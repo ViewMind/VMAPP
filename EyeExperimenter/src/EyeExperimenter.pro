@@ -40,6 +40,7 @@ SOURCES += main.cpp \
     ../../CommonClasses/RenderServerClient/renderserverclient.cpp \
     ../../CommonClasses/RestAPIController/restapicontroller.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
+    ../../CommonClasses/StudyControl/gng3D/gngspheresconfigurator.cpp \
     ../../CommonClasses/StudyControl/nback/nbackconfigurator.cpp \
     ../../CommonClasses/StudyControl/studyconfigurator.cpp \
     ../../CommonClasses/StudyControl/studycontrol.cpp \
@@ -74,6 +75,7 @@ HEADERS += \
     ../../CommonClasses/RenderServerClient/renderserverclient.h \
     ../../CommonClasses/RestAPIController/restapicontroller.h \
     ../../CommonClasses/StudyControl/StudyConfiguration.h \
+    ../../CommonClasses/StudyControl/gng3D/gngspheresconfigurator.h \
     ../../CommonClasses/StudyControl/nback/nbackconfigurator.h \
     ../../CommonClasses/StudyControl/studyconfigurator.h \
     ../../CommonClasses/StudyControl/studycontrol.h \

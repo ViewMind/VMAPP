@@ -14,6 +14,7 @@ FlowControl::FlowControl(QObject *parent, ConfigurationManager *c) : QObject(par
 
     // Making all the connection to the calibration manager.
     connect(&calibrationManager,&CalibrationManager::calibrationDone,this,&FlowControl::onCalibrationDone);
+    connect(&calibrationManager,&CalibrationManager::newPacketAvailable,this,&FlowControl::onNewCalibrationPacketAvailable);
 
     // Making the connection to the end of the study processor.
     connect(&studyEndProcessor,&StudyEndOperations::finished,this,&FlowControl::onStudyEndProcessFinished);
@@ -76,10 +77,14 @@ void FlowControl::onNewMessage(const QString &msg, const quint8 &msgType){
         StaticThreadLogger::warning("FlowControl::onNewMessage",msg);
     }
 
-    if (!renderServerClient.isRenderServerWorking()){
+    if (!renderServerClient.isRenderServerWorking() && renderServerClient.isReadyToRender()){
         emit FlowControl::renderServerDisconnect();
     }
 
+}
+
+void FlowControl::onNewCalibrationPacketAvailable(){
+    renderServerClient.sendPacket(calibrationManager.getRenderServerPacket());
 }
 
 void FlowControl::onConnectionEstablished(){
@@ -201,23 +206,61 @@ bool FlowControl::isRenderServerWorking() const{
 ////////////////////////////// AUXILIARY FUNCTIONS ///////////////////////////////////////
 void FlowControl::keyboardKeyPressed(int key){
 
-    switch (key){
-    case Qt::Key_S:
-        studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_BINDING_SAME);
-        break;
-    case Qt::Key_D:
-        studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_BINDING_DIFF);
-        break;
-    case Qt::Key_Escape:
-        studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_ABORT);
-        break;
-    case Qt::Key_G:
-        studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_CONTINUE);
-        break;
-    default:
-        StaticThreadLogger::warning("FlowControl::keyboardKeyPressed","The following key was pressed but the in study command was not sent as the key was not recognized: " + QString::number(key));
-        break;
+    if (studyControl.getStudyPhase() == StudyControl::SS_EVAL){
+        QString phase = "Eval";
+        switch (key){
+        case Qt::Key_S:
+            studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_BINDING_SAME);
+            break;
+        case Qt::Key_D:
+            studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_BINDING_DIFF);
+            break;
+        case Qt::Key_Escape:
+            studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_ABORT);
+            break;
+        case Qt::Key_G:
+            studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_CONTINUE);
+            break;
+        default:
+            StaticThreadLogger::warning("FlowControl::keyboardKeyPressed","The following key was pressed but the in study command was not sent as the key was not recognized: " + QString::number(key) + " in state " + phase);
+            break;
+        }
     }
+    else if (studyControl.getStudyPhase() == StudyControl::SS_EXAMPLE){
+        QString phase = "Example";
+        switch (key){
+        case Qt::Key_N:
+            studyControl.nextExampleSlide();
+            break;
+        case Qt::Key_Escape:
+            studyControl.sendInStudyCommand(StudyControl::ISC_ABORT);
+            break;
+        default:
+            StaticThreadLogger::warning("FlowControl::keyboardKeyPressed","The following key was pressed but the in study command was not sent as the key was not recognized: " + QString::number(key) + " in state " + phase);
+            break;
+        }
+    }
+    else if (studyControl.getStudyPhase() == StudyControl::SS_EXPLAIN){
+        QString phase = "Explanation";
+        switch (key){
+        case Qt::Key_N:
+            studyControl.nextExplanationSlide();
+            break;
+        case Qt::Key_B:
+            studyControl.previousExplanationSlide();
+            break;
+        case Qt::Key_Escape:
+            studyControl.sendInStudyCommand(StudyControl::ISC_ABORT);
+            break;
+        default:
+            StaticThreadLogger::warning("FlowControl::keyboardKeyPressed","The following key was pressed but the in study command was not sent as the key was not recognized: " + QString::number(key) + " in state " + phase);
+            break;
+        }
+    }
+    else {
+        StaticThreadLogger::warning("FlowControl::keyboardKeyPressed","The following key was pressed but the in study command was not sent as no study is running");
+    }
+
 }
 
 bool FlowControl::isExperimentEndOk() const{
@@ -382,6 +425,8 @@ void FlowControl::onCalibrationDone(qint32 code){
 QVariantMap FlowControl::getCalibrationValidationData() const {
 
     QVariantMap map = calibrationHistory.getMapOfLastAttempt();
+
+    // The calibration target locations need to be there, as there are checked with QML
 
     // We add the resolution as it is required for plotting the calibration data.
     QSize s = calibrationManager.getResolution();

@@ -289,11 +289,6 @@ Rectangle {
         //console.log("PRESSED the NEXT Button in Stage" + vmEvaluationStage)
         if (vmEvaluationStage === vmSTAGE_CALIBRATION){
 
-            // If we are not connected there is something wrong and we get notified and don't move forward.
-            if (!flowControl.isConnected()){
-                mainWindow.popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewevaluation_err_noconnect"))
-                return;
-            }
             // All is good so the calibration is requested.
 
             let mode3d = isCurrentEvaluationA3DStudy();

@@ -106,11 +106,23 @@ private:
     void sendCalibrationCoefficientPacket();
     void addEyeDataToCalibrationPoint(float xl, float xr, float yl, float yr, float zl, float zr, qint32 index);
 
+    /**
+     * @brief compute2DTargetLocations - Computes target locations using screen percents.
+     * @details When using a 3D calibration the target vectors are the non normalized vectors that define
+     * the target positon. The UI still requires to know the 2D locations of the targets as if it were a
+     * 2D calibration in order to properly plot the dialog with the circles and percents. It does this by
+     * using an approximation of the value in X and Y representing the "width" resolution of the screen
+     * and the "height"
+     */
+    void compute2DTargetLocations();
+
     ////////////////////////////// DEBUG LOAD FUNCTIONS /////////////////
-    bool debugLoadFixed3DCalibrationParameters();
-    bool debugLoadFixed2DCalibrationParameters();
+    RenderServerPacket debugLoadFixed3DCalibrationParameters();
+    RenderServerPacket debugLoadFixed2DCalibrationParameters();
 
     const qreal K_LARGE_D = 0.1;
+    const qreal VIRTUAL_3D_W = 80/3;
+    const qreal VIRTUAL_3D_H = 70/3;
 
 };
 

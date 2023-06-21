@@ -85,10 +85,11 @@ ViewBase {
                         loader.getStringForKey("viewevaluation_binding_uc"),
                         loader.getStringForKey("viewevaluation_eval_nbackms"),
                         loader.getStringForKey("viewevaluation_eval_nbackrt"),
-                        loader.getStringForKey("viewevaluation_eval_nbackvs"),
+                        loader.getStringForKey("viewevaluation_eval_nbackvs"),                        
                         loader.getStringForKey("viewevaluation_eval_passball"),
                         loader.getStringForKey("viewevaluation_eval_gonogo"),
-                        loader.getStringForKey("viewevaluation_eval_gonogo3D")
+                        loader.getStringForKey("viewevaluation_eval_gonogo3D"),
+                        loader.getStringForKey("viewevaluation_eval_nbackslow")
                     ];
 
                 var study_names = [];
@@ -113,7 +114,11 @@ ViewBase {
                             hcalib = true;
                         }
 
-                        config[key_and_value[0]] = key_and_value[1]
+                        let value = key_and_value[1];
+                        if (value === "false") value = false;
+                        else if (value === "true") value = true;
+
+                        config[key_and_value[0]] = value;
 
                     }
                     console.log("   DBUG: Adding Study " + name + " With use of hand calibration equal to " + hcalib);

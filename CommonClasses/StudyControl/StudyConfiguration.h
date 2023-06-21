@@ -11,6 +11,7 @@ namespace RRS {
 namespace StudyConfigurationFields {
 static const QString STUDY =                      "study";
 static const QString NBACK_TRIALS =               "nback_trials";
+static const QString GNG3D_SPHERES =              "gng3d_spheres";
 static const QString MIN_HOLD_TIME =              "min_hold_time";
 static const QString MAX_HOLD_TIME =              "max_hold_time";
 static const QString STEP_HOLD_TIME =             "step_hold_time";
@@ -25,6 +26,11 @@ static const QString NBACK_LIGHTUP =              "nback_lightup";
 static const QString MD_PERCENT =                 "max_dispersion_percent";
 static const QString SAMPLE_F =                   "sampling_frequency";
 static const QString IS_STUDY_3D =                "is_study_3D";
+static const QString MIN_SPEED =                  "min_speed";
+static const QString MAX_SPEED =                  "max_speed";
+static const QString INITIAL_SPEED =              "initial_speed";
+static const QString HAND_L_ENABLED =             "hand_l_enabled";
+static const QString HAND_R_ENABLED =             "hand_r_enabled";
 }
 
 }

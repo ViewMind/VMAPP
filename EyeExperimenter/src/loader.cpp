@@ -534,6 +534,9 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         qDebug() << dbug;
         StaticThreadLogger::warning("Loader::createSubjectStudyFile",dbug);
     }
+    // These values will be properly set with the end study data.
+    pp[VMDC::ProcessingParameter::RESOLUTION_HEIGHT] = 0;
+    pp[VMDC::ProcessingParameter::RESOLUTION_WIDTH]  = 0;
 
     // Setting the QC Parameters that will be used.
     QVariantMap qc = localDB.getQCParameters();

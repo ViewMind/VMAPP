@@ -7,7 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonParseError>
 
-#include "RenderServerPacketNames.h"
+#include "RenderServerStrings.h"
 #include "renderserverpacketrecognizer.h"
 
 class RenderServerPacket
@@ -34,19 +34,14 @@ public:
     void setPacketType(const QString &type);
     void setPayloadField(const QString &name, const QVariant &vallue);
     void setFullPayload(const QVariantMap &map);
-    void setPacketSkippable(bool skippable = true);
     QVariant getPayloadField(const QString &name) const;
     bool containsPayloadField(const QString &name) const;
     bool isPacketOfType (const QString &type) const;
-
-    // Creates a short string summarizing the contentes of the packets if it's implemented for the packet type. Returns an empty string otherwise.
-    QString getStringSummary() const;
 
 private:
 
     QString type;
     QVariantMap payload;
-    bool isSkippable;
     QByteArray rxBuffer;
     QString error;
 

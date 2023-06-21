@@ -39,6 +39,8 @@ public:
     // Two conditions must be met for render server to be working: The process must be running AND the client must be connected to the server.
     bool isRenderServerWorking() const;
 
+    bool isReadyToRender() const;
+
     RenderServerPacket getPacket();
 
     // Stores the window positiona and size. Then calls show.
@@ -51,14 +53,6 @@ public:
     void showRenderWindow();
 
     void setRenderWindowHiddenFlag(bool flag);
-
-//    QSize getRenderResolution() const;
-
-//    qreal getVerticalFieldOfView() const;
-
-//    qreal getHorizontalFieldOfView() const;
-
-    //void sendEnable2DRenderPacket(bool enable);
 
     void closeRenderServer();
 
@@ -119,6 +113,7 @@ private:
 
     // Render handle ready emitted flag.
     bool emittedRenderHandleReady;
+    bool isConnectedToRRS;
 
     // The Handle to render Window.
     static HWND renderHandle;

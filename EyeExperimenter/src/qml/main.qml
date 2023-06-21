@@ -254,6 +254,8 @@ ApplicationWindow {
             let NPts  = calib_target_locs.length;
             let math_issues = map[math_issues_key];
 
+            //console.log("NPts,NFail->" + NPts + ", " + Nfail + ". Issues: " + math_issues);
+
             if ((NPts === Nfail) || math_issues){
                 messageDiag.vmLarge = true; // Makes it a bit taller, so that more text can fit.
                 messageDiag.loadFromKey("viewevaluation_calib_suggest_retry",true);

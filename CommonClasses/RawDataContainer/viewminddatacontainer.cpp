@@ -662,8 +662,7 @@ bool ViewMindDataContainer::setFullTrialList(const QVariantList &fullTrialList,
                                              qint32 examplePhaseDuration,
                                              qint32 pauseDuration,
                                              qint32 evaluationDuration,
-                                             const QString &startTime,
-                                             bool shouldStudyBeFinalized){
+                                             const QString &startTime){
 
     // Getting the current study structure from the current studies list.
     QString studyName = currentlySelectedStudy;
@@ -677,9 +676,7 @@ bool ViewMindDataContainer::setFullTrialList(const QVariantList &fullTrialList,
     study.insert(VMDC::StudyField::PAUSE_DURATION,pauseDuration);
     study.insert(VMDC::StudyField::END_TIME,QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
     study.insert(VMDC::StudyField::STUDY_DURATION,evaluationDuration);
-
-    if (shouldStudyBeFinalized) study.insert(VMDC::StudyField::STATUS,VMDC::StatusType::FINALIZED);
-    else study.insert(VMDC::StudyField::STATUS,VMDC::StatusType::ONGOING);
+    study.insert(VMDC::StudyField::STATUS,VMDC::StatusType::FINALIZED);
 
     studies[currentlySelectedStudy] = study;
 
@@ -694,6 +691,44 @@ bool ViewMindDataContainer::setFullTrialList(const QVariantList &fullTrialList,
     currentTrialList.clear();
 
     return true;
+
+
+}
+
+bool ViewMindDataContainer::setFullElement3D(const QVariantMap &elements,
+                                             qint32 explanationPhaseDuration,
+                                             qint32 examplePhaseDuration, qint32 pauseDuration,
+                                             qint32 evaluationDuration,
+                                             const QString &startTime){
+
+    // Getting the current study structure from the current studies list.
+    QString studyName = currentlySelectedStudy;
+    QVariantMap studies = data.value(MAIN_FIELD_STUDIES).toMap();
+    QVariantMap study = studies.value(studyName).toMap();
+
+    study.insert(VMDC::StudyField::STUDY_DATA,elements);
+    study.insert(VMDC::StudyField::EXAMPLE_TIME,examplePhaseDuration);
+    study.insert(VMDC::StudyField::EXPLANATION_TIME,explanationPhaseDuration);
+    study.insert(VMDC::StudyField::START_TIME,startTime);
+    study.insert(VMDC::StudyField::PAUSE_DURATION,pauseDuration);
+    study.insert(VMDC::StudyField::END_TIME,QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    study.insert(VMDC::StudyField::STUDY_DURATION,evaluationDuration);
+    study.insert(VMDC::StudyField::STATUS,VMDC::StatusType::FINALIZED);
+
+    studies[currentlySelectedStudy] = study;
+
+    data[MAIN_FIELD_STUDIES] = studies;
+
+    // Clearing all data.
+    currentDataSetMap.clear();
+    currentTrial.clear();
+    currentRawDataList.clear();
+    currentLFixationVectorL.clear();
+    currentLFixationVectorR.clear();
+    currentTrialList.clear();
+
+    return true;
+
 
 
 }

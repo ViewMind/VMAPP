@@ -32,13 +32,13 @@ RenderServerClient::RenderServerClient(QObject *parent):QObject(parent)
     mainWindowID = 0;
     renderHandle = nullptr;
 
-//    screenResolutionHeight = 0;
-//    screenResolutionWidth = 0;
-
     sentResolutionRequest = false;
     bytesAreBeingSent = false;
 
     renderWindowHidden = false;
+
+    emittedRenderHandleReady = false;
+    isConnectedToRRS = false;
 
     onClosing = false;
 
@@ -55,18 +55,11 @@ void RenderServerClient::resizeRenderWindow(qint32 x, qint32 y, qint32 w, qint32
 
 void RenderServerClient::hideRenderWindow(){
     MoveWindow(RenderServerClient::renderHandle,renderWindowGeometry.x(),renderWindowGeometry.y(),0,0,TRUE);
-    //ShowWindow(RenderServerClient::renderHandle,SW_HIDE);
-    //SetWindowPos(RenderServerClient::renderHandle,HWND_BOTTOM,0,0,0,0,SWP_HIDEWINDOW|SWP_NOMOVE|SWP_NOSIZE);
 }
 
 void RenderServerClient::showRenderWindow() {
     //qDebug() << "Entering Show of RanderWindow with" << renderWindowHidden << renderWindowGeometry;
     if (renderWindowHidden) return;  // Does nothing.
-    //SetWindowPos(RenderServerClient::renderHandle,HWND_BOTTOM,0,0,0,0,SWP_SHOWWINDOW|SWP_NOMOVE|SWP_NOSIZE);
-    //SetWindowPos(RenderServerClient::renderHandle,HWND_TOP,0,0,0,0,SWP_SHOWWINDOW|SWP_NOMOVE|SWP_NOSIZE);
-    //SetWindowPos(RenderServerClient::renderHandle,(HWND) mainWindowID,0,0,0,0,0);
-
-    //ShowWindow(RenderServerClient::renderHandle,SW_SHOW);
     MoveWindow(RenderServerClient::renderHandle,renderWindowGeometry.x(),renderWindowGeometry.y(),renderWindowGeometry.width(),renderWindowGeometry.height(),TRUE);
 }
 
@@ -74,21 +67,6 @@ void RenderServerClient::setRenderWindowHiddenFlag(bool flag){
     renderWindowHidden = flag;
 }
 
-
-//QSize RenderServerClient::getRenderResolution() const{
-//    QSize size;
-//    size.setWidth(screenResolutionWidth);
-//    size.setHeight(screenResolutionHeight);
-//    return size;
-//}
-
-//qreal RenderServerClient::getHorizontalFieldOfView() const {
-//    return hFOV;
-//}
-
-//qreal RenderServerClient::getVerticalFieldOfView() const {
-//    return vFOV;
-//}
 
 void RenderServerClient::startRenderServer(const QString &fullPath, WId mainWinID){
 
@@ -120,9 +98,11 @@ bool RenderServerClient::isRenderServerWorking() const {
     if (renderHandle == nullptr) return false;
     if (socket->state() != QTcpSocket::ConnectedState) return false;
     if (renderServerProcess.state() != QProcess::Running) return false;
-//    if (screenResolutionHeight == 0) return false;
-//    if (screenResolutionWidth == 0) return false;
     return true;
+}
+
+bool RenderServerClient::isReadyToRender() const {
+    return isConnectedToRRS;
 }
 
 void RenderServerClient::connectToRenderServer() {
@@ -164,21 +144,6 @@ RenderServerPacket RenderServerClient::getPacket() {
 }
 
 void RenderServerClient::sendPacket(const RenderServerPacket &packet){
-
-//    if (packet.getType() == RenderServerPacketType::TYPE_2D_RENDER){
-//        qDebug() << "SENDING PACKET @ " << mtimer.elapsed();
-//        mtimer.start();
-//        Debug::prettpPrintQVariantMap(packet.getPayload());
-//    }
-
-//    qDebug() << "Sending Packet of Type: " << packet.getType();
-
-//    if (DBUGBOOL(Debug::Options::SEND_RENDER_2D_PRINT)){
-//        if (packet.getType() == RenderServerPacketType::TYPE_2D_RENDER){
-//            qDebug() << "SENDING PACKET" << packet.getStringSummary() << "@ " << mtimer.elapsed();
-//            mtimer.start();
-//        }
-//    }
 
 
     if (socket->state() != QAbstractSocket::ConnectedState){
@@ -246,20 +211,7 @@ void RenderServerClient::onWaitTimerTimeout(){
     }
 
     if (socket->state() == QAbstractSocket::ConnectedState){
-//        if ((screenResolutionHeight == 0) && (screenResolutionWidth == 0)){
-//            // If we got here the render handle is effectively set and we are connected. So The next step is to get the render canvas dimensions.
-//            if (!sentResolutionRequest){
-//                RenderServerPacket request;
-//                request.setPacketType(RenderServerPacketType::TYPE_2D_CONTROL);
-//                request.setPayloadField(RenderControlPacketFields::WIDTH,0);
-//                request.setPayloadField(RenderControlPacketFields::HEIGHT,0);
-//                request.setPayloadField(RenderControlPacketFields::ENABLE_2D_RENDER,false);
-//                this->sendPacket(request);
-//                sentResolutionRequest = true;
-//                emit RenderServerClient::newMessage("Sent request for resolution",MSG_TYPE_INFO);
-//            }
-//            else return;
-//        }
+        isConnectedToRRS = true;
         emit RenderServerClient::readyToRender();
     }
     else return;

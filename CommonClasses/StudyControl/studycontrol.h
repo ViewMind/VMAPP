@@ -8,12 +8,15 @@
 #include "../RawDataContainer/VMDC.h"
 #include "../RawDataContainer/viewminddatacontainer.h"
 #include "../LogInterface/staticthreadlogger.h"
-#include "../StudyControl/nback/nbackconfigurator.h"
 #include "../debug.h"
 
+#include "../StudyControl/nback/nbackconfigurator.h"
+#include "../StudyControl/gng3D/gngspheresconfigurator.h"
+
+
 namespace StudyGlobals {
-static const QString SUBJECT_DIR_ABORTED     = "exp_aborted";
-static const QString SUBJECT_DIR_SENT        = "sent";
+   static const QString SUBJECT_DIR_ABORTED     = "exp_aborted";
+   static const QString SUBJECT_DIR_SENT        = "sent";
 }
 
 class StudyControl: public QObject
@@ -26,6 +29,7 @@ public:
     typedef enum {SES_OK, SES_FAILED, SES_ABORTED} StudyEndStatus;
     typedef enum {ISC_ABORT, ISC_BINDING_SAME, ISC_BINDING_DIFF, ISC_CONTINUE} InStudyCommand;
     typedef enum {ST_3D, ST_2D, ST_NOT_SET} StudyType;
+    typedef enum { SS_NONE, SS_EXPLAIN, SS_EXAMPLE, SS_EVAL } StudyState;
 
     /**
      * @brief startStudy
@@ -52,6 +56,12 @@ public:
      * @return The study end status. If it the study ended, something failed or was aborted.
      */
     StudyEndStatus getStudyEndStatus() const;
+
+    /**
+     * @brief getStudyPhase
+     * @return The current study phase: none, evaluation, examples or explanation.
+     */
+    StudyState getStudyPhase() const;
 
     /**
      * @brief receiveRenderServerPacket
@@ -137,8 +147,6 @@ signals:
 
 private:
 
-    typedef enum { SS_NONE, SS_EXPLAIN, SS_EXAMPLE, SS_EVAL } StudyState;
-
     // Packet to send to render server.
     RenderServerPacket rspacket;
 
@@ -151,6 +159,9 @@ private:
     QString fullPathCurrentStudyFile;
     QString fullPathCurrentIDXFile;
     QString evaluationStartTime;
+
+    // Flag used to determine when then next ACK is an abort request.
+    bool expectingAbortACK;
 
     // Where the data will be stored.
     ViewMindDataContainer rawdata;

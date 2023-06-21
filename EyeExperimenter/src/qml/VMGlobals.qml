@@ -134,7 +134,6 @@ QtObject {
     readonly property string vmSCP_NBACKRT_TIMEOUT:          "nback_timeout";
     readonly property string vmSCP_NBACKRT_TRANSITION:       "nback_transition";
 
-
     // Study configuration parameter values
     readonly property string vmSCV_BINDING_TARGETS_2:        "2";
     readonly property string vmSCV_BINDING_TARGETS_3:        "3";

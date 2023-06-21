@@ -41,6 +41,7 @@ static const QString RENDER_BORDERS = "render_border_check";
 }
 
 namespace PacketStudyData {
+static const QString ELEMENTS_3D      = "elements_3d";
 static const QString TRIAL_LIST_2D    = "trial_list";
 static const QString HITBOXES         = "hitboxes";
 static const QString EXPLAIN_LENGTH   = "explanation_phase_duration";

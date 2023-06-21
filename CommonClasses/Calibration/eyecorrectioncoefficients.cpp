@@ -201,7 +201,10 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
 
         QList<EyeTrackerData> f;
 
-        for (qint32 j = 0; j < points2Fit.at(i).size(); j++){
+        qint32 start_point = cuttoffForCalibrationDataForCumputation.at(i);
+
+        for (qint32 j = start_point; j < points2Fit.at(i).size(); j++){
+
             EyeTrackerData input = points2Fit.at(i).at(j);
             EyeTrackerData prediction;
 

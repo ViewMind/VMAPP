@@ -119,6 +119,9 @@ public slots:
     // The sstudy end process is triggered and this funciton is called. For storing data in the local DB and notifying the front end.
     void onStudyEndProcessFinished();
 
+    // Whenever calibration needs to send a new packet
+    void onNewCalibrationPacketAvailable();
+
 
 private:
 

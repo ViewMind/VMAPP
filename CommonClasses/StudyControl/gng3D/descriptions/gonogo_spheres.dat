@@ -1,0 +1,244 @@
+{
+    "spheres": [
+        {
+            "color": "R",
+            "origin": 8
+        },
+        {
+            "color": "R",
+            "origin": 5
+        },
+        {
+            "color": "G",
+            "origin": 3
+        },
+        {
+            "color": "R",
+            "origin": 3
+        },
+        {
+            "color": "R",
+            "origin": 7
+        },
+        {
+            "color": "G",
+            "origin": 4
+        },
+        {
+            "color": "R",
+            "origin": 6
+        },
+        {
+            "color": "G",
+            "origin": 1
+        },
+        {
+            "color": "R",
+            "origin": 8
+        },
+        {
+            "color": "G",
+            "origin": 4
+        },
+        {
+            "color": "R",
+            "origin": 4
+        },
+        {
+            "color": "R",
+            "origin": 4
+        },
+        {
+            "color": "G",
+            "origin": 4
+        },
+        {
+            "color": "G",
+            "origin": 3
+        },
+        {
+            "color": "R",
+            "origin": 4
+        },
+        {
+            "color": "R",
+            "origin": 7
+        },
+        {
+            "color": "G",
+            "origin": 0
+        },
+        {
+            "color": "R",
+            "origin": 8
+        },
+        {
+            "color": "G",
+            "origin": 1
+        },
+        {
+            "color": "G",
+            "origin": 8
+        },
+        {
+            "color": "R",
+            "origin": 0
+        },
+        {
+            "color": "R",
+            "origin": 0
+        },
+        {
+            "color": "G",
+            "origin": 5
+        },
+        {
+            "color": "R",
+            "origin": 5
+        },
+        {
+            "color": "R",
+            "origin": 6
+        },
+        {
+            "color": "R",
+            "origin": 4
+        },
+        {
+            "color": "G",
+            "origin": 4
+        },
+        {
+            "color": "R",
+            "origin": 5
+        },
+        {
+            "color": "R",
+            "origin": 7
+        },
+        {
+            "color": "G",
+            "origin": 7
+        },
+        {
+            "color": "G",
+            "origin": 6
+        },
+        {
+            "color": "G",
+            "origin": 0
+        },
+        {
+            "color": "R",
+            "origin": 0
+        },
+        {
+            "color": "G",
+            "origin": 8
+        },
+        {
+            "color": "R",
+            "origin": 0
+        },
+        {
+            "color": "G",
+            "origin": 7
+        },
+        {
+            "color": "G",
+            "origin": 3
+        },
+        {
+            "color": "G",
+            "origin": 6
+        },
+        {
+            "color": "G",
+            "origin": 1
+        },
+        {
+            "color": "G",
+            "origin": 0
+        },
+        {
+            "color": "G",
+            "origin": 6
+        },
+        {
+            "color": "R",
+            "origin": 7
+        },
+        {
+            "color": "G",
+            "origin": 8
+        },
+        {
+            "color": "G",
+            "origin": 5
+        },
+        {
+            "color": "R",
+            "origin": 3
+        },
+        {
+            "color": "G",
+            "origin": 1
+        },
+        {
+            "color": "R",
+            "origin": 5
+        },
+        {
+            "color": "G",
+            "origin": 7
+        },
+        {
+            "color": "G",
+            "origin": 5
+        },
+        {
+            "color": "G",
+            "origin": 3
+        },
+        {
+            "color": "R",
+            "origin": 8
+        },
+        {
+            "color": "G",
+            "origin": 6
+        },
+        {
+            "color": "R",
+            "origin": 3
+        },
+        {
+            "color": "R",
+            "origin": 6
+        },
+        {
+            "color": "G",
+            "origin": 5
+        },
+        {
+            "color": "G",
+            "origin": 8
+        },
+        {
+            "color": "G",
+            "origin": 7
+        },
+        {
+            "color": "R",
+            "origin": 3
+        },
+        {
+            "color": "R",
+            "origin": 6
+        },
+        {
+            "color": "G",
+            "origin": 0
+        }
+    ]
+}

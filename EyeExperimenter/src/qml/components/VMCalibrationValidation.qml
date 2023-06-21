@@ -91,6 +91,10 @@ Item {
     function renderTargets(ctx){
 
         let upperLeftCorners = vmCalibrationData["calibration_target_location"];
+
+        //console.log("Printing calibration target locations");
+        //console.log(JSON.stringify(vmCalibrationData["calibration_target_location"]));
+
         if (upperLeftCorners === undefined) return;
         let Dx = vmCalibrationData["calibration_target_diameter"]*vmKx;
         let Dy = vmCalibrationData["calibration_target_diameter"]*vmKy;
@@ -100,10 +104,11 @@ Item {
         for (let i = 0; i < upperLeftCorners.length; i++){
             let x = upperLeftCorners[i]["x"]*vmKx;
             let y = upperLeftCorners[i]["y"]*vmKy;
+            //console.log("Printing Target at " + x + ", " + y);
             ctx.beginPath();
             ctx.fillStyle = VMGlobals.vmWhite
             ctx.strokeStyle = VMGlobals.vmGrayDialogDivider
-            ctx.roundedRect(x,y,Dx,Dy,Rx,Ry)
+            ctx.roundedRect(x-Rx,y-Ry,Dx,Dy,Rx,Ry)
             ctx.stroke();
             ctx.fill();
         }
@@ -157,7 +162,7 @@ Item {
             ctx.beginPath();
             ctx.fillStyle = VMGlobals.vmWhite
             ctx.strokeStyle = VMGlobals.vmGrayDialogDivider
-            ctx.roundedRect(x-offsetX,y-offsetY,Dx,Dy,Rx,Ry)
+            ctx.roundedRect(x-offsetX-Rx,y-offsetY-Ry,Dx,Dy,Rx,Ry)
             ctx.stroke();
             ctx.fill();
 
@@ -178,7 +183,7 @@ Item {
             ctx.fillStyle = color
             ctx.strokeStyle = color
             //console.log("Drawing text " + vmPercent);
-            ctx.fillText(pText,cx,cy)
+            ctx.fillText(pText,cx-Rx,cy-Ry)
 
         }
 

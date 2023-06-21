@@ -271,12 +271,11 @@ namespace VMDC {
        static const QString INSTITUTION_NAME = "institution_name";
        static const QString VERSION = "version";
        static const QString PROC_PARAMETER_KEY = "processing_parameters_key";
-       static const QString MOUSE_USED = "mouse_used";
        static const QString PROTOCOL = "protocol";
        static const QString COMMENTS = "comments";
        static const QString DISCARD_REASON = "discard_reason";
        static const QString APP_VERSION = "app_version";
-       static const QStringList valid{DATE,HOUR,INSTITUTION_ID,INSTITUTION_INSTANCE,INSTITUTION_NAME,VERSION,PROC_PARAMETER_KEY,MOUSE_USED,PROTOCOL,STATUS,COMMENTS,DISCARD_REASON,APP_VERSION};
+       static const QStringList valid{DATE,HOUR,INSTITUTION_ID,INSTITUTION_INSTANCE,INSTITUTION_NAME,VERSION,PROC_PARAMETER_KEY,PROTOCOL,STATUS,COMMENTS,DISCARD_REASON,APP_VERSION};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Metadata Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   

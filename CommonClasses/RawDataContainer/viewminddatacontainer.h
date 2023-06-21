@@ -82,8 +82,14 @@ public:
                            qint32 examplePhaseDuration,
                            qint32 pauseDuration,
                            qint32 evaluationDuration,
-                           const QString &startTime,
-                           bool shouldStudyBeFinalized);
+                           const QString &startTime);
+
+    bool setFullElement3D (const QVariantMap &elements,
+                           qint32 explanationPhaseDuration,
+                           qint32 examplePhaseDuration,
+                           qint32 pauseDuration,
+                           qint32 evaluationDuration,
+                           const QString &startTime);
 
     bool addNewTrial(const QString &trial_id, const QString &type, const QString &correct_response, const QVariantMap &trialMetadata = QVariantMap());
 

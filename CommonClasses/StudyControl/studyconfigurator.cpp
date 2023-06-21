@@ -1,7 +1,7 @@
 #include "studyconfigurator.h"
 
 StudyConfigurator::StudyConfigurator(){
-
+    this->defaultStudyEye = VMDC::Eye::RIGHT;
 }
 
 QVariantMap StudyConfigurator::getConfiguration() const{
@@ -31,6 +31,9 @@ bool StudyConfigurator::createStudyConfiguration(const QVariantMap &studyConfig,
     configuration[RRS::StudyConfigurationFields::SAMPLE_F]   = sample_f;
     shortStudies = short_studies;
     studyType = study_type;
+    if (!openStudyDescriptionFile(this->studyDescriptionFile)){
+        return false;
+    }
     return this->studySpecificConfiguration(studyConfig);
 }
 

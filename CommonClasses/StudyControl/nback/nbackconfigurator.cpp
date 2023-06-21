@@ -1,8 +1,7 @@
 #include "nbackconfigurator.h"
 
 NBackConfigurator::NBackConfigurator(): StudyConfigurator() {
-    //QString filename = ":/../../CommonClasses/StudyControl/nback/descriptions/nback.dat";;
-    this->studyDescriptionFile = ":/nback/descriptions/nback.dat";
+    this->studyDescriptionFile = ":/CommonClasses/StudyControl/nback/descriptions/nback.dat";
     this->defaultStudyEye = VMDC::Eye::RIGHT;
 }
 
@@ -33,7 +32,7 @@ bool NBackConfigurator::studySpecificConfiguration(const QVariantMap &studyConfi
             configuration[RRS::StudyConfigurationFields::NBACK_LIGHTUP] = RRS::NBack::NBackLightUp::ALL;
         }
 
-        configuration[RRS::StudyConfigurationFields::STUDY]                = VMDC::Study::NBACK;
+        configuration[RRS::StudyConfigurationFields::STUDY]                = VMDC::Study::NBACKVS;
         configuration[RRS::StudyConfigurationFields::MIN_HOLD_TIME]        = NBACKVS_MIN_HOLD_TIME;
         configuration[RRS::StudyConfigurationFields::MAX_HOLD_TIME]        = NBACKVS_MAX_HOLD_TIME;
         configuration[RRS::StudyConfigurationFields::STEP_HOLD_TIME]       = NBACKVS_STEP_HOLD_TIME;
@@ -58,7 +57,7 @@ bool NBackConfigurator::studySpecificConfiguration(const QVariantMap &studyConfi
         configuration[RRS::StudyConfigurationFields::NBACK_LIGHTUP]        = RRS::NBack::NBackLightUp::NONE;
     }
 
-    return false;
+    return true;
 }
 
 
@@ -71,6 +70,7 @@ bool NBackConfigurator::parseStudyDescription(int numberOfTrials){
     // Checking the size of the first line to see if it is a version string.
     qint32 startI = 0;
     QString possibleHeader = lines.first();
+    //qDebug() << "Possible header is" << possibleHeader << " out of " << lines.size() << "lines";
     QStringList headerParts = possibleHeader.split(" ",Qt::SkipEmptyParts);
     if (headerParts.size() == 1){
         // Version string pesent
