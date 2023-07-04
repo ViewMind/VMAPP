@@ -12,6 +12,8 @@
 
 #include "../StudyControl/nback/nbackconfigurator.h"
 #include "../StudyControl/gng3D/gngspheresconfigurator.h"
+#include "../StudyControl/binding/bindingconfigurator.h"
+#include "../StudyControl/gng/gngconfigurator.h"
 
 
 namespace StudyGlobals {
@@ -29,7 +31,7 @@ public:
     typedef enum {SES_OK, SES_FAILED, SES_ABORTED} StudyEndStatus;
     typedef enum {ISC_ABORT, ISC_BINDING_SAME, ISC_BINDING_DIFF, ISC_CONTINUE} InStudyCommand;
     typedef enum {ST_3D, ST_2D, ST_NOT_SET} StudyType;
-    typedef enum { SS_NONE, SS_EXPLAIN, SS_EXAMPLE, SS_EVAL } StudyState;
+    typedef enum { SS_NONE, SS_EXPLAIN, SS_EXAMPLE, SS_EVAL, SS_WAITING_FOR_STUDY_DATA } StudyState;
 
     /**
      * @brief startStudy
@@ -120,6 +122,16 @@ public:
      */
     QStringList getDataFilesLocation() const;
 
+    /**
+     * @brief requestStudyData - Simply sends the request study data control packet.
+     */
+    void requestStudyData();
+
+    /**
+     * @brief isStudyInDataTransfer
+     * @return True if the study has finished and the study data transfer has started. False otherwise. WARNING: it's not reset until the NEXT Study start.
+     */
+    bool isStudyInDataTransfer() const;
 
     /**
      * @brief FillNumberOfSlidesInExplanations - Fills a dictionary with the number of slides in each key of explanation.
@@ -141,7 +153,7 @@ signals:
     void updateStudyMessages(const QVariantMap &string_value_map);
 
     /**
-     * @brief studyEnd - Signals that the study has finished.
+     * @brief studyEnd - Signals that the study has finished. It is emitted again when the study data has been received.
      */
     void studyEnd();
 
@@ -162,6 +174,9 @@ private:
 
     // Flag used to determine when then next ACK is an abort request.
     bool expectingAbortACK;
+
+    // Flag to determine whether the study end signal was sent during the study or during data transfer.
+    bool studyInDataTransfer;
 
     // Where the data will be stored.
     ViewMindDataContainer rawdata;
@@ -195,8 +210,9 @@ private:
 
     /**
      * @brief emitFailState - Shorcut function to coreccty set variables and emit the study end signal on failure of some kind.
+     * @param wasAborted - If true the study was aborted, else it was a failure.
      */
-    void emitFailState();
+    void emitFailState(bool wasAborted = false);
 
     /**
      * @brief emitNewExplanationMessage - Shortcut function to emit the index of the current explanation screen that should be displayed.

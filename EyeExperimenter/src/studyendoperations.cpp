@@ -414,14 +414,16 @@ qreal StudyEndOperations::computeNumberOfDataPointsIn2DStudy(const QVariantList 
         QVariantMap trial = trials.at(i).toMap();
         QVariantMap data = trial.value(VMDC::TrialField::DATA).toMap();
         QStringList dataset_names = data.keys();
+        //qDebug() << "Trial" << i;
         for (qint32 j = 0; j < dataset_names.size(); j++){
             QVariantMap dataSet = data.value(dataset_names.at(j)).toMap();
+            //qDebug() << "   Dataset: " << dataset_names.at(j) << dataSet.value(VMDC::DataSetField::RAW_DATA).toList().size();
             pointsInTrial = pointsInTrial + dataSet.value(VMDC::DataSetField::RAW_DATA).toList().size();
         }
 
     }
 
-    //return qMin(pointsInTrial*100.0/expectedNumberOfDataPoints,100.0);
+    //return qMin(pointsInTrial*100.0/expectedNumberOfDataPoints,100.0);    
     return pointsInTrial;
 
 }

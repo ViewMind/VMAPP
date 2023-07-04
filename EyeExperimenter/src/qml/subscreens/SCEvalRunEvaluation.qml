@@ -55,18 +55,25 @@ Rectangle {
                 // We show the wait screen while we do some background processing.
                 flowControl.hideRenderWindow();
                 mainWindow.openWait(loader.getStringForKey("viewwait_study_end"));
-                flowControl.finalizeStudyOperations();
+                //flowControl.finalizeStudyOperations();
+                flowControl.requestStudyData();
 
             }
         }
 
 
         function onStudyEndProcessingDone() {
-            // Since flowcontrol does nto have access to the local DB, we need to get the entry from flow control and pass it on to loader.
+            // We now need to check if all is good or if there was a problem with the data tranfer.
             mainWindow.closeWait();
             flowControl.showRenderWindow();
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_next_button"),"next")
             viewEvaluations.enableNextButton(true)
+            if (!flowControl.isExperimentEndOk()){
+                // We abort everything.
+                let popup = loader.getStringForKey("viewevaluation_err_data_transfer")
+                mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
+                mainWindow.popUpNotify(VMGlobals.vmNotificationRed,popup);
+            }
         }
 
         function onCalibrationDone(calibrated) {

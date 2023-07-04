@@ -150,23 +150,30 @@ void FlowControl::onReadyToRender() {
 
     // Setting the remote debug options.
     bool enableGazeFollow   = DBUGBOOL(Debug::Options::ENABLE_GAZE_FOLLOW);
+    bool enablePacketPrintout = DBUGBOOL(Debug::Options::RRS_PACKET_PRINT);
     QStringList handCalibValues = DBUGSLIST(Debug::Options::HAND_CALIB_RESULTS);
 
     //qDebug() << "HAND CALIB VALUES" << handCalibValues;
 
-    bool sendDebugPacket = (enableGazeFollow || !handCalibValues.isEmpty());
+    bool sendDebugPacket = (enableGazeFollow || !handCalibValues.isEmpty() || enablePacketPrintout);
 
     if (sendDebugPacket){
-        if (enableGazeFollow) StaticThreadLogger::warning("FlowControl::onReadyToRender","Gaze Following in HMD Enabled");
-        if (!handCalibValues.isEmpty()) StaticThreadLogger::warning("FlowControl::onReadyToRender","Will force set hand calibration to " + handCalibValues.join("|"));
 
         RenderServerPacket p;
         p.setPacketType(RRS::PacketType::TYPE_DBUG_CONTROL);
 
         QVariantMap map;
-        if (enableGazeFollow) map[RRS::PacketDebugControl::ENABLE_HMD_EYE_FOLLOW] = "true";
+        if (enableGazeFollow) {
+            map[RRS::PacketDebugControl::ENABLE_HMD_EYE_FOLLOW] = "true";
+            StaticThreadLogger::warning("FlowControl::onReadyToRender","Gaze Following in HMD Enabled");
+        }
         if (!handCalibValues.isEmpty()){
+            StaticThreadLogger::warning("FlowControl::onReadyToRender","Will force set hand calibration to " + handCalibValues.join("|"));
             map[RRS::PacketDebugControl::ENABLE_FORCE_HAND_CALIB] = handCalibValues.join("|");
+        }
+        if (enablePacketPrintout){
+            StaticThreadLogger::warning("FlowControl::onReadyToRender","Enablign RRS Received Packet Printout");
+            map[RRS::PacketDebugControl::ENABLE_RRS_PACKET_PRINT] = "true";
         }
         p.setPayloadField(RRS::PacketDebugControl::JSON_DICT_FIELD,map);
         renderServerClient.sendPacket(p);
@@ -273,11 +280,9 @@ void FlowControl::onStudyEndProcessFinished(){
     emit FlowControl::studyEndProcessingDone();
 }
 
-void FlowControl::finalizeStudyOperations() {
-    // We start the end of processing study.
-    studyEndProcessor.start();
+void FlowControl::requestStudyData() {
+    studyControl.requestStudyData();
 }
-
 
 void FlowControl::onNewControlPacketAvailableFromStudy(){
     renderServerClient.sendPacket(studyControl.getControlPacket());
@@ -363,7 +368,7 @@ void FlowControl::calibrateEyeTracker(bool useSlowCalibration, bool mode3D){
     calibrationValidationParameters[VMDC::CalibrationConfigurationFields::NUMBER_OF_CALIBRAION_POINTS] = ncalibration_points;
     calibrationValidationParameters[VMDC::CalibrationAttemptFields::CALIBRATION_POINT_GATHERTIME] = gather_time;
     calibrationValidationParameters[VMDC::CalibrationAttemptFields::CALIBRATION_POINT_WAITTIME] = wait_time;
-    calibrationValidationParameters[VMDC::CalibrationAttemptFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD] = 70;
+    calibrationValidationParameters[VMDC::CalibrationAttemptFields::VALIDATION_POINT_ACCEPTANCE_THRESHOLD] = validation_point_acceptance_threshold;
 
     if (DBUGEXIST(Debug::Options::CONFIG_CALIB_VALID)){
         QVariantMap configCalibValidDebugOptons = Debug::parseMultipleDebugOptionLine(DBUGSTR(Debug::Options::CONFIG_CALIB_VALID));
@@ -583,24 +588,43 @@ void FlowControl::onStudyEnd(){
 
     StudyControl::StudyEndStatus ses = studyControl.getStudyEndStatus();
 
+    QString message_prefix = "EXPERIMENT";
+    bool all_good = false;
+    if (studyControl.isStudyInDataTransfer()){
+        message_prefix = "STUDY DATA RECEPTION";
+    }
+
     switch (ses){
     case StudyControl::SES_ABORTED:
-        StaticThreadLogger::log("FlowControl::onStudyEnd","EXPERIMENT aborted");
+        StaticThreadLogger::log("FlowControl::onStudyEnd",message_prefix +  " aborted");
         break;
     case StudyControl::SES_FAILED:
-        StaticThreadLogger::error("FlowControl::onStudyEnd","EXPERIMENT was ended by failure");
+        StaticThreadLogger::error("FlowControl::onStudyEnd",message_prefix + " was ended by failure");
         break;
     case StudyControl::SES_OK:
-        StaticThreadLogger::log("FlowControl::onStudyEnd","EXPERIMENT Finshed Successfully");
+        all_good = true;
+        StaticThreadLogger::log("FlowControl::onStudyEnd",message_prefix + " Finshed Successfully");
         break;
     }
 
-    // We get the files for this experiment and set them. The processing will start AFTER we can get the wait screen up.
-    QStringList files = studyControl.getDataFilesLocation();
-    studyEndProcessor.setFileToProcess(files.first(),files.last());
-
-    // Notifying the QML.
-    emit(experimentHasFinished());
+    if (!studyControl.isStudyInDataTransfer()){
+        // We need to tell the UI that the study has finished so that it can put the wait screen up and request the study data.
+        emit FlowControl::experimentHasFinished();
+    }
+    else {
+        // This is the second time the study end came as the SS_NONE means we are done. If all is good, then we start file processing.
+        // Other wise we need to notify the UI that something went wrong with the data transfer.
+        if (all_good){
+            // We get the files for this experiment and set them.
+            QStringList files = studyControl.getDataFilesLocation();
+            studyEndProcessor.setFileToProcess(files.first(),files.last());
+            studyEndProcessor.start();
+        }
+        else {
+            // This is the signal the UI is expecting. However it must check the experiment state in order to make sure all is good.
+            emit FlowControl::studyEndProcessingDone();
+        }
+    }
 
 }
 

@@ -12,6 +12,8 @@ namespace StudyConfigurationFields {
 static const QString STUDY =                      "study";
 static const QString NBACK_TRIALS =               "nback_trials";
 static const QString GNG3D_SPHERES =              "gng3d_spheres";
+static const QString BINDING_TRIALS =             "binding_flags";
+static const QString GNG_ARROWS =                 "gng_arrows";
 static const QString MIN_HOLD_TIME =              "min_hold_time";
 static const QString MAX_HOLD_TIME =              "max_hold_time";
 static const QString STEP_HOLD_TIME =             "step_hold_time";
@@ -30,6 +32,7 @@ static const QString MIN_SPEED =                  "min_speed";
 static const QString MAX_SPEED =                  "max_speed";
 static const QString INITIAL_SPEED =              "initial_speed";
 static const QString HAND_L_ENABLED =             "hand_l_enabled";
+static const QString N_OF_TRIALS =                "number_of_trials";
 static const QString HAND_R_ENABLED =             "hand_r_enabled";
 }
 

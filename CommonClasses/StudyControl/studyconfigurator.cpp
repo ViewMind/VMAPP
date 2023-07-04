@@ -30,7 +30,7 @@ bool StudyConfigurator::createStudyConfiguration(const QVariantMap &studyConfig,
     configuration[RRS::StudyConfigurationFields::MD_PERCENT] = md_percent;
     configuration[RRS::StudyConfigurationFields::SAMPLE_F]   = sample_f;
     shortStudies = short_studies;
-    studyType = study_type;
+    studyType = study_type;    
     if (!openStudyDescriptionFile(this->studyDescriptionFile)){
         return false;
     }

@@ -181,14 +181,8 @@ ViewBase {
             vmMaxDisplayItems: 1
             Component.onCompleted: {
                 var langs = loader.getStringListForKey("viewsettings_langs")
-                setModelList(loader.getStringListForKey("viewsettings_langs"))
-                var lang = loader.getSettingsString("ui_language","en")
-                for (var i = 0; i < langs.length; i++){
-                    if (langs[i] === lang){
-                        uiLanguage.setSelection(i)
-                        break;
-                    }
-                }
+                this.setModelList(langs)
+                uiLanguage.setSelection(0);
             }
             onVmCurrentIndexChanged: {
                 loader.changeGetVMConfigScreenLanguage(uiLanguage.vmCurrentText);

@@ -56,6 +56,7 @@ bool GNGSpheresConfigurator::studySpecificConfiguration(const QVariantMap &study
     configuration[RRS::StudyConfigurationFields::MIN_SPEED]     = min_speed;
     configuration[RRS::StudyConfigurationFields::MAX_SPEED]     = max_speed;
     configuration[RRS::StudyConfigurationFields::INITIAL_SPEED] = initial_speed;
+    configuration[RRS::StudyConfigurationFields::IS_STUDY_3D]   = true;
 
     return true;
 

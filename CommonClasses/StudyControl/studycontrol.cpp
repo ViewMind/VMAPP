@@ -6,6 +6,7 @@ StudyControl::StudyControl() {
     this->studyState = SS_NONE;
     this->studyType  = ST_NOT_SET;
     this->expectingAbortACK = false;
+    this->studyInDataTransfer = false;
 }
 
 /////////////////////////////////////////////// GETTERS //////////////////////////////////////////////////////
@@ -26,6 +27,10 @@ StudyControl::StudyState StudyControl::getStudyPhase() const{
     return this->studyState;
 }
 
+bool StudyControl::isStudyInDataTransfer() const {
+    return this->studyInDataTransfer;
+}
+
 ////////////////////////////////////////// CONTROL FUNCTIONS //////////////////////////////////////////////////
 
 void StudyControl::startStudy(const QString &workingDir, const QString &studyFile, const QVariantMap &studyConfig, const QString &studyName){
@@ -34,6 +39,7 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
     workingDirectory = workingDir;
     fullPathCurrentStudyFile = studyFile;
     expectingAbortACK = false;
+    studyInDataTransfer = false;
 
     bool shortStudies = false;
     if (DBUGBOOL(Debug::Options::SHORT_STUDIES)){
@@ -51,6 +57,26 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
         else {
             studyExplanationLanguageKey = STUDY_TEXT_KEY_NBACK_4;
         }
+        studyType = ST_2D;
+    }
+    else if (studyName == VMDC::Study::NBACKVS){
+        configurator = new NBackConfigurator();
+        studyExplanationLanguageKey = STUDY_TEXT_KEY_NBACKVS;
+        studyType = ST_2D;
+    }
+    else if (studyName == VMDC::Study::BINDING_UC) {
+        configurator = new BindingConfigurator(false,studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt());
+        studyExplanationLanguageKey = STUDY_TEXT_KEY_BINDING_UC;
+        studyType = ST_2D;
+    }
+    else if (studyName == VMDC::Study::BINDING_BC) {
+        configurator = new BindingConfigurator(true,studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt());
+        studyExplanationLanguageKey = STUDY_TEXT_KEY_BINDING_BC;
+        studyType = ST_2D;
+    }
+    else if (studyName == VMDC::Study::GONOGO){
+        configurator = new GNGConfigurator();
+        studyExplanationLanguageKey = STUDY_TEXT_KEY_GONOGO;
         studyType = ST_2D;
     }
     else if (studyName == VMDC::Study::GONOGO_SPHERE){
@@ -93,14 +119,6 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
     QVariantMap enhancedStudyConfig = studyConfig; // This is done so I don't have to change the function interface everywhere.
     enhancedStudyConfig[VMDC::StudyParameter::DEFAULT_EYE] = configurator->getDefaultStudyEye();
 
-    // Adding the study to the raw data container.
-    if (!rawdata.addStudy(studyName,enhancedStudyConfig,configurator->getStudyDescriptionContents(),configurator->getVersionString())){
-        StaticThreadLogger::error("StudyControl::startStudy","Adding the study type: " + rawdata.getError());
-        delete configurator;
-        emitFailState();
-        return;
-    }
-
     // Last thing to do is to actually set the current study to the study type
     if (DBUGBOOL(Debug::Options::DBUG_MSG)){
         QString dbug = "DBUG: Setting study on starting experiment of type '" + studyName + "'";
@@ -108,20 +126,29 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
         StaticThreadLogger::warning("StudyControl::startStudy",dbug);
     }
 
-    if (!rawdata.setCurrentStudy(studyName)){
-        StaticThreadLogger::error("StudyControl::startStudy","Failed setting current study of " + studyName + ". Reason: " + rawdata.getError());
+    // Setting up the fixation computer.
+    qreal sampleFrequency = processingParameters.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
+    qreal md_percent     =  processingParameters.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
+
+    // We need to create the configuration for the study.
+    if (!configurator->createStudyConfiguration(studyConfig,sampleFrequency,md_percent,studyName,shortStudies)){
+        StaticThreadLogger::error("StudyControl::startStudy","Failed in creating a configuration for study of type " + studyName + ". Reason: " + configurator->getError());
         delete configurator;
         emitFailState();
         return;
     }
 
-    // Setting up the fixation computer.
-    qreal sampleFrequency = processingParameters.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
-    qreal md_percent     =  processingParameters.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
+    // After the configuration is created, we can now add the study to the raw data container.
+    // This is because until the configuration is not created the study description contents are empty.
+    if (!rawdata.addStudy(studyName,enhancedStudyConfig,configurator->getStudyDescriptionContents(),configurator->getVersionString())){
+        StaticThreadLogger::error("StudyControl::startStudy","Adding the study type: " + rawdata.getError());
+        delete configurator;
+        emitFailState();
+        return;
+    }
 
-    // We now, finally, create teh study configuraiton.
-    if (!configurator->createStudyConfiguration(studyConfig,sampleFrequency,md_percent,studyName,shortStudies)){
-        StaticThreadLogger::error("StudyControl::startStudy","Failed in creating a configuration for study of type " + studyName + ". Reason: " + configurator->getError());
+    if (!rawdata.setCurrentStudy(studyName)){
+        StaticThreadLogger::error("StudyControl::startStudy","Failed setting current study of " + studyName + ". Reason: " + rawdata.getError());
         delete configurator;
         emitFailState();
         return;
@@ -147,18 +174,21 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
 
 void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
 
+    //StaticThreadLogger::log("StudyControl::receiveRenderServerPacket","Received a packet " + control.getType());
+    //StaticThreadLogger::log("StudyControl::receiveRenderServerPacket",Debug::QVariantMapToString(control.getPayload()));
+
     if (control.getType() == RRS::PacketType::TYPE_STUDY_CONTROL){
         QString command = control.getPayloadField(RRS::PacketStudyControl::CMD).toString();
 
         if (expectingAbortACK){
             if (command != RRS::CommandStudyControl::CMD_ACK){
-                StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Study was expectin ACK from abort request. Will do nothing");
+                StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Study was expecting ACK from abort request. Will do nothing");
                 return;
             }
             else {
                 StaticThreadLogger::log("StudyControl::receiveRenderServerPacket","Received Abort ACK");
             }
-            emitFailState();
+            emitFailState(true);
             return;
         }
 
@@ -187,24 +217,33 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
                 return;
             }
         }
-        else if ( (this->studyState == SS_EVAL) && (command == RRS::CommandStudyControl::CMD_STUDY_STATUS_UPDATES) ){
-            //qDebug() << "Got Stats Updates For Evaluation" << control.getPayloadField(RRS::PacketStudyControl::STATUS_UPDATE).toMap();
-            emit StudyControl::updateStudyMessages(control.getPayloadField(RRS::PacketStudyControl::STATUS_UPDATE).toMap());
-            return;
+        else if (this->studyState == SS_EVAL) {
+            if (command == RRS::CommandStudyControl::CMD_STUDY_STATUS_UPDATES) {
+                //qDebug() << "Got Stats Updates For Evaluation" << control.getPayloadField(RRS::PacketStudyControl::STATUS_UPDATE).toMap();
+                emit StudyControl::updateStudyMessages(control.getPayloadField(RRS::PacketStudyControl::STATUS_UPDATE).toMap());
+                return;
+            }
+            else if (command == RRS::CommandStudyControl::CMD_STUDY_END){
+                // The study has finalized. We need to setup the wait screen both in the app and in the HMD.
+                this->studyState = SS_WAITING_FOR_STUDY_DATA;
+                this->studyEndStatus = SES_OK; // This might change once we get the data. But up to this point it's all OK.
+                emit StudyControl::studyEnd();
+                return;
+            }
         }
-        else {
-            // Unexpected command. - We abort.
-            StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Recieved unpexcted study control command " + command + " for the current study phase. Aborting");
-            emitFailState();
-            return;
-        }
+
+        // If we got here it's an unexpected command Unexpected command. - We abort.
+        StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Recieved unpexcted study control command " + command + " for the current study phase. Aborting");
+        emitFailState();
+        return;
+
 
     }
     else if (control.getType() == RRS::PacketType::TYPE_STUDY_DATA){
 
         // This is the end of the study, we should only receive when we are in the evaluation phase.
-        if (this->studyState != SS_EVAL){
-            StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Received packet with study data, however the study is NOT in it's evaluation phase");
+        if (this->studyState != SS_WAITING_FOR_STUDY_DATA){
+            StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Received packet with study data, however the study is NOT waiting for it");
             return;
         }
 
@@ -216,11 +255,26 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
         qint32 pauseDuration = control.getPayloadField(RRS::PacketStudyData::PAUSE_LEGTH).toInt();
         qint32 res_width = control.getPayloadField(RRS::PacketStudyData::RES_W).toInt();
         qint32 res_height = control.getPayloadField(RRS::PacketStudyData::RES_H).toInt();
+        QVariantList hitboxes = control.getPayloadField(RRS::PacketStudyData::HITBOXES).toList();
+
+        QString ndata_points = control.getPayloadField(RRS::PacketStudyData::N_DP_DURING_EVAL).toString();
+        StaticThreadLogger::log("StudyControl::receiveRenderServerPacket","Finalized evaluation. Number of datapoints gathered is: " + ndata_points);
 
         // First we set the processing parameter missing fields.
         QVariantMap pp = rawdata.getProcessingParameters();
         pp[VMDC::ProcessingParameter::RESOLUTION_WIDTH] = res_width;
         pp[VMDC::ProcessingParameter::RESOLUTION_HEIGHT] = res_height;
+
+        if ( (rawdata.getCurrentStudy() == VMDC::Study::NBACK) ||
+             (rawdata.getCurrentStudy() == VMDC::Study::NBACKVS) ||
+             (rawdata.getCurrentStudy() == VMDC::Study::NBACKRT) ){
+
+            pp[VMDC::ProcessingParameter::NBACK_HITBOXES] = hitboxes;
+        }
+        else if (rawdata.getCurrentStudy() == VMDC::Study::GONOGO){
+            pp[VMDC::ProcessingParameter::GONOGO_HITBOXES] = hitboxes;
+        }
+
         if (!rawdata.setProcessingParameters(pp)){
             StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Failed to set processing parameters in raw data. Reason: " + rawdata.getError());
             this->studyEndStatus = SES_FAILED;
@@ -269,6 +323,7 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
 
         this->studyState = SS_NONE;
         this->studyEndStatus = SES_OK;
+        //this->studyEndStatus = SES_FAILED; // Was put here to test the data transfer error situation.
         this->studyType = ST_NOT_SET;
         emit StudyControl::studyEnd();
 
@@ -355,7 +410,12 @@ void StudyControl::nextExplanationSlide(){
 }
 
 void StudyControl::sendInStudyCommand(InStudyCommand cmd){
-    if (this->studyState != SS_EVAL){
+
+    bool isOk = false;
+    isOk = isOk || (this->studyState == SS_EVAL);
+    isOk = isOk || ( (this->studyState != SS_NONE) && (cmd == ISC_ABORT) );
+
+    if (!isOk){
         StaticThreadLogger::error("StudyControl::sendInStudyCommand","Cannot send in study command as study is NOT in evaluation state");
         return;
     }
@@ -383,6 +443,18 @@ void StudyControl::sendInStudyCommand(InStudyCommand cmd){
         return;
     }
 
+    emit StudyControl::newPacketAvailable();
+}
+
+void StudyControl::requestStudyData() {
+    if (this->studyState != SS_WAITING_FOR_STUDY_DATA){
+        StaticThreadLogger::error("StudyControl::requestStudyData","Will not send the request data command as state is NOT the waiting for study data state.");
+        return;
+    }
+    rspacket.resetForRX();
+    rspacket.setPacketType(RRS::PacketType::TYPE_STUDY_CONTROL);
+    rspacket.setPayloadField(RRS::PacketStudyControl::CMD,RRS::CommandStudyControl::CMD_SEND_STUDY_DATA);
+    studyInDataTransfer = true;
     emit StudyControl::newPacketAvailable();
 }
 
@@ -432,9 +504,10 @@ bool StudyControl::studyFinalizationLogic() {
 
 }
 
-void StudyControl::emitFailState(){
+void StudyControl::emitFailState(bool wasAborted){
     this->expectingAbortACK = false;
-    this->studyEndStatus = SES_FAILED;
+    if (wasAborted) this->studyEndStatus = SES_ABORTED;
+    else this->studyEndStatus = SES_FAILED;
     this->studyState = SS_NONE;
     this->studyType = ST_NOT_SET;
     emit StudyControl::studyEnd();
@@ -454,6 +527,7 @@ void StudyControl::FillNumberOfSlidesInExplanations(ConfigurationManager *langua
             << STUDY_TEXT_KEY_NBACKRT << STUDY_TEXT_KEY_NBACKVS << STUDY_TEXT_KEY_NBACK_3 << STUDY_TEXT_KEY_NBACK_4
             << STUDY_TEXT_KEY_PASS_BALL;
     for (qint32 i = 0; i < allkeys.size(); i++){
+        //qDebug() << language->getStringList(allkeys.at(i));
         NumberOfExplanationSlides[allkeys.at(i)] = language->getStringList(allkeys.at(i)).size();
     }
 }

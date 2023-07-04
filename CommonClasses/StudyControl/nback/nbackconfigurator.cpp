@@ -1,8 +1,7 @@
 #include "nbackconfigurator.h"
 
 NBackConfigurator::NBackConfigurator(): StudyConfigurator() {
-    this->studyDescriptionFile = ":/CommonClasses/StudyControl/nback/descriptions/nback.dat";
-    this->defaultStudyEye = VMDC::Eye::RIGHT;
+    this->studyDescriptionFile = ":/CommonClasses/StudyControl/nback/descriptions/nback.dat";    
 }
 
 bool NBackConfigurator::studySpecificConfiguration(const QVariantMap &studyConfig){
@@ -22,6 +21,7 @@ bool NBackConfigurator::studySpecificConfiguration(const QVariantMap &studyConfi
 
     // Now that the description was parsed, we can set all the other configuration constants.
     configuration[RRS::StudyConfigurationFields::PAUSE_MESSAGE] = studyConfig[VMDC::StudyParameter::WAIT_MESSAGE];
+    configuration[RRS::StudyConfigurationFields::IS_STUDY_3D] = false;
 
     if (this->studyType == VMDC::Study::NBACKVS){
 

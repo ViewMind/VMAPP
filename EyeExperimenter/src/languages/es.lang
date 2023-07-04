@@ -171,6 +171,7 @@ viewevaluation_action_examples  = EJEMPLOS;
 viewevaluation_action_starteval = COMENZAR EVALUACIÓN;
 viewevaluation_err_noconnect = <b>Falla al conectarse al EyeTracker</b><br>Por favor, contacte a ViewMind Support para más ayuda;
 viewevaluation_err_badend_study = <b>Estudio no terminó corectamente</b><br>Si el estudio no fue abortado, intente nuevamente;
+viewevaluation_err_data_transfer = <b>Falla en la transferencia de datos</b><br>Deberá realizar nuevamente el ultimo estudio; 
 viewevaluation_err_calib_title = ¡Error de Calibración!;
 viewevaluation_err_calib_exp   = La calibración para los ojos seleccionados falló<br>
 Por favor vea el detalle aqui abajo y reintente: <br><br>

@@ -2,5 +2,10 @@
     <qresource prefix="/">
         <file>../../CommonClasses/StudyControl/nback/descriptions/nback.dat</file>
         <file>../../CommonClasses/StudyControl/gng3D/descriptions/gonogo_spheres.dat</file>
+        <file>../../CommonClasses/StudyControl/binding/descriptions/bc.dat</file>
+        <file>../../CommonClasses/StudyControl/binding/descriptions/bc_3.dat</file>
+        <file>../../CommonClasses/StudyControl/binding/descriptions/uc.dat</file>
+        <file>../../CommonClasses/StudyControl/binding/descriptions/uc_3.dat</file>
+        <file>../../CommonClasses/StudyControl/gng/descriptions/go_no_go.dat</file>
     </qresource>
 </RCC>

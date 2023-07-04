@@ -614,14 +614,16 @@ QVariantMap EyeCorrectionCoefficients::getCalibrationControlPacketCompatibleMap(
     QVariantMap map;
 
     if (left_eye){
-        map["ccx"] = xl.toMap();
-        map["ccy"] = yl.toMap();
-        map["ccz"] = zl.toMap();
+        map["ccx"]  = xl.toMap();
+        map["ccy"]  = yl.toMap();
+        map["ccz"]  = zl.toMap();
+        map["is3D"] = mode3D;
     }
     else {
-        map["ccx"] = xr.toMap();
-        map["ccy"] = yr.toMap();
-        map["ccz"] = zr.toMap();
+        map["ccx"]  = xr.toMap();
+        map["ccy"]  = yr.toMap();
+        map["ccz"]  = zr.toMap();
+        map["is3D"] = mode3D;
     }
 
     return map;

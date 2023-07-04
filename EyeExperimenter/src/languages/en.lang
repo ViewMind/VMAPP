@@ -152,8 +152,8 @@ viewevaluation_gng3D_hand_left = Left;
 viewevaluation_gng3D_hand_right = Right;
 viewevaluation_gng3D_hand_both = Both;
 viewevaluation_err_at_least_1_study = You must select at least 1 study;
-viewevaluation_binding_uc = New Colours;
-viewevaluation_binding_bc = Colour Combinations;
+viewevaluation_binding_uc = New Colors;
+viewevaluation_binding_bc = Color Combinations;
 viewevaluation_shortcuts = Shortcuts;
 viewevaluation_evaluation_steps = Calibration|Explanation|Examples|Evaluation;
 viewevaluation_evaluation_steps_with_hand_calib = Calibration|Hands - Horizontal|Hands - Vertical|Explanation|Examples|Evaluation;
@@ -171,6 +171,7 @@ viewevaluation_action_examples = EXAMPLES;
 viewevaluation_action_starteval = START EVALUATION;
 viewevaluation_err_noconnect = <b>Failed Connection to EyeTracker</b><br>Please contact ViewMind Support for help;
 viewevaluation_err_badend_study = <b>Study ended abruptly</b><br>If the study was not aborted, please try again;
+viewevaluation_err_data_transfer = <b>Data Transfer Error</b><br>You must redo the last study; 
 viewevaluation_err_calib_title = Calibration Error!;
 viewevaluation_err_calib_exp   = The calibration for the requested eyes could not be completed.<br>
 Please see the detail below and retry:<br><br>
@@ -267,8 +268,8 @@ viewqc_SubFrequency = Sample Rate;
 viewqc_SubICI = ICI;
 viewQC_StudyNameMap = 
 Reading|Reading|
-Binding BC|Colour Combinations| 
-Binding UC|New Colurs|
+Binding BC|Color Combinations| 
+Binding UC|New Colors|
 Binding|Color Tasks|
 NBack|N-Back|
 NBack RT|N-Back RT|

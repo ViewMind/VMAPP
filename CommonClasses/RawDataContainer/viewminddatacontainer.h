@@ -176,6 +176,8 @@ public:
 
     QVariantMap getQCParameters() const;
 
+    QString getCurrentStudy() const;
+
     bool isStudy3D(const QString &study) const;
 
     void DebugPrintContentToConsole() const;

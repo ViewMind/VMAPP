@@ -19,6 +19,7 @@ Rectangle {
     readonly property int vmNBACK_RT_TIME_OUT_SLOW: 5000
     readonly property int vmNBACK_RT_TRANSITION_DEFAULT: 500
     readonly property int vmNBACK_RT_TRANSITION_SLOW : 1000
+    readonly property int vmGNG3D_UNIQUE_SPEED: 100
 
     signal goToEvalRun();
 
@@ -410,9 +411,9 @@ Rectangle {
                     configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = configuration[VMGlobals.vmSCP_HAND_TO_USE];
                     configuration[VMGlobals.vmSCP_IS_STUDY_3D] = true;
                     //configuration[VMGlobals.vmSCP_HAND_TO_USE] = "both";
-                    configuration[VMGlobals.vmSCP_MIN_SPEED]     = 50; //= 10;
-                    configuration[VMGlobals.vmSCP_MAX_SPEED]     = 50; //= 100;
-                    configuration[VMGlobals.vmSCP_INITIAL_SPEED] = 50; //= 30;
+                    configuration[VMGlobals.vmSCP_MIN_SPEED]     = vmGNG3D_UNIQUE_SPEED; //= 10;
+                    configuration[VMGlobals.vmSCP_MAX_SPEED]     = vmGNG3D_UNIQUE_SPEED; //= 100;
+                    configuration[VMGlobals.vmSCP_INITIAL_SPEED] = vmGNG3D_UNIQUE_SPEED; //= 30;
 
                     requires_hand_calibration.push(true);
 

@@ -30,8 +30,7 @@ ViewBase {
         var dbug_selected_patient = loader.getDebugOption("selected_patient");
         var dbug_selected_doctor = loader.getDebugOption("selected_doctor");
         var dbug_qc_file_to_set = loader.getDebugOption("qc_file_path");
-        var dbug_setup_studies = loader.getDebugOption("study_configutation_map")
-
+        var dbug_setup_studies = loader.getDebugOption("study_configutation_map");
 
         if (dbug_user !== ""){
             user = dbug_user;

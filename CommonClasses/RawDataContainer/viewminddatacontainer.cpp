@@ -227,6 +227,10 @@ QVariantMap ViewMindDataContainer::getQCParameters() const {
     return data.value(MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS).toMap();
 }
 
+QString ViewMindDataContainer::getCurrentStudy() const {
+    return currentlySelectedStudy;
+}
+
 void ViewMindDataContainer::DebugPrintContentToConsole() const{
     Debug::prettpPrintQVariantMap(data);
 }

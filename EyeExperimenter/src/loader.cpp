@@ -14,6 +14,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     ConfigurationManager::CommandVerifications cv;
     ConfigurationManager::Command cmd;
 
+
     loadingError = false;
     configuration = c;
 
@@ -61,7 +62,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     setExplanationLanguage();
 
     // We now load the number of Slides that each explanation contains. This is independant of language, but we do need the language file loaded.
-    StudyControl::FillNumberOfSlidesInExplanations(&language);
+    StudyControl::FillNumberOfSlidesInExplanations(&explanationStrings);
 
     // Must make sure that the data directory exists
     QDir rawdata(Globals::Paths::WORK_DIRECTORY);
@@ -363,6 +364,7 @@ QString Loader::getSettingsString(const QString &key, const QString &defvalue){
 QVariant Loader::getDebugOption(const QString &debugOption){
     // Since this is for use in the QML/JS part of the code the string literal must be used.
     QVariant option = Debug::DEBUG_OPTIONS.getVariant(debugOption);
+    //Debug::prettpPrintQVariantMap(Debug::DEBUG_OPTIONS.getMap());
     if (!option.isValid()) return "";
     else return option;
 }

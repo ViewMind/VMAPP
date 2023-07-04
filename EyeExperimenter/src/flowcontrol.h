@@ -39,7 +39,7 @@ public:
     Q_INVOKABLE bool startNewExperiment(QVariantMap study_config);
     Q_INVOKABLE void startStudyEvaluationPhase();
     Q_INVOKABLE void startStudyExamplePhase();
-    Q_INVOKABLE void finalizeStudyOperations();
+    Q_INVOKABLE void requestStudyData();
 
     Q_INVOKABLE bool isExperimentEndOk() const;
     Q_INVOKABLE void keyboardKeyPressed(int key);
@@ -121,7 +121,6 @@ public slots:
 
     // Whenever calibration needs to send a new packet
     void onNewCalibrationPacketAvailable();
-
 
 private:
 

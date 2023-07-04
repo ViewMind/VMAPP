@@ -26,6 +26,7 @@ namespace PacketDebugControl {
 static const QString JSON_DICT_FIELD           = "dbug";
 static const QString ENABLE_HMD_EYE_FOLLOW     = "enable_eye_following";
 static const QString ENABLE_FORCE_HAND_CALIB   = "force_hand_calibration_results";
+static const QString ENABLE_RRS_PACKET_PRINT   = "enable_printout_of_received_packets";
 }
 
 namespace PacketStudyControl {
@@ -121,6 +122,8 @@ static const QString CMD_STUDY_STATUS_UPDATES = "study_status_updates";
 static const QString CMD_STUDY_START          = "study_start";
 static const QString CMD_ACK                  = "acknowledge";
 static const QString CMD_ERROR                = "error";
+static const QString CMD_STUDY_END            = "study_end";
+static const QString CMD_SEND_STUDY_DATA      = "send_study_data";
 }
 
 namespace CommandInStudy {

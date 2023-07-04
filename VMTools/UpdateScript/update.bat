@@ -1,12 +1,17 @@
 :: Update Script for EyeExperimentner Application
-:: Version: 1
+
+:: Version: 1.0.2
+:: Date (DD/MM/YYYY) : 04/07/2023
+:: -> Removed the copying of the settings file as it is no longer necessary as of version 26.0.0 
+
+:: Version: 1.0.1
 :: Date (DD/MM/YYYY) : 12/08/2021
 
 :: Getting rid of anoying echo. 
 @ECHO OFF
 
 :: Defining constants. 
-SET VERSION=1.0.1
+SET VERSION=1.0.2
 SET CURRENT_DIR=%cd%
 
 :: Local Paths
@@ -102,17 +107,18 @@ if %ERRORLEVEL% neq 0 (
 )
 
 
+:: AFTER VERSION 26.0.0 Copying the settings file is NOT necessary. 
 :: Copying the Settings file.
-SET src=%FULL_PATH_APP_DIR%\%VMSETTINGS%
-SET dest=%FULL_PATH_NEW_APP_DIR%
-XCOPY %src% %dest% /y > NUL
-ECHO -Porting settings directory: XCOPY %src% %dest% >> %LOG%
-if %ERRORLEVEL% neq 0 (
-   echo Updated failed: Please contact Viewmind Support
-   echo - The following error was encountered when copying the settings file: %ERRORLEVEL% >> %LOG%
-   PAUSE
-   exit
-)
+:: SET src=%FULL_PATH_APP_DIR%\%VMSETTINGS%
+:: SET dest=%FULL_PATH_NEW_APP_DIR%
+:: XCOPY %src% %dest% /y > NUL
+:: ECHO -Porting settings directory: XCOPY %src% %dest% >> %LOG%
+:: if %ERRORLEVEL% neq 0 (
+::    echo Updated failed: Please contact Viewmind Support
+::    echo - The following error was encountered when copying the settings file: %ERRORLEVEL% >> %LOG%
+::    PAUSE
+::    exit
+:: )
 
 :: Deleting the old directory if exists. 
 ECHO -Deleting backup location: rmdir %BKP_DIR% >> %LOG%
