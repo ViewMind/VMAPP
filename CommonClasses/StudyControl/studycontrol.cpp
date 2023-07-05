@@ -253,26 +253,44 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
         qint32 exampleDuration = control.getPayloadField(RRS::PacketStudyData::EXAMPLE_LENGTH).toInt();
         qint32 evalDuration = control.getPayloadField(RRS::PacketStudyData::EVAL_LENGTH).toInt();
         qint32 pauseDuration = control.getPayloadField(RRS::PacketStudyData::PAUSE_LEGTH).toInt();
-        qint32 res_width = control.getPayloadField(RRS::PacketStudyData::RES_W).toInt();
-        qint32 res_height = control.getPayloadField(RRS::PacketStudyData::RES_H).toInt();
-        QVariantList hitboxes = control.getPayloadField(RRS::PacketStudyData::HITBOXES).toList();
 
+        /**
+         * The list of study data fields that need to be added as processing parameters.
+         * The values are required for actually processing each study file. Whether they have content or not
+         * will depend on the study.
+         */
+        QVariantMap addToPP;
+        addToPP[RRS::PacketStudyData::FOV]          = VMDC::ProcessingParameter::FOV_3D;
+        addToPP[RRS::PacketStudyData::MESH_FILES]   = VMDC::ProcessingParameter::MESH_FILES;
+        addToPP[RRS::PacketStudyData::MESH_STRUCTS] = VMDC::ProcessingParameter::MESH_STRUCT;
+        addToPP[RRS::PacketStudyData::ORIGIN_PTS]   = VMDC::ProcessingParameter::ORIGIN_POINTS;
+        addToPP[RRS::PacketStudyData::SPHERE_R]     = VMDC::ProcessingParameter::SPHERE_RADIOUS;
+        addToPP[RRS::PacketStudyData::RES_W]        = VMDC::ProcessingParameter::RESOLUTION_WIDTH;
+        addToPP[RRS::PacketStudyData::RES_H]        = VMDC::ProcessingParameter::RESOLUTION_HEIGHT;
+
+        // The hitboxes can be go no go hitboxes or NBAck. depending on the study.
+        if ( (rawdata.getCurrentStudy() == VMDC::Study::NBACK) ||
+             (rawdata.getCurrentStudy() == VMDC::Study::NBACKVS) ||
+             (rawdata.getCurrentStudy() == VMDC::Study::NBACKRT) ){
+            addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::NBACK_HITBOXES;
+        }
+        else if (rawdata.getCurrentStudy() == VMDC::Study::GONOGO){
+            addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::GONOGO_HITBOXES;
+        }
+
+        // To do a bit of control and that is it.
         QString ndata_points = control.getPayloadField(RRS::PacketStudyData::N_DP_DURING_EVAL).toString();
         StaticThreadLogger::log("StudyControl::receiveRenderServerPacket","Finalized evaluation. Number of datapoints gathered is: " + ndata_points);
 
         // First we set the processing parameter missing fields.
         QVariantMap pp = rawdata.getProcessingParameters();
-        pp[VMDC::ProcessingParameter::RESOLUTION_WIDTH] = res_width;
-        pp[VMDC::ProcessingParameter::RESOLUTION_HEIGHT] = res_height;
 
-        if ( (rawdata.getCurrentStudy() == VMDC::Study::NBACK) ||
-             (rawdata.getCurrentStudy() == VMDC::Study::NBACKVS) ||
-             (rawdata.getCurrentStudy() == VMDC::Study::NBACKRT) ){
-
-            pp[VMDC::ProcessingParameter::NBACK_HITBOXES] = hitboxes;
-        }
-        else if (rawdata.getCurrentStudy() == VMDC::Study::GONOGO){
-            pp[VMDC::ProcessingParameter::GONOGO_HITBOXES] = hitboxes;
+        // We now add all fields.
+        QStringList packet_keys = addToPP.keys();
+        for (qint32 i = 0; i < packet_keys.size(); i++){
+            QString packetKey = packet_keys.at(i);
+            QString ppKey     = addToPP.value(packetKey).toString();
+            pp[ppKey] = control.getPayloadField(packetKey);
         }
 
         if (!rawdata.setProcessingParameters(pp)){
@@ -287,7 +305,6 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
 
         // If the trial list field is a list that is NOT empty, this a 2D study file.
         if (trialList.size() > 0){
-
             // We have a 2D file.
             if (!rawdata.setFullTrialList(trialList,
                                           explanationDuration,exampleDuration,pauseDuration,evalDuration,
@@ -296,7 +313,6 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
                 emitFailState();
                 return;
             }
-
         }
         else {
             // This should be a 3D study.
@@ -307,7 +323,6 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
                 emitFailState();
                 return;
             }
-
         }
 
         // Now that we are ready, then we mark the file as finalized if it is.

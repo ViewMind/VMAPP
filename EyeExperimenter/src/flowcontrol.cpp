@@ -107,6 +107,11 @@ void FlowControl::onNewPacketArrived(){
 
     RenderServerPacket packet = renderServerClient.getPacket();
 
+    if (DBUGBOOL(Debug::Options::PRINT_INCOMMING)){
+        QString message = "Incomming Packet of type '" + packet.getType() + "' :\n" + Debug::QVariantMapToString(packet.getPayload());
+        StaticThreadLogger::warning("FlowControl::onNewPacketArrived",message);
+    }
+
 
     if (packet.getType() == RRS::PacketType::TYPE_CALIB_CONTROL){
         // The only packet regarding calibration that we should be receiving is the one with the calibration data to compute the coefficients.

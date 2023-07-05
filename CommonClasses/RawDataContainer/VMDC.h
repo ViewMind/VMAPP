@@ -421,18 +421,25 @@ namespace VMDC {
 
     
     namespace ProcessingParameter{
-       static const QString RESOLUTION_HEIGHT = "resolution_height";
-       static const QString RESOLUTION_WIDTH = "resolution_width";
-       static const QString NBACK_HITBOXES = "nback_hitboxes";
-       static const QString GONOGO_HITBOXES = "go_no_go_hitboxes";
-       static const QString MIN_FIXATION_DURATION = "minimum_fixation_length";
-       static const QString MAX_DISPERSION_WINDOW = "max_dispersion_window";
+       static const QString RESOLUTION_HEIGHT        = "resolution_height";
+       static const QString RESOLUTION_WIDTH         = "resolution_width";
+       static const QString NBACK_HITBOXES           = "nback_hitboxes";
+       static const QString GONOGO_HITBOXES          = "go_no_go_hitboxes";
+       static const QString MIN_FIXATION_DURATION    = "minimum_fixation_length";
+       static const QString MAX_DISPERSION_WINDOW    = "max_dispersion_window";
        static const QString MAX_DISPERSION_WINDOW_PX = "max_disp_window_in_px";
-       static const QString SAMPLE_FREQUENCY = "sample_frequency";
-       static const QString GAZE_ON_CENTER_RADIOUS = "gaze_on_center_threshold_radius";
-       static const QString LATENCY_ESCAPE_RADIOUS = "latency_escape_radious";
-       static const QString HAND_CALIB_RESULTS     = "hand_calibration_results";
-       static const QStringList valid{RESOLUTION_HEIGHT,RESOLUTION_WIDTH,NBACK_HITBOXES,GONOGO_HITBOXES,MIN_FIXATION_DURATION,MAX_DISPERSION_WINDOW,MAX_DISPERSION_WINDOW_PX,SAMPLE_FREQUENCY,LATENCY_ESCAPE_RADIOUS, GAZE_ON_CENTER_RADIOUS, HAND_CALIB_RESULTS};
+       static const QString SAMPLE_FREQUENCY         = "sample_frequency";
+       static const QString GAZE_ON_CENTER_RADIOUS   = "gaze_on_center_threshold_radius";
+       static const QString LATENCY_ESCAPE_RADIOUS   = "latency_escape_radious";
+       static const QString HAND_CALIB_RESULTS       = "hand_calibration_results";
+       static const QString FOV_3D                   = "field_of_view";
+       static const QString MESH_FILES               = "mesh_files";
+       static const QString MESH_STRUCT              = "mesh_struct";
+       static const QString ORIGIN_POINTS            = "origin_points";
+       static const QString SPHERE_RADIOUS           = "sphere_radious";
+       static const QStringList valid{RESOLUTION_HEIGHT,RESOLUTION_WIDTH,NBACK_HITBOXES,GONOGO_HITBOXES,MIN_FIXATION_DURATION,
+                   MAX_DISPERSION_WINDOW,MAX_DISPERSION_WINDOW_PX,SAMPLE_FREQUENCY,LATENCY_ESCAPE_RADIOUS,
+                   GAZE_ON_CENTER_RADIOUS, HAND_CALIB_RESULTS,FOV_3D,MESH_FILES,MESH_STRUCT,ORIGIN_POINTS,SPHERE_RADIOUS};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Processing Parameter"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   

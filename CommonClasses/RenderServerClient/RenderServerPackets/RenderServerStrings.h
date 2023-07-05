@@ -52,6 +52,12 @@ static const QString PAUSE_LEGTH      = "pause_phase_duration";
 static const QString N_DP_DURING_EVAL = "number_of_datapoints_during_evaluation";
 static const QString RES_W            = "resolution_width";
 static const QString RES_H            = "resolution_height";
+static const QString FOV              = "field_of_view";
+static const QString MESH_FILES       = "mesh_files";
+static const QString MESH_STRUCTS     = "mesh_structs";
+static const QString ORIGIN_PTS       = "origin_points";
+static const QString SPHERE_R         = "sphere_radius";
+
 }
 
 namespace PacketCalibrationControl {

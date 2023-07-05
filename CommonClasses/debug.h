@@ -60,6 +60,7 @@ namespace Debug {
        const QString RENDER_PACKET_DBUG   = "render_packet_debug_enable";
        const QString HAND_CALIB_RESULTS   = "hand_calib_results";
        const QString PRETTY_PRINT_STUDIES = "pretty_print_study_files";
+       const QString PRINT_INCOMMING      = "print_incomming_packets";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;
