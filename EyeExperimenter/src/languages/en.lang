@@ -13,18 +13,24 @@ viewstart_vr_disconnect = <b>Connection to HMD Lost</b><br>Please restart the ap
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Advanced;
 viewsettings_about = About;
-viewsettings_tech_support = Tech support;
+viewsettings_tech_support = Support;
 viewsettings_default_country = Default country;
 viewsettings_def_country_placeholder = Select the default country;
-viewsettings_language = Language;
+viewsettings_language = Select the aplication language;
 viewsettings_langs = English|Español;
 viewsettings_umanual = User Manual;
 viewsettings_cancel = CANCEL;
 viewsettings_restart = RESTART NOW;
 viewsettings_apply = APPLY;
-viewsettings_upload_logs = SEND LOGS;
+viewsettings_support_text = If you are experiencing issues with the ViewMind software, please 
+click on Send Diagnostic Data and contact the tech support team on 
+info@viewmind.com. 
+For urgent matters, please Send Diagnostic Data and  contact 
+your ViewMind Institution Supervisor.;
+viewsettings_upload_logs = SEND DIAGNOSTIC DATA;
 viewsettings_restart_msg = Restart required|The application will now close.
 You must open it back up for the changes to take effect;
+
 
 
 #********************************* WAIT SCREEN *********************************
@@ -83,6 +89,8 @@ viewpatlist_months = Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;
 viewpatlist_nothing_found = No entries found;
 viewpatlist_nothing_found_exp = There are not patients matching the specified name or ID.; 
 viewpatlist_vr_failed = <b>VR Intialization Failed</b><br>Please verify your setup. Studies are disabled;
+viewpatlist_protocol_delete_title = Delete Protocol;
+viewpatlist_protocol_delete_message = Are you sure you want to delete protocol <b><<N>></b>?;
 
 #********************************* ACCOUNT LIST *********************************
 viewaccount_save = SAVE;
@@ -139,6 +147,7 @@ viewevaluation_eval_passball   = PassBall;
 viewevaluation_error_patient_dir = Disk Write Error|Failed creating subject directory;
 viewevaluation_must_select_doctor = A doctor must be selected;
 viewevaluation_start = START;
+viewevaluation_start = SAVE SEQUENCE & START;
 viewevaluation_choose = Choose evaluations;
 viewevaluation_number_of_targets = Number of targets;
 viewevaluation_nback_light_up_title = Light Up Targets;
@@ -165,8 +174,8 @@ Back a study step in explanation|
 Indicate targets are different|
 Indicate that targets are the same;
 viewevaluation_action_calibrate = CALIBRATE;
-viewevaluation_action_hcalib_v  = VERTICAL HAND CALIBRATION;
-viewevaluation_action_hcalib_end = END HAND CALIBRATION;
+viewevaluation_action_hcalib_v  = END HORIZONTAL HAND CALIBRATION;
+viewevaluation_action_hcalib_end = END VERTICAL HAND CALIBRATION;
 viewevaluation_action_examples = EXAMPLES;
 viewevaluation_action_starteval = START EVALUATION;
 viewevaluation_err_noconnect = <b>Failed Connection to EyeTracker</b><br>Please contact ViewMind Support for help;
@@ -200,11 +209,10 @@ viewevaluation_comfirm_abort_msg = Do you wish to stop the current study?<br>All
 viewevaluation_comfirm_abort_yes = YES;
 viewevaluation_comfirm_abort_no  = NO;
 viewevaluation_seq_name_ph    = Input a name for the selected sequence;
-viewevaluation_start_sequence = START SEQUENE;
-viewevaluation_del_sequence   = DELETE SEQUENCE;
+viewevaluation_save_sequence = SAVE SEQUENCE;
 viewevaluation_seq_name = Save sequence as;
 viewevaluation_popup_save = Sequence<br><b></b><br> has been successfully saved;
-viewevaluation_goback = GO BACK;
+viewevaluation_goback = PATIENT LIST;
 
 viewevaluation_hand_calib_h = 
 Place your hands horizontally. 
@@ -235,6 +243,7 @@ Please adjust the height as necessary and retry the calibration.;
 
 viewevaluation_nback_wait_msg = Press "G" to
 continue with study;
+
 
 
 #********************************* VR WAIT SCREEN MESSAGES *********************************
@@ -349,7 +358,6 @@ update_download_wait = Please wait while we download the update;
 update_failed_message = <b>Update process failed</b><br>Please contanct viewmind team for support;
 
 #********************************* Explanation Phase Text *********************************
-
 explanation_key_to_continue = Press N on keyboard to advance;
 explanation_key_to_goback   = Press B on keyboard to move one slide back;
 
@@ -365,12 +373,13 @@ label_md = EYE EXPLORER;
 
 label_manual = READ THE OPERATING INSTRUCTIONS;
 
-label_ec = EC MARKING under the Directive 93/42/EEC amended by 2007/47/EC.<br><br>
+label_ec = EC MARKING under the Directive 93/42/EEC amended by 2007/47/EC.<br>
 AUTHORIZEDO BY ANMAT: <b>PM-2478-1</b>.<br>
 Exclusive use for professionals and health institutions;
 
 label_version = Version;
 
-
+label_patent = Patent Protected: This software is protected by one or more patents. 
+Unauthorized use, reproduction, or distribution may be subject to legal action.;
 
 

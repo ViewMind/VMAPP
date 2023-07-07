@@ -469,6 +469,14 @@ ViewBase {
                 vmLabel: ""
                 width: VMGlobals.adjustWidth(300)
                 vmMaxLength: 41
+                onVmCurrentTextChanged: {
+                    if (vmCurrentText == ""){
+                        nextButton.vmText = loader.getStringForKey("viewevaluation_start");
+                    }
+                    else {
+                        nextButton.vmText = loader.getStringForKey("viewevaluation_start_and_save");
+                    }
+                }
             }
 
         }

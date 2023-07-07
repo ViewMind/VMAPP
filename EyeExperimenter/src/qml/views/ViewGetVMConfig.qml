@@ -185,6 +185,7 @@ ViewBase {
                 uiLanguage.setSelection(0);
             }
             onVmCurrentIndexChanged: {
+                if (loader.isVMConfigPresent()) return; // We do this because on normal operation the line below screws with language selection
                 loader.changeGetVMConfigScreenLanguage(uiLanguage.vmCurrentText);
                 reloadStrings();
             }

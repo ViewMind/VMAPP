@@ -46,5 +46,6 @@
         <file>images/tech_support_gray.png</file>
         <file>images/sequence_blue.png</file>
         <file>images/sequence_gray.png</file>
+        <file>images/labeling/patent.png</file>
     </qresource>
 </RCC>

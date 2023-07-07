@@ -322,9 +322,43 @@ Rectangle {
         text: loader.getStringForKey("label_ec")
         font.weight: 400
         font.pixelSize: VMGlobals.vmFontSmall
-        height: VMGlobals.adjustHeight(66);
+        //height: VMGlobals.adjustHeight(66);
         verticalAlignment: Text.AlignVCenter
         anchors.top: div_vm_manual.bottom
+        anchors.topMargin: vmDivisorMargin
+        anchors.left: vmIndustryColumn.left
+    }
+
+    Rectangle {
+        id: div_ec
+        width: VMGlobals.adjustWidth(480)
+        anchors.horizontalCenter: parent.horizontalCenter
+        height: VMGlobals.adjustHeight(1)
+        color: VMGlobals.vmGrayUnselectedBorder
+        anchors.top: ceText.bottom
+        anchors.topMargin: vmDivisorMargin
+    }
+
+    //////////////////////////////////////////// Patent stuff
+
+    Image {
+        id: patentImage
+        source: "qrc:/images/labeling/patent.png"
+        fillMode: Image.PreserveAspectFit
+        width: VMGlobals.adjustWidth(30)
+        anchors.verticalCenter: patentText.verticalCenter
+        anchors.horizontalCenter: industryBlack.horizontalCenter
+    }
+
+
+    Text {
+        id: patentText
+        text: loader.getStringForKey("label_patent")
+        font.weight: 400
+        font.pixelSize: VMGlobals.vmFontSmall
+        //height: VMGlobals.adjustHeight(66);
+        verticalAlignment: Text.AlignVCenter
+        anchors.top: div_ec.bottom
         anchors.topMargin: vmDivisorMargin
         anchors.left: vmIndustryColumn.left
     }

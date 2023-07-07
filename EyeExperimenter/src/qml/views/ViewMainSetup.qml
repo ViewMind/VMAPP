@@ -67,6 +67,15 @@ ViewBase {
         sideNavigationBar.vmCurrentIndex = 1; // This should be the index of the Report List.
     }
 
+    VMConfirmDialog {
+        id: confirmProtocolDelete
+        vmTitle: loader.getStringForKey("viewpatlist_protocol_delete_title")
+        vmMessage: ""
+        onConfirm: {
+            protocollist.deleteProtocol();
+        }
+    }
+
     Rectangle {
         id: initials
         width: VMGlobals.adjustWidth(62)
@@ -178,6 +187,18 @@ ViewBase {
         anchors.left: sideNavigationBar.left
         anchors.bottom: parent.bottom
         anchors.bottomMargin: VMGlobals.adjustHeight(36)
+
+        VMButton {
+            id: supportButton
+            vmIconSource: "qrc:/images/tech_support_gray.png"
+            vmIconToTheRight: false
+            vmButtonType: settingsButton.vmTypeTertiary
+            vmText: loader.getStringForKey("viewsettings_tech_support");
+            onClickSignal: {
+                settingsDialog.open()
+                settingsDialog.goToSupport()
+            }
+        }
 
         VMButton {
             id: settingsButton

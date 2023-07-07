@@ -195,6 +195,23 @@ ViewBase {
         }
     }
 
+    // The Settings button
+    VMButton {
+        id: supportButton
+        vmIconSource: "qrc:/images/tech_support_gray.png"
+        vmIconToTheRight: false
+        vmButtonType: settingsButton.vmTypeTertiary
+        vmText: loader.getStringForKey("viewsettings_tech_support");
+        anchors.left: settingsButton.right
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: VMGlobals.adjustWidth(10)
+        anchors.bottomMargin: VMGlobals.adjustHeight(32.75)
+        onClickSignal: {
+            settingsDialog.open()
+            settingsDialog.goToSupport()
+        }
+    }
+
 // We add test stuff to main when developing components as we can test it as sson as the app starts.
 // I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
 //        VMTextInput {

@@ -44,11 +44,23 @@ Rectangle {
         anchors.leftMargin: VMGlobals.adjustWidth(19)
     }
 
+    // Title
+    Text {
+        id: supportTextExplanation
+        text: loader.getStringForKey("viewsettings_support_text");
+        font.weight: 400
+        font.pixelSize: VMGlobals.vmFontBaseSize
+        //height: VMGlobals.adjustHeight(18);
+        anchors.top: title.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(20)
+        anchors.left: title.left
+    }
+
 
     VMButton {
         id: btnUploadLogs
-        anchors.top: title.top
-        anchors.topMargin: VMGlobals.adjustHeight(50)
+        anchors.top: supportTextExplanation.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(20)
         anchors.left: parent.left
         anchors.leftMargin: VMGlobals.adjustWidth(20)
         vmText: loader.getStringForKey("viewsettings_upload_logs")

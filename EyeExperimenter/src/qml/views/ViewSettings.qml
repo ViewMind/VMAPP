@@ -14,6 +14,7 @@ Item {
     z: 10
 
     property bool vmAnyChangeState: false
+    readonly property int vmSupportListIndex: 2
 
     signal restartRequired()
 
@@ -27,12 +28,18 @@ Item {
         visible = false
     }
 
+    function goToSupport(){
+        sideNavigationBar.setItemSelected(vmSupportListIndex)
+        sideNavigationBar.vmCurrentIndex = vmSupportListIndex;
+        viewer.setCurrentIndex(sideNavigationBar.vmCurrentIndex)
+    }
+
     MouseArea {
         id: mouseCatcher
         anchors.fill: parent
         hoverEnabled: true
         onClicked: {
-            console.log("Mouse catcher");
+
         }
     }
 
@@ -45,7 +52,7 @@ Item {
     Rectangle {
         id: dialog
         width: VMGlobals.adjustWidth(821)
-        height: VMGlobals.adjustHeight(592)
+        height: VMGlobals.adjustHeight(650)
         anchors.centerIn: parent
         radius: VMGlobals.adjustWidth(10);
         color: "#ffffff"
@@ -180,6 +187,8 @@ Item {
         Component.onCompleted: {
             var list = [];
             var item = {};
+
+            //console.log("Getting the text for the sliding menu in settings");
 
             item["text"]        = loader.getStringForKey("viewsettings_advanced");
             item["icon_normal"] = "qrc:/images/sliders.png"

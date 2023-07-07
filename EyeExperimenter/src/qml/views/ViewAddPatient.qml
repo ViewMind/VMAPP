@@ -21,7 +21,6 @@ ViewBase {
 
         month.setSelection(-1)
         sex.setSelection(-1)
-        country.setSelection(loader.getDefaultCountry(false));
         vmCurrentlyLoadedPatient = ""
     }
 
@@ -38,8 +37,6 @@ ViewBase {
         if ("email" in patientData){
             email.setText(patientData["email"]);
         }
-
-        country.setSelection(loader.getCountryIndexFromCode(patientData["birthcountry"]))
 
         var sex_array = ["M","F","O"];
         sex.setSelection(sex_array.indexOf(patientData["gender"]));
@@ -100,13 +97,6 @@ ViewBase {
             sex.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
             return;
         }
-
-// We no longer check for the country to be present.
-//        if (country.vmCurrentIndex == -1){
-//            country.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
-//            return;
-//        }
-
 
         var check = numberCheck(yearsOfEducation.vmCurrentText,[0, 100])
         if (check !== 1){

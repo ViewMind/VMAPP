@@ -1246,7 +1246,7 @@ QVariantMap Loader::getProtocolList() {
 ////////////////////////////////////////////////////////////////// PRIVATE FUNCTIONS //////////////////////////////////////////////////////////////////
 
 void Loader::changeLanguage(){
-    QString lang = localDB.getPreference(LocalDB::PREF_UI_LANG,"en").toString();
+    QString lang = localDB.getPreference(LocalDB::PREF_UI_LANG,"English").toString();
     if (lang == Globals::UILanguage::ES){
         if (!language.loadConfiguration(":/languages/es.lang")){
             // In a stable program this should NEVER happen.

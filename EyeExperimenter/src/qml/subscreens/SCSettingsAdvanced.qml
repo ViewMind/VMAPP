@@ -10,7 +10,6 @@ Rectangle {
     color: VMGlobals.vmGrayToggleOff
 
     property string vmCurrentLang: ""
-    property int vmLoadedCountry: -1
     property bool vmRestartRequired: false
     property bool vmAnyChanges: false
 
@@ -21,7 +20,6 @@ Rectangle {
     function reset(){
         vmAnyChanges = false;
         vmRestartRequired = false;
-        vmLoadedCountry = loader.getDefaultCountry(false)
     }
 
     // Rectangle that straightens the left side edge.
@@ -60,7 +58,8 @@ Rectangle {
         Component.onCompleted: {
             var langs = loader.getStringListForKey("viewsettings_langs")
             setModelList(loader.getStringListForKey("viewsettings_langs"))
-            var lang = loader.getSettingsString("ui_language","en");
+            var lang = loader.getSettingsString("ui_language","English");
+            //console.log("Current lang is: " + lang);
             for (var i = 0; i < langs.length; i++){
                 if (langs[i] === lang){
                     vmCurrentLang = lang

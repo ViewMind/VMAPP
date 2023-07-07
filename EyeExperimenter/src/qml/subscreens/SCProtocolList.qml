@@ -19,8 +19,8 @@ Rectangle {
 
     property string vmCurrentSortOrder: vmSORT_INDEX_PNAME
     property string vmCurrentOrderDirection: OLS.ORDER_ASCENDING
+    property string vmIndexToDelete: ""
     property int vmNumberOfProtocols: 0
-
 
     function loadProtocols(){
 
@@ -71,6 +71,13 @@ Rectangle {
         // newColumn is an index and hence it needs to be transformed to the actual key name
         vmCurrentOrderDirection = newDirection
         vmCurrentSortOrder = vmSORT_COLUMNS[newColumn]
+        loadProtocols();
+    }
+
+    function deleteProtocol(){
+        if (vmIndexToDelete === "") return;
+        loader.deleteProtocol(vmIndexToDelete)
+        vmIndexToDelete = "";
         loadProtocols();
     }
 
@@ -170,8 +177,13 @@ Rectangle {
         }
 
         onDeleteClicked: function (vmIndex) {
-            loader.deleteProtocol(OLS.getKeyAtIndex(vmIndex))
-            loadProtocols();
+            var data = OLS.getDataAtIndex(vmIndex)
+            vmIndexToDelete = OLS.getKeyAtIndex(vmIndex)
+            var protocol_name = data[vmSORT_INDEX_PNAME];
+            var message_text = loader.getStringForKey("viewpatlist_protocol_delete_message");
+            message_text = message_text.replace("<<N>>",protocol_name)
+            confirmProtocolDelete.vmMessage = message_text;
+            confirmProtocolDelete.open();
         }
 
     }

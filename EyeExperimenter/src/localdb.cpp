@@ -788,6 +788,7 @@ bool LocalDB::setPreference(const QString &preference, const QVariant &variant){
     if (data.contains(MAIN_PREFERENCES)){
         map = data.value(MAIN_PREFERENCES).toMap();
     }
+    //qDebug() << "Setting preference" << preference << "to" << variant;
     map[preference] = variant;
     data[MAIN_PREFERENCES] = map;
     return saveAndBackup();
@@ -800,11 +801,13 @@ QVariant LocalDB::getPreference(const QString &preference, const QString &retAnd
     }
 
     if (!map.contains(preference)){
+        //qDebug() << "Map does not contain preference";
         if (retAndStoreIfDoenstExist != ""){
             setPreference(preference,retAndStoreIfDoenstExist);
             return retAndStoreIfDoenstExist;
         }
     }
+    //else qDebug() << "Map contains" << preference << ". Will return" << map.value(preference).toString();
 
     return map.value(preference).toString();
 }
