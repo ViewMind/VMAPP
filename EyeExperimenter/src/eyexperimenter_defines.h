@@ -48,9 +48,9 @@ static const QString UPDATE_SCRIPT           = "update.bat";
 static const QString CHANGELOG_LOCATION      = "changelog";
 static const QString CHANGELOG_BASE          = "changelog_";
 static const QString DEBUG_OPTIONS_FILE      = "vmdebug";
-static const QString USER_MANUAL             = "report.pdf";
 static const QString TAR_EXE                 = "tar.exe";
 static const QString LOGFILE                 = "logfile.log";
+static const QString MANUAL_DIR              = "manual";
 static const QString FAILED_CALIBRATION_DIR  = "failed_calibrations";
 }
 

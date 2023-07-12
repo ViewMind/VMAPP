@@ -271,16 +271,22 @@ QString Loader::getInstitutionName() const {
 
 void Loader::openUserManual(){
 
-    // Attempting to find the user manual (it is different when running from the application, versus running from the IDE).
+    QString lang = localDB.getPreference(LocalDB::PREF_UI_LANG,"English").toString();
+    QString path = "";
+    if (lang == Globals::UILanguage::ES){
+        path = Globals::Paths::MANUAL_DIR + "/es.pdf";
+    }
+    else{
+        path = Globals::Paths::MANUAL_DIR + "/es.pdf";
+    }
+
     QString currentDirectory = QDir::currentPath();
-    QString filePath = currentDirectory + "/" + Globals::Paths::USER_MANUAL;
+    QString filePath = currentDirectory + "/" + path;
     if (!QFile(filePath).exists()){
-        //filePath = currentDirectory + "/EyeExperimenter/" + Globals::Paths::USER_MANUAL;
         StaticThreadLogger::error("Loader::openUserManual","User manual could not be found at: " + filePath);
         return;
     }
     filePath = "file:///" + filePath;
-
     if (!QDesktopServices::openUrl(QUrl(filePath))){
         StaticThreadLogger::error("Loader::openUserManual","Could not open the user manual on file path: " + filePath);
     }
