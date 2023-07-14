@@ -41,7 +41,6 @@ static const QString WORK_DIRECTORY          = "viewmind_etdata";
 static const QString LOCALDB                 = "viewmind_etdata/localdb.dat";
 static const QString DBBKPDIR                = "dbbkp";
 static const QString CONFIGURATION           = "vmconfiguration";
-//static const QString SETTINGS                = "vmsettings";
 static const QString APPSPEC                 = "vmappspec";
 static const QString UPDATE_PACKAGE          = "app.zip";
 static const QString UPDATE_SCRIPT           = "update.bat";
@@ -52,6 +51,18 @@ static const QString TAR_EXE                 = "tar.exe";
 static const QString LOGFILE                 = "logfile.log";
 static const QString MANUAL_DIR              = "manual";
 static const QString FAILED_CALIBRATION_DIR  = "failed_calibrations";
+static const QString SUPPORT_EMAIL_FILE      = "support_email.html";
+}
+
+namespace SupportEmailPlaceHolders {
+static const QString APPVERSION = "||APP_VERSION||";
+static const QString EVALUATOR  = "||EVALUATOR||";
+static const QString EVAL_EMAIL = "||EVAL_EMAIL||";
+static const QString INST_NAME  = "||INSTITUTION||";
+static const QString INST_ID    = "||INSTITUTION_ID||";
+static const QString INSTANCE   = "||INSTANCE||";
+static const QString HWSPECS    = "||HW_SPECS||";
+static const QString ISSUE      = "||ISSUE||";
 }
 
 namespace QCIFields {

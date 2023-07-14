@@ -45,6 +45,7 @@ Ha entendido? Haremos algunas rondas de práctica antes de comenzar.;
 
 
 explanation_phase_list_gonogo     = 
+|
 Esta es la evaluación de Go/No-go. Una cruz aparecerá en el centro de la
 pantalla. Mire la cruz. La cruz desaparecerá y en su lugar aparecerá una flecha.
 Si la flecha es color verde, mire rápidamente un punto en la dirección de la

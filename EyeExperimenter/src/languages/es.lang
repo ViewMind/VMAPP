@@ -120,6 +120,26 @@ viewpatform_invalid_range = Rango inválido;
 viewpatform_success_edit = <b></b><br>ha sido editado;
 viewpatform_success_add = <b></b><br>ha sido agregado como paciente;
 
+#********************************* SEND SUPPORT EMAIL *********************************
+viewsendsupport_email_title = PEDIDO DE SOPORTE;
+viewsendsupport_email_subject = Mótivo del pedido de soporte;
+viewsendsupport_email_subject_ph = Seleccion el motivo que mas se asemeje;
+viewsendsupport_email_sender  = Evaluador;
+viewsendsupport_email_sender_ph  = Seleccione un evaluador;
+viewsendsupport_email_issue   = Por favor describa el problema;
+viewsendsupport_email_issue_ph   = Ingrese aqui su descripción;
+viewsendsupport_email_reasons = 
+Calibration-Calibración|
+EyeTracking-Segumiento Ocular|
+VRHeadset-Problemas con el visor de Realidad Virtual|
+Computer-Problemas con la computadora|
+ViewMindApp-Problemas con la aplicación|
+Other-Otros;
+viewsendsupport_email_error   = No puede quedar vacío;
+viewsendsupport_email_fail = <b>Error de envío</b><br>El mail de soporte no ha podido ser enviado;
+viewsendsupport_email_succes = <b>Envío exitoso</b><br>Se ha enviado correctamente el mail de soporte;
+viewsendsupport_email_send = ENVIAR;
+
 #********************************* STUDY SETUP *********************************
 viewevaluation_date = Fecha;
 viewevaluation_patient = Paciente;

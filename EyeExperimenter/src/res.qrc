@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/tempalte_support_email.html</file>
+    </qresource>
+</RCC>

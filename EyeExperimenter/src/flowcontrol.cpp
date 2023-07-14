@@ -124,6 +124,7 @@ void FlowControl::onNewPacketArrived(){
         }
     }
     else if (packet.getType() == RRS::PacketType::TYPE_HAND_CALIB_CONTROL){
+
         // This should be the packet which contains the hand calibration values.
         // They should be added to the processing parameters when a new study is created.
         QVariantList result;
@@ -139,6 +140,7 @@ void FlowControl::onNewPacketArrived(){
     }
     else if ( (packet.getType() == RRS::PacketType::TYPE_STUDY_CONTROL ) ||
               (packet.getType() == RRS::PacketType::TYPE_STUDY_DATA) ){
+
         // These packets are processed by study control
         studyControl.receiveRenderServerPacket(packet);
 

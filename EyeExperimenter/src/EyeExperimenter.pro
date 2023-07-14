@@ -17,6 +17,7 @@ RESOURCES += qml.qrc \
     fonts.qrc \
     images.qrc \
     languages.qrc \
+    res.qrc \
     study_files.qrc
 
 SOURCES += main.cpp \

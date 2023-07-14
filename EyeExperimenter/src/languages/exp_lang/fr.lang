@@ -63,6 +63,7 @@ Nous allons à présent nous entraîner avant de commencer le test.;
 
 
 explanation_phase_list_gonogo_3D = 
+|
 This is Go/No-Go Sphere Evaluation.
 During this evaluation green and red spheres will be sent from the dark
 points in front of you. Si the sphere is green you must try to touch it.

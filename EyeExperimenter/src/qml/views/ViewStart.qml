@@ -207,8 +207,8 @@ ViewBase {
         anchors.leftMargin: VMGlobals.adjustWidth(10)
         anchors.bottomMargin: VMGlobals.adjustHeight(32.75)
         onClickSignal: {
-            settingsDialog.open()
-            settingsDialog.goToSupport()
+            vmSendSupportEmail.open();
+            vmSendSupportEmail.setCurrentEvaluator("");
         }
     }
 

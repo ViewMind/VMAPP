@@ -639,8 +639,20 @@ QVariantMap LocalDB::getMedicData(const QString &key) const{
     return data.value(MAIN_MEDICS).toMap().value(key).toMap();
 }
 
-QStringList LocalDB::getUsernameEmails() const {
-    return data.value(MAIN_EVALUATOR_DATA).toMap().keys();
+QStringList LocalDB::getUsernameEmails(bool withname) const {
+    if (withname){
+
+        QStringList emails = data.value(MAIN_EVALUATOR_DATA).toMap().keys();
+        for (qint32 i = 0; i < emails.size(); i++){
+            QString email = emails.at(i);
+            QString name = data.value(MAIN_EVALUATOR_DATA).toMap().value(email).toMap().value(APPUSER_NAME).toString();
+            QString lname = data.value(MAIN_EVALUATOR_DATA).toMap().value(email).toMap().value(APPUSER_LASTNAME).toString();
+            emails[i] = lname + ", " + name + " (" + email + ")";
+        }
+        return emails;
+
+    }
+    else return data.value(MAIN_EVALUATOR_DATA).toMap().keys();
 }
 
 QVariantMap LocalDB::getQCParameters() const {

@@ -177,8 +177,8 @@ public:
     // Gets full medic data map.
     QVariantMap getMedicData(const QString &key) const;
 
-    // List the emails of all evaluators.
-    QStringList getUsernameEmails() const;
+    // List the emails of all evaluators. If withname is true then the string list returns Name - email.
+    QStringList getUsernameEmails(bool withname = false) const;
 
     // Get the QC Parameters as they came in from the server
     QVariantMap getQCParameters() const;

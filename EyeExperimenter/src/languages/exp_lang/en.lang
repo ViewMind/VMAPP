@@ -62,7 +62,9 @@ as you can. Did you understand?
 We will do some practice rounds before starting the test.;
 
 
-explanation_phase_list_gonogo_3D = This is Go/No-Go Sphere Evaluation.
+explanation_phase_list_gonogo_3D
+|
+This is Go/No-Go Sphere Evaluation.
 During this evaluation green and red spheres will be sent from the dark
 points in front of you. If the sphere is green you must try to touch it.
 If you make contact with the sphere you will feel your controller vibrate.|

@@ -68,7 +68,7 @@ public:
     Q_INVOKABLE bool evaluatorLogIn(const QString &username, const QString &password);
     Q_INVOKABLE void updateCurrentEvaluator(const QString &username);
     Q_INVOKABLE QVariantMap getCurrentEvaluatorInfo() const;
-    Q_INVOKABLE QStringList getLoginEmails() const;
+    Q_INVOKABLE QStringList getLoginEmails(bool with_name = false) const;
 
     //////////////////////////// SUBJECT REALATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QString addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id, const QString &birthdate,  const QString &gender, qint32 formative_years, const QString &email);
@@ -104,6 +104,7 @@ public:
     Q_INVOKABLE void sendStudy(QString discard_reason, const QString &comment);
     Q_INVOKABLE qint32 getLastAPIRequest();
     Q_INVOKABLE void requestActivation(int institution, int instance, const QString &key);
+    Q_INVOKABLE void sendSupportEmail(const QString &subject,const QString &body, const QString &evaluator_name, const QString &evaluator_email);
 
     //////////////////////////// PROTOCOL RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE bool addProtocol(const QString &name, const QString &id);
@@ -114,7 +115,7 @@ public:
 
 signals:
     void finishedRequest();
-    void logUploadFinished();
+    void sendSupportEmailDone(bool allOK);
 
 private slots:
     void receivedRequest();

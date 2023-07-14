@@ -23,6 +23,7 @@ public:
     static const qint32 API_ACTIVATE               = 4;
     static const qint32 API_OP_INFO_LOG_ONLY       = 5;
     static const qint32 API_OPERATING_INFO_AND_LOG = 6;
+    static const qint32 API_SENT_SUPPORT_EMAIL     = 7;
 
     // Parameters required for configuration. Numbers must be used and sent as strings anyways. So string parameters are accepted.
     void configure(const QString &institution_id,
@@ -36,6 +37,9 @@ public:
     // If sendLog is true then the current logfile is uploaded.
     // If logOnly is true AND sendLog is true, then the code for the last API request is set to API_OP_INFO_LOG_ONLY
     bool requestOperatingInfo(const QString &hardware_description_string, bool sendLog, bool logOnly);
+
+    // Requensts sending a support email.
+    bool requestSupportEmail(const QString &subject, const QString &email_file);
 
     // Request processing for report.
     bool requestReportProcessing(const QString &tarFile);
@@ -54,6 +58,9 @@ public:
 
     // If requesting the operating information generated a new logfile name, that name will be stored and will can be read using this fucntion.
     QString getLastGeneratedLogFileName() const;
+
+    // We need this name to clear the file after it has finished.
+    QString getLatestGeneratedSupportEmail() const;
 
     // Returning the parsed information.
     QVariantMap getMapDataReturned() const;
@@ -83,12 +90,14 @@ private:
     QVariantMap retdata;
     qint32 lastRequest;
     QString lastGeneratedLogFileName;
+    QString lastRequestEmailFile;
 
     // The actual endpoints.    
     const QString ENDPOINT_OPERATING_INFO      = "/institution/operating_information";
     const QString ENDPOINT_GET_UPDATE          = "/instances/getupdate";
     const QString ENDPOINT_REPORT_GENERATION   = "/reports/generate";
     const QString ENDPOINT_ACTIVATION_ENDPOINT = "/instances/activate";
+    const QString ENDPOINT_SEND_SUPPORT_EMAIL  = "/tickets/send_support_email";
 
     // URL parameters.
     const QString URLPARAM_PPKEY            = "ppkey";
@@ -112,6 +121,8 @@ private:
     // Key for the $_FILES structure.
     const QString FILE_KEY                        = "FileToProcess";
     const QString FAILED_CALIBRATION_FILE_PREFIX  = "FailedCalibrationFile_";
+    const QString SUPPORT_EMAIL_LOG               = "SupportEmailLog";
+    const QString SUPPORT_EMAIL_FILE              = "SupportEmailFile";
 
     // Signs the message and sends the request.
     bool sendRequest(bool nosign = false);

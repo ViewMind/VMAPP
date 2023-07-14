@@ -649,8 +649,8 @@ QVariantMap Loader::getCurrentEvaluatorInfo() const{
     return localDB.getEvaluatorData(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
 }
 
-QStringList Loader::getLoginEmails() const {
-    return localDB.getUsernameEmails();
+QStringList Loader::getLoginEmails(bool with_name) const {
+    return localDB.getUsernameEmails(with_name);
 }
 
 ////////////////////////////////////////////////////////////////// SUBJECT FUNCTIONS //////////////////////////////////////////////////////////////////
@@ -865,6 +865,65 @@ void Loader::requestOperatingInfo(bool logOnly){
     }
 }
 
+void Loader::sendSupportEmail(const QString &subject, const QString &body, const QString &evaluator_name, const QString &evaluator_email){
+
+    // We need to load the emaiil template.
+    QFile file(":/resources/tempalte_support_email.html");
+    if (!file.open(QFile::ReadOnly)){
+        StaticThreadLogger::error("Loader::sendSupportEmail","Unable to read the support email template");
+        return;
+    }
+
+    QTextStream reader(&file);
+    QString email_template = reader.readAll();
+    file.close();
+
+    // Now we replace the placeholders with the actual values.
+    QString issue_description = body;
+    issue_description = issue_description.replace("\n","<br>\n"); // HTML P requrires <br> and not new lines.
+    QString hardware = hwRecognizer.toString(true).replace("\n","<br>\n"); // HTML P requrires <br> and not new lines.
+
+    QString instance = configuration->getString(Globals::VMConfig::INSTANCE_NUMBER);
+    QString inst_id  = configuration->getString(Globals::VMConfig::INSTITUTION_ID);
+
+
+    QVariantMap replacement_map;
+    replacement_map[Globals::SupportEmailPlaceHolders::APPVERSION]  = this->getWindowTilteVersion();
+    replacement_map[Globals::SupportEmailPlaceHolders::EVALUATOR]   = evaluator_name;
+    replacement_map[Globals::SupportEmailPlaceHolders::EVAL_EMAIL]  = evaluator_email;
+    replacement_map[Globals::SupportEmailPlaceHolders::HWSPECS]     = hardware;
+    replacement_map[Globals::SupportEmailPlaceHolders::INSTANCE]    = instance;
+    replacement_map[Globals::SupportEmailPlaceHolders::INST_ID]     = inst_id;
+    replacement_map[Globals::SupportEmailPlaceHolders::INST_NAME]   = configuration->getString(Globals::VMConfig::INSTITUTION_NAME);
+    replacement_map[Globals::SupportEmailPlaceHolders::ISSUE]       = issue_description;
+
+    QStringList keys = replacement_map.keys();
+    for (qint32 i = 0; i < keys.size(); i++){
+        email_template = email_template.replace(keys.at(i),replacement_map.value(keys.at(i)).toString());
+    }
+
+    // Finally we save the support email where it's supposed to be saved
+    QString email_filename = "support_email_" + inst_id + "_" + instance + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss") + ".html";
+    email_filename = Globals::Paths::WORK_DIRECTORY + "/" + email_filename;
+
+    QFile email_file(email_filename);
+    if (!email_file.open(QFile::WriteOnly)){
+        StaticThreadLogger::error("Loader::sendSupportEmail","Unable to open support email file: '" + email_filename + "', for writing");
+        return;
+    }
+
+    QTextStream writer(&email_file);
+    writer << email_template;
+    email_file.close();
+
+    StaticThreadLogger::log("Loader::sendSupportEmail","Successfully created email file: '" + email_filename + "'");
+
+
+    if (!apiclient.requestSupportEmail(subject,email_filename)){
+        StaticThreadLogger::error("Loader::sendSupportEmail","Request for sending support email error: "  + apiclient.getError());
+    }
+}
+
 void Loader::requestActivation(int institution, int instance, const QString &key){
     processingUploadError = FAIL_CODE_NONE;
     if (!apiclient.requestActivation(institution,instance,key)){
@@ -949,6 +1008,9 @@ void Loader::receivedRequest(){
     if (!apiclient.getError().isEmpty()){
         processingUploadError = FAIL_CODE_SERVER_ERROR;
         StaticThreadLogger::error("Loader::receivedRequest","Error Receiving Request :"  + apiclient.getError());
+        if (apiclient.getLastRequestType() == APIClient::API_SENT_SUPPORT_EMAIL){
+            emit Loader::sendSupportEmailDone(false);
+        }
     }
     else{
         if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO || apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO_AND_LOG){
@@ -1110,7 +1172,18 @@ void Loader::receivedRequest(){
         else if (apiclient.getLastRequestType() == APIClient::API_OP_INFO_LOG_ONLY){
             // In this case there is nothing todo really other than notify the fron end.
             StaticThreadLogger::log("Loader::receivedRequest","Tech support log upload, successful");
-            emit Loader::logUploadFinished();
+            emit Loader::sendSupportEmailDone(true);
+        }
+        else if (apiclient.getLastRequestType() == APIClient::API_SENT_SUPPORT_EMAIL){
+            // In this case there is nothing todo really other than notify the fron end.
+            StaticThreadLogger::log("Loader::receivedRequest","Tech support email sent successfully");
+
+            // We need to clear the sent files to avoid garbage build up.
+            apiclient.clearFileToSendHandles();
+            QFile::remove(apiclient.getLastGeneratedLogFileName()); // This will fail if no file exists. So we don't check for errors.
+            QFile::remove(apiclient.getLatestGeneratedSupportEmail());
+
+            emit Loader::sendSupportEmailDone(true);
         }
         else {
             StaticThreadLogger::error("Loader::receivedRequest","Received unknown API Request Type finish:  " + QString::number(apiclient.getLastRequestType()));

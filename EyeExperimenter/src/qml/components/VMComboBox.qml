@@ -82,8 +82,11 @@ Item {
         id: display
         anchors.fill: parent
         color: {
-            if (vmErrorMsg === "") return  VMGlobals.vmWhite
-            else VMGlobals.vmRedErrorBackground
+            if (vmEnabled){
+                if (vmErrorMsg === "") return  VMGlobals.vmWhite
+                else VMGlobals.vmRedErrorBackground
+            }
+            else VMGlobals.vmGrayTextButtonDisabled
         }
         border.color: {
             if (vmErrorMsg === ""){

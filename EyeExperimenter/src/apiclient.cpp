@@ -40,7 +40,7 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string,
     QVariantMap map;
     map.insert(URLPARAM_PPKEY,Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
     map.insert(URLPARAM_VERSION,this->version);
-    map.insert(URLPARAM_INSTANCE,instance_number);    
+    map.insert(URLPARAM_INSTANCE,instance_number);
 
     // Setting the required post data.
     QVariantMap postdata;
@@ -95,6 +95,48 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string,
     else {
         lastRequest = API_OPERATING_INFO;
     }
+
+    return sendRequest();
+}
+
+bool APIClient::requestSupportEmail(const QString &subject, const QString &email_file){
+
+
+    error = "";
+    lastGeneratedLogFileName = "";
+
+    // Clearing everything but the URL.
+    rest_controller.resetRequest();
+
+    // Forming the URL
+    rest_controller.setAPIEndpoint(ENDPOINT_SEND_SUPPORT_EMAIL + "/" + subject);
+
+    // Setting the required post data.
+    QVariantMap postdata;
+    postdata.insert(POST_FIELD_INSTITUTION_ID,institution_id);
+    postdata.insert(POST_FIELD_INSTITUTION_INSTANCE,instance_number);
+    rest_controller.setPOSTDataToSend(postdata);
+    rest_controller.setURLParameters(QVariantMap());
+
+    // Appending the log file for the support request.
+    lastGeneratedLogFileName = institution_id + "_" + instance_number + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss") + ".log";
+    if (!QFile::rename(Globals::Paths::LOGFILE,lastGeneratedLogFileName)){
+        error = "Unable to remane the logfile to a new temporary name of " + lastGeneratedLogFileName;
+        return false;
+    }
+
+    if (!rest_controller.appendFileForRequest(lastGeneratedLogFileName,SUPPORT_EMAIL_LOG)){
+        error = "Could not append log File " + lastGeneratedLogFileName + " for request. Reason: " + rest_controller.getErrors().join("\n");
+        return false;
+    }
+
+    lastRequestEmailFile = email_file;
+    if (!rest_controller.appendFileForRequest(lastRequestEmailFile,SUPPORT_EMAIL_FILE)){
+        error = "Could not append email File " + lastRequestEmailFile + " for request. Reason: " + rest_controller.getErrors().join("\n");
+        return false;
+    }
+
+    lastRequest = API_SENT_SUPPORT_EMAIL;
 
     return sendRequest();
 }
@@ -178,7 +220,7 @@ bool APIClient::requestUpdate(const QString &pathToSaveAFile){
     // Setting the required post data.
     QVariantMap postdata;
     postdata.insert(POST_FIELD_INSTITUTION_ID,institution_id);
-    postdata.insert(POST_FIELD_INSTITUTION_INSTANCE,instance_number);    
+    postdata.insert(POST_FIELD_INSTITUTION_INSTANCE,instance_number);
     rest_controller.setPOSTDataToSend(postdata);
 
     rest_controller.setURLParameters(map);
@@ -193,6 +235,10 @@ bool APIClient::requestUpdate(const QString &pathToSaveAFile){
 
 QString APIClient::getLastGeneratedLogFileName() const {
     return lastGeneratedLogFileName;
+}
+
+QString APIClient::getLatestGeneratedSupportEmail() const {
+    return lastRequestEmailFile;
 }
 
 QString APIClient::getError() const{

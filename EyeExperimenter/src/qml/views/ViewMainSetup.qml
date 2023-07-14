@@ -195,8 +195,9 @@ ViewBase {
             vmButtonType: settingsButton.vmTypeTertiary
             vmText: loader.getStringForKey("viewsettings_tech_support");
             onClickSignal: {
-                settingsDialog.open()
-                settingsDialog.goToSupport()
+                let email = loader.getCurrentEvaluatorInfo()["email"];
+                vmSendSupportEmail.open();
+                vmSendSupportEmail.setCurrentEvaluator(email);
             }
         }
 

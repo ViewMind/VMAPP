@@ -14,7 +14,6 @@ Item {
     z: 10
 
     property bool vmAnyChangeState: false
-    readonly property int vmSupportListIndex: 2
 
     signal restartRequired()
 
@@ -26,12 +25,6 @@ Item {
 
     function close(){
         visible = false
-    }
-
-    function goToSupport(){
-        sideNavigationBar.setItemSelected(vmSupportListIndex)
-        sideNavigationBar.vmCurrentIndex = vmSupportListIndex;
-        viewer.setCurrentIndex(sideNavigationBar.vmCurrentIndex)
     }
 
     MouseArea {
@@ -98,13 +91,6 @@ Item {
             Item {
                 SCSettingsAbout {
                     id: about
-                    anchors.fill: parent
-                }
-            }
-
-            Item {
-                SCTechSupport {
-                    id: techSupport
                     anchors.fill: parent
                 }
             }
@@ -204,12 +190,6 @@ Item {
             //console.log(JSON.stringify(item))
             list.push(item)
             //console.log(JSON.stringify(list))
-
-            item = {};
-            item["text"]        = loader.getStringForKey("viewsettings_tech_support");
-            item["icon_normal"] = "qrc:/images/tech_support_gray.png"
-            item["icon_selected"] = "qrc:/images/tech_support_blue.png"
-            list.push(item)
 
             sideNavigationBar.setItems(list);
             sideNavigationBar.setItemSelected(0)

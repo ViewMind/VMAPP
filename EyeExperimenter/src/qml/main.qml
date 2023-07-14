@@ -55,6 +55,10 @@ ApplicationWindow {
         }
     }
 
+    VMSendSupportEmail {
+        id: vmSendSupportEmail
+    }
+
     // Calibration Validation dialog
     VMCalibrationValidation {
         id: calibrationValidation

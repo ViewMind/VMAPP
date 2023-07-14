@@ -191,6 +191,7 @@ ViewBase {
         anchors.bottomMargin: VMGlobals.adjustHeight(592)
         anchors.left: parent.left
         anchors.leftMargin: VMGlobals.adjustWidth(5)
+        visible: vmEnabled
         onClickSignal: {
             mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
         }
