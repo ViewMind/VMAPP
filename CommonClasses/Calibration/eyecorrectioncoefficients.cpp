@@ -170,26 +170,39 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
     //qDebug() << "LINEAR FITTING XL";
     QStringList invalidCoefficients;
 
+    bool eyeLeftGood  = true;
+    bool eyeRightGood = true;
+
     xl = fitterXL.linearFit();
-    if (!xl.isValid()) invalidCoefficients << "XL";
+    if (!xl.isValid()) {
+        invalidCoefficients << "XL";
+        eyeLeftGood = false;
+    }
 
     //qDebug() << "LINEAR FITTING XR";
     xr = fitterXR.linearFit();
-    if (!xr.isValid()) invalidCoefficients << "XR";
+    if (!xr.isValid()) {
+        invalidCoefficients << "XR";
+        eyeRightGood = false;
+    }
 
     //qDebug() << "LINEAR FITTING YL";
     yl = fitterYL.linearFit();
-    if (!yl.isValid()) invalidCoefficients << "XR";
+    if (!yl.isValid()) {
+        invalidCoefficients << "YL";
+        eyeLeftGood = false;
+    }
 
     //qDebug() << "LINEAR FITTING YR";
     yr = fitterYR.linearFit();
-    if (!yr.isValid()) invalidCoefficients << "XR";
+    if (!yr.isValid()) {
+        invalidCoefficients << "YR";
+        eyeRightGood = false;
+    }
 
-//    qDebug() << "Computed Coefficients";
-//    qDebug() << xl.toString() << yl.toString();
-//    qDebug() << xr.toString() << yr.toString();
+    // The check here must account for single eye use. So as long as one eye is complete, then we are good.
 
-    if (!invalidCoefficients.empty()){
+    if (!eyeRightGood && !eyeLeftGood){
         error_msg = "The following components did not have valid coefficients: " + invalidCoefficients.join(",");
         return false;
     }
@@ -283,34 +296,55 @@ bool EyeCorrectionCoefficients::computeCoefficients3D(){
 
     //qDebug() << "LINEAR FITTING XL";
     QStringList invalidCoefficients;
+    bool eyeLeftGood = true;
+    bool eyeRightGood = true;
+
     if (!fitterXL.computeCoefficients()) invalidCoefficients << "XL";
     xl.fromSimpleMatrix(fitterXL.getCoefficients());
-    if (!xl.isValid()) invalidCoefficients << "XL";
+    if (!xl.isValid()) {
+        eyeLeftGood = false;
+        invalidCoefficients << "XL";
+    }
 
     //qDebug() << "LINEAR FITTING XR";
     if (!fitterXR.computeCoefficients()) invalidCoefficients << "XR";
     xr.fromSimpleMatrix(fitterXR.getCoefficients());
-    if (!xr.isValid()) invalidCoefficients << "XR";
+    if (!xr.isValid()) {
+        invalidCoefficients << "XR";
+        eyeRightGood = false;
+    }
 
     //qDebug() << "LINEAR FITTING YL";
     if (!fitterYL.computeCoefficients()) invalidCoefficients << "YL";
     yl.fromSimpleMatrix(fitterYL.getCoefficients());
-    if (!yl.isValid()) invalidCoefficients << "YL";
+    if (!yl.isValid()) {
+        invalidCoefficients << "YL";
+        eyeLeftGood = false;
+    }
 
     //qDebug() << "LINEAR FITTING YR";
     if (!fitterYR.computeCoefficients()) invalidCoefficients << "YR";
     yr.fromSimpleMatrix(fitterYR.getCoefficients());
-    if (!yr.isValid()) invalidCoefficients << "YR";
+    if (!yr.isValid()) {
+        invalidCoefficients << "YR";
+        eyeRightGood = false;
+    }
 
     if (!fitterZR.computeCoefficients()) invalidCoefficients << "ZR";
     zr.fromSimpleMatrix(fitterZR.getCoefficients());
-    if (!zr.isValid()) invalidCoefficients << "ZR";
+    if (!zr.isValid()) {
+        invalidCoefficients << "ZR";
+        eyeRightGood = false;
+    }
 
     if (!fitterZL.computeCoefficients()) invalidCoefficients << "ZL";
     zl.fromSimpleMatrix(fitterZL.getCoefficients());
-    if (!zl.isValid()) invalidCoefficients << "ZL";
+    if (!zl.isValid()) {
+        invalidCoefficients << "ZL";
+        eyeLeftGood = false;
+    }
 
-    if (!invalidCoefficients.empty()){
+    if (!eyeLeftGood && !eyeRightGood){
         error_msg = "The following components did not have valid coefficients: " + invalidCoefficients.join(",");
         return false;
     }

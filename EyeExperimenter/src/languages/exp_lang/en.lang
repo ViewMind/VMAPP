@@ -62,18 +62,19 @@ as you can. Did you understand?
 We will do some practice rounds before starting the test.;
 
 
-explanation_phase_list_gonogo_3D
-|
+explanation_phase_list_gonogo_3D =
 This is Go/No-Go Sphere Evaluation.
 During this evaluation green and red spheres will be sent from the dark
-points in front of you. If the sphere is green you must try to touch it.
+points in front of you. Si the sphere is green you must try to touch it.
 If you make contact with the sphere you will feel your controller vibrate.|
+|
 If the sphere is red, you must move your hands to avoid touching the sphere.
-If contact is made anyway, then your controller will still vibrate. | 
-Now try to touch the green sphere again. | 
-Avoid touching the red shphere.
-If you touch and avoid the spheres correctly the, spheres will start to go faster.
-If your performance worsens the spheres will go slower.;
+If contact is made anyway, then your controller will still vibrate. |
+|
+Now try to touch the green sphere again. |
+|
+Avoid touching the red sphere.
+The speed of the spheres shall remain constant|;
 
 
 

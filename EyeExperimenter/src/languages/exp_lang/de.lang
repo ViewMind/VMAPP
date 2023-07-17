@@ -61,19 +61,20 @@ schnell wie möglich machen. Haben Sie alles verstanden?
 Wir werden einige Übungsrunden machen, bevor wir mit dem Test beginnen.;
 
 explanation_phase_list_gonogo_3D = 
-|
 Dies ist die Go/No-Go Sphere Evaluation. Während dieser Evaluation werden grüne und
 rote Kugeln von den dunklen Punkten vor Ihnen ausgesendet. Wenn die Kugel grün ist, 
 müssen Sie versuchen, sie mit ihrer Hand zu berühren. Wenn Sie Kontakt mit der Kugel 
 haben, wird Ihr Controller vibrieren.|
+|
 Wenn die Kugel rot ist, müssen Sie Ihre Hände fortbewegen, um zu vermeiden, dass 
 Sie die Kugel berühren. Wenn Sie trotzdem Kontakt haben, wird Ihr Controller i 
 vibrieren.|
+|
 Versuchen Sie nun, die grüne Kugel zu berühren.|
+|
 Vermeiden Sie, die rote Kugel zu berühren. Wenn Sie die grünen Kugeln richtig 
 berühren und die roten Kuglen vermeiden, werden die Kugeln schneller werden. 
-Wenn Ihre Leistung nachlässt, werden die Kugeln langsamer.;
-
+Wenn Ihre Leistung nachlässt, werden die Kugeln langsamer.|;
 
 
 explanation_phase_list_nbackrt    =

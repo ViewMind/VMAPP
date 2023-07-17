@@ -63,19 +63,20 @@ rápido que pueda.
 Ha entendido?
 Haremos algunas rondas de práctica antes de comenzar.;
 
-explanation_phase_list_gonogo_3D = Este es las Evaluación Esferas Go/No-Go.
+explanation_phase_list_gonogo_3D =
+Este es las Evaluación Esferas Go/No-Go.
 Durante esta evaluación esferas rojas y verdes serán enviadas de los puntos que
 se encuentran frente suyo. Si la esfera es verde debe intentar tocarla.
-Si realiza contacto sentirá a su control vibrar. 
-Toque la esfera verde.  | 
+Si realiza contacto sentirá a su control vibrar.|
+|
 Si la esfera es roja, debe mover sus manos para evitar que la esfera
 entre en contacto con ella. Si el contacto se realiza, su control vibrará.
 Evite tocar la esfera roja.| 
+|
 Ahora toque nuevamente la esfera verde.| 
+|
 Evite tocar la esfera roja.
-Si toca y esquiva correctamente las esferas durante el estudio, la velocidad
-de las esferas aumentara. Si su desempeño cae, la velocidad de las esferas 
-disminuirá;
+La velocidad de las esferas se mantendra constante|;
 
 explanation_phase_list_nbackrt    = 
 Esta es la evaluación de N-Back. La prueba se compone de 6 cajas y una cruz central.
