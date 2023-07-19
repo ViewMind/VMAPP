@@ -207,13 +207,20 @@ ViewBase {
         anchors.leftMargin: VMGlobals.adjustWidth(10)
         anchors.bottomMargin: VMGlobals.adjustHeight(32.75)
         onClickSignal: {
-            vmSendSupportEmail.open();
-            vmSendSupportEmail.setCurrentEvaluator("");
+            let h = [10.2,5.3]
+            let v = [6.7,15.2]
+            let hlimit = 8.6
+            let vlimit = 10.3
+            let handToUse = 2;
+            handCalibrationResults.configureResults(h,v,hlimit,vlimit,handToUse);
+            handCalibrationResults.open();
+//            vmSendSupportEmail.open();
+//            vmSendSupportEmail.setCurrentEvaluator("");
         }
     }
 
 // We add test stuff to main when developing components as we can test it as sson as the app starts.
-// I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
+// I leave here the commented the last test item so that It appears right beside the add new evaluator button.
 //        VMTextInput {
 //            id: testBox
 //            width: VMGlobals.adjustWidth(100)

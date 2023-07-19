@@ -277,7 +277,7 @@ void Loader::openUserManual(){
         path = Globals::Paths::MANUAL_DIR + "/es.pdf";
     }
     else{
-        path = Globals::Paths::MANUAL_DIR + "/es.pdf";
+        path = Globals::Paths::MANUAL_DIR + "/en.pdf";
     }
 
     QString currentDirectory = QDir::currentPath();

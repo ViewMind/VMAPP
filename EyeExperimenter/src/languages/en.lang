@@ -140,7 +140,6 @@ viewsendsupport_email_fail = <b>Email Error</b><br>The support email could not b
 viewsendsupport_email_succes = <b>Email Succesfull</b><br>The support email has been successfully sent;
 viewsendsupport_email_send = SEND;
 
-
 #********************************* STUDY SETUP *********************************
 viewevaluation_date = Date;
 viewevaluation_patient = Patient;
@@ -220,6 +219,9 @@ viewevaluation_finish_message = <b></b><br> has a new study that can be processe
 viewevaluation_calib_res = CALIBRATION RESULTS;
 viewevaluation_left_eye = Left Eye;
 viewevaluation_right_eye = Right Eye;
+viewevaluation_hand_res = HAND CALIBRATION RESULTS;
+viewevaluation_left_hand = Left Hand;
+viewevaluation_right_hand = Right Hand;
 viewevaluation_success = Success;
 viewevaluation_failed = Failed;
 viewevaluation_calib_restart = RESTART CALIBRATION;
