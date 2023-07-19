@@ -72,14 +72,6 @@ ApplicationWindow {
         }
     }
 
-    VMHandCalibrationResults {
-        id: handCalibrationResults
-        onCalibrationValidated: {
-        }
-        onRequestReCalibration: {
-        }
-    }
-
     VMNotification {
         id: notification
     }

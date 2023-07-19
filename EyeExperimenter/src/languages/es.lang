@@ -216,15 +216,9 @@ viewevaluation_congrats = ¡Felicitaciones!;
 viewevaluation_congrats_sub = Ha finalizado exitósamente todas las evaluaciones;
 viewevaluation_skip_calibration = SALTEAR CALIBRACIÓN;
 viewevaluation_finish_message = <b></b><br> tiene un nuevo estudio listo para procesar;
-
 viewevaluation_calib_res = RESULTADOS DE CALIBRACIÓN;
 viewevaluation_left_eye = Ojo Izquierdo;
 viewevaluation_right_eye = Ojo Derectho;
-
-viewevaluation_hand_res = RESULTADOS DE CALIBRACIÓN DE MANOS;
-viewevaluation_left_hand = Mano Izquierda;
-viewevaluation_right_hand = Mano Derectha;
-
 viewevaluation_success = Exitosa;
 viewevaluation_failed = Falló;
 viewevaluation_calib_restart = REINICIAR CALIBRACIÓN;

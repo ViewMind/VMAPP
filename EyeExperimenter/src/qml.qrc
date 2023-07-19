@@ -53,6 +53,5 @@
         <file>qml/components/VMArrowButton.qml</file>
         <file>qml/views/ViewGetVMConfig.qml</file>
         <file>qml/components/VMSendSupportEmail.qml</file>
-        <file>qml/components/VMHandCalibrationResults.qml</file>
     </qresource>
 </RCC>
