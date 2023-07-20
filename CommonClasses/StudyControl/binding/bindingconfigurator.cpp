@@ -24,8 +24,6 @@ BindingConfigurator::BindingConfigurator(bool isBC, qint32 ntargets){
 
 bool BindingConfigurator::studySpecificConfiguration(const QVariantMap &studyConfig){
 
-    Q_UNUSED(studyConfig)
-
     // Now we parse the trial. If it worked the configuration is loaded with the NBack trials.
     if (!parseStudyDescription()) return false;
 
@@ -34,8 +32,17 @@ bool BindingConfigurator::studySpecificConfiguration(const QVariantMap &studyCon
         this->configuration[RRS::StudyConfigurationFields::N_OF_TRIALS] = N_TRIALS_IN_SHORT_STUDIES;
     }
     else {
-        this->configuration[RRS::StudyConfigurationFields::N_OF_TRIALS] = this->configuration.value(RRS::StudyConfigurationFields::BINDING_TRIALS).toList().size();
+
+        qint32 ntrials = studyConfig.value(VMDC::StudyParameter::NUM_TRIALS).toInt();
+        if (ntrials > 0){
+            this->configuration[RRS::StudyConfigurationFields::N_OF_TRIALS] = ntrials;
+        }
+        else {
+            this->configuration[RRS::StudyConfigurationFields::N_OF_TRIALS] = this->configuration.value(RRS::StudyConfigurationFields::BINDING_TRIALS).toList().size();
+        }
     }
+
+    //qDebug() << "Configured number of trials to " << this->configuration[RRS::StudyConfigurationFields::N_OF_TRIALS].toInt();
 
     // The study name and the number of targets are the only configuration parameters required.
     if (this->isBC){

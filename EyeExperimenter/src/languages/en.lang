@@ -140,7 +140,6 @@ viewsendsupport_email_fail = <b>Email Error</b><br>The support email could not b
 viewsendsupport_email_succes = <b>Email Succesfull</b><br>The support email has been successfully sent;
 viewsendsupport_email_send = SEND;
 
-
 #********************************* STUDY SETUP *********************************
 viewevaluation_date = Date;
 viewevaluation_patient = Patient;
@@ -170,7 +169,10 @@ viewevaluation_must_select_doctor = A doctor must be selected;
 viewevaluation_start = START;
 viewevaluation_start_and_save = SAVE SEQUENCE & START;
 viewevaluation_choose = Choose evaluations;
-viewevaluation_number_of_targets = Number of targets;
+viewevaluation_number_of_targets = Number of Targets;
+viewevaluation_binding_length = Study Duration;
+viewevaluation_binding_normal = Normal;
+viewevaluation_binding_short  = Short;
 viewevaluation_nback_light_up_title = Light Up Targets;
 viewevaluation_nback_light_up_all = All;
 viewevaluation_nback_light_up_correct = Correct Sequence;

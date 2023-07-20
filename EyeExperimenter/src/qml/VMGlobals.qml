@@ -121,6 +121,7 @@ QtObject {
     readonly property string vmSCP_EYES:                     "valid_eye";
     readonly property string vmSCP_LANGUAGE:                 "language";
     readonly property string vmSCP_NUMBER_OF_TARGETS:        "number_targets";
+    readonly property string vmSCP_NUMBER_OF_TRIALS:         "number_of_trials";
     readonly property string vmSCP_TARGET_SIZE:              "target_size";
     readonly property string vmSCP_BINDING_TYPE:             "binding_type";
     readonly property string vmSCP_NBACK_LIGHTUP:            "nback_light_all"

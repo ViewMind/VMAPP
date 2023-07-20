@@ -20,6 +20,7 @@ Rectangle {
     readonly property int vmNBACK_RT_TRANSITION_DEFAULT: 500
     readonly property int vmNBACK_RT_TRANSITION_SLOW : 1000
     readonly property int vmGNG3D_UNIQUE_SPEED: 100
+    readonly property int vmBINDING_SHORT_STUDY_N_TRIALS: 32
 
     signal goToEvalRun();
 
@@ -160,14 +161,22 @@ Rectangle {
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_number_of_targets");
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_VAlUES] = [2,3];
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
-        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_WIDTH] = 100;
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_WIDTH] = 40;
+
+        options[VMGlobals.vmSCP_NUMBER_OF_TRIALS] = {}
+        options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_binding_length");
+        options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_binding_normal"),
+                                                                                     loader.getStringForKey("viewevaluation_binding_short")];
+        options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
+        options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_WIDTH] = 60;
+
         item = {
             vmIndex: VMGlobals.vmINDEX_BINDING_UC,
             vmStudyName : loader.getStringForKey("viewevaluation_eval_binding") ,
             vmIsLastSelected: false,
             vmOptions: options,
-            vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS,
-            vmOptionValueMap: "2|3",
+            vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS + "|" + VMGlobals.vmSCP_NUMBER_OF_TRIALS,
+            vmOptionValueMap: "2|3||-1|32",
             vmIsSelected: false
         }
         availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
