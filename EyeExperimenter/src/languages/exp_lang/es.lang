@@ -11,6 +11,15 @@ Estire sus brazos lo mas que pueda hacia sus costados.;
 viewevaluation_hand_calib_v = 
 Alce sus brazos estirando al máximo los mismos.;
 
+viewevaluation_turn_on_controllers =
+Asegurese de que los controladores esten cargados y encendidos.
+Antes de seguir adelante, el paciente ya debe tener los controladores
+en sus manos;
+
+viewevaluation_hand_verif =
+Try and touch the cubes in front of you.
+Make sure you can reach them all. If you are having trouble touching any cube
+then redo the hand calibration but this time do not fully strech your arms;
 
 explanation_phase_list_binding_bc =
 Esta es la prueba de Combinación de Colores. En esta prueba aparecerán <<N>> figuras.
@@ -45,7 +54,6 @@ Ha entendido? Haremos algunas rondas de práctica antes de comenzar.;
 
 
 explanation_phase_list_gonogo     = 
-|
 Esta es la evaluación de Go/No-go. Una cruz aparecerá en el centro de la
 pantalla. Mire la cruz. La cruz desaparecerá y en su lugar aparecerá una flecha.
 Si la flecha es color verde, mire rápidamente un punto en la dirección de la

@@ -4,7 +4,6 @@ Look at the white dot.
 The circle will move through the screen. You must follow it. Remember not to
 take your eyes off the circle until it disappears.;
 
-
 viewevaluation_hand_calib_h = 
 Strech your arms, to the sides of your body.
 Reach as far as you can.;
@@ -12,6 +11,16 @@ Reach as far as you can.;
 viewevaluation_hand_calib_v = 
 Strech your arms, upwards towards the ceiling.
 Reach as far as you can.;
+
+viewevaluation_turn_on_controllers =
+Make sure the controllers are charged and turned on.
+Make sure that the patient is holding the turned on
+controllers before the hand calibration starts;
+
+viewevaluation_hand_verif =
+Try and touch the cubes in front of you.
+Make sure you can reach them all. If you are having trouble touching any cube
+then redo the hand calibration but this time do not fully strech your arms;
 
 explanation_phase_list_binding_bc =
 This is the Color Combination Test. In this study, <<N>> targets will appear on the screen,

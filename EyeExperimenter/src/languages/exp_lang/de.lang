@@ -12,6 +12,17 @@ viewevaluation_hand_calib_v =
 Strecken Sie Ihre Arme nach oben zur Decke aus. Strecken Sie ihre Arme 
 soweit wie möglich.;
 
+viewevaluation_turn_on_controllers =
+Make sure the controllers are charged and turned on.
+Make sure that the patient is holding the turned on
+controllers before the hand calibration starts;
+
+viewevaluation_hand_verif =
+Try and touch the cubes in front of you.
+Make sure you can reach them all. If you are having trouble touching any cube
+then redo the hand calibration but this time do not fully strech your arms;
+
+
 explanation_phase_list_binding_bc =
 Dies ist der Farbkombinationstest. Bei dieser Übung werden <<N>> Figuren auf dem
 Bildschirm erscheinen. Jede Figur hat eine Farbe außen und eine Farbe innen. 
@@ -26,7 +37,6 @@ Schauen Sie sich das zweite Beispiel an.|
 In diesem Fall sind die Farbkombinationen gleich geblieben. Sie müssen "gleich" sagen.
 Haben Sie es verstanden?
 Wir werden einige Übungsrunden durchführen, bevor wir mit dem Test beginnen.;
-
 
 
 explanation_phase_list_binding_uc =

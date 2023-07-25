@@ -12,6 +12,15 @@ Tendez les bras le long du corps, aussi loin que possible.;
 viewevaluation_hand_calib_v = 
 Tendez les bras vers le plafond, aussi loin que possible.;
 
+viewevaluation_turn_on_controllers =
+Make sure the controllers are charged and turned on.
+Make sure that the patient is holding the turned on
+controllers before the hand calibration starts;
+
+viewevaluation_hand_verif =
+Try and touch the cubes in front of you.
+Make sure you can reach them all. If you are having trouble touching any cube
+then redo the hand calibration but this time do not fully strech your arms;
 
 explanation_phase_list_binding_bc =
 Voici le test de combinaison de couleurs. Dans cette étude, <<N>> cibles apparaîtront
