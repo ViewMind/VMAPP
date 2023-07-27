@@ -188,7 +188,7 @@ viewevaluation_binding_uc = Nuevos Colores;
 viewevaluation_binding_bc = Combinación de Colores;
 viewevaluation_shortcuts = Teclas;
 viewevaluation_evaluation_steps = Calibración|Explicación|Ejemplos|Evaluación;
-viewevaluation_evaluation_steps_with_hand_calib = Calibración|Manos - Horizontal|Manos - Vertical|Explicación|Ejemplos|Evaluación;
+viewevaluation_evaluation_steps_with_hand_calib = Calibración|Calibración de Manos|Explicación|Ejemplos|Evaluación;
 viewevaluation_keyboard_explanations = 
 Frenar estudios|
 Resumir estudio luego de pausa|
@@ -197,10 +197,12 @@ Retroceder un paso en una explicación|
 Indicar objectivos distintos|
 Indicar objetivos iguales;
 viewevaluation_action_calibrate = CALIBRAR;
+viewevaluation_action_start_hand_calib = COMENZAR CALIBRACIÓN DE MANOS;
 viewevaluation_action_hcalib_v  = FIN CALIBRACION MANOS HORIZONTAL;
 viewevaluation_action_hcalib_end = FIN CALIBRACIÓN MANOS VERTICAL;
 viewevaluation_action_examples  = EJEMPLOS;
 viewevaluation_action_starteval = COMENZAR EVALUACIÓN;
+viewevaluation_restart_hand_calib = CALIBRAR MANOS NUEVAMENTE;
 viewevaluation_err_noconnect = <b>Falla al conectarse al EyeTracker</b><br>Por favor, contacte a ViewMind Support para más ayuda;
 viewevaluation_err_badend_study = <b>Estudio no terminó corectamente</b><br>Si el estudio no fue abortado, intente nuevamente;
 viewevaluation_err_data_transfer = <b>Falla en la transferencia de datos</b><br>Deberá realizar nuevamente el ultimo estudio; 

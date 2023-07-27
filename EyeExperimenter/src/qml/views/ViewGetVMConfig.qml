@@ -133,7 +133,7 @@ ViewBase {
         anchors.left: inputColumn.left
         anchors.bottom: parent.bottom
         anchors.bottomMargin: VMGlobals.adjustHeight(60)
-        spacing: VMGlobals.adjustWidth(900)
+        spacing: VMGlobals.adjustWidth(800)
         VMButton {
             id: btnGetLicence
             vmText: loader.getStringForKey("viewgetconfig_get")
@@ -146,9 +146,9 @@ ViewBase {
                 let code   = activation_code.vmCurrentText
 
                 // For quick testing. Developing the endpoint itself
-                //inst = 1;
-                //number = 6;
-                //code = "ZP1KY-OGQFG-UFFSV-A4SPO-YONOK-NGOA0"
+                inst = 1;
+                number = 9;
+                code = "PIDTB-WSJIE-7YFVB-WLSJU-U2XWZ-SVMHD"
 
                 if (inst == ""){
                     institution.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty")

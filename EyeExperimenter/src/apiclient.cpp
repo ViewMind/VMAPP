@@ -73,12 +73,12 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string,
         QStringList filters; filters  << "*.tar.gz";
         QStringList tar_files = calib_dir.entryList(filters,QDir::Files|QDir::NoDotAndDotDot);
 
-        qDebug() << "TAR FILES for failed calibrations" << tar_files;
+        //qDebug() << "TAR FILES for failed calibrations" << tar_files;
 
         QString prefix = FAILED_CALIBRATION_FILE_PREFIX + "_" + institution_id + "_" + instance_number + "_";
 
         for (qint32 i = 0; i < tar_files.size(); i++){
-            qDebug() << "Appending file" << tar_files.at(i);
+            //qDebug() << "Appending file" << tar_files.at(i);
             rest_controller.appendFileForRequest(Globals::Paths::FAILED_CALIBRATION_DIR + "/" + tar_files.at(i),prefix + QString::number(i));
         }
 
@@ -141,7 +141,7 @@ bool APIClient::requestSupportEmail(const QString &subject, const QString &email
     return sendRequest();
 }
 
-bool APIClient::requestActivation(qint32 institution, qint32 instance, const QString &key){
+bool APIClient::requestActivation(qint32 institution, qint32 instance, const QString &key, const QString &hardware_description_string){
 
     error = "";
 
@@ -156,6 +156,11 @@ bool APIClient::requestActivation(qint32 institution, qint32 instance, const QSt
     map.insert(URLPARAM_KEY,key);
 
     rest_controller.setURLParameters(map);
+
+    // The actual hardware string is sent via POST data as the json fields are not obtained when doing activation.
+    QVariantMap postdata;
+    postdata.insert(POST_FIELD_HW_STRING, hardware_description_string);
+    rest_controller.setPOSTDataToSend(postdata);
 
     lastRequest = API_ACTIVATE;
 

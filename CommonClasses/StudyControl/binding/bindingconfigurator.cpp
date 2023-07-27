@@ -83,6 +83,7 @@ bool BindingConfigurator::parseStudyDescription(){
     qint32 N = lines.size()/7;
 
     QVariantList trials;
+    //QStringList all_color_list;
 
     for (qint32 i = 0; i < N; i++){
 
@@ -94,6 +95,12 @@ bool BindingConfigurator::parseStudyDescription(){
         for (qint32 j = start; j < end; j++){
 
             QStringList row = lines.at(j).split(" ",Qt::SkipEmptyParts);
+
+//            for (qint32 k = 0; k < row.size(); k++){
+//                if (row.at(k).size() == 6){
+//                    if (!all_color_list.contains(row.at(k))) all_color_list << row.at(k);
+//                }
+//            }
 
 
             if (j == start){
@@ -127,6 +134,11 @@ bool BindingConfigurator::parseStudyDescription(){
         //qDebug() << "Adding the created trial";
         trials << trial;
     }
+
+//    qDebug() << "All unique colors";
+//    for (qint32 i = 0; i < all_color_list.size(); i++){
+//        qDebug() << all_color_list.at(i);
+//    }
 
     this->configuration[RRS::StudyConfigurationFields::BINDING_TRIALS] = trials;
 

@@ -23,33 +23,52 @@ Make sure you can reach them all. If you are having trouble touching any cube
 then redo the hand calibration but this time do not fully strech your arms;
 
 explanation_phase_list_binding_bc =
-This is the Color Combination Test. In this study, <<N>> targets will appear on the screen,
-Each target has a color on the outside and a color on the inside. In this case,
-remember the color combination of each target.|
-The first targets will disappear and a new set of targets will appear. You must
-identify if the color combination of each target remained the same or if the
-colors have been swapped between targets. The position is not important.
-If the colors have swapped between targets, say "Different". If not say, "Same".
-In this case, the colors swapped between targets. You must say "Different"|
-Look at the second example.|
-In this case, color combination remained the same. You must say "Same".
-Did you understand?
-We will do some practice rounds before starting the test.;
+This is the Color Combination Test. It can be harder than the previous one.|
+<<N>> boxes with a cross at its center will appear. In this case, you must
+remember the combination of colors between each box and cross.
+No new colors will appear|
+The boxes will disappear, and a new set will appear|
+You must indentify and say out loud if the color combinations between
+each box and cross is the same or different. Their position is not important|
+If we compare the two screen side by side, we can see that there are boxes
+that exchanged colors|
+The boxes that exchanged colors are the ones highlighted.
+In this case, you must say "Different"|
+Let's do another example|
+<<N>> boxes with crosses appear|
+Then they disappear|
+A new set then appears|
+The color combinations between the boxes and coresses didn't change, so
+you must say out loud "Same".
+
+Do you understand the instructions?
+
+We will do some practice examples before starting;
+
+
 
 
 explanation_phase_list_binding_uc =
-This is the New Colors Test. In this study, <<N>> targets will appear on the screen,
-like the targets you are seeing on the left. Each target has a color on the outside
-and a color on the inside. Remember the colors present in the targets.|
-The first targets will disappear and a new set of targets will appear. You have to
-identify if any new colors appeared or if all the colors are the same. 
-The position of the targets is not important. If new colors appeared, 
-quickly say "Different" out loud. If not, say "Same". In this case, two new colors 
-appeared in each target. You must say "Different".|
-Look at the second example.|
-In this case, no new colors appeared. You must say "Same".
-Did you understand?
-We will do some practice rounds before starting the test.;
+This is the New Colors Test|
+<<N>> boxes with a cross at its center will appear. You must remember
+all the colors present. |
+The boxes will disappear, and a new set will appear|
+You must identify if new colors appeared in the boxes or in the
+crosses. The position of the boxes is not important. If new colors
+appeared, quickly say "Different" out loud. If not, say "Same"|
+If we compare the two screens sid by side, we can see new colors
+appeared|
+The boxes that changed colores are the ones highlighted. In this
+case, you must say "Different"|
+Let's do another example|
+<<N>> boxes appear|
+Then they disspear|
+And a new set of boxes will appear|
+No new colors appeared, so you must say "Same".
+
+Do you understand the instructions?
+
+We will do some practice examples before starting.;
 
 
 

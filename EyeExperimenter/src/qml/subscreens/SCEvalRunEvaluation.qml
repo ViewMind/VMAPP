@@ -5,11 +5,13 @@ import "../components"
 Rectangle {
 
     readonly property int vmSTAGE_CALIBRATION:      0
-    readonly property int vmSTAGE_HAND_CALIB_H:     1
-    readonly property int vmSTAGE_HAND_CALIB_V:     2
-    readonly property int vmSTAGE_EXPLANATION:      3
-    readonly property int vmSTAGE_EXAMPLES:         4
-    readonly property int vmSTAGE_EVALUATION:       5
+    readonly property int vmSTAGE_PRE_HAND_CALIB:   1
+    readonly property int vmSTAGE_HAND_CALIB_H:     2
+    readonly property int vmSTAGE_HAND_CALIB_V:     3
+    readonly property int vmSTAGE_HAND_CALIB_VERIF: 4
+    readonly property int vmSTAGE_EXPLANATION:      5
+    readonly property int vmSTAGE_EXAMPLES:         6
+    readonly property int vmSTAGE_EVALUATION:       7
 
     readonly property int vmHAND_CALIB_START_H : 0;
     readonly property int vmHAND_CALIB_START_V : 1;
@@ -100,8 +102,9 @@ Rectangle {
         }
 
         function onHandCalibrationDone(){
-            // When the hand calibration is done, we always continue to start study.
-            prepareStudyStart();
+            // When the hand calibration is done, we move on to verification and we give the possibility of starting the hand calibration again.
+            showHandCalibrationVerification();
+            // prepareStudyStart();
         }
 
         function onNewExperimentMessages(string_value_map){
@@ -124,10 +127,10 @@ Rectangle {
                     let message_list = loader.getStringListForKey(key,false)
                     let index = string_value_map[key];
 
-                    //                    console.log("Showing explanation text " + index + " in a list of " + message_list.length);
-                    //                    for (var i = 0; i < message_list.length; i++){
-                    //                        console.log("  Message in index " + i + " is " + message_list[i]);
-                    //                    }
+//                    console.log("Showing explanation text " + index + " in a list of " + message_list.length);
+//                    for (var i = 0; i < message_list.length; i++){
+//                        console.log("  Message in index " + i + " is " + message_list[i]);
+//                    }
 
                     if (message_list.length < 1) return; // IN this case there is nothing to do.
 
@@ -198,7 +201,8 @@ Rectangle {
         if (current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] !== ""){
             //console.log("Preparing for Hand Calibration");
             vmWhichHandToCalibrate = current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB];
-            startHorizontalHandCalibration()
+            //startHorizontalHandCalibration()
+            prepareForHandCalibration()
         }
         else {
             prepareStudyStart();
@@ -206,12 +210,24 @@ Rectangle {
 
     }
 
+    function prepareForHandCalibration(){
+        vmEvaluationStage = vmSTAGE_PRE_HAND_CALIB
+        viewEvaluations.advanceStudyIndicator();
+        viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_start_hand_calib"),"");
+        studyExplanationText.text = loader.getStringForKey("viewevaluation_turn_on_controllers",false);
+    }
+
     function startHorizontalHandCalibration(){
         vmEvaluationStage = vmSTAGE_HAND_CALIB_H;
-        viewEvaluations.advanceStudyIndicator();
         viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_hcalib_v"),"");
         flowControl.handCalibrationControl(vmHAND_CALIB_START_H,vmWhichHandToCalibrate);
         studyExplanationText.text = loader.getStringForKey("viewevaluation_hand_calib_h",false);
+    }
+
+    function showHandCalibrationVerification(){
+        vmEvaluationStage = vmSTAGE_HAND_CALIB_VERIF
+        viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_starteval"),"");
+        studyExplanationText.text = loader.getStringForKey("viewevaluation_hand_verif",false);
     }
 
     function prepareStudyStart(){
@@ -308,16 +324,21 @@ Rectangle {
             flowControl.calibrateEyeTracker(vmSlowCalibrationSelected, mode3d);
 
         }
+        else if (vmEvaluationStage == vmSTAGE_PRE_HAND_CALIB){
+            startHorizontalHandCalibration();
+        }
         else if (vmEvaluationStage == vmSTAGE_HAND_CALIB_H){
             vmEvaluationStage = vmSTAGE_HAND_CALIB_V;
             studyExplanationText.text = loader.getStringForKey("viewevaluation_hand_calib_v",false);
             flowControl.handCalibrationControl(vmHAND_CALIB_START_V,vmWhichHandToCalibrate);
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_hcalib_end"),"");
-            viewEvaluations.advanceStudyIndicator();
         }
         else if (vmEvaluationStage == vmSTAGE_HAND_CALIB_V){
             flowControl.handCalibrationControl(vmHAND_CALIB_END,vmWhichHandToCalibrate);
             // When onHandCalibrationDone is called the next stage will be called.
+        }
+        else if (vmEvaluationStage == vmSTAGE_HAND_CALIB_VERIF){
+            prepareStudyStart();
         }
         else if (vmEvaluationStage == vmSTAGE_EXPLANATION){
             vmEvaluationStage = vmSTAGE_EXAMPLES;
@@ -358,7 +379,6 @@ Rectangle {
 
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_calibrate"),"")
             evaluationRun.setCalibrationExplantion() // Setting the calibration explanation message.
-
 
         }
     }
@@ -476,7 +496,9 @@ Rectangle {
                   (vmEvaluationStage === vmSTAGE_CALIBRATION) ||
                   (vmEvaluationStage == vmSTAGE_EXAMPLES)     ||
                   (vmEvaluationStage == vmSTAGE_HAND_CALIB_H) ||
-                  (vmEvaluationStage == vmSTAGE_HAND_CALIB_V)
+                  (vmEvaluationStage == vmSTAGE_HAND_CALIB_V) ||
+                  (vmEvaluationStage == vmSTAGE_PRE_HAND_CALIB) ||
+                  (vmEvaluationStage == vmSTAGE_HAND_CALIB_VERIF)
 
         Image {
             id: studyExplanationInfoIcon
@@ -523,29 +545,6 @@ Rectangle {
                 flowControl.keyboardKeyPressed(Qt.Key_B);
             }
         }
-
-        //        Text {
-        //            id: pressKeyToContinue;
-        //            color: VMGlobals.vmBlueSelected
-        //            text: loader.getStringForKey("explanation_key_to_continue");
-        //            font.pixelSize: VMGlobals.vmFontBaseSize
-        //            font.weight: 600
-        //            anchors.top: studyExplanationText.bottom
-        //            anchors.left: studyExplanationText.left
-        //            visible: (vmEvaluationStage === vmSTAGE_EXPLANATION) || (vmEvaluationStage == vmSTAGE_EXAMPLES)
-        //        }
-
-        //        Text {
-        //            id: pressKeyToGoBack;
-        //            color: VMGlobals.vmBlueSelected
-        //            text: loader.getStringForKey("explanation_key_to_goback");
-        //            font.pixelSize: VMGlobals.vmFontBaseSize
-        //            font.weight: 600
-        //            anchors.top: pressKeyToContinue.bottom
-        //            anchors.left: pressKeyToContinue.left
-        //            visible: (vmEvaluationStage === vmSTAGE_EXPLANATION)
-        //        }
-
 
     }
 

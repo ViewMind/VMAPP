@@ -48,7 +48,7 @@ public:
     bool requestUpdate(const QString &pathToSaveAFile);
 
     // Sends a query to the activation endpoint.
-    bool requestActivation(qint32 institution, qint32 instance, const QString &key);
+    bool requestActivation(qint32 institution, qint32 instance, const QString &key, const QString &hardware_description_string);
 
     // Call function of the same name on the rest api controller.
     void clearFileToSendHandles();

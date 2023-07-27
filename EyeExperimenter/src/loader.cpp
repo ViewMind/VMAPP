@@ -926,7 +926,7 @@ void Loader::sendSupportEmail(const QString &subject, const QString &body, const
 
 void Loader::requestActivation(int institution, int instance, const QString &key){
     processingUploadError = FAIL_CODE_NONE;
-    if (!apiclient.requestActivation(institution,instance,key)){
+    if (!apiclient.requestActivation(institution,instance,key,hwRecognizer.toString(true))){
         StaticThreadLogger::error("Loader::requestActivation","Request activation error: "  + apiclient.getError());
         emit Loader::finishedRequest();
     }

@@ -519,6 +519,20 @@ ViewBase {
             }
         }
 
+        VMButton {
+            id: restartHandCalibrationButton
+            vmText: loader.getStringForKey("viewevaluation_restart_hand_calib")
+            vmButtonType: skipCalibrationButton.vmTypeSecondary
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: VMGlobals.adjustWidth(29)
+            visible: (evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_HAND_CALIB_VERIF)
+            onClickSignal: {
+                // This should reset the hand calibration.
+                evaluationRun.prepareNextStudyOrHandCalibration(true)
+            }
+        }
+
     }
 
     VMProgressLine {
