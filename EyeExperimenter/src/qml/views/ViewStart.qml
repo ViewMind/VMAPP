@@ -214,12 +214,17 @@ ViewBase {
 
 // We add test stuff to main when developing components as we can test it as sson as the app starts.
 // I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
-//        VMTextInput {
+//        Text {
 //            id: testBox
 //            width: VMGlobals.adjustWidth(100)
 //            anchors.left: btnAddNew.right
 //            anchors.top: btnAddNew.top
 //            anchors.leftMargin: 10
+//            linkColor: "#0000aa"
+//            text: "Hello. This is a <a href='www.viewmind.com'>Link</a> to I don't know where"
+//            onLinkActivated: {
+//                console.log("Link clicked");
+//            }
 //        }
 
 

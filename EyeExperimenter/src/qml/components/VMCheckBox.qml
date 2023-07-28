@@ -16,6 +16,8 @@ Item {
     width: square.width + text.width + vmAirBeforeText
     height: VMGlobals.adjustHeight(20)
 
+    signal linkClicked(url: string);
+
     Rectangle {
 
         id: square
@@ -59,6 +61,7 @@ Item {
     Text {
         id: text
         text: vmText
+        linkColor: "#0000aa"
         font.pixelSize: VMGlobals.vmFontLarge
         font.weight: 600
         height: VMGlobals.adjustHeight(18)
@@ -66,6 +69,9 @@ Item {
         anchors.verticalCenter: square.verticalCenter
         anchors.left: square.right
         anchors.leftMargin: vmAirBeforeText
+        onLinkActivated: function (link) {
+            linkClicked(link);
+        }
     }
 
 }

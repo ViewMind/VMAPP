@@ -51,6 +51,7 @@ public:
     Q_INVOKABLE void logUIMessage(const QString &message, bool isError);
     Q_INVOKABLE void openUserManual();
     Q_INVOKABLE bool processingParametersArePresent() const;
+    Q_INVOKABLE void openURLInBrowser(const QString &url);
 
     //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QString getNewUpdateVersionAvailable() const;

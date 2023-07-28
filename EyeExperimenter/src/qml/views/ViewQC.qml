@@ -31,6 +31,11 @@ ViewBase {
         }
     }
 
+    function clear(){
+        sendReport.reset()
+        archiveReport.reset();
+    }
+
     VMButton {
         id: backButton
         vmText: loader.getStringForKey("viewlogin_back")

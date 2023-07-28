@@ -14,6 +14,7 @@ ViewBase {
         password.clear()
         verifyPassword.clear()
         email.clear()
+        acceptTerms.vmIsOn = false;
     }
 
     function checkAndSave(){
@@ -90,7 +91,7 @@ ViewBase {
 
         id: inputColumn
         width: VMGlobals.adjustWidth(320)
-        spacing: VMGlobals.adjustHeight(54)
+        spacing: VMGlobals.adjustHeight(40)
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: subtitle.bottom
         anchors.topMargin: VMGlobals.adjustHeight(54)
@@ -141,13 +142,26 @@ ViewBase {
 
     }
 
+    VMCheckBox {
+        id: acceptTerms
+        anchors.top: inputColumn.bottom
+        anchors.left: inputColumn.left
+        anchors.topMargin: VMGlobals.adjustHeight(35)
+        vmText: loader.getStringForKey("viewaddeval_accept")
+        Keys.onTabPressed: fname.vmFocus = true;
+        onLinkClicked: function (url){
+            loader.openURLInBrowser(url);
+        }
+    }
+
     VMButton {
         id: addEvaluButton
         vmText: loader.getStringForKey("viewaddeval_addeval")
         vmCustomWidth: inputColumn.width
-        anchors.top: inputColumn.bottom
-        anchors.topMargin: VMGlobals.adjustHeight(30)
+        anchors.top: acceptTerms.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(20)
         anchors.horizontalCenter: parent.horizontalCenter
+        vmEnabled: acceptTerms.vmIsOn
         onClickSignal: {
             checkAndSave();
         }

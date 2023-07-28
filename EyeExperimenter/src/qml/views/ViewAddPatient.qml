@@ -18,6 +18,7 @@ ViewBase {
         personalID.clear()
         yearsOfEducation.clear()
         email.clear()
+        acceptTerms.vmIsOn = false;
 
         month.setSelection(-1)
         sex.setSelection(-1)
@@ -305,6 +306,16 @@ ViewBase {
             }
         }
 
+        VMCheckBox {
+            id: acceptTerms
+            anchors.top: formRow.bottom
+            anchors.left: formRow.left
+            anchors.topMargin: VMGlobals.adjustHeight(35)
+            vmText: loader.getStringForKey("viewaddeval_accept")
+            onLinkClicked: function (url){
+                loader.openURLInBrowser(url);
+            }
+        }
 
         Rectangle {
             id: horizontalDivider
@@ -325,6 +336,7 @@ ViewBase {
             anchors.topMargin: VMGlobals.adjustHeight(20)
             anchors.right: parent.right
             anchors.rightMargin: VMGlobals.adjustWidth(29)
+            vmEnabled: acceptTerms.vmIsOn
             onClickSignal: {
                 checkAndSave()
             }

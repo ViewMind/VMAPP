@@ -15,6 +15,8 @@ Item {
 
     ////////////////////////// BASE DIALOG FUNCTIONS ////////////////////////
     function open(){
+        subject.setSelection(-1);
+        issues.clear()
         visible = true
     }
 

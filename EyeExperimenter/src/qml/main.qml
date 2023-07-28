@@ -193,6 +193,9 @@ ApplicationWindow {
             case VMGlobals.vmSwipeIndexEvalView:
                 viewEvaluations.setPatientForEvaluation()
                 break;
+            case VMGlobals.vmSwipeIndexQCView:
+                viewQC.clear();
+                break;
             }
         }
 

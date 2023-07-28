@@ -181,17 +181,16 @@ Rectangle {
 
             let data = OLS.getDataAtIndex(vmIndex);
 
-            console.log("Getting the data at vmIndex: " + vmIndex)
-            console.log(JSON.stringify(data));
-
-            let studyNameMap = loader.getStudyNameMap()
-            let study_name = studyNameMap[data.type];
+//            console.log("Getting the data at vmIndex: " + vmIndex)
+//            console.log(JSON.stringify(data));
+//            let studyNameMap = loader.getStudyNameMap()
+//            let study_name = studyNameMap[data.type];
 
             // Getting the configuration data for the QC View.
             viewQC.configurePatientInformation(data.subject_name,
                                                data.subject_insitution_id,
                                                convertDateToDisplayDate(data.date),
-                                               study_name, isSend)
+                                               data.type, isSend)
 
             loader.setCurrentStudyFileToSendOrDiscard(data.file);
 

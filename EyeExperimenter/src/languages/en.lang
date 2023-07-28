@@ -68,6 +68,7 @@ viewaddeval_verifpass = Verify Password;
 viewaddeval_err_empty = Cannot be empty;
 viewaddeval_exmail_exists = Email is already being used;
 viewaddeval_added = <b></b><br>has been added as evaluator;
+viewaddeval_accept = I have read and agree to the <a href="https://www.viewmind.com/terms-conditions/">Terms of Use</a> and <a href="https://www.viewmind.com/privacy-policy/">Privacy Policy</a>;
 
 #********************************* PATIENT LIST *********************************
 viewpatlist_title = Patient List;
@@ -134,7 +135,7 @@ EyeTracking-Eye Tracking Issues|
 VRHeadset-Issues with the Virtual Reality Headset|
 Computer-Issues with the computer|
 ViewMindApp-ViewMind Application Issues|
-Other-Otros;
+Other-Other;
 viewsendsupport_email_error   = Cannot leave empty;
 viewsendsupport_email_fail = <b>Email Error</b><br>The support email could not be sent;
 viewsendsupport_email_succes = <b>Email Succesfull</b><br>The support email has been successfully sent;
