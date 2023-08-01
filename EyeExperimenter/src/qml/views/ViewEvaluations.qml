@@ -146,7 +146,7 @@ ViewBase {
 
     function calibrationValidated(){
         evaluationRun.vmIsCalibrated = true;
-        evaluationRun.prepareNextStudyOrHandCalibration(false);
+        evaluationRun.prepareNextStudyOrHandCalibration(false,false);
     }
 
     function setCalibrationSpeedToSlow(slow){
@@ -515,7 +515,7 @@ ViewBase {
                 else return false;
             }
             onClickSignal: {
-                evaluationRun.prepareNextStudyOrHandCalibration(true)
+                evaluationRun.prepareNextStudyOrHandCalibration(true,false)
             }
         }
 
@@ -529,7 +529,7 @@ ViewBase {
             visible: (evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_HAND_CALIB_VERIF)
             onClickSignal: {
                 // This should reset the hand calibration.
-                evaluationRun.prepareNextStudyOrHandCalibration(true)
+                evaluationRun.prepareNextStudyOrHandCalibration(true,true)
             }
         }
 

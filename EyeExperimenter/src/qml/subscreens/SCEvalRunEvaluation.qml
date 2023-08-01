@@ -189,7 +189,7 @@ Rectangle {
         viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation] = study_config;
     }
 
-    function prepareNextStudyOrHandCalibration(calibrationSkipped){
+    function prepareNextStudyOrHandCalibration(calibrationSkipped, is_recalibrating_hands){
 
         if (!calibrationSkipped) {
             // Calibration notification success will be in the middle of the screen as not to obstruct the button.
@@ -202,7 +202,7 @@ Rectangle {
             //console.log("Preparing for Hand Calibration");
             vmWhichHandToCalibrate = current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB];
             //startHorizontalHandCalibration()
-            prepareForHandCalibration()
+            prepareForHandCalibration(is_recalibrating_hands)
         }
         else {
             prepareStudyStart();
@@ -210,9 +210,9 @@ Rectangle {
 
     }
 
-    function prepareForHandCalibration(){
+    function prepareForHandCalibration(is_recalibrating){
         vmEvaluationStage = vmSTAGE_PRE_HAND_CALIB
-        viewEvaluations.advanceStudyIndicator();
+        if (!is_recalibrating) viewEvaluations.advanceStudyIndicator();
         viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_start_hand_calib"),"");
         studyExplanationText.text = loader.getStringForKey("viewevaluation_turn_on_controllers",false);
     }
