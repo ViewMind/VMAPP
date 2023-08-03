@@ -8,6 +8,7 @@ Item {
     height: VMGlobals.vmControlsHeight
 
     property string vmErrorMsg: ""
+    property bool vmAlignErrorLeft: true
     property bool vmEnabled: true
     property string vmPlaceHolderText: "Placeholder"
     property string vmLabel: ""
@@ -174,9 +175,15 @@ Item {
         color:  VMGlobals.vmRedError
         font.pixelSize: VMGlobals.vmFontBaseSize
         font.weight: 400
-        anchors.left: parent.left
+        //anchors.left: parent.left
         anchors.top: parent.bottom
         anchors.topMargin: 10
+        x: {
+            if (vmAlignErrorLeft) return parent.x
+            else {
+                return parent.x + (parent.width - width)
+            }
+        }
         visible: (vmErrorMsg !== "")
     }
 

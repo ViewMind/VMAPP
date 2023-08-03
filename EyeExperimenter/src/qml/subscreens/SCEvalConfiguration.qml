@@ -19,7 +19,9 @@ Rectangle {
     readonly property int vmNBACK_RT_TIME_OUT_SLOW: 5000
     readonly property int vmNBACK_RT_TRANSITION_DEFAULT: 500
     readonly property int vmNBACK_RT_TRANSITION_SLOW : 1000
-    readonly property int vmGNG3D_UNIQUE_SPEED: 100
+    readonly property int vmGNG3D_DEFAULT_SPEED: 100
+    readonly property int vmGNG3D_SLOW_SPEED: 60
+    readonly property var vmGNG3D_VARIABLE: [50, 80, 110]; // Min, Initial, Max
     readonly property int vmBINDING_SHORT_STUDY_N_TRIALS: 32
 
     signal goToEvalRun();
@@ -30,7 +32,6 @@ Rectangle {
             vmPreSelectedStudySequence = [];
         }
         else{
-//           let configString = "[{\"valid_eye\":\"both\",\"unique_study_id\":9,\"number_targets\":\"3\",\"study_reqs_hand_calib\":\"\",\"is_3d_study\":false,\"nback_rt_hold_time\":400,\"nback_timeout\":5000,\"nback_transition\":1000},{\"valid_eye\":\"both\",\"unique_study_id\":2,\"number_targets\":\"3\",\"target_size\":\"large\",\"study_reqs_hand_calib\":\"\",\"is_3d_study\":false},{\"valid_eye\":\"both\",\"unique_study_id\":1,\"number_targets\":\"3\",\"target_size\":\"large\",\"study_reqs_hand_calib\":\"\",\"is_3d_study\":false},{\"valid_eye\":\"both\",\"unique_study_id\":8,\"hand_to_use\":\"left\",\"study_reqs_hand_calib\":\"left\",\"is_3d_study\":true,\"min_speed\":90,\"max_speed\":90,\"initial_speed\":90}]"
            vmPreSelectedStudySequence = loader.getStudySequence(sequence_name);
            console.log("PreSelected Study Sequence name: " + sequence_name + " its values are")
            console.log(JSON.stringify(vmPreSelectedStudySequence));
@@ -258,7 +259,8 @@ Rectangle {
             vmIsSelected: false
         }
         //availableEvaluations.append(item)
-        availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
+        // For now variable speed is not an option.
+        //availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
         /////////////////////////////////////////////////////////// GNG Spheres /////////////////////////////////////////////////////////////////////////
         item = {}
@@ -269,15 +271,23 @@ Rectangle {
                                                                                loader.getStringForKey("viewevaluation_gng3D_hand_left"),
                                                                                loader.getStringForKey("viewevaluation_gng3D_hand_both")];
         options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_SELECTED] = 2;
-        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_WIDTH] = 30;
+        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_WIDTH] = 40;
+
+        options[VMGlobals.vmSCP_GNG3DSPEED] = {}
+        options[VMGlobals.vmSCP_GNG3DSPEED][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_gng3d_speed");
+        options[VMGlobals.vmSCP_GNG3DSPEED][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_gng3d_fast"),
+                                                                               loader.getStringForKey("viewevaluation_gng3d_slow"),
+                                                                               loader.getStringForKey("viewevaluation_gng3d_variable")];
+        options[VMGlobals.vmSCP_GNG3DSPEED][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
+        options[VMGlobals.vmSCP_GNG3DSPEED][VMGlobals.vmSCO_OPTION_WIDTH] = 30;
 
         item = {
             vmIndex: VMGlobals.vmINDEX_GONOGO3D,
             vmStudyName : loader.getStringForKey("viewevaluation_eval_gonogo3D") ,
             vmIsLastSelected: false,
             vmOptions: options,
-            vmOrder: VMGlobals.vmSCP_HAND_TO_USE,
-            vmOptionValueMap: "right|left|both", // These are the values inside the study configuration map corresponding to each of the option values.
+            vmOrder: VMGlobals.vmSCP_HAND_TO_USE + "|" + VMGlobals.vmSCP_GNG3DSPEED,
+            vmOptionValueMap: "right|left|both||0|1|2", // These are the values inside the study configuration map corresponding to each of the option values.
             vmIsSelected: false
         }
         //availableEvaluations.append(item)
@@ -419,10 +429,26 @@ Rectangle {
                     // Standard 3D study.
                     configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = configuration[VMGlobals.vmSCP_HAND_TO_USE];
                     configuration[VMGlobals.vmSCP_IS_STUDY_3D] = true;
-                    //configuration[VMGlobals.vmSCP_HAND_TO_USE] = "both";
-                    configuration[VMGlobals.vmSCP_MIN_SPEED]     = vmGNG3D_UNIQUE_SPEED; //= 10;
-                    configuration[VMGlobals.vmSCP_MAX_SPEED]     = vmGNG3D_UNIQUE_SPEED; //= 100;
-                    configuration[VMGlobals.vmSCP_INITIAL_SPEED] = vmGNG3D_UNIQUE_SPEED; //= 30;
+
+                    let selected_config = configuration[VMGlobals.vmSCP_GNG3DSPEED];
+                    if (selected_config === "0"){
+                        // Default fast speed.
+                        configuration[VMGlobals.vmSCP_MIN_SPEED]     = vmGNG3D_DEFAULT_SPEED;
+                        configuration[VMGlobals.vmSCP_MAX_SPEED]     = vmGNG3D_DEFAULT_SPEED;
+                        configuration[VMGlobals.vmSCP_INITIAL_SPEED] = vmGNG3D_DEFAULT_SPEED;
+                    }
+                    else if (selected_config === "1"){
+                        // Slow speed.
+                        configuration[VMGlobals.vmSCP_MIN_SPEED]     = vmGNG3D_SLOW_SPEED;
+                        configuration[VMGlobals.vmSCP_MAX_SPEED]     = vmGNG3D_SLOW_SPEED;
+                        configuration[VMGlobals.vmSCP_INITIAL_SPEED] = vmGNG3D_SLOW_SPEED;
+                    }
+                    else {
+                        // Variable speed.
+                        configuration[VMGlobals.vmSCP_MIN_SPEED]     = vmGNG3D_VARIABLE[0];
+                        configuration[VMGlobals.vmSCP_MAX_SPEED]     = vmGNG3D_VARIABLE[2];
+                        configuration[VMGlobals.vmSCP_INITIAL_SPEED] = vmGNG3D_VARIABLE[1];
+                    }
 
                     requires_hand_calibration.push(true);
 

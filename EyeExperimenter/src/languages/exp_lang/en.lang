@@ -9,13 +9,14 @@ Strech your arms, to the sides of your body.
 Reach as far as you can.;
 
 viewevaluation_hand_calib_v = 
+Please make sure that you are looking in front of you.
 Strech your arms, upwards towards the ceiling.
 Reach as far as you can.;
 
 viewevaluation_turn_on_controllers =
-Make sure the controllers are charged and turned on.
-Make sure that the patient is holding the turned on
-controllers before the hand calibration starts;
+<i>Make sure the controllers are charged and turned on.</i><br>
+<i>Make sure that the patient is holding the turned on</i><br>
+<i>controllers before the hand calibration starts</i><br>;
 
 viewevaluation_hand_verif =
 Try and touch the cubes in front of you.
@@ -104,6 +105,21 @@ Now try to touch the green sphere again. |
 Avoid touching the red sphere.
 The speed of the spheres shall remain constant|;
 
+explanation_phase_list_gonogo_3D_vs =
+This is Go/No-Go Sphere Evaluation With Variable Speed.
+During this evaluation green and red spheres will be sent from the dark
+points in front of you. Si the sphere is green you must try to touch it.
+If you make contact with the sphere you will feel your controller vibrate.|
+|
+If the sphere is red, you must move your hands to avoid touching the sphere.
+If contact is made anyway, then your controller will still vibrate. |
+|
+Now try to touch the green sphere again. |
+|
+Avoid touching the red sphere.
+The speed of the spheres will increase as you successfully reach green
+spheres and avoid red spheres. Likewise if you start missing green spheres
+and touching red spheres, their speed will decrease|;
 
 
 explanation_phase_list_nback_3    =
@@ -122,7 +138,6 @@ Position 1|
 Position 2|
 Position 3|
 Now quickly look at Position 3|
-Position 3|
 Position 2|
 And Position 1. Did you understand?
 We will do some practice rounds before starting the test.;

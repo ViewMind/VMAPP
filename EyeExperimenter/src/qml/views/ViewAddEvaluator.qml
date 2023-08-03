@@ -101,6 +101,7 @@ ViewBase {
             vmPlaceHolderText: loader.getStringForKey("viewaddeval_fname_ph")
             vmLabel: loader.getStringForKey("viewaddeval_fname")
             width: parent.width
+            vmAlignErrorLeft: false
             Keys.onTabPressed: lname.vmFocus = true;
         }
 

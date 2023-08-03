@@ -225,11 +225,16 @@ private:
     static inline const char * STUDY_TEXT_KEY_BINDING_BC     = "explanation_phase_list_binding_bc";
     static inline const char * STUDY_TEXT_KEY_GONOGO         = "explanation_phase_list_gonogo";
     static inline const char * STUDY_TEXT_KEY_GONOGO_3D      = "explanation_phase_list_gonogo_3D";
+    static inline const char * STUDY_TEXT_KEY_GONOGO_3D_VS   = "explanation_phase_list_gonogo_3D_vs";
     static inline const char * STUDY_TEXT_KEY_PASS_BALL      = "explanation_phase_list_pass_ball";
     static inline const char * STUDY_TEXT_KEY_NBACKRT        = "explanation_phase_list_nbackrt";
     static inline const char * STUDY_TEXT_KEY_NBACK_3        = "explanation_phase_list_nback_3";
     static inline const char * STUDY_TEXT_KEY_NBACK_4        = "explanation_phase_list_nback_4";
     static inline const char * STUDY_TEXT_KEY_NBACKVS        = "explanation_phase_list_nbackvs";
+
+    // The normal, slow and variable speed values fo rthe GONOGO are codified in the numbers 0,1 and 2 respectively.
+    // We need to detect the 2 specifically to change the explanantion language key.
+    const qint32 CODE_FOR_GNG3D_VS = 2;
 
     static QMap<QString,int> NumberOfExplanationSlides;
 };

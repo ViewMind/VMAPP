@@ -88,6 +88,11 @@ QSize CalibrationManager::getResolution() const{
 
 void CalibrationManager::finalizeCalibrationProcess(qint32 code){
 
+    if (code != CALIBRATION_SUCCESSFUL){
+        emit CalibrationManager::calibrationDone(code);
+        return;
+    }
+
     // We compute the corrections.
     if (!correctionCoefficients.computeCoefficients()){
         StaticThreadLogger::error("CalibrationManager::finalizeCalibrationProcess","Failed in computing the correction coefficients. Reason: " + correctionCoefficients.getLastError());
@@ -223,14 +228,22 @@ void CalibrationManager::processCalibrationData(const RenderServerPacket &calibr
         qint32 currentCalibrationPointIndex = static_cast<qint32>(i)-1;
 
         qint32 start_index = start_index_list.value(i).toInt();
+        bool there_was_an_error = false;
         if (start_index == -1){
-            StaticThreadLogger::error("CalibrationManager::process3DCalibrationEyeTrackingData","The calibration start index for calibration point  " + QString::number(i) + " has not been set");
+            StaticThreadLogger::error("CalibrationManager::processCalibrationData","The calibration start index for calibration point  " + QString::number(i) + " has not been set");
             start_index = 0;
+            there_was_an_error = true;
         }
         else if (start_index >= (M-1)) {
-            StaticThreadLogger::error("CalibrationManager::process3DCalibrationEyeTrackingData","The calibration start index for calibration point  " + QString::number(i) + " has been set to "
+            StaticThreadLogger::error("CalibrationManager::processCalibrationData","The calibration start index for calibration point  " + QString::number(i) + " has been set to "
                                       + QString::number(start_index) + " however the number of data points is " + QString::number(M));
             start_index = 0;
+            there_was_an_error = true;
+        }
+
+        if (there_was_an_error){
+            finalizeCalibrationProcess(CALIBRATION_FAILED);
+            return;
         }
 
         //qDebug() << "DATA FOR TARGET VECTOR " << nonNormalizedTargetVectors.at(currentCalibrationPointIndex);
@@ -285,6 +298,8 @@ void CalibrationManager::compute2DTargetLocations(){
         qreal y = nonNormalizedTargetVectors.at(i).y();
         qreal x0 = mx*x + bx;
         qreal y0 = my*y + by;
+        y0 = Ho - y0; // We need to do this becuse in monitor coordinates, higher y values are lower on the screen.
+        //qDebug() << "3D Values" << x << y << ". 2D Values" << x0 << y0;
         targetPoints2D << QPointF(x0,y0);
     }
 

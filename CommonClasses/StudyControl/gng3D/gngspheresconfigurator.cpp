@@ -6,13 +6,22 @@ GNGSpheresConfigurator::GNGSpheresConfigurator(): StudyConfigurator() {
 
 bool GNGSpheresConfigurator::studySpecificConfiguration(const QVariantMap &studyConfig){
 
+    qreal min_speed     = studyConfig.value(VMDC::StudyParameter::MIN_SPEED).toReal();
+    qreal max_speed     = studyConfig.value(VMDC::StudyParameter::MAX_SPEED).toReal();
+    qreal initial_speed = studyConfig.value(VMDC::StudyParameter::INITIAL_SPEED).toReal();
+
     qint32 numberOfTrials = -1; // This will use all of them.
     if (this->shortStudies){
         numberOfTrials = N_TRIALS_IN_SHORT_STUDIES;
     }
+    else if (min_speed == max_speed){
+        numberOfTrials = N_TRIALS_IN_NON_VS_STUDIES;
+    }
 
     // Now we parse the trial. If it worked the configuration is loaded with the NBack trials.
     if (!parseStudyDescription(numberOfTrials)) return false;
+
+    qDebug() << "Number of trials for GNG3D" << numberOfTrials << "Speed Setting: "  << min_speed <<  initial_speed << max_speed;
 
     configuration[RRS::StudyConfigurationFields::STUDY] = VMDC::Study::GONOGO_SPHERE;
 
@@ -34,10 +43,6 @@ bool GNGSpheresConfigurator::studySpecificConfiguration(const QVariantMap &study
         error = "Invalid hand configuration: " + handToUse;
         return false;
     }
-
-    qreal min_speed     = studyConfig.value(VMDC::StudyParameter::MIN_SPEED).toReal();
-    qreal max_speed     = studyConfig.value(VMDC::StudyParameter::MAX_SPEED).toReal();
-    qreal initial_speed = studyConfig.value(VMDC::StudyParameter::INITIAL_SPEED).toReal();
 
     if (min_speed > max_speed){
         error = "Specified minimum speed (" + QString::number(min_speed) + ") is lower than the specified maxiumum speed (" + QString::number(max_speed) + ")";

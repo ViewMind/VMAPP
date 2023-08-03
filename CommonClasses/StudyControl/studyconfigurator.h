@@ -80,6 +80,7 @@ protected:
     bool shortStudies;
 
     const qint32 N_TRIALS_IN_SHORT_STUDIES = 4;
+    const qint32 N_TRIALS_IN_NON_VS_STUDIES = 60; // NON VS are non-variable speed. The speed is fixed to either slow fast.
 
     /**
      * @brief openStudyDescriptionFile - Opens and description file loading the contents.

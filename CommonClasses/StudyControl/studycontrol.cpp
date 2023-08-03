@@ -81,7 +81,12 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
     }
     else if (studyName == VMDC::Study::GONOGO_SPHERE){
         configurator = new GNGSpheresConfigurator();
-        studyExplanationLanguageKey = STUDY_TEXT_KEY_GONOGO_3D;
+        if (studyConfig.value(VMDC::StudyParameter::SPEED) == 2){
+            studyExplanationLanguageKey = STUDY_TEXT_KEY_GONOGO_3D_VS;
+        }
+        else {
+            studyExplanationLanguageKey = STUDY_TEXT_KEY_GONOGO_3D;
+        }
         studyType = ST_3D;
     }
     else {
@@ -540,7 +545,7 @@ void StudyControl::FillNumberOfSlidesInExplanations(ConfigurationManager *langua
     QStringList allkeys;
     allkeys << STUDY_TEXT_KEY_BINDING_BC << STUDY_TEXT_KEY_BINDING_UC << STUDY_TEXT_KEY_GONOGO << STUDY_TEXT_KEY_GONOGO_3D
             << STUDY_TEXT_KEY_NBACKRT << STUDY_TEXT_KEY_NBACKVS << STUDY_TEXT_KEY_NBACK_3 << STUDY_TEXT_KEY_NBACK_4
-            << STUDY_TEXT_KEY_PASS_BALL;
+            << STUDY_TEXT_KEY_PASS_BALL << STUDY_TEXT_KEY_GONOGO_3D_VS;
     for (qint32 i = 0; i < allkeys.size(); i++){
         //qDebug() << language->getStringList(allkeys.at(i));
         NumberOfExplanationSlides[allkeys.at(i)] = language->getStringList(allkeys.at(i)).size();

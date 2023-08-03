@@ -9,17 +9,18 @@ Coloque sus manos de manera horizontal.
 Estire sus brazos lo mas que pueda hacia sus costados.;
 
 viewevaluation_hand_calib_v = 
+Mire hacia el frente.
 Alce sus brazos estirando al máximo los mismos.;
 
 viewevaluation_turn_on_controllers =
-Asegurese de que los controladores esten cargados y encendidos.
-Antes de seguir adelante, el paciente ya debe tener los controladores
-en sus manos;
+<i>Asegurese de que los controladores esten cargados y encendidos.</i><br>
+<i>Antes de seguir adelante, el paciente ya debe tener los controladores</i><br>
+<i>en sus manos</i>;
 
 viewevaluation_hand_verif =
-Try and touch the cubes in front of you.
-Make sure you can reach them all. If you are having trouble touching any cube
-then redo the hand calibration but this time do not fully strech your arms;
+Intentece tocar los cubos en frente suyo.
+Asegúrese de que pueda alcanzar todos ellos. Si esta teniendo problemas
+para tocar alguno, reintente la calibración sin estirar sus brazos totalmente;
 
 explanation_phase_list_binding_bc =
 Esta es la prueba de Combinación de Colores.
@@ -104,6 +105,23 @@ Ahora toque nuevamente la esfera verde.|
 |
 Evite tocar la esfera roja.
 La velocidad de las esferas se mantendra constante|;
+
+explanation_phase_list_gonogo_3D_vs =
+Este es las Evaluación Esferas Go/No-Go con Velocidad Variable.
+Durante esta evaluación esferas rojas y verdes serán enviadas de los puntos que
+se encuentran frente suyo. Si la esfera es verde debe intentar tocarla.
+Si realiza contacto sentirá a su control vibrar.|
+|
+Si la esfera es roja, debe mover sus manos para evitar que la esfera
+entre en contacto con ella. Si el contacto se realiza, su control vibrará.
+Evite tocar la esfera roja.|
+|
+Ahora toque nuevamente la esfera verde.|
+|
+Evite tocar la esfera roja.
+La velocidad de las esferas irá en aumenton conforme pueda tocar esferas
+verdes y evitar las rojas. Por lo contrario, si toca esferas rojas y no
+logra alcanzar las esferas verdes, la velociad de las mismas disminuirá|;
 
 explanation_phase_list_nbackrt    = 
 Esta es la evaluación de N-Back. La prueba se compone de 6 cajas y una cruz central.
