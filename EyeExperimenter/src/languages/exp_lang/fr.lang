@@ -85,6 +85,21 @@ Now try to touch the green sphere again. |
 Avoid touching the red sphere.
 The speed of the spheres shall remain constant|;
 
+explanation_phase_list_gonogo_3D_vs =
+This is Go/No-Go Sphere Evaluation.
+During this evaluation green and red spheres will be sent from the dark
+points in front of you. Si the sphere is green you must try to touch it.
+If you make contact with the sphere you will feel your controller vibrate.|
+|
+If the sphere is red, you must move your hands to avoid touching the sphere.
+If contact is made anyway, then your controller will still vibrate. |
+|
+Now try to touch the green sphere again. |
+|
+Avoid touching the red sphere.
+The speed of the spheres shall remain constant|;
+
+
 
 explanation_phase_list_nback_3 =
 Voici le test N-Back. Ce test est composé de 6 cases et d'une croix au centre de l'écran.

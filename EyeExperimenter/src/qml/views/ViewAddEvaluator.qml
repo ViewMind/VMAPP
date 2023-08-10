@@ -110,6 +110,7 @@ ViewBase {
             width: parent.width
             vmPlaceHolderText: loader.getStringForKey("viewaddeval_lname_ph")
             vmLabel: loader.getStringForKey("viewaddeval_lname")
+            vmAlignErrorLeft: false
             Keys.onTabPressed: email.vmFocus = true;
         }
 
@@ -118,6 +119,7 @@ ViewBase {
             width: parent.width
             vmPlaceHolderText: loader.getStringForKey("viewaddeval_email_ph")
             vmLabel: loader.getStringForKey("viewaddeval_email")
+            vmAlignErrorLeft: false
             Keys.onTabPressed: password.vmFocus = true;
         }
 
@@ -128,6 +130,7 @@ ViewBase {
             vmPlaceHolderText: loader.getStringForKey("viewlogin_placeholder_password")
             vmShowText: loader.getStringForKey("viewlogin_show")
             vmHideText: loader.getStringForKey("viewlogin_hide")
+            vmAlignErrorLeft: false
             Keys.onTabPressed: verifyPassword.vmFocus = true;
         }
 
@@ -138,6 +141,7 @@ ViewBase {
             vmPlaceHolderText: loader.getStringForKey("viewlogin_placeholder_password")
             vmShowText: loader.getStringForKey("viewlogin_show")
             vmHideText: loader.getStringForKey("viewlogin_hide")
+            vmAlignErrorLeft: false
             Keys.onTabPressed: fname.vmFocus = true;
         }
 

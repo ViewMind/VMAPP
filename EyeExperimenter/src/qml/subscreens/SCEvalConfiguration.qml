@@ -21,7 +21,7 @@ Rectangle {
     readonly property int vmNBACK_RT_TRANSITION_SLOW : 1000
     readonly property int vmGNG3D_DEFAULT_SPEED: 100
     readonly property int vmGNG3D_SLOW_SPEED: 60
-    readonly property var vmGNG3D_VARIABLE: [50, 80, 110]; // Min, Initial, Max
+    readonly property var vmGNG3D_VARIABLE: [50, 80, 120]; // Min, Initial, Max
     readonly property int vmBINDING_SHORT_STUDY_N_TRIALS: 32
 
     signal goToEvalRun();

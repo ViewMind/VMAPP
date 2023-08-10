@@ -5,12 +5,11 @@ The circle will move through the screen. You must follow it. Remember not to
 take your eyes off the circle until it disappears.;
 
 viewevaluation_hand_calib_h = 
-Strech your arms, to the sides of your body.
+Stretch your arms to the sides of your body.
 Reach as far as you can.;
 
 viewevaluation_hand_calib_v = 
-Please make sure that you are looking in front of you.
-Strech your arms, upwards towards the ceiling.
+Stretch your arms upwards towards the ceiling and look to the front.
 Reach as far as you can.;
 
 viewevaluation_turn_on_controllers =
@@ -21,7 +20,7 @@ viewevaluation_turn_on_controllers =
 viewevaluation_hand_verif =
 Try and touch the cubes in front of you.
 Make sure you can reach them all. If you are having trouble touching any cube
-then redo the hand calibration but this time do not fully strech your arms;
+we can redo the hand calibration, but this time do not fully stretch your arms;
 
 explanation_phase_list_binding_bc =
 This is the Color Combination Test. It can be harder than the previous one.|
@@ -29,9 +28,9 @@ This is the Color Combination Test. It can be harder than the previous one.|
 remember the combination of colors between each box and cross.
 No new colors will appear|
 The boxes will disappear, and a new set will appear|
-You must indentify and say out loud if the color combinations between
+You must identify and say out loud if the color combinations between
 each box and cross is the same or different. Their position is not important|
-If we compare the two screen side by side, we can see that there are boxes
+If we compare the two screens side by side, we can see that there are boxes
 that exchanged colors|
 The boxes that exchanged colors are the ones highlighted.
 In this case, you must say "Different"|
@@ -39,7 +38,7 @@ Let's do another example|
 <<N>> boxes with crosses appear|
 Then they disappear|
 A new set then appears|
-The color combinations between the boxes and coresses didn't change, so
+The color combinations between the boxes and crosses didn't change, so
 you must say out loud "Same".
 
 Do you understand the instructions?
@@ -57,13 +56,13 @@ The boxes will disappear, and a new set will appear|
 You must identify if new colors appeared in the boxes or in the
 crosses. The position of the boxes is not important. If new colors
 appeared, quickly say "Different" out loud. If not, say "Same"|
-If we compare the two screens sid by side, we can see new colors
+If we compare the two screens side by side, we can see new colors
 appeared|
-The boxes that changed colores are the ones highlighted. In this
+The boxes that changed colors are the ones highlighted. In this
 case, you must say "Different"|
 Let's do another example|
 <<N>> boxes appear|
-Then they disspear|
+Then they disappear|
 And a new set of boxes will appear|
 No new colors appeared, so you must say "Same".
 
@@ -75,7 +74,7 @@ We will do some practice examples before starting.;
 
 explanation_phase_list_gonogo     = 
 This is the Go/No Go test. Look at the cross in the center of the screen.
-The cross will disappears and an arrow will appear.
+The cross will disappear and an arrow will appear.
 If the arrow is green, look in the direction of the arrow. And if it is
 red, look in the opposite direction.|
 In this case, because the arrow is red, look at the circle in the
@@ -87,39 +86,44 @@ Look back at the cross|
 Look in the direction of the arrow|
 Back at the cross|
 Look in the opposite direction. You must do this exercise as fast
-as you can. Did you understand?
-We will do some practice rounds before starting the test.;
+as you can. Do you understand the instructions?
+
+We will do some practice examples before starting;
 
 
 explanation_phase_list_gonogo_3D =
-This is Go/No-Go Sphere Evaluation.
-During this evaluation green and red spheres will be sent from the dark
-points in front of you. Si the sphere is green you must try to touch it.
-If you make contact with the sphere you will feel your controller vibrate.|
+This is Go/No-Go Balls Test. During this evaluation green and 
+red balls will be sent from the points in front of you. If the ball is 
+green you must touch it and if it's red, you must avoid it. If you make 
+contact with a ball you will feel your controller vibrate. Let's do 
+an example. Try to touch the green ball.|
 |
-If the sphere is red, you must move your hands to avoid touching the sphere.
-If contact is made anyway, then your controller will still vibrate. |
+Now avoid touching the red ball.|
 |
-Now try to touch the green sphere again. |
+Now try to touch the green ball again. |
 |
-Avoid touching the red sphere.
-The speed of the spheres shall remain constant|;
+Avoid touching the red ball.|
+Do you understand the instructions?
+
+We will do some practice examples before starting;
 
 explanation_phase_list_gonogo_3D_vs =
-This is Go/No-Go Sphere Evaluation With Variable Speed.
-During this evaluation green and red spheres will be sent from the dark
-points in front of you. Si the sphere is green you must try to touch it.
-If you make contact with the sphere you will feel your controller vibrate.|
+This is Go/No-Go Balls Test with Variable Speed. During this evaluation 
+green and red balls will be sent from the points in front of you. If 
+the ball is green you must touch it and if it's red, you must avoid it. 
+If you make contact with a ball you will feel your controller vibrate. 
+Let's do an example. Try to touch the green ball.|
 |
-If the sphere is red, you must move your hands to avoid touching the sphere.
-If contact is made anyway, then your controller will still vibrate. |
+Now avoid touching the red ball.|
 |
-Now try to touch the green sphere again. |
+Now try to touch the green ball again. |
 |
-Avoid touching the red sphere.
-The speed of the spheres will increase as you successfully reach green
-spheres and avoid red spheres. Likewise if you start missing green spheres
-and touching red spheres, their speed will decrease|;
+Now avoid touching the red ball.|
+The speed of the balls will increase as you do the test successfully. 
+If you don't, the speed of the balls will decrease.
+Do you understand the instructions?
+
+We will do some practice examples before starting;
 
 
 explanation_phase_list_nback_3    =
@@ -127,7 +131,7 @@ This is the N-Back Test. The test is composed of 6 boxes and one cross in
 the center of the screen. You must keep your eyes on the cross.|
 A red circle will appear on one of the boxes. Position 1|
 Then it will appear on another box. Position 2|
-And finally on another box. Position 3. Remeber to always keep your eyes on
+And finally on another box. Position 3. Remember to always keep your eyes on
 the cross|
 When the cross disappears, you must quickly look at Position 3, where the last
 circle appeared, as indicated by the arrow.|
@@ -150,12 +154,12 @@ the center of the screen. You must keep your eyes on the cross.|
 A red circle will appear on one of the boxes. Position 1|
 Then it will appear on another box. Position 2|
 Then it will appear on another box. Position 3|
-And finally on another box. Position 4. Remeber to always keep your eyes on
+And finally on another box. Position 4. Remember to always keep your eyes on
 the cross|
 When the cross disappears, you must quickly look at Position 4, where the last
 circle appeared, as indicated by the arrow.|
-Then look at Position 3, where the third circle appeared|
-Then look at Position 2, where the second circle appeared|
+Then at Position 3, where the third circle appeared|
+Then at Position 2, where the second circle appeared|
 And finally, at Position 1, where the first circle appeared. In the inverse order|
 When you finish, quickly look back at the cross. Now the test will be repeated|
 Position 1|
@@ -165,8 +169,10 @@ Position 4|
 Now quickly look at Position 4|
 Position 3|
 Position 2|
-And Position 1. Did you understand?
-We will do some practice rounds before starting the test.;
+And Position 1. 
+Do you understand?
+
+We will do some practice examples before starting the test.;
 
 
 
@@ -176,7 +182,7 @@ This is the N-Back Test. The test is composed of 6 boxes and one cross in
 the center of the screen. You must keep your eyes on the cross.|
 A red circle will appear on one of the boxes. Position 1|
 Then it will appear on another box. Position 2|
-And finally on another box. Position 3. Remeber to always keep your eyes on
+And finally on another box. Position 3. Remember to always keep your eyes on
 the cross|
 When the cross disappears, you must quickly look at Position 3, where the last
 circle appeared, as indicated by the arrow.|
@@ -188,18 +194,18 @@ Position 2|
 Position 3|
 Now quickly look at Position 3|
 Position 2|
-And Position 1. Did you understand?
-We will do some practice rounds before starting the test.;
+And Position 1. Do you understand?
+We will do some practice examples before starting the test.;
 
 explanation_phase_list_nbackvs    = 
 This is the NBack Evaluation For Training.
 Red circles will appear on the screen in a given sequence.
-While the cirles are being shown, please keep your eyes focused on the center cross. 
+While the circles are being shown, please keep your eyes focused on the center cross. 
 The number of circles in the sequence will depend on the selected difficulty. 
 This example will use 3.|
 Now, a second circle will appear.| 
 Finally, the third and last circle of the sequence will be shown.|
-When the cross dissapears, you must look at the rectangle where the third circle appeared. 
+When the cross disappears, you must look at the rectangle where the third circle appeared. 
 During the study, a flash of light will indicate that you looked a the right rectangle.
 The screen will show indicators for the circle locations and the path your gaze must do.
 These indicators will not be present during the real study.|

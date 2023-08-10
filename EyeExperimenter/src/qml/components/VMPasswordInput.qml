@@ -9,6 +9,7 @@ Item {
 
     property string vmErrorMsg: ""
     property bool vmEnabled: true
+    property bool vmAlignErrorLeft: true
     property string vmPlaceHolderText: "Password"
     property string vmLabel: ""
     property string vmCurrentText: ""
@@ -174,9 +175,15 @@ Item {
         color:  VMGlobals.vmRedError
         font.pixelSize: VMGlobals.vmFontBaseSize
         font.weight: 400
-        anchors.left: parent.left
+        //anchors.left: parent.left
         anchors.top: parent.bottom
         anchors.topMargin: 10
+        x: {
+            if (vmAlignErrorLeft) return parent.x
+            else {
+                return parent.x + (parent.width - width)
+            }
+        }
         visible: (vmErrorMsg !== "")
     }
 

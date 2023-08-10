@@ -6,33 +6,33 @@ Recuerde no quitar sus ojos del círculo hasta que este desaparezca.;
 
 viewevaluation_hand_calib_h = 
 Coloque sus manos de manera horizontal. 
-Estire sus brazos lo mas que pueda hacia sus costados.;
+Estire sus brazos lo más que pueda hacia sus costados.;
 
 viewevaluation_hand_calib_v = 
 Mire hacia el frente.
-Alce sus brazos estirando al máximo los mismos.;
+Alce sus brazos estirándolos hacia arriba lo más que pueda.;
 
 viewevaluation_turn_on_controllers =
-<i>Asegurese de que los controladores esten cargados y encendidos.</i><br>
+<i>Asegúrese de que los controladores estén cargados y encendidos.</i><br>
 <i>Antes de seguir adelante, el paciente ya debe tener los controladores</i><br>
 <i>en sus manos</i>;
 
 viewevaluation_hand_verif =
-Intentece tocar los cubos en frente suyo.
-Asegúrese de que pueda alcanzar todos ellos. Si esta teniendo problemas
+Intente tocar los cubos enfrente suyo.
+Asegúrese de que pueda alcanzar todos ellos. Si está teniendo problemas
 para tocar alguno, reintente la calibración sin estirar sus brazos totalmente;
 
 explanation_phase_list_binding_bc =
 Esta es la prueba de Combinación de Colores.
-Puede ser mas difícil que la anterior|
+Puede ser más difícil que la anterior|
 Aparecerán <<N>> cuadrados con una cruz en su centro.
 En este caso, debe recordar la combinación de colores entre cada cuadrado y cruz.
 No aparecerán colores nuevos.|
 Los cuadrados desaparecerán y un conjunto de cuadrados nuevos
-se mostrarán|
+aparecerá|
 Debe identificar y decir en voz alta si la combinación entre cada cuadrado
-y cruz es la sisma o si es distinta. La posición no es imporante|
-Si comparamos las dos pantallas lado a lado, pdemos ver que ha habido
+y cruz es la misma o si es diferente. La posición de los cuadrados no es importante.|
+Si comparamos las dos pantallas lado a lado, podemos ver que ha habido
 un intercambio de colores|
 Los cuadrados que han intercambiado colores se han resaltado.
 En este caso debe decir "Diferente"|
@@ -40,10 +40,10 @@ Veamos otro ejemplo|
 Se muestran <<N>> cuadrados con cruces|
 Luego desaparecen|
 Y un conjunto nuevo aparece|
-La combinación de colores entre cajas y cruces no ha cambiado, asi que
-Debe decir en voz alta "Igual".
+Si comparamos las dos pantallas, vemos que la combinación de colores entre 
+cuadrados y cruces no ha cambiado, así que debe decir en voz alta "Igual".
 
-¿Ha comprendido la instrucciones?
+¿Ha comprendido las instrucciones?
 
 Haremos algunos ejemplos de práctica antes de comenzar;
 
@@ -52,23 +52,23 @@ Esta es la prueba de Nuevos Colores|
 Aparecerán <<N>> cuadrados con una cruz en su centro
 Debe recordar todos los colores presentes|
 Los cuadrados desaparecerán y un conjunto de cuadrados nuevos
-se mostrarán|
+aparecerá|
 Debe identificar si han aparecido colores nuevos en las cruces o
-cuadrados. La posición no es imporante. Si nuevos colores han
-aparecido entonces debe decir rápidamente "Diferente". Caso
-contrario, diga "Igual"|
-Si comparamos las dos pantallas lado a lado, pdemos ver que han
-aparecido colores nuevos|
-Los cuadrados que han intercambiado colores se han resaltado.
+cuadrados. La posición de los cuadrados no es importante. Si han 
+aparecido nuevos colores debe decir rápidamente "Diferente". 
+Sino, diga "Igual"|
+Si comparamos las dos pantallas lado a lado, podemos ver que han
+aparecido nuevos colores|
+Los cuadrados que han cambiado de color se encuentran resaltados.
 En este caso debe decir "Diferente"|
 Veamos otro ejemplo|
 Se muestran <<N>> cuadrados con cruces|
 Luego desaparecen|
 Y un conjunto nuevo aparece|
-No han aparecido colores nuevos, asi que
-debe decir en voz alta "Igual".
+Si comparamos las dos pantallas, vemos que no han aparecido nuevos colores, 
+así que debe decir "Igual".
 
-¿Ha comprendido la instrucciones?
+¿Ha comprendido las instrucciones?
 
 Haremos algunos ejemplos de práctica antes de comenzar;
 
@@ -92,36 +92,38 @@ Ha entendido?
 Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_gonogo_3D =
-Este es las Evaluación Esferas Go/No-Go.
-Durante esta evaluación esferas rojas y verdes serán enviadas de los puntos que
-se encuentran frente suyo. Si la esfera es verde debe intentar tocarla.
-Si realiza contacto sentirá a su control vibrar.|
+Este es las Evaluación de Pelotas de Go/No-Go.
+Durante esta evaluación pelotas rojas y verdes serán enviadas de los puntos que
+se encuentran frente suyo. Si la pelota es verde debe intentar tocarla. Si es 
+roja, debe evitar tocarla. Si toca una pelota sentirá a su control vibrar.
+Hagamos un ejemplo. Intente tocar la pelota verde.|
 |
-Si la esfera es roja, debe mover sus manos para evitar que la esfera
-entre en contacto con ella. Si el contacto se realiza, su control vibrará.
-Evite tocar la esfera roja.| 
+Ahora evite tocar la pelota roja.| 
 |
-Ahora toque nuevamente la esfera verde.| 
+Ahora toque nuevamente la pelota verde.| 
 |
-Evite tocar la esfera roja.
-La velocidad de las esferas se mantendra constante|;
+Evite tocar la pelota roja.|
+Ha entendido?
+
+Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_gonogo_3D_vs =
-Este es las Evaluación Esferas Go/No-Go con Velocidad Variable.
-Durante esta evaluación esferas rojas y verdes serán enviadas de los puntos que
-se encuentran frente suyo. Si la esfera es verde debe intentar tocarla.
-Si realiza contacto sentirá a su control vibrar.|
+Este es las Evaluación de Pelotas de Go/No-Go con Velocidad Variable.
+Durante esta evaluación pelotas rojas y verdes serán enviadas de los puntos que
+se encuentran frente suyo. Si la pelota es verde debe intentar tocarla. Si es 
+roja, debe evitar tocarla. Si toca una pelota sentirá a su control vibrar.
+Hagamos un ejemplo. Intente tocar la pelota verde.|
 |
-Si la esfera es roja, debe mover sus manos para evitar que la esfera
-entre en contacto con ella. Si el contacto se realiza, su control vibrará.
-Evite tocar la esfera roja.|
+Ahora evite tocar la pelota roja.| 
 |
-Ahora toque nuevamente la esfera verde.|
+Ahora toque nuevamente la pelota verde.|
 |
-Evite tocar la esfera roja.
-La velocidad de las esferas irá en aumenton conforme pueda tocar esferas
-verdes y evitar las rojas. Por lo contrario, si toca esferas rojas y no
-logra alcanzar las esferas verdes, la velociad de las mismas disminuirá|;
+Evite tocar la pelota roja.
+|
+La velocidad de las pelotas irá en aumento si realiza bien el ejercicio. 
+Por lo contrario, la velocidad disminuirá si no lo realiza bien.
+Ha entendido?
+Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_nbackrt    = 
 Esta es la evaluación de N-Back. La prueba se compone de 6 cajas y una cruz central.
@@ -196,24 +198,24 @@ Esta es la prueba N-back De Entrenamiento.
 Se mostraran una serie de círculos rojos en pantalla en una secuencia determinada. 
 Mientras los círculos se mantengan en pantalla, usted debe mirar fijamente
 la cruz del centro. 
-El número de circulos varía según la dificultad seleccionada del estudio. 
+El número de círculos varía según la dificultad seleccionada del estudio. 
 Para este ejemplo se utilizarán 3|
-Ahora aparece el segundo circulo de la secuencia |
+Ahora aparece el segundo círculo de la secuencia |
 Finalmente, aparece el tercer y último ciruculo|
-Cuando la cruz desaparezca, se debe mirar al casillero donde apareció el último circulo. 
+Cuando la cruz desaparezca, se debe mirar al casillero donde apareció el último círculo. 
 Durante el estudio, si se mira al rectángulo correcto, éste se iluminará. 
 En la pantalla podrá ver indicadores de la ubicación de los círculos y el camino que
 debe trazar su mirada. Estos indicadores no aparecerám durante el estudio real.|
-Luego se debe mirar al casillero donde apareció el segundo circulo|
+Luego se debe mirar al casillero donde apareció el segundo círculo|
 Y finalmente, al casillero donde apareció el primero.
 Con sucesivos éxitos, el tiempo que aparecen los círculos en pantalla disminuirá. 
 De la misma manera, con sucesivos fracasos, éste tiempo aumentará.|
 Probemos nuevamente. Fije su mirada en el centro de la pantalla y note 
 donde aparece el primer círculo.|
-Mantiendo la mirdad en el centro, note el segundo circulo|
+Manteniendo la mirada en el centro, note el segundo círculo|
 Finalmente se muestra el tercer círculo.|
 Ahora mire al casillero donde apareció el tercer círculo|
-Ahora donde apareció el segundo circulo|
+Ahora donde apareció el segundo círculo|
 Y finalmente donde apareció el tercero;
 
 explanation_phase_list_pass_ball = | 
