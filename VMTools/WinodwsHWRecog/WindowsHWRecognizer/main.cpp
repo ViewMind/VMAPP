@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 //        qDebug() << keys.at(i) << "->" << hw.value(keys.at(i));
 //    }
 
-    qDebug() << recog.toString(false);
+    // qDebug() << recog.toString(false);
 
     qDebug().noquote() << recog.toString(true);
 

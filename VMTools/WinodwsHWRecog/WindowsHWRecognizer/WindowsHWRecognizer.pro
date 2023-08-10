@@ -9,6 +9,7 @@ CONFIG -= app_bundle
 
 SOURCES += \
         ../../../CommonClasses/HWRecog/hwrecognizer.cpp \
+        ../../../CommonClasses/HWRecog/tableoutputparser.cpp \
         main.cpp
 
 # Default rules for deployment.
@@ -17,4 +18,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    ../../../CommonClasses/HWRecog/hwrecognizer.h
+    ../../../CommonClasses/HWRecog/hwrecognizer.h \
+    ../../../CommonClasses/HWRecog/tableoutputparser.h

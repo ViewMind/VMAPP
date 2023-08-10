@@ -20,6 +20,12 @@ HWRecognizer::HWRecognizer()
     // And the PNP info.
     parsePNPUtilInfo();
 
+    // We now attempt to get the HP Omnicept SN
+    QString hp_omnicept_sn = findHPOmniceptSN();
+    if (hp_omnicept_sn != ""){
+        specs[HWKeys::HP_SN] = hp_omnicept_sn;
+    }
+
     // Copy the relevant information.
     QMap<QString,QString> keys_to_copy;
     keys_to_copy[SYSINFO_KEY_SYS_MANUFACTURER] = HWKeys::PC_BRAND;
@@ -107,6 +113,10 @@ QStringList HWRecognizer::getErrors() const{
     return lastErrors;
 }
 
+QStringList HWRecognizer::getWarnings() const {
+    return lastWarnings;
+}
+
 QString HWRecognizer::runCommand(const QString &command, const QStringList &args ,bool *ranOK){
 
     QProcess process;
@@ -126,9 +136,9 @@ QString HWRecognizer::runCommand(const QString &command, const QStringList &args
 
 }
 
-QMap<QString, QStringList> HWRecognizer::parseWMICOutputAsTable(const QString &cmd){
+TableOutputParser::TableColumnList HWRecognizer::parseWMICOutputAsTable(const QString &cmd){
 
-    QMap<QString, QStringList> parsedInformation;
+    TableOutputParser::TableColumnList parsedInformation;
     QStringList args = cmd.split(" ");
     QString command = args.first();
     args.removeFirst();
@@ -140,99 +150,53 @@ QMap<QString, QStringList> HWRecognizer::parseWMICOutputAsTable(const QString &c
 
     cmd_output = cmd_output.remove('\r');
 
-    QStringList lines = cmd_output.split("\n",Qt::SkipEmptyParts);
-
-    if (lines.size() < 2) {
-        this->lastErrors.append("Number of lines obtained in output when running command '" + cmd + "' is too low");
+    // Now that we have the output of the command, we parse it.
+    TableOutputParser top;
+    if (!top.parseCMDTableOuput(cmd_output)){
+        this->lastErrors.append("For command '" + cmd + "', failed in parsing the output. Reason: " + top.getErrors().join(" & "));
         return parsedInformation;
     }
 
-    // The first line is a table. The starting position of it's Name and It's value provide the formatting.
-    QString header = lines.first().trimmed();
-
-    QStringList keys;
-    QList<qint32> key_start_positions;
-    QString key = "";
-    qint32 position_start = 0;
-    bool searching_for_key = false;
+    return top.getParsedOutputAsTableRowList();
 
 
+}
 
-    for (qint32 i = 0; i < header.size(); i++){
-        QChar c = header.at(i);
-        if (isspace(c.toLatin1())){
+TableOutputParser::ParseTableOutput HWRecognizer::getDevicePropertiesByID(const QString &deviceID){
 
-            if (!searching_for_key){
-                if (key == ""){
-                    this->lastErrors.append("Could not parse header. Found a space with empty key. Header: '" + header + "'");
-                    parsedInformation.clear();
-                    return parsedInformation;
-                }
-                else {
-                    keys << key;
-                    key_start_positions << position_start;
-                    parsedInformation[key] = QStringList();
-                    key = "";
-                    searching_for_key = true;
-                }
-            }
+    QString cmd = CMD_GET_DEVICE_PROPERTY;
+    cmd = cmd.replace("<<DEVICE_ID>>",deviceID);
+    TableOutputParser::ParseTableOutput pto;
 
-        }
-        else {
+    // For whatever reason this command (which needs to run through powershell) does not work correctly
+    // With Qt Process. It works but returns nothing. As a ByPass we create a script with the command.
 
-            if (searching_for_key){
-                // This is a character when we are searching for the start of a key name.
-                key = QString("") + c;
-                searching_for_key = false;
-                position_start = i;
-            }
-            else {
-                key = key + c;
-            }
+    QString batchFile = "get_device_properties.bat";
+    QFile file(batchFile);
+    if (!file.open(QFile::WriteOnly)){
+        this->lastErrors.append("Failed to open batch file for writing for device ID '" + deviceID + "'");
+    }
+    QTextStream writer(&file);
+    writer << "@ECHO OFF\n"; // This we need so the first line is the actual instance ID and not the
+    writer << cmd;
+    file.close();
 
-        }
+    bool ok = true;
+    QString cmd_output = this->runCommand(batchFile,QStringList(),&ok);
+
+    // One way or the other we delete the file.
+    QFile::remove(batchFile);
+
+    if (!ok) return pto;
+
+    cmd_output = cmd_output.remove('\r');
+    TableOutputParser top;
+    if (!top.parseCMDTableOuput(cmd_output)){
+        this->lastErrors.append(top.getErrors());
+        return pto;
     }
 
-    // When we reached the end, we need to check if key is non empty.
-    if (key != ""){
-        keys << key;
-        key_start_positions << position_start;
-        parsedInformation[key] = QStringList();
-    }
-
-
-
-    // Now armed with this information we can process all other lines.
-    for (qint32 i = 1; i < lines.size(); i++){
-        QString line = lines.at(i);
-
-        QString acc = "";
-        qint32 pos_in_str = 0;
-
-        for (qint32 j = 0; j < key_start_positions.size(); j++){
-            qint32 end;
-
-            if ( j < key_start_positions.size()-1) {
-                end = key_start_positions.at(j+1);
-            }
-            else {
-                end = static_cast<qint32>(line.size());
-            }
-
-            while (pos_in_str < end){
-                acc = acc + line.at(pos_in_str);
-                pos_in_str++;
-            }
-
-            // The key is actually indexed by the previous value.
-            parsedInformation[keys.at(j)] << acc.trimmed();
-            acc = "";
-        }
-
-
-    }
-
-    return parsedInformation;
+    return top.getParsedOutput();
 
 }
 
@@ -308,42 +272,6 @@ void HWRecognizer::parseSystemInfo() {
 
 }
 
-void HWRecognizer::parseStringIntoMap(const QString &line, const QStringList &keys, const QList<qint32> count){
-
-    QStringList words = line.split(" ",Qt::SkipEmptyParts);
-
-    if (keys.size()-1 != count.size()) return;
-
-    // Special case of a single word.
-    if (keys.size() == 1){
-        specs.insert(keys.first(),line);
-        return;
-    }
-
-    qint32 cnt = count.first();
-    qint32 cnt_idx = 0;
-    QStringList temp;
-    qint32 i = 0;
-    for (i = 0; i < words.size(); i++){
-        temp << words.at(i);
-        if (temp.size() == cnt){
-            specs.insert(keys.at(i),temp.join(" "));
-            temp.clear();
-            cnt_idx++;
-            if (cnt_idx < count.size()){
-                cnt = count.at(cnt_idx);
-            }
-            else {
-                cnt = -1; // The if will never be true and so temp will have all the remaining word.s
-            }
-        }
-    }
-
-    // Temp has all the remaining words.
-    specs.insert(keys.last(),temp.join(" "));
-
-}
-
 QString HWRecognizer::toString(bool prettyPrint) const{
 
     QStringList keys = specs.keys();
@@ -383,7 +311,6 @@ QList< QMap<QString,QString> > HWRecognizer::searchPNPInfo(const QString &key, c
 
 }
 
-
 void HWRecognizer::parsePNPUtilInfo(){
 
     QStringList args = CMD_PNPINFO.split(" ");
@@ -396,6 +323,13 @@ void HWRecognizer::parsePNPUtilInfo(){
     if (!ok) return;
 
     cmd_output = cmd_output.remove('\r');
+
+//    // For DEBUGGING ONLY
+//    QFile file("pnp_util_output.txt");
+//    file.open(QFile::WriteOnly);
+//    QTextStream writer(&file);
+//    writer << cmd_output;
+//    file.close();
 
     QStringList lines = cmd_output.split("\n");
     QStringList entry;
@@ -430,5 +364,34 @@ QMap<QString,QString> HWRecognizer::parseSinglePNPInfoEntry(const QStringList &l
     }
 
     return parsed;
+
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////
+QString HWRecognizer::findHPOmniceptSN(){
+
+    // The first thing we do is search for the device description we know to be for the HP Device.
+    QList< QMap<QString,QString> > search_results = searchPNPInfo(PNP_KEY_DESC,HP_DEVICE_DESCRIPTION);
+    if (search_results.count() != 1){
+        this->lastWarnings << "Wrong number of entries when search for PNP HP Omnicept Device: " + QString::number(search_results.count());
+        return "";
+    }
+
+    // If we have a single result we get the instance ID.
+    QString instance_id = search_results.first().value(PNP_KEY_INSTID);
+    this->getDevicePropertiesByID(instance_id);
+
+    // And now we get the Device property information.
+    TableOutputParser::ParseTableOutput device_properties = this->getDevicePropertiesByID(instance_id);
+
+    // We now search for the property key name which contains the Serial number.
+    for (qint32 i = 0; i < device_properties.size(); i++){
+        if (device_properties.at(i).value(PNP_DEV_PROP_KEY_KEYNAME) == HP_DEVICE_SN_PNP_PROPERTY_KEY){
+            return device_properties.at(i).value(PNP_DEV_PROP_KEY_DATA);
+        }
+    }
+
+    return "";
 
 }

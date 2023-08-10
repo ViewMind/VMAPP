@@ -6,6 +6,9 @@
 #include <QProcess>
 #include <QSysInfo>
 #include <QDebug>
+#include <QFile>
+#include <QTextStream>
+#include "tableoutputparser.h"
 
 namespace HWKeys {
    const QString PC_SN        = "serial_number";  /// wmic bios get serialnumber
@@ -19,6 +22,7 @@ namespace HWKeys {
    const QString DISK_SN      = "hdd_sn";         /// wmic diskdrive get model, serialNumber, size, mediaType
    const QString DISK_SIZE    = "hdd_size";       /// wmic diskdrive get model, serialNumber, size, mediaType
    const QString TOTAL_RAM    = "total_ram";      /// SystemInfo - Available Physical Memory
+   const QString HP_SN        = "hp_hmd_sn";      /// If available, the serial number of the HP Reverb Omnicept G2 headset.
 }
 
 /**
@@ -41,6 +45,9 @@ public:
     // Get errors, if any.
     QStringList getErrors() const;
 
+    // Get warnings, if any.
+    QStringList getWarnings() const;
+
     // Get information as a string, either coded (values separated by a | and key value pairs by a ||) or pretty printed.
     QString toString(bool prettyPrint) const;
 
@@ -51,7 +58,11 @@ private:
 
     QList< QMap<QString,QString> > pnputilinfo;
 
+    // Errors.
     QStringList lastErrors;
+
+    // Warnings.
+    QStringList lastWarnings;
 
     // SystemInfo Parsed data.
     HardwareMap systemInfo;
@@ -65,6 +76,7 @@ private:
     const QString CMD_GET_GPU_NAME                            = "wmic PATH Win32_videocontroller get name"; //
     const QString CMD_GET_HDD_INFO                            = "wmic diskdrive get model, serialNumber, size";
     const QString CMD_PNPINFO                                 = "pnputil /enum-devices /connected";
+    const QString CMD_GET_DEVICE_PROPERTY                     = "powershell \"Get-PnpDeviceProperty -InstanceId '<<DEVICE_ID>>'\"";
 
     // Keys into the system info structure.
     const QString SYSINFO_KEY_SYS_MANUFACTURER                = "System Manufacturer";
@@ -87,6 +99,16 @@ private:
     const QString PNP_KEY_DRIVER                              = "Driver Name";
     const QString PNP_KEY_EXT_DRIVER                          = "Extension Driver Names";
 
+    // PNP DEVICE PROPERTY_KEYS
+    const QString PNP_DEV_PROP_KEY_KEYNAME                    = "KeyName";
+    const QString PNP_DEV_PROP_KEY_INSTANCEID                 = "InstanceId";
+    const QString PNP_DEV_PROP_KEY_TYPE                       = "Type";
+    const QString PNP_DEV_PROP_KEY_DATA                       = "Data";
+
+    // HP Omnicept related constants.
+    const QString HP_DEVICE_DESCRIPTION                       = "HP Reverb G2 Omnicept";
+    const QString HP_DEVICE_SN_PNP_PROPERTY_KEY               = "{6D166322-FA1D-4223-9463-201AFD540BC8} 0";
+
     // Generic motor to run a console command in windows.
     QString runCommand(const QString &command, const QStringList &args, bool *ranOK);
 
@@ -95,16 +117,17 @@ private:
     void parseSystemInfo();
 
     // The as table printed information is parsed
-    QMap<QString, QStringList> parseWMICOutputAsTable(const QString &cmd);
-
-    // Takes the line, splits it into words and assignes tohose words, concatenated to the corresponding keys in the HW MAp
-    // The last key in the list always has the remaining words so count should alwasy have one element less than keys
-    void parseStringIntoMap(const QString &line, const QStringList &keys, const QList<qint32> count);
-
-    QList< QMap<QString,QString> >  searchPNPInfo(const QString &key, const QString &value);
+    TableOutputParser::TableColumnList parseWMICOutputAsTable(const QString &cmd);
+    // PNP Command functions.
     void parsePNPUtilInfo();
     QMap<QString,QString> parseSinglePNPInfoEntry(const QStringList &lines);
+    QList< QMap<QString,QString> >  searchPNPInfo(const QString &key, const QString &value);
 
+    // Get a device property
+    TableOutputParser::ParseTableOutput getDevicePropertiesByID(const QString &deviceID);
+
+    // Device specific functios.
+    QString findHPOmniceptSN();
 
 };
 
