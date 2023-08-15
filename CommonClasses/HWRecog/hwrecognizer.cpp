@@ -13,6 +13,8 @@ HWRecognizer::HWRecognizer()
     specs[HWKeys::DISK_MODEL] = "";
     specs[HWKeys::DISK_SIZE] = "";
     specs[HWKeys::DISK_SN] = "";
+    specs[HWKeys::HMD_SN] = "";
+    specs[HWKeys::HMD_BRAND] = "";
 
     // We parse the sytem info.
     parseSystemInfo();
@@ -23,7 +25,8 @@ HWRecognizer::HWRecognizer()
     // We now attempt to get the HP Omnicept SN
     QString hp_omnicept_sn = findHPOmniceptSN();
     if (hp_omnicept_sn != ""){
-        specs[HWKeys::HP_SN] = hp_omnicept_sn;
+        specs[HWKeys::HMD_SN] = hp_omnicept_sn;
+        specs[HWKeys::HMD_BRAND] = HP_DEVICE_DESCRIPTION;
     }
 
     // Copy the relevant information.
@@ -107,6 +110,15 @@ HWRecognizer::HWRecognizer()
 
 HWRecognizer::HardwareMap HWRecognizer::getHardwareSpecs() const{
     return specs;
+}
+
+QVariantMap HWRecognizer::getHardwareSpecsAsVariantMap() const {
+    QVariantMap map;
+    QStringList keys = specs.keys();
+    for (qint32 i = 0; i < keys.size(); i++){
+        map[keys.at(i)] = specs.value(keys.at(i));
+    }
+    return map;
 }
 
 QStringList HWRecognizer::getErrors() const{

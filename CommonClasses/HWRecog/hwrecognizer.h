@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QTextStream>
+#include <QVariantMap>
 #include "tableoutputparser.h"
 
 namespace HWKeys {
@@ -22,7 +23,8 @@ namespace HWKeys {
    const QString DISK_SN      = "hdd_sn";         /// wmic diskdrive get model, serialNumber, size, mediaType
    const QString DISK_SIZE    = "hdd_size";       /// wmic diskdrive get model, serialNumber, size, mediaType
    const QString TOTAL_RAM    = "total_ram";      /// SystemInfo - Available Physical Memory
-   const QString HP_SN        = "hp_hmd_sn";      /// If available, the serial number of the HP Reverb Omnicept G2 headset.
+   const QString HMD_BRAND    = "hmd_brand";      /// Depeding on which serial number we are able to find, we kown the hmd brand.
+   const QString HMD_SN       = "hmd_sn";         /// If available, the serial number of the headset
 }
 
 /**
@@ -41,6 +43,9 @@ public:
 
     // Get all the information as a string map.
     HardwareMap getHardwareSpecs() const;
+
+    // Get the information as a VariantMap.
+    QVariantMap getHardwareSpecsAsVariantMap() const;
 
     // Get errors, if any.
     QStringList getErrors() const;

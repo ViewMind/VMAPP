@@ -283,6 +283,11 @@ bool ViewMindDataContainer::setMetadata(const QVariantMap &metadata){
     return true;
 }
 
+void ViewMindDataContainer::setSystemSpecs(const QVariantMap &system_specs){
+    // No checking is done for the system specs as they are varied.
+    data[MAIN_FIELD_SYSTEM_SPECS] = system_specs;
+}
+
 void ViewMindDataContainer::addCustomMetadataFields(const QString field_name, const QString field_value){
     QVariantMap current_metada = data.value(MAIN_FIELD_METADATA).toMap();
     current_metada.insert(field_name,field_value);
@@ -993,6 +998,7 @@ QString ViewMindDataContainer::MAIN_FIELD_APPLICATION_USER            = "applica
 QString ViewMindDataContainer::MAIN_FIELD_STUDIES                     = "studies";
 QString ViewMindDataContainer::MAIN_FIELD_HASH                        = "hash";
 QString ViewMindDataContainer::MAIN_FIELD_CALIBRATION                 = "calibration";
+QString ViewMindDataContainer::MAIN_FIELD_SYSTEM_SPECS                = "system_specs";
 
 QString ViewMindDataContainer::CURRENT_JSON_STRUCT_VERSION            = "1";
 

@@ -49,6 +49,7 @@ public:
     bool setApplicationUserData(const QString &type, const QVariantMap &au_data);
     bool setSubjectData(const QVariantMap &subject_data);
     void setQCParameters(const QVariantMap &qcparams);
+    void setSystemSpecs(const QVariantMap &system_specs);
 
     ////////////////////////// SET SPECIFICT FIELD
     void addCustomMetadataFields(const QString field_name, const QString field_value);
@@ -220,6 +221,7 @@ private:
     static QString MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS;
     static QString MAIN_FIELD_APPLICATION_USER;
     static QString MAIN_FIELD_METADATA;
+    static QString MAIN_FIELD_SYSTEM_SPECS;
     static QString MAIN_FIELD_STUDIES;
     static QString MAIN_FIELD_HASH;
     static QString MAIN_FIELD_CALIBRATION;

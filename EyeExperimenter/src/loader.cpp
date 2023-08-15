@@ -582,7 +582,9 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
         return false;
     }
 
-    //qDebug() << "SAVING THE JSON FILE!!!!!!!!!!!";
+    // We add the system specifications to the file.
+    rdc.setSystemSpecs(hwRecognizer.getHardwareSpecsAsVariantMap());
+
     if (!rdc.saveJSONFile(filename)){
         StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed on creating new study file: " + filename + ". Reason: " + rdc.getError());
         return false;
