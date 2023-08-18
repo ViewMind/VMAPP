@@ -14,6 +14,8 @@ public:
 
     bool loadFromString (const QString &comma_separted_values);
 
+    void clear();
+
     bool isValid() const;
     qreal getM() const;
     qreal getB() const;

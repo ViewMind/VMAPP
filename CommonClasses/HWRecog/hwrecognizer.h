@@ -56,6 +56,10 @@ public:
     // Get information as a string, either coded (values separated by a | and key value pairs by a ||) or pretty printed.
     QString toString(bool prettyPrint) const;
 
+    // Search by getting each device property and searching in all device properties a specific string.
+    // This will print to console and should not be used in production. Can take a really long time.
+    void searchForADeviceWithPropertyValue(const QString &search_for);
+
 private:
 
     // The actual information returned, in an standarized manner.

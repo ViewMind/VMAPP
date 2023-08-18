@@ -12,6 +12,11 @@ SOURCES += \
         ../../../CommonClasses/HWRecog/tableoutputparser.cpp \
         main.cpp
 
+CONFIG -= debug_and_release
+MOC_DIR = MOCS
+OBJECTS_DIR = OBJS
+RCC_DIR = QRC
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

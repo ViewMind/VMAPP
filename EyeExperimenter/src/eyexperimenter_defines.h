@@ -19,7 +19,7 @@ const QString REGION  = "DEV";
 }
 
 namespace LOCAL {
-const QString API_URL = "http://192.168.1.12/vmapi";
+const QString API_URL = "http://192.168.0.6/vmapi";
 const QString REGION  = "DBUG";
 }
 

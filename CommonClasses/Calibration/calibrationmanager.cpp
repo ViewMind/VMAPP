@@ -88,12 +88,8 @@ QSize CalibrationManager::getResolution() const{
 
 void CalibrationManager::finalizeCalibrationProcess(qint32 code){
 
-    if (code != CALIBRATION_SUCCESSFUL){
-        emit CalibrationManager::calibrationDone(code);
-        return;
-    }
 
-    // We compute the corrections.
+    // We compute the correction coefficients only if the calibration was successfull.
     if (!correctionCoefficients.computeCoefficients()){
         StaticThreadLogger::error("CalibrationManager::finalizeCalibrationProcess","Failed in computing the correction coefficients. Reason: " + correctionCoefficients.getLastError());
         code = CALIBRATION_FAILED;    

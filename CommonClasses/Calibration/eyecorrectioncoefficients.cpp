@@ -4,6 +4,33 @@ EyeCorrectionCoefficients::EyeCorrectionCoefficients(){
     mode3D = false;
 }
 
+void EyeCorrectionCoefficients::clear(){
+    xr.clear();
+    yr.clear();
+    xl.clear();
+    yl.clear();
+    zr.clear();
+    zl.clear();
+
+    R2.clear();
+
+    xtarget.clear();
+    ytarget.clear();
+    ztarget.clear();
+
+    error_msg = "";
+
+    nonNormalizedTargetVectors.clear();
+    validationRadious = 0;
+
+    resultOfLastComputation = false;
+
+    calibrationData.clear();
+    fittedEyeDataPoints.clear();
+    cuttoffForCalibrationDataForCumputation.clear();
+    effectiveNumberOfDataPointsUsedPerCalibrationPoint.clear();
+}
+
 
 void EyeCorrectionCoefficients::addPointForCoefficientComputation(const EyeTrackerData &etdata, qint32 calibrationTargetIndex){
     if ((calibrationTargetIndex >= 0) && (calibrationTargetIndex < calibrationData.size()) ){
@@ -33,6 +60,8 @@ void EyeCorrectionCoefficients::configureFor2DCoefficientComputation(const QList
 void EyeCorrectionCoefficients::configureFor3DCoefficientComputation(const QList<QVector3D> &targetVectors, qreal validationRadiousValue){
     //qDebug() << "Setting target vectors with " << targetVectors.size() << "vectors";
 
+    this->clear();
+
     // The vectors need to be normalized. So the original values must be saved.
     nonNormalizedTargetVectors = targetVectors;
     validationRadious = validationRadiousValue;
@@ -51,12 +80,7 @@ void EyeCorrectionCoefficients::configureFor3DCoefficientComputation(const QList
 void EyeCorrectionCoefficients::configureForCoefficientComputation(const QList<QVector3D> &targetVectors){
     //qDebug() << "Setting target vectors with " << targetVectors.size() << "vectors";
 
-    xtarget.clear();
-    ytarget.clear();
-    ztarget.clear();
-    calibrationData.clear();
-    fittedEyeDataPoints.clear();
-    cuttoffForCalibrationDataForCumputation.clear();
+    this->clear();
 
     for (qint32 i = 0; i < targetVectors.size(); i++){
         calibrationData << QList<EyeTrackerData>();

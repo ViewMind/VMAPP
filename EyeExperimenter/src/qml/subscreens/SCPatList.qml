@@ -114,7 +114,7 @@ Rectangle {
         anchors.topMargin: VMGlobals.adjustHeight(30)
         visible: !vmNoPatientsAtAll
         onTextChanged: {
-            if (searchInput.vmCurrentText.length >= 3){
+            if ((searchInput.vmCurrentText.length >= 3) || (searchInput.vmCurrentText.length == 0)){
                 loadPatients();
             }
         }

@@ -22,6 +22,16 @@ LinearCoefficients::LinearCoefficients(qreal mm, qreal bb)
 
 }
 
+void LinearCoefficients::clear(){
+    m = 0;
+    b = 0;
+    mx = 0;
+    my = 0;
+    mz = 0;
+    c  = 0;
+    valid = false;
+}
+
 LinearCoefficients::LinearCoefficients()
 {
     m = 0;

@@ -80,7 +80,6 @@ Rectangle {
 
         function onCalibrationDone(calibrated) {
 
-            //console.log("Rendering Wait Screen of On Calibration Done");
             if (calibrated) {
                 flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
             }

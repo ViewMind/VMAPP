@@ -22,9 +22,15 @@ public:
         qreal yl;
         qreal zl;
         qreal zr;
+        void clear(){
+            xr = 0; yr = 0; xl = 0; yl = 0; zl = 0; zr = 0;
+        }
     };
 
     EyeCorrectionCoefficients();
+
+    // Reset all internal variables to their status as they were just created.
+    void clear();
 
     // 2D Calibration Setup Configures For 2D Calibration Process.
     void configureFor2DCoefficientComputation(const QList<QPointF> &target);

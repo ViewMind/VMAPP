@@ -196,6 +196,13 @@ TableOutputParser::ParseTableOutput HWRecognizer::getDevicePropertiesByID(const 
     bool ok = true;
     QString cmd_output = this->runCommand(batchFile,QStringList(),&ok);
 
+//    // FOR DEBUGGING Getting the output from the list.
+//    QFile file1("pnp_input.txt");
+//    file1.open(QFile::ReadOnly);
+//    QTextStream reader(&file1);
+//    cmd_output = reader.readAll();
+
+
     // One way or the other we delete the file.
     QFile::remove(batchFile);
 
@@ -314,6 +321,7 @@ QList< QMap<QString,QString> > HWRecognizer::searchPNPInfo(const QString &key, c
     QList< QMap<QString,QString> > ans;
 
     for (qint32 i = 0; i < pnputilinfo.size(); i++){
+        //qDebug() << "Checking if Key" << key << "with value" << pnputilinfo.value(i).value(key) << " is the same as " << value;
         if (pnputilinfo.value(i).value(key) == value){
             ans << pnputilinfo.value(i);
         }
@@ -331,6 +339,12 @@ void HWRecognizer::parsePNPUtilInfo(){
     bool ok = true;
 
     QString cmd_output = runCommand(command,args,&ok);
+
+//    // FOR DEBUGGING Getting the output from the list.
+//    QFile file("pnp_list_input.txt");
+//    file.open(QFile::ReadOnly);
+//    QTextStream reader(&file);
+//    cmd_output = reader.readAll();
 
     if (!ok) return;
 
@@ -375,7 +389,43 @@ QMap<QString,QString> HWRecognizer::parseSinglePNPInfoEntry(const QStringList &l
         parsed[key] = value;
     }
 
+    //qDebug() << parsed;
+
     return parsed;
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+void HWRecognizer::searchForADeviceWithPropertyValue(const QString &search_for){
+
+    QString tosearch = search_for.toLower();
+
+    qint32 N = pnputilinfo.size();
+    for (qint32 i = 0; i < N; i++){
+
+        qDebug() << "Searching divice" << (i+1) << " out of " << N;
+        QMap<QString,QString> entry = pnputilinfo.at(i);
+
+        TableOutputParser::ParseTableOutput properties = this->getDevicePropertiesByID(entry.value(PNP_KEY_INSTID));
+        qDebug() << "   Properties" << properties.size() << ". Device" <<  entry.value(PNP_KEY_DESC);
+
+        for (qint32 j = 0; j < properties.size(); j++){
+            // Now we get the key value.
+            QMap<QString,QString> row = properties.at(j);
+            QString tocompare = row.value(PNP_DEV_PROP_KEY_DATA).toLower();
+
+            if ((tosearch == tocompare) || (tocompare.contains(tosearch))){
+                qDebug() << "   MATCH FOUND: KEY:"  << row.value(PNP_DEV_PROP_KEY_KEYNAME) << ". VALUE: " << tocompare;
+                QStringList keys = entry.keys();
+                for (qint32 k = 0; k < keys.size(); k++){
+                    qDebug() << "      " << keys.at(k) << "=>" << entry.value(keys.at(k));
+                }
+                break; // We search for only one property per device.
+            }
+        }
+    }
+
+    qDebug() << "Finished";
 
 }
 
@@ -386,12 +436,14 @@ QString HWRecognizer::findHPOmniceptSN(){
     // The first thing we do is search for the device description we know to be for the HP Device.
     QList< QMap<QString,QString> > search_results = searchPNPInfo(PNP_KEY_DESC,HP_DEVICE_DESCRIPTION);
     if (search_results.count() != 1){
+        //qDebug() << "Did not find the HP Device Description";
         this->lastWarnings << "Wrong number of entries when search for PNP HP Omnicept Device: " + QString::number(search_results.count());
         return "";
     }
 
     // If we have a single result we get the instance ID.
     QString instance_id = search_results.first().value(PNP_KEY_INSTID);
+    //qDebug() << "The instance ID is " << instance_id;
     this->getDevicePropertiesByID(instance_id);
 
     // And now we get the Device property information.
