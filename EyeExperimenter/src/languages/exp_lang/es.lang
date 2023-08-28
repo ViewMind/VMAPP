@@ -23,54 +23,36 @@ Asegúrese de que pueda alcanzar todos ellos. Si está teniendo problemas
 para tocar alguno, reintente la calibración sin estirar sus brazos totalmente;
 
 explanation_phase_list_binding_bc =
-Esta es la prueba de Combinación de Colores.
-Puede ser más difícil que la anterior|
-Aparecerán <<N>> cuadrados con una cruz en su centro.
-En este caso, debe recordar la combinación de colores entre cada cuadrado y cruz.
-No aparecerán colores nuevos.|
-Los cuadrados desaparecerán y un conjunto de cuadrados nuevos
-aparecerá|
-Debe identificar y decir en voz alta si la combinación entre cada cuadrado
-y cruz es la misma o si es diferente. La posición de los cuadrados no es importante.|
-Si comparamos las dos pantallas lado a lado, podemos ver que ha habido
-un intercambio de colores|
-Los cuadrados que han intercambiado colores se han resaltado.
-En este caso debe decir "Diferente"|
-Veamos otro ejemplo|
-Se muestran <<N>> cuadrados con cruces|
-Luego desaparecen|
-Y un conjunto nuevo aparece|
-Si comparamos las dos pantallas, vemos que la combinación de colores entre 
-cuadrados y cruces no ha cambiado, así que debe decir en voz alta "Igual".
+Esta es la prueba de Combinación de Colores. En esta prueba aparecerán <<N>> figuras.
+Las figuras se componen de un cuadrado de un color, con una cruz en su centro de
+otro color.
+En este caso debe recordar la combinación de colores de cada figura|
+Las figuras desaparecerán y aparecerá un nuevo grupo de figuras. Debe identificar 
+si la combinación de colores de las figuras es la misma o si los colores se han
+intercambiado entre las figuras. No parecerán nuevos colores. Si la combinación
+de colores es la misma, debe decir rápidamente “Igual” en voz alta. 
+Diga “Diferente”, en caso contrario. En este caso debe decir "Diferente".
+Tenga en cuenta que la ubicación de las figuras no es importante.|
+Mire el siguiente ejemplo|
+En este caso, la combinación de colores de las figuras no ha cambiado,
+por lo tanto, debe decir "Igual".
+Ha entendido?
+Haremos algunas rondas de práctica antes de comenzar.;
 
-¿Ha comprendido las instrucciones?
-
-Haremos algunos ejemplos de práctica antes de comenzar;
 
 explanation_phase_list_binding_uc =
-Esta es la prueba de Nuevos Colores|
-Aparecerán <<N>> cuadrados con una cruz en su centro
-Debe recordar todos los colores presentes|
-Los cuadrados desaparecerán y un conjunto de cuadrados nuevos
-aparecerá|
-Debe identificar si han aparecido colores nuevos en las cruces o
-cuadrados. La posición de los cuadrados no es importante. Si han 
-aparecido nuevos colores debe decir rápidamente "Diferente". 
-Sino, diga "Igual"|
-Si comparamos las dos pantallas lado a lado, podemos ver que han
-aparecido nuevos colores|
-Los cuadrados que han cambiado de color se encuentran resaltados.
-En este caso debe decir "Diferente"|
-Veamos otro ejemplo|
-Se muestran <<N>> cuadrados con cruces|
-Luego desaparecen|
-Y un conjunto nuevo aparece|
-Si comparamos las dos pantallas, vemos que no han aparecido nuevos colores, 
-así que debe decir "Igual".
-
-¿Ha comprendido las instrucciones?
-
-Haremos algunos ejemplos de práctica antes de comenzar;
+Esta es la prueba de Nuevos Colores. En esta prueba aparecerán <<N>> figuras 
+como las que ve en la pantalla. Las figuras se componen de un cuadrado 
+de un color, con una cruz en su centro de otro color.
+Recuerde los colores presentes en las figuras.|
+Las figuras desaparecerán y aparecerá un nuevo grupo de figuras. Debe identificar
+si apareció algún color nuevo. Si apareció un nuevo color, debe decir rápidamente
+“Diferente” en voz alta. De lo contrario, diga “Igual”. Tenga en cuenta que la
+ubicación de las figuras no es importante, por lo tanto, no debe influir en
+su respuesta. En este caso, aparecieron 2 nuevos colores. Debe decir "Diferente"|
+Mire el siguiente ejemplo|
+En este caso, los colores son iguales, por lo tanto, debe decir "Igual"
+Ha entendido? Haremos algunas rondas de práctica antes de comenzar.;
 
 
 explanation_phase_list_gonogo     = 
