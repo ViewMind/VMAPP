@@ -47,6 +47,7 @@ void EyeCorrectionCoefficients::setStartPointForValidCalibrationRawData(qint32 c
 }
 
 void EyeCorrectionCoefficients::configureFor2DCoefficientComputation(const QList<QPointF> &target){
+    this->clear();
     QList<QVector3D> vectors;
     for (qint32 i = 0; i < target.size(); i++){
         QVector3D v(static_cast<float>(target.at(i).x()),static_cast<float>(target.at(i).y()),0);
@@ -61,7 +62,6 @@ void EyeCorrectionCoefficients::configureFor3DCoefficientComputation(const QList
     //qDebug() << "Setting target vectors with " << targetVectors.size() << "vectors";
 
     this->clear();
-
     // The vectors need to be normalized. So the original values must be saved.
     nonNormalizedTargetVectors = targetVectors;
     validationRadious = validationRadiousValue;
@@ -79,8 +79,6 @@ void EyeCorrectionCoefficients::configureFor3DCoefficientComputation(const QList
 
 void EyeCorrectionCoefficients::configureForCoefficientComputation(const QList<QVector3D> &targetVectors){
     //qDebug() << "Setting target vectors with " << targetVectors.size() << "vectors";
-
-    this->clear();
 
     for (qint32 i = 0; i < targetVectors.size(); i++){
         calibrationData << QList<EyeTrackerData>();

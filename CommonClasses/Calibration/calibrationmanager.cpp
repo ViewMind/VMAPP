@@ -149,6 +149,8 @@ void CalibrationManager::processCalibrationData(const RenderServerPacket &calibr
     targetPoints2D.clear();
     validationRadious = calibrationData.getPayloadField(RRS::PacketCalibrationControl::VALIDATION_R).toReal();
 
+    //qDebug() << "Validation Radious set to" << validationRadious;
+
     // Storing the resolution
     resolutionHeight = calibrationData.getPayloadField(RRS::PacketCalibrationControl::RES_H).toInt();
     resolutionWidth  = calibrationData.getPayloadField(RRS::PacketCalibrationControl::RES_W).toInt();
