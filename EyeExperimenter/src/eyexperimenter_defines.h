@@ -131,14 +131,14 @@ static QVariantMap GetNameCodeMap() {
     map["English"]   = "en";
     map["Español"]   = "es";
     //map["中国人"]   = "cn"; Chinese was a test and is not fully available yet.
-    //map["Deutsch"]   = "de";
-    //map["Français "] = "fr";
+    map["Deutsch"]   = "de";
+    map["Français "] = "fr";
     return map;
 }
 }
 
 namespace Share {
-static const QString EXPERIMENTER_VERSION_NUMBER = "26.0.0";
+static const QString EXPERIMENTER_VERSION_NUMBER = "26.0.0.lih";
 extern QString EXPERIMENTER_VERSION;
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
