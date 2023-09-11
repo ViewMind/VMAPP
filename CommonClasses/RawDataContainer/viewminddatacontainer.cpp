@@ -303,7 +303,6 @@ bool ViewMindDataContainer::setProcessingParameters(const QVariantMap &pp){
     // All processing parameters will be considered mandatory.
     QStringList mandatory;
     mandatory << VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW
-              << VMDC::ProcessingParameter::MIN_FIXATION_DURATION
               << VMDC::ProcessingParameter::SAMPLE_FREQUENCY
               << VMDC::ProcessingParameter::LATENCY_ESCAPE_RADIOUS
               << VMDC::ProcessingParameter::RESOLUTION_HEIGHT

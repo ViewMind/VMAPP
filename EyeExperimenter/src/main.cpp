@@ -20,15 +20,6 @@ namespace Globals {
    QString API_URL;
    QString REGION;
 
-   namespace Share {
-      QString EXPERIMENTER_VERSION = "";
-   }
-
-   namespace EyeTracker{
-      QString NAME = "";
-      QString PROCESSING_PARAMETER_KEY = "";
-   }
-
 }
 
 // Debug Structure
@@ -44,43 +35,38 @@ int main(int argc, char *argv[])
 
     // We need to load the defines to configure the rest of hte application.
     ConfigurationManager defines;
-    if (!defines.loadConfiguration(Globals::Paths::APPSPEC)){
-        StaticThreadLogger::error("main","Could not load configuration file due to " + defines.getError());
+    defines.addKeyValuePair(Globals::VMAppSpec::Region,"GLOBAL");
+    if (QFile::exists(Globals::Paths::APPSPEC)){
+        // If APP Spec Exists we try to load it.
+        if (!defines.loadConfiguration(Globals::Paths::APPSPEC)){
+            StaticThreadLogger::warning("main","Could not load existing APP SPEC  file due to " + defines.getError() + ". Will pretend the file does not exist");
+        }
+        else {
+            if (defines.containsKeyword(Globals::VMAppSpec::ET)){
+                StaticThreadLogger::warning("main","EyeTracker Specification contains app spec. It is ignored as it is assumed to be provided by the RRS");
+            }
+
+            if (!defines.containsKeyword(Globals::VMAppSpec::Region)){
+                // In this case the region now defaults to Global
+                defines.addKeyValuePair(Globals::VMAppSpec::Region,"GLOBAL");
+                StaticThreadLogger::warning("main","No region defined. Defaulting to global");
+                return 0;
+            }
+        }
     }
-    else{
 
-        if (!defines.containsKeyword(Globals::VMAppSpec::ET)){
-             StaticThreadLogger::error("main","EyeTracker Specification is missing from app spec");
-            return 0;
-        }
+    // At this point we know the region, so we set it up.
+    bool OK = false;
+    OK = Globals::SetUpRegion(defines.getString(Globals::VMAppSpec::Region));
+    if (!OK){
+        StaticThreadLogger::error("main","Could not set up Region Configuration for " + defines.getString(Globals::VMAppSpec::Region));
+        return 0;
+    }
 
-        if (!defines.containsKeyword(Globals::VMAppSpec::Region)){
-            // In this case the region now defaults to Global
-            defines.addKeyValuePair(Globals::VMAppSpec::Region,"GLOBAL");
-            StaticThreadLogger::warning("main","No region defined. Defaulting to global");
-            return 0;
-        }
-
-        bool OK = false;
-
-        OK = Globals::SetUpEyeTrackerNameSpace(defines.getString(Globals::VMAppSpec::ET));
-        if (!OK){
-             StaticThreadLogger::error("main","Could not set up ET Configuration for " + defines.getString(Globals::VMAppSpec::ET));
-            return 0;
-        }
-
-        OK = Globals::SetUpRegion(defines.getString(Globals::VMAppSpec::Region));
-        if (!OK){
-             StaticThreadLogger::error("main","Could not set up Region Configuration for " + defines.getString(Globals::VMAppSpec::Region));
-            return 0;
-        }
-
-        // Loading the DEBUG Options. This needs to happen BEFORE Setup Experimenter Version so as to ensure that the options oppear in the title bar.
-        QString error = Debug::LoadOptions(Globals::Paths::DEBUG_OPTIONS_FILE);
-        if (error != ""){
-             StaticThreadLogger::error("main","Loading Debug Options File: " + error);
-        }
-
+    // Loading the DEBUG Options. This needs to happen BEFORE Setup Experimenter Version so as to ensure that the options oppear in the title bar.
+    QString error = Debug::LoadOptions(Globals::Paths::DEBUG_OPTIONS_FILE);
+    if (error != ""){
+        StaticThreadLogger::error("main","Loading Debug Options File: " + error);
     }
 
 //    qDebug() << "Active SSL BackEnd: " << QSslSocket::activeBackend();
@@ -136,6 +122,9 @@ int main(int argc, char *argv[])
     // Laods all language related data
     FlowControl flowControl(nullptr,&configuration);
 
+    // Now that the flow control and loader are created we need to connect them.
+    QObject::connect(&flowControl,&FlowControl::notifyLoader,&loader,&Loader::onNotificationFromFlowControl);
+
     engine.rootContext()->setContextProperty("loader", &loader);
     engine.rootContext()->setContextProperty("flowControl", &flowControl);
 
@@ -147,7 +136,6 @@ int main(int argc, char *argv[])
     // We need to set the identification window which starts the server render process.
     if (QWindow *window = qobject_cast<QWindow*>(engine.rootObjects().at(0))){
         flowControl.startRenderServerAndSetWindowID(window->winId());
-        //control.runUnityRenderServer();
     }
 
     return app.exec();

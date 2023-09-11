@@ -118,6 +118,10 @@ private:
     const QString HP_DEVICE_DESCRIPTION                       = "HP Reverb G2 Omnicept";
     const QString HP_DEVICE_SN_PNP_PROPERTY_KEY               = "{6D166322-FA1D-4223-9463-201AFD540BC8} 0";
 
+    // Varjo AERO.
+    const QString VARJO_SN_INST_ID_PREFIX                     = "QVRJV";
+    const QString VARJO_MODEL                                 = "Varjo Aero";
+
     // Generic motor to run a console command in windows.
     QString runCommand(const QString &command, const QStringList &args, bool *ranOK);
 
@@ -130,13 +134,14 @@ private:
     // PNP Command functions.
     void parsePNPUtilInfo();
     QMap<QString,QString> parseSinglePNPInfoEntry(const QStringList &lines);
-    QList< QMap<QString,QString> >  searchPNPInfo(const QString &key, const QString &value);
+    QList< QMap<QString,QString> >  searchPNPInfo(const QString &key, const QString &value, bool containsValue);
 
     // Get a device property
     TableOutputParser::ParseTableOutput getDevicePropertiesByID(const QString &deviceID);
 
     // Device specific functios.
     QString findHPOmniceptSN();
+    QString findVarjoAeroSN();
 
 };
 

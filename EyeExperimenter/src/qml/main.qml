@@ -11,6 +11,13 @@ ApplicationWindow {
     title: qsTr("EyeExplorer - ") + loader.getWindowTilteVersion()
     visibility: Window.Maximized
 
+    Connections {
+        target: loader
+        function onTitleBarUpdate(){
+            title = qsTr("EyeExplorer - ") + loader.getWindowTilteVersion()
+        }
+    }
+
     readonly property alias vmSegoeNormal: segoeui_normal
     readonly property alias vmSegoeHeavy: segoeui_heavy
     readonly property alias vmSegoeBold: segoeui_bold

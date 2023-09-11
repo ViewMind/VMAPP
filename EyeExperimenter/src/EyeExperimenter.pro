@@ -89,6 +89,7 @@ HEADERS += \
     ../../CommonClasses/debug.h \
     ../../CommonClasses/eyetracker_defines.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    FlowControlLoaderNotifications.h \
     apiclient.h \
     eyexperimenter_defines.h \
     loader.h \

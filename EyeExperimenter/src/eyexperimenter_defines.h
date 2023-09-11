@@ -138,8 +138,7 @@ static QVariantMap GetNameCodeMap() {
 }
 
 namespace Share {
-static const QString EXPERIMENTER_VERSION_NUMBER = "26.0.0";
-extern QString EXPERIMENTER_VERSION;
+static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.varjo.0";
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
 static const QString PATIENT_UID = "patient_uid";
@@ -172,14 +171,6 @@ static bool SetUpRegion(const QString &reg){
         return true;
     }
     return false;
-}
-
-static void SetExperimenterVersion(const QString institutionDescription) {
-    QString dbug_str = Debug::CreateDebugOptionSummary();
-    Share::EXPERIMENTER_VERSION = Share::EXPERIMENTER_VERSION_NUMBER + " - " + EyeTracker::NAME + " - " + institutionDescription  + " - " + REGION;
-    if (!dbug_str.isEmpty()){
-        Share::EXPERIMENTER_VERSION = Share::EXPERIMENTER_VERSION + " - " + dbug_str;
-    }
 }
 
 namespace BaseFileNames {

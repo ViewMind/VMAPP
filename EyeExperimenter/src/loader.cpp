@@ -40,14 +40,13 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     }
 
 
-    QString titleString = "";
+    institutionStringIdentification = "";
+    frequencyString = "";
 
     if (isLicenceFilePresent){
-        titleString = configuration->getString(Globals::VMConfig::INSTITUTION_NAME)
+        institutionStringIdentification = configuration->getString(Globals::VMConfig::INSTITUTION_NAME)
                 + " (" + configuration->getString(Globals::VMConfig::INSTITUTION_ID) + "." + configuration->getString(Globals::VMConfig::INSTANCE_NUMBER) + ")";
     }
-
-    Globals::SetExperimenterVersion(titleString);
 
     // Now we load the local DB.
     if (!localDB.setDBFile(Globals::Paths::LOCALDB,Globals::Paths::DBBKPDIR,DBUGBOOL(Debug::Options::PRETTY_PRINT_DB),DBUGBOOL(Debug::Options::DISABLE_DB_CHECKSUM))){
@@ -257,7 +256,22 @@ bool Loader::getLoaderError() const {
 }
 
 QString Loader::getWindowTilteVersion(){
-    return Globals::Share::EXPERIMENTER_VERSION;
+    QString dbug_str = Debug::CreateDebugOptionSummary();
+    QString version = Globals::Share::EXPERIMENTER_VERSION_NUMBER + " - " +
+            eyeTrackerName + " - " +
+            institutionStringIdentification;
+    if (Globals::REGION != Globals::GLOBAL::REGION){
+        version = version + " - " + Globals::REGION ;
+    }
+
+    if (this->frequencyString != ""){
+        version = version + " - " + this->frequencyString;
+    }
+
+    if (!dbug_str.isEmpty()){
+        version = version + " - " + dbug_str;
+    }
+    return version;
 }
 
 QString Loader::getVersionNumber() const {
@@ -478,7 +492,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     metadata.insert(VMDC::MetadataField::INSTITUTION_ID,configuration->getString(Globals::VMConfig::INSTITUTION_ID));
     metadata.insert(VMDC::MetadataField::INSTITUTION_INSTANCE,configuration->getString(Globals::VMConfig::INSTANCE_NUMBER));
     metadata.insert(VMDC::MetadataField::INSTITUTION_NAME,configuration->getString(Globals::VMConfig::INSTITUTION_NAME));
-    metadata.insert(VMDC::MetadataField::PROC_PARAMETER_KEY,Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
+    metadata.insert(VMDC::MetadataField::PROC_PARAMETER_KEY,apiclient.getEyeTrackerKey());
     metadata.insert(VMDC::MetadataField::STATUS,VMDC::StatusType::ONGOING);
     metadata.insert(VMDC::MetadataField::PROTOCOL,protocol);
     metadata.insert(VMDC::MetadataField::DISCARD_REASON,"");
@@ -1024,6 +1038,35 @@ void Loader::startUpSequenceCheck() {
     }
 }
 
+void Loader::onNotificationFromFlowControl(QVariantMap notification){
+    if (notification.contains(FCL::HMD_KEY_RECEIVED)){
+        // We now know which headset we are dealing with.
+        QString key = notification.value(FCL::HMD_KEY_RECEIVED).toString();
+        if (Globals::EyeTrackerKeys::HP == key){
+            this->eyeTrackerName = Globals::EyeTrackerNames::HP;
+        }
+        else if (Globals::EyeTrackerKeys::VARJO == key){
+            this->eyeTrackerName = Globals::EyeTrackerNames::VARJO;
+        }
+        else {
+            StaticThreadLogger::error("Loader::onNotificationFromFlowControl","Got an unknown HMD Key: " + key);
+            return;
+        }
+        apiclient.setEyeTrackerKey(key);
+        emit Loader::titleBarUpdate();
+    }
+    else if (notification.contains(FCL::UPDATE_SAMP_FREQ)){
+        // This is a sampling frequency update packet.
+        QString F = notification.value(FCL::UPDATE_SAMP_FREQ).toString();
+        QString A = notification.value(FCL::UPDATE_AVG_FREQ).toString();
+        QString M = notification.value(FCL::UPDATE_MAX_FREQ).toString();
+        this->frequencyString = "F: " + F + " Hz. Avg: " + A + " Hz. Max: " + M + " Hz.";
+        emit Loader::titleBarUpdate();
+    }
+    else{
+        StaticThreadLogger::warning("Loader::onNotificationFromFlowControl","Got an unknown notification: " + notification.keys().join(","));
+    }
+}
 
 void Loader::receivedRequest(){
 
