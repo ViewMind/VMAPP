@@ -28,6 +28,14 @@ HWRecognizer::HWRecognizer()
         specs[HWKeys::HMD_SN] = hp_omnicept_sn;
         specs[HWKeys::HMD_BRAND] = HP_DEVICE_DESCRIPTION;
     }
+    else {
+       QString varjo_sn = findVarjoAeroSN();
+       if (varjo_sn != ""){
+           specs[HWKeys::HMD_SN] = varjo_sn;
+           specs[HWKeys::HMD_BRAND] = VARJO_MODEL;
+       }
+    }
+
 
     // Copy the relevant information.
     QMap<QString,QString> keys_to_copy;
@@ -66,7 +74,7 @@ HWRecognizer::HWRecognizer()
     }
 
     // We search for the entry of the CPU in the PNP Info.
-    QList< QMap<QString,QString> > search_results = searchPNPInfo(PNP_KEY_DESC,specs.value(HWKeys::CPU_MODEL));
+    QList< QMap<QString,QString> > search_results = searchPNPInfo(PNP_KEY_DESC,specs.value(HWKeys::CPU_MODEL),true);
     if (search_results.size() > 0){
         specs[HWKeys::CPU_BRAND] = search_results.first().value(PNP_KEY_BRAND);
     }
@@ -81,7 +89,7 @@ HWRecognizer::HWRecognizer()
         }
     }
 
-    search_results = searchPNPInfo(PNP_KEY_DESC,specs.value(HWKeys::GPU_MODEL));
+    search_results = searchPNPInfo(PNP_KEY_DESC,specs.value(HWKeys::GPU_MODEL),true);
     if (search_results.size() > 0){
         specs[HWKeys::GPU_BRAND] = search_results.first().value(PNP_KEY_BRAND);
     }
@@ -196,11 +204,11 @@ TableOutputParser::ParseTableOutput HWRecognizer::getDevicePropertiesByID(const 
     bool ok = true;
     QString cmd_output = this->runCommand(batchFile,QStringList(),&ok);
 
-//    // FOR DEBUGGING Getting the output from the list.
-//    QFile file1("pnp_input.txt");
-//    file1.open(QFile::ReadOnly);
-//    QTextStream reader(&file1);
-//    cmd_output = reader.readAll();
+    //    // FOR DEBUGGING Getting the output from the list.
+    //    QFile file1("pnp_input.txt");
+    //    file1.open(QFile::ReadOnly);
+    //    QTextStream reader(&file1);
+    //    cmd_output = reader.readAll();
 
 
     // One way or the other we delete the file.
@@ -316,14 +324,30 @@ QString HWRecognizer::toString(bool prettyPrint) const{
 
 }
 
-QList< QMap<QString,QString> > HWRecognizer::searchPNPInfo(const QString &key, const QString &value){
+QList< QMap<QString,QString> > HWRecognizer::searchPNPInfo(const QString &key, const QString &value, bool containsValue){
 
     QList< QMap<QString,QString> > ans;
 
-    for (qint32 i = 0; i < pnputilinfo.size(); i++){
-        //qDebug() << "Checking if Key" << key << "with value" << pnputilinfo.value(i).value(key) << " is the same as " << value;
-        if (pnputilinfo.value(i).value(key) == value){
-            ans << pnputilinfo.value(i);
+    if (containsValue){
+
+        QString tosearch = value;
+        tosearch = tosearch.toLower();
+
+        for (qint32 i = 0; i < pnputilinfo.size(); i++){
+            //qDebug() << "Checking if Key" << key << "with value" << pnputilinfo.value(i).value(key) << " is the same as " << value;
+            QString totest = pnputilinfo.value(i).value(key).toLower();
+            if (totest.contains(tosearch)){
+                ans << pnputilinfo.value(i);
+            }
+        }
+
+    }
+    else {
+        for (qint32 i = 0; i < pnputilinfo.size(); i++){
+            //qDebug() << "Checking if Key" << key << "with value" << pnputilinfo.value(i).value(key) << " is the same as " << value;
+            if (pnputilinfo.value(i).value(key) == value){
+                ans << pnputilinfo.value(i);
+            }
         }
     }
 
@@ -340,22 +364,22 @@ void HWRecognizer::parsePNPUtilInfo(){
 
     QString cmd_output = runCommand(command,args,&ok);
 
-//    // FOR DEBUGGING Getting the output from the list.
-//    QFile file("pnp_list_input.txt");
-//    file.open(QFile::ReadOnly);
-//    QTextStream reader(&file);
-//    cmd_output = reader.readAll();
+    //    // FOR DEBUGGING Getting the output from the list.
+    //    QFile file("pnp_list_input.txt");
+    //    file.open(QFile::ReadOnly);
+    //    QTextStream reader(&file);
+    //    cmd_output = reader.readAll();
 
     if (!ok) return;
 
     cmd_output = cmd_output.remove('\r');
 
-//    // For DEBUGGING ONLY
-//    QFile file("pnp_util_output.txt");
-//    file.open(QFile::WriteOnly);
-//    QTextStream writer(&file);
-//    writer << cmd_output;
-//    file.close();
+    //    // For DEBUGGING ONLY
+    //    QFile file("pnp_util_output.txt");
+    //    file.open(QFile::WriteOnly);
+    //    QTextStream writer(&file);
+    //    writer << cmd_output;
+    //    file.close();
 
     QStringList lines = cmd_output.split("\n");
     QStringList entry;
@@ -434,7 +458,7 @@ void HWRecognizer::searchForADeviceWithPropertyValue(const QString &search_for){
 QString HWRecognizer::findHPOmniceptSN(){
 
     // The first thing we do is search for the device description we know to be for the HP Device.
-    QList< QMap<QString,QString> > search_results = searchPNPInfo(PNP_KEY_DESC,HP_DEVICE_DESCRIPTION);
+    QList< QMap<QString,QString> > search_results = searchPNPInfo(PNP_KEY_DESC,HP_DEVICE_DESCRIPTION,false);
     if (search_results.count() != 1){
         //qDebug() << "Did not find the HP Device Description";
         this->lastWarnings << "Wrong number of entries when search for PNP HP Omnicept Device: " + QString::number(search_results.count());
@@ -458,4 +482,29 @@ QString HWRecognizer::findHPOmniceptSN(){
 
     return "";
 
+}
+
+QString HWRecognizer::findVarjoAeroSN(){
+
+    QList< QMap<QString,QString> > search_results = searchPNPInfo(PNP_KEY_INSTID,VARJO_SN_INST_ID_PREFIX,true);
+    if (search_results.count() == 0){
+        // We didn't find anything.
+        qDebug() << "No varjo prefix found";
+        return "";
+    }
+
+    // If we did then the last part of the instance id is the serial number.
+    QMap<QString,QString> entry = search_results.first();
+    QString inst_id = entry.value(PNP_KEY_INSTID);
+    QStringList parts = inst_id.split("\\",Qt::SkipEmptyParts);
+    QString serial_number = parts.last();
+
+    qDebug() << "Proposed serial number" << serial_number;
+
+    if (serial_number.startsWith(VARJO_SN_INST_ID_PREFIX)){
+        // The string starts with qvrjv however only the last v is part of the serial number so the qvrj is removed.
+        serial_number = serial_number.remove(0,4);
+        return serial_number;
+    }
+    return "";
 }

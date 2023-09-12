@@ -22,7 +22,7 @@
 #include "localdb.h"
 #include "apiclient.h"
 #include "updater.h"
-
+#include "FlowControlLoaderNotifications.h"
 
 class Loader : public QObject
 {
@@ -117,6 +117,10 @@ public:
 signals:
     void finishedRequest();
     void sendSupportEmailDone(bool allOK);
+    void titleBarUpdate();
+
+public slots:
+    void onNotificationFromFlowControl(QVariantMap notification);
 
 private slots:
     void receivedRequest();
@@ -140,6 +144,12 @@ private:
     // The API communication client.
     APIClient apiclient;
 
+    // The pretty name for the eyetracker/HMD being used. Mainly for display on the title bar.
+    QString eyeTrackerName;
+
+    // This is the string representation of the last update sampling frequency packet.
+    QString frequencyString;
+
     // Start up sequence flag. It requires two process to be done in order to actually kill the wait screen.
     quint8 startUpSequenceFlag;
 
@@ -161,6 +171,9 @@ private:
 
     // In order for the update to function properly the system command that calls the update script needs to be started in a separate thread.
     Updater updater;
+
+    // Used mainly for updating the title bar.
+    QString institutionStringIdentification;
 
     // Loads the appropiate language file.
     void changeLanguage();

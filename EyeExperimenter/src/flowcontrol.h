@@ -28,6 +28,8 @@
 
 #include "eyexperimenter_defines.h"
 
+#include "FlowControlLoaderNotifications.h"
+
 class FlowControl : public QObject
 {
     Q_OBJECT
@@ -89,6 +91,9 @@ signals:
     // Once study operations are finalized this signal is emitted. The final operations make take time. So the study end signaled so that the front end might put up
     // a wait screen. And then the study end processing is carried out on a background thread.
     void studyEndProcessingDone();
+
+    // Used to notify loader of information that might come from the server.
+    void notifyLoader(QVariantMap information);
 
 public slots:
 
