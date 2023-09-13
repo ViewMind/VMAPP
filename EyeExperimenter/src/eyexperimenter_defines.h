@@ -52,6 +52,7 @@ static const QString LOGFILE                 = "logfile.log";
 static const QString MANUAL_DIR              = "manual";
 static const QString FAILED_CALIBRATION_DIR  = "failed_calibrations";
 static const QString SUPPORT_EMAIL_FILE      = "support_email.html";
+static const QString APPVERSION              = "appversioninfo.json";
 }
 
 namespace SupportEmailPlaceHolders {

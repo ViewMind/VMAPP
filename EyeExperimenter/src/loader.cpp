@@ -1052,6 +1052,15 @@ void Loader::onNotificationFromFlowControl(QVariantMap notification){
             StaticThreadLogger::error("Loader::onNotificationFromFlowControl","Got an unknown HMD Key: " + key);
             return;
         }
+
+        // At this point we need to create the Application Version File.
+        QVariantMap appversioninfo;
+        appversioninfo["version"] = Globals::Share::EXPERIMENTER_VERSION_NUMBER;
+        appversioninfo["hmd"] = key;
+        if (!Globals::SaveVariantMapToJSONFile(Globals::Paths::APPVERSION,appversioninfo,true)){
+            StaticThreadLogger::error("Loader::onNotificationFromFlowControl","Was unable to create the Application Version File for use for the EyeMaintenance");
+        }
+
         apiclient.setEyeTrackerKey(key);
         emit Loader::titleBarUpdate();
     }

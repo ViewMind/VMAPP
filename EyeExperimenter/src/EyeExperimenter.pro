@@ -98,6 +98,7 @@ HEADERS += \
     studyendoperations.h \
     updater.h
 
+RC_ICONS = vm.ico
 
 LIBS += -lWinTrust
 LIBS += -lRpcRT4
