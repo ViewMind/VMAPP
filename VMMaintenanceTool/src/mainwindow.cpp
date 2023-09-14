@@ -7,11 +7,19 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Loading the debug options if any.
+    DebugOptions::LoadDebugOptions();
+
+    // Getting the arguments for this run.
     QStringList args = QCoreApplication::arguments();
 
-    qDebug() << args;
-
+    // Creating the log manager.
     logger = new MessageLogger(ui->listWidget);
+
+    // Loading the language strings
+    if (!Langs::LoadLanguageFile("en")){
+        logger->log("Failed in loading the language file");
+    }
 
     bool isUpdate = false;
     if (args.size() > 1){
@@ -23,19 +31,28 @@ MainWindow::MainWindow(QWidget *parent)
     if (isUpdate){
         logger->log("Started in UPDATE MODE");
         this->setDisplayMode(DM_UPDATE_MODE);
+        // We show the welcome message.
+        logger->success(Langs::getString("welcome_update"));
     }
     else {
         logger->log("Started in NORMAL MODE");
         this->setDisplayMode(DM_NORMAL_MODE);
+        logger->success(Langs::getString("welcome_normal"));
     }
 
-    connect(&drunner,&DirRunner::finished,this,&MainWindow::onDirRunFinished);
-    connect(&dirComparer,&DirCompare::finished,this,&MainWindow::onDirCompareFinished);
-    connect(&dirComparer,&DirCompare::updateProgress,this,&MainWindow::onDirCompareProgressUpdate);
+    connect(&maintainer,&MaintenanceManager::progressUpdate,this,&MainWindow::onProgressUpdate);
+    connect(&maintainer,&MaintenanceManager::message,this,&MainWindow::onNewMessage);
+    connect(&maintainer,&MaintenanceManager::finished,this,&MainWindow::onMaintenanceFinished);
 
     ui->progressBar->setValue(0);
     ui->labProgress->setText("");
     ui->labFile->setText("");
+
+    if (isUpdate){
+        // We need to start the updat.e
+        maintainer.setAction(MaintenanceManager::ACTION_UPDATE);
+        maintainer.start();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -43,84 +60,69 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::onDirCompareProgressUpdate(qreal p, QString filename){
-    ui->labFile->setText(filename);
+void MainWindow::onNewMessage(qint32 type, QString message){
+    if (type == MessageLogger::MSG_DISP){
+        logger->display(message);
+    }
+    else if (type == MessageLogger::MSG_ERROR){
+        logger->error(message);
+    }
+    else if (type == MessageLogger::MSG_SUCCESS){
+        logger->success(message);
+    }
+    else if (type == MessageLogger::MSG_WARNING){
+        logger->warning(message);
+    }
+    else{
+        logger->log(message);
+    }
+}
+
+void MainWindow::onMaintenanceFinished(){
+
+    MaintenanceManager::Action action =  maintainer.getAction();
+    if (action == MaintenanceManager::ACTION_UPDATE){
+        // There was an update we need to start up the eye experimenter, if successfull
+        if (maintainer.wasLastActionASuccess()){
+            // We now run the EyeExperimenter.
+            QString workdir = maintainer.getEyeExpWorkDir();
+            qint64 pid;
+            QString program = workdir + "/" + Globals::Paths::EYEEXP_EXECUTABLE;
+
+            logger->log("Launching the EyeExplorer from: " + program);
+
+            QStringList arguments;
+            if (!QProcess::startDetached(program,arguments,workdir,&pid)){
+                logger->error(Langs::getString("error_cant_start_ee"));
+            }
+            else {
+                //this->close();
+                QCoreApplication::quit(); // With this the application starts maximized instead of minimized. Go figure.
+            }
+        }
+        else {
+            logger->display(Langs::getString("unable_to_update"));
+        }
+
+    }
+
+}
+
+void MainWindow::onProgressUpdate(qreal p, QString message){
+    ui->labFile->setText(message);
     ui->progressBar->setValue(qRound(p));
     ui->labProgress->setText(QString::number(qRound(p)) + "%");
 }
 
-void MainWindow::onDirRunFinished(){
-
-}
-
-void MainWindow::onDirCompareFinished(){
-
-    //    ui->pbMainAction->setEnabled(true);
-    //    ui->labProgress->setText("");
-    //    ui->labFile->setText("");
-    //    ui->progressBar->setValue(0);
-
-    //    QMap<QString,DirCompare::FileListType> lists;
-    //    lists["Files With Different CheckSum"] = DirCompare::FLT_BAD_CHECSUM;
-    ////    lists["Files In Reference But Not IN Check Dir"] = DirCompare::FLT_NOT_IN_CHECK;
-    ////    lists["Files Not In Reference"] = DirCompare::FLT_NOT_IN_REF;
-    ////    lists["Identical Files"] = DirCompare::FLT_SAME;
-
-    //    QStringList keys = lists.keys();
-    //    for (qint32 i = 0; i < keys.size(); i++){
-    //        qDebug() << keys.at(i);
-    //        QStringList list = dirComparer.getFileList(lists.value(keys.at(i)));
-    //        for (qint32 j = 0; j < list.size(); j++){
-    //            qDebug() << "   " << list.at(j);
-    //        }
-    //    }
-
-}
-
 void MainWindow::on_pbMainAction_clicked(){
-
-    ////    Start an application and quit.
-    //    QString workdir = "C:/Users/ViewMind/Documents/VMAPP/EyeExperimenter/EyeExperimenter/";
-    //    QString exe = "EyeExperimenter.exe";
-    ////    qint64 pid;
-    //    QString program = workdir + "/" + exe;
-    ////    QProcess::startDetached(program,QStringList(),workdir,&pid);
-    ////    this->close();
-
-    //// Create a shortcut for the application.
-
-    //    QStringList possiblePaths = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation);
-    //    QString pathToLink = possiblePaths.first() + "/EyeExperimenter.lnk";
-    //    qDebug() << "From" << program << "To" << pathToLink;
-    //    if (!QFile::link(program,pathToLink)){
-    //        qDebug() << "Link failed";
-    //    }
-    //    else {
-    //        qDebug() << "link success";
-    //    }
-
-
-
-
-
-    //    return;
-    //    ui->pbMainAction->setEnabled(false);
-
-    //    QString refdir = "C:/Users/ViewMind/Documents/temp/EyeExperimenter_";
-    //    QString checkdir = "C:/Users/ViewMind/Documents/VMAPP/EyeExperimenter/EyeExperimenter";
-
-    //    dirComparer.setDirs(refdir,checkdir);
-    //    dirComparer.compare();
-    //    ui->progressBar->setValue(0);
-
 }
 
 void MainWindow::setDisplayMode(DisplayMode dm){
     switch (dm){
     case DM_UPDATE_MODE:
-        ui->labProgress->setVisible(false);
-        ui->labFile->setVisible(false);
-        ui->progressBar->setVisible(false);
+        ui->labProgress->setVisible(true);
+        ui->labFile->setVisible(true);
+        ui->progressBar->setVisible(true);
         ui->pbMainAction->setVisible(false);
         break;
     case DM_NORMAL_MODE:

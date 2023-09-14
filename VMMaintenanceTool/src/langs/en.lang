@@ -1,0 +1,47 @@
+# Language File English.
+
+welcome_update = Welcome to the ViewMind Maintenance Tool. The tool will now attempt to perform an update of the current ViewMind Application version.
+If any issue should arise it will provide instructions to the best way of solving it.;
+
+welcome_normal = Welcome to the ViewMind Maintenance Tool. Please make sure that the ViewMind application is closed.
+Once ready, please press the Diagnostics Button and it will attempt to find and fix common issues.;
+
+error_no_current_install = Unable to find the the current installation;
+error_fail_rename = Unable to temporary rename installation directory;
+error_uncompress = Failed uncompressing update package;
+error_fail_rename_new = Unable to rename application directory to its proper value;
+error_move_db_bkp = Unable to to move the DB backups;
+error_move_config = Unable to move the license file;
+error_move_patdata = Unable to move the patient data to the directory;
+error_cant_start_ee = Failed to start Eye Explorer. Please attempt to start manually;
+
+warning_cleanup = Unable to clean up temporary directory;
+warning_shortcut = Unable to create desktop shortcut;
+
+success_update = Finished update process will now restart the application again;
+
+notification_wait = Please wait while we run a check on the current installation;
+
+btn_main_action_diag = RUN DIAGNOSTICS;
+btn_main_action_fix  = RUN CORRECTIVE ACTION;
+
+action_checking_installation = Checking installation ...;
+action_checking_config       = Checking license ...;
+action_checking_dbintegrity  = Checking DB integrity ...;
+action_uncompress_dir        = Uncompressing the update package ...;
+action_renaming_current_dir  = Changing name of application directory ...;
+action_renaming_new_dir      = Changing name of new application directory ...;
+action_moving_new_dir        = Setting up new application version ...;
+action_copying_patient_data  = Copying patient data ...;
+action_copying_db_bkps       = Copying database backups ...;
+action_copying_license       = Copying license ...;
+action_cleaning_up           = Cleaning up ... ;
+action_desktop_shorcut       = Creating desktop shortcut ...;
+
+unable_to_update = The update did not finish correctly. In order to try and fix this error, we recomend the following steps:
+1) Restart the computer
+2) Use the Desktop Shortcut for the ViewMind Maintenance Tool to start that application.
+3) Click on the RUN DIAGNOSTICS button.
+4) If a solution is offered click on RUN CORRECTIVE ACTION BUTTON.
+If you have issues with any of the steps above and the problem persists, contact ViewMind.;
+

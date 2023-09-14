@@ -6,7 +6,14 @@ MessageLogger::MessageLogger(QListWidget *lister) {
     this->uilist = lister;
     this->uilist->clear();
     this->uilist->setIconSize(QSize(30,30));
-    this->logFile = Globals::LOG_FILE_BASE + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm") + ".log";
+
+
+    if (DebugOptions::DebugBool(Globals::DebugOptions::SAME_LOG)){
+        this->logFile = Globals::LOG_FILE_BASE + "unique.log";
+    }
+    else {
+        this->logFile = Globals::LOG_FILE_BASE + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm") + ".log";
+    }
 
     // Creating/checking the Logs directory.
     QDir(".").mkdir(Globals::DIR_LOGS);
@@ -49,7 +56,7 @@ MessageLogger::MessageLogger(QListWidget *lister) {
 }
 
 void MessageLogger::log(const QString msg){
-    this->addToLog(MSG_LOG,msg);
+    this->addToLog("LOG",msg);
 }
 
 void MessageLogger::display(const QString msg){
@@ -60,7 +67,7 @@ void MessageLogger::display(const QString msg){
     item->setIcon(QIcon(":/images/info_notification.png"));
     item->setText(msg);
     this->uilist->addItem(item);
-    this->addToLog(MSG_DISPLAY,msg);
+    this->addToLog("DISPLAY",msg);
 }
 
 void MessageLogger::error(const QString msg){
@@ -71,7 +78,7 @@ void MessageLogger::error(const QString msg){
     item->setIcon(QIcon(":/images/alert-triangle-white.png"));
     item->setText(msg);
     this->uilist->addItem(item);
-    this->addToLog(MSG_ERROR,msg);
+    this->addToLog("ERROR",msg);
 }
 
 void MessageLogger::warning(const QString msg){
@@ -82,7 +89,7 @@ void MessageLogger::warning(const QString msg){
     item->setIcon(QIcon(":/images/alert-triangle-white.png"));
     item->setText(msg);
     this->uilist->addItem(item);
-    this->addToLog(MSG_WARNING,msg);
+    this->addToLog("WARNING",msg);
 }
 
 void MessageLogger::success(const QString msg){
@@ -93,7 +100,7 @@ void MessageLogger::success(const QString msg){
     item->setIcon(QIcon(":/images/check-circle-white.png"));
     item->setText(msg);
     this->uilist->addItem(item);
-    this->addToLog(MSG_SUCCESS,msg);
+    this->addToLog("SUCCESS",msg);
 }
 
 void MessageLogger::addToLog(const QString &type, const QString &message){

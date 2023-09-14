@@ -9,16 +9,24 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+   ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
    ../../CommonClasses/DirTools/dircompare.cpp \
    ../../CommonClasses/DirTools/dirrunner.cpp \
+   debugoptions.cpp \
+   langs.cpp \
    main.cpp \
+   maintenancemanager.cpp \
    mainwindow.cpp \
    messagelogger.cpp
 
 HEADERS += \
+   ../../CommonClasses/ConfigurationManager/configurationmanager.h \
    ../../CommonClasses/DirTools/dircompare.h \
    ../../CommonClasses/DirTools/dirrunner.h \
+   debugoptions.h \
    defines.h \
+   langs.h \
+   maintenancemanager.h \
    mainwindow.h \
    messagelogger.h
 
@@ -31,7 +39,8 @@ RCC_DIR = QRC
 FORMS += \
    mainwindow.ui
 
-RESOURCES += images.qrc
+RESOURCES += images.qrc \
+   langs.qrc
 
 RC_ICONS = vmwhite.ico
 

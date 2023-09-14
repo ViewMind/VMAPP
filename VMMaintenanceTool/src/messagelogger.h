@@ -9,12 +9,18 @@
 #include <QTextStream>
 
 #include "defines.h"
-
+#include "debugoptions.h"
 
 class MessageLogger
 {
 public:
     MessageLogger(QListWidget *lister);
+
+    static const qint32 MSG_LOG = 0;
+    static const qint32 MSG_ERROR = 1;
+    static const qint32 MSG_WARNING = 2;
+    static const qint32 MSG_DISP = 3;
+    static const qint32 MSG_SUCCESS = 4;
 
     void log(const QString msg);
     void warning(const QString msg);
@@ -24,19 +30,12 @@ public:
 
 private:
 
-    const char* MSG_DISPLAY = "DISPLAY";
-    const char* MSG_WARNING = "WARNING";
-    const char* MSG_SUCCESS = "SUCCESS";
-    const char* MSG_ERROR   = "ERROR";
-    const char* MSG_LOG     = "LOG";
-
     QBrush colorWarning;
     QBrush colorError;
     QBrush colorSuccess;
     QBrush colorDisplay;
     QBrush colorText;
     QFont  font;
-
 
     QListWidget *uilist;
     QString logFile;

@@ -5,9 +5,13 @@
 #include <QDebug>
 #include <QProcess>
 #include <QStandardPaths>
+#include <QTimer>
 
 #include "../../CommonClasses/DirTools/dircompare.h"
 #include "messagelogger.h"
+#include "langs.h"
+#include "debugoptions.h"
+#include "maintenancemanager.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -20,15 +24,13 @@ class MainWindow : public QMainWindow
 
 public:
 
-
-
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
-    void onDirRunFinished();
-    void onDirCompareFinished();
-    void onDirCompareProgressUpdate(qreal p, QString filename);
+    void onProgressUpdate(qreal p, QString filename);
+    void onNewMessage(qint32 type, QString message);
+    void onMaintenanceFinished();
 
     void on_pbMainAction_clicked();
 
@@ -37,11 +39,8 @@ private:
     typedef enum { DM_UPDATE_MODE, DM_NORMAL_MODE, DM_PROGRESS_MODE} DisplayMode;
 
     Ui::MainWindow *ui;
-
     MessageLogger *logger;
-
-    DirCompare dirComparer;
-    DirRunner drunner;
+    MaintenanceManager maintainer;
 
     void setDisplayMode(DisplayMode dm);
 
