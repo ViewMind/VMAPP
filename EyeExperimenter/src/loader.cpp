@@ -5,8 +5,8 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
 
     // Connecting the API Client slot.
     connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedRequest);
-    //connect(&qc,&QualityControl::finished,this,&Loader::qualityControlFinished);
     connect(&fileDownloader,&FileDownloader::downloadCompleted,this,&Loader::updateDownloadFinished);
+    connect(&fileDownloader,&FileDownloader::downloadProgress,this,&Loader::onFileDownloaderUpdate);
     connect(&qcChecker,&StudyEndOperations::finished,this,&Loader::startUpSequenceCheck);
 
     // Loading the configuration file and checking for the must have configurations
@@ -88,8 +88,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
                         configuration->getString(Globals::VMConfig::INSTANCE_KEY),
                         configuration->getString(Globals::VMConfig::INSTANCE_HASH_KEY));
 
-    // Update cleanup.
-    QFile::remove("../" + Globals::Paths::UPDATE_SCRIPT);
 
     if (!localDB.isVersionUpToDate()){
         localDB.replaceMedicKeys();
@@ -1038,6 +1036,10 @@ void Loader::startUpSequenceCheck() {
     }
 }
 
+void Loader::onFileDownloaderUpdate(qreal progress, qreal hours, qreal minutes, qreal seconds, qint64 bytesDowloaded, qint64 bytesTotal){
+    emit Loader::downloadProgressUpdate(progress,hours,minutes,seconds,bytesDowloaded,bytesTotal);
+}
+
 void Loader::onNotificationFromFlowControl(QVariantMap notification){
     if (notification.contains(FCL::HMD_KEY_RECEIVED)){
         // We now know which headset we are dealing with.
@@ -1195,13 +1197,52 @@ void Loader::receivedRequest(){
                 StaticThreadLogger::warning("Loader::receivedRequest",toprint);
             }
 
-            // URL should be present.
-            QString dlurl = mainData.value(APINames::UpdateDLFields::URL).toString();
+            // Before we actually download anything we need to check if the last download app coincides with the desired app.
+            QString lastDownlodedApp = localDB.getLastDownloadedApp();
+            updateDownloadSkipped = (lastDownlodedApp == newVersionAvailable);
+            if (updateDownloadSkipped){
+                updateDownloadSkipped = updateDownloadSkipped && QFile(Globals::Paths::VMTOOLEXE).exists();
+                if (!updateDownloadSkipped){
+                    StaticThreadLogger::log("Loader::receivedRequest", "The last downloaded app version and the new version are the same but the VM Maintenance Tool Executable could not be found. Download will ocurr");
+                }
+            }
+            else {
+                StaticThreadLogger::log("Loader::receivedRequest", "The last downloaded app version (" + lastDownlodedApp + ") differs from the new version (" + newVersionAvailable + "). Download will ocurr");
+            }
 
-            // Starting the download. And the process must now wait until the download is finished.
-            QString expectedPath = "../" + Globals::Paths::UPDATE_PACKAGE;
-            fileDownloader.download(dlurl,expectedPath);
+            if (!updateDownloadSkipped){
+
+
+                // URL should be present.
+                QString dlurl = mainData.value(APINames::UpdateDLFields::URL).toString();
+
+                // Starting the download. And the process must now wait until the download is finished.
+                QString expectedPath = "../" + Globals::Paths::UPDATE_PACKAGE;
+
+                QString override_url = DBUGSTR(Debug::Options::OVERRIDE_UPDATE_LINK);
+                if (override_url != ""){
+                    StaticThreadLogger::warning("Loader::receivedRequest","Overriding download URL with one provided in VMDebug File override_url");
+                    dlurl = override_url;
+                }
+
+                // Before we download anything, we need to ensure that the current VM Tool is deleted.
+                if (!QDir(Globals::Paths::VMTOOLDIR).removeRecursively()){
+                    StaticThreadLogger::error("Loader::receivedRequest","Unable to delete current VMMaintenaceDir installation. Aborting update");
+                    updateDownloadFinished(false);
+                    return;
+                }
+
+                StaticThreadLogger::log("Loader::receivedRequest","Downloading the update package from '" + dlurl  + "'");
+                fileDownloader.download(dlurl,expectedPath);
+
+            }
+            else {
+                StaticThreadLogger::log("Loader::receivedRequest", "The last downloaded app version (" + lastDownlodedApp + ") is the same as the new version (" + newVersionAvailable + "). Skipping download");
+                updateDownloadFinished(true);
+            }
+
             return;
+
 
         }
         else if (apiclient.getLastRequestType() == APIClient::API_ACTIVATE){
@@ -1269,42 +1310,78 @@ void Loader::receivedRequest(){
 void Loader::updateDownloadFinished(bool allOk){
 
     if (!allOk){
-        StaticThreadLogger::error("Loader::updateDownloadFinished","Failed to download update. Reason: " + fileDownloader.getError());
+        StaticThreadLogger::error("Loader::updateDownloadFinished","Failed to download update. Reason: " + fileDownloader.getError() + ". If error is empty it could have been called from another point with a false paraemter.");
         emit Loader::finishedRequest();
         return;
     }
 
-    QString expectedPath = "../" + Globals::Paths::UPDATE_PACKAGE;
-    if (QFile::exists(expectedPath)){
-        StaticThreadLogger::log("Loader::updateDownloadFinished","Received update succesfully. Unzipping");
+    if (!updateDownloadSkipped){
+        QString expectedPath = "../" + Globals::Paths::UPDATE_PACKAGE;
+        if (QFile::exists(expectedPath)){
+            StaticThreadLogger::log("Loader::updateDownloadFinished","Received update succesfully. Unzipping");
 
-        QDir dir(".");
-        dir.cdUp();
+            QDir dir(".");
+            dir.cdUp();
 
-        // Untarring the exe file.
-        QProcess process;
-        QStringList arguments;
-        arguments << "-xvzf" <<  dir.path() + "/" +  Globals::Paths::UPDATE_PACKAGE << "-C"  << dir.path();
-        process.setProcessChannelMode(QProcess::MergedChannels);
-        process.start(Globals::Paths::TAR_EXE,arguments);
+            // Untarring the exe file.
+            QProcess process;
+            QStringList arguments;
+            arguments << "-xvzf" <<  dir.path() + "/" +  Globals::Paths::UPDATE_PACKAGE << "-C"  << dir.path();
+            process.setProcessChannelMode(QProcess::MergedChannels);
+            process.start(Globals::Paths::TAR_EXE,arguments);
 
-        if (!process.waitForFinished()){
-            QString output = QString::fromUtf8(process.readAllStandardOutput());
-            StaticThreadLogger::error("Loader::updateDownloadFinished","Untarring failed with " + process.errorString() + ". Tar output:\n" + output);
-        }
+            if (!process.waitForFinished()){
+                QString output = QString::fromUtf8(process.readAllStandardOutput());
+                StaticThreadLogger::error("Loader::updateDownloadFinished","Untarring failed with " + process.errorString() + ". Tar output:\n" + output);
+            }
 
-        if (!QFile::exists("../" + Globals::Paths::UPDATE_SCRIPT)){
-            QString output = QString::fromUtf8(process.readAllStandardOutput());
-            StaticThreadLogger::error("Loader::updateDownloadFinished","Failed to to uncompressed update file. Tar output:\n" + output);
+            // If the process finished correctly then the VMMaintenanceTool Directory should be present. And we have susccessfully downloaded the courrent version
+            localDB.setLastDownloadedApp(newVersionAvailable); // This will prevent redownload incase that the application was already downloaded and the update process failed.
+            StaticThreadLogger::error("Loader::updateDownloadFinished","We should now continue the update process");
+
+            if (!QFile(Globals::Paths::VMTOOLEXE).exists()){
+                StaticThreadLogger::error("Loader::updateDownloadFinished","Unable to find the VMMaintenanceTool Executable. Aborting update");
+                emit Loader::finishedRequest();
+                return;
+            }
+
+            // We need to detelet the zip file.
+            if (!QFile("./" + Globals::Paths::UPDATE_PACKAGE).remove()){
+                StaticThreadLogger::warning("Loader::updateDownloadFinished","Failed in cleaning the app.zip file which is the update package");
+            }
+
         }
         else{
-            updater.start();
+            StaticThreadLogger::error("Loader::updateDownloadFinished","The download apparently succeded but the file is not where it was expected: " + expectedPath);
         }
+    }
 
+    // At this point we know tha the VM Maintenance Tool Executable exists. So we need to do the following.
+    // First we copy the vmconfiguration file for backup.
+    if (!QFile(Globals::Paths::CONFIGURATION).copy(Globals::Paths::VMTOOLDIR + "/" + Globals::Paths::CONFIGURATION)){
+        StaticThreadLogger::error("Loader::updateDownloadFinished","Failed in creating a backup of the vmconfiguration file to the tool maintenance directory");
     }
-    else{
-        StaticThreadLogger::error("Loader::updateDownloadFinished","The download apparently succeded but the file is not where it was expected: " + expectedPath);
+
+    // Now we create a Desktop ShortCut For the file.
+    QStringList possiblePaths = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation); // the possible paths for the desktop.
+    QString pathToLink = possiblePaths.first() + "/VMMaintenaceTool.lnk"; // The name of the ShortCut
+    QFileInfo info(Globals::Paths::VMTOOLEXE);
+    if (!QFile::link(info.absoluteFilePath(),pathToLink)){
+        StaticThreadLogger::error("Loader::updateDownloadFinished","Failed in creating a shortcut for tool app. The target path: '" + pathToLink + "'. The source path: '" + info.absoluteFilePath() +  "'");
     }
+
+    // If we had no issues so far we call the VMMaintenanceTool with the update parameter.
+    //    Start an application and quit.
+    QString workdir = info.absoluteDir().absolutePath();
+    qint64 pid;
+    QString program = info.absoluteFilePath();
+    QStringList arguments; arguments << "update";
+    if (!QProcess::startDetached(program,arguments,workdir,&pid)){
+        StaticThreadLogger::error("Loader::updateDownloadFinished","Failed to start the update application. EXE: '" + program + "'. Working Directory: '" + workdir +  "'");
+    }
+
+    // Since we starte detached sucessfully we should now be able to quit the app and let the
+    QCoreApplication::exit();
 
     emit Loader::finishedRequest();
 

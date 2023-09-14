@@ -53,6 +53,7 @@ namespace Debug {
        const QString HAND_CALIB_RESULTS   = "hand_calib_results";
        const QString PRETTY_PRINT_STUDIES = "pretty_print_study_files";
        const QString PRINT_INCOMMING      = "print_incomming_packets";
+       const QString OVERRIDE_UPDATE_LINK = "override_update_link";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

@@ -7,6 +7,8 @@
 #include <QStandardPaths>
 
 #include "../../CommonClasses/DirTools/dircompare.h"
+#include "messagelogger.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,6 +19,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+
+
+
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -28,10 +33,17 @@ private slots:
     void on_pbMainAction_clicked();
 
 private:
+
+    typedef enum { DM_UPDATE_MODE, DM_NORMAL_MODE, DM_PROGRESS_MODE} DisplayMode;
+
     Ui::MainWindow *ui;
+
+    MessageLogger *logger;
 
     DirCompare dirComparer;
     DirRunner drunner;
+
+    void setDisplayMode(DisplayMode dm);
 
 };
 #endif // MAINWINDOW_H

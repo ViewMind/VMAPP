@@ -40,6 +40,8 @@ viewwait_study_end = Finalizando estudio.
 Por favor espere ... ;
 viewait_get_license = Buscando los datos en nuestros servidores.
 Por favor espere ...;
+viewwait_download_remaining = Tiempo Estimado: <M> minutos <S> segundos (<MB> MB/<MBT> MB);
+
 
 #********************************* LOGIN SCREEN *********************************
 viewlogin_title = Ingreso Evaluador;

@@ -60,7 +60,6 @@ VMTools/WinodwsHWRecog/exe/
 VMTools/QGraphicsExperiments/exe/
 VMTools/QMLRenderServerDev/exe/
 
-
 EyeExperimenter/src/images/ViewMind.zip
 EyeExperimenter/src/images/ViewMind/
 EyeExperimenter/src/images/ic/
@@ -74,3 +73,4 @@ EyeExperimenter/src/experiment_data/perception_study.dat.short
 CommonClasses/EyeTrackingInterface/HPReverb/hp/hp_omnicept.lib
 EyeExperimenter/other_configs/
 VMMaintenanceTool/VMMaintenanceTool/
+VMMaintenanceTool/app.zip

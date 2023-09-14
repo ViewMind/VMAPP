@@ -12,12 +12,21 @@ SOURCES += \
    ../../CommonClasses/DirTools/dircompare.cpp \
    ../../CommonClasses/DirTools/dirrunner.cpp \
    main.cpp \
-   mainwindow.cpp
+   mainwindow.cpp \
+   messagelogger.cpp
 
 HEADERS += \
    ../../CommonClasses/DirTools/dircompare.h \
    ../../CommonClasses/DirTools/dirrunner.h \
-   mainwindow.h
+   defines.h \
+   mainwindow.h \
+   messagelogger.h
+
+
+CONFIG -= debug_and_release
+MOC_DIR = MOCS
+OBJECTS_DIR = OBJS
+RCC_DIR = QRC
 
 FORMS += \
    mainwindow.ui

@@ -214,16 +214,23 @@ ViewBase {
 
 // We add test stuff to main when developing components as we can test it as sson as the app starts.
 // I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
-//        Text {
+//        VMButton {
 //            id: testBox
+//            vmText: "Test Stuff";
 //            width: VMGlobals.adjustWidth(100)
 //            anchors.left: btnAddNew.right
 //            anchors.top: btnAddNew.top
 //            anchors.leftMargin: 10
-//            linkColor: "#0000aa"
-//            text: "Hello. This is a <a href='www.viewmind.com'>Link</a> to I don't know where"
-//            onLinkActivated: {
-//                console.log("Link clicked");
+//            onClickSignal: {
+//                waitScreen.vmText = "Some Text";
+//                //waitScreen.show()
+//                waitScreen.showWithProgress();
+//                let text = loader.getStringForKey("viewwait_download_remaining")
+//                text = text.replace("<M>",38);
+//                text = text.replace("<S>",30);
+//                text = text.replace("<MB>",52);
+//                text = text.replace("<MBT>",138);
+//                waitScreen.updateProgress(24,text);
 //            }
 //        }
 

@@ -16,6 +16,17 @@ ApplicationWindow {
         function onTitleBarUpdate(){
             title = qsTr("EyeExplorer - ") + loader.getWindowTilteVersion()
         }
+
+        function onDownloadProgressUpdate(progress, hours, minutes, seconds, bytesDowloaded, bytesTotal){
+            let text = loader.getStringForKey("viewwait_download_remaining")
+            let MB = Math.round(bytesDowloaded/(1024*1024))
+            let MBT = Math.round(bytesTotal/(1024*1024));
+            text = text.replace("<M>",Math.round(minutes));
+            text = text.replace("<S>",Math.round(seconds));
+            text = text.replace("<MB>",MB);
+            text = text.replace("<MBT>",MBT);
+            waitScreen.updateProgress(Math.ceil(progress),text);
+        }
     }
 
     readonly property alias vmSegoeNormal: segoeui_normal
@@ -215,6 +226,12 @@ ApplicationWindow {
     function openWait(message){
         waitScreen.vmText = message;
         waitScreen.show()
+    }
+
+    function openWaitAsProgress(message){
+        waitScreen.vmText = message
+        waitScreen.showWithProgress();
+        waitScreen.updateProgress(0,"");
     }
 
     function closeWait(){

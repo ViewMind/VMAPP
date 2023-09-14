@@ -16,6 +16,7 @@ const char * LocalDB::MAIN_QC_STUDY_INDEX                    = "qc_study_index";
 const char * LocalDB::MAIN_LAST_LOG_UPLOAD                   = "last_log_upload";
 const char * LocalDB::MAIN_STORED_SEQUENCES                  = "stored_sequences";
 const char * LocalDB::MAIN_PREFERENCES                       = "preferences";
+const char * LocalDB::MAIN_LAST_APP_DOWNLOADED               = "last_downloaded_app";
 
 // Evaluator fields
 const char * LocalDB::APPUSER_NAME          = "name";
@@ -789,6 +790,19 @@ bool LocalDB::deleteStudySequence(const QString &name){
     data[MAIN_STORED_SEQUENCES] = main_map;
     return saveAndBackup();
 }
+
+////////////////////////////// Update Help Check ///////////////////////////////
+
+QString LocalDB::getLastDownloadedApp() const{
+    if (data.contains(MAIN_LAST_APP_DOWNLOADED)) return data.value(MAIN_LAST_APP_DOWNLOADED).toString();
+    else return "";
+}
+
+bool LocalDB::setLastDownloadedApp(const QString &version){
+    data[MAIN_LAST_APP_DOWNLOADED] = version;
+    return saveAndBackup();
+}
+
 
 ////////////////////////////// PREFERENCES ///////////////////////////////
 bool LocalDB::setPreference(const QString &preference, const QVariant &variant){
