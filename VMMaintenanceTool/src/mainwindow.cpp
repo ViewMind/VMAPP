@@ -40,6 +40,10 @@ MainWindow::MainWindow(QWidget *parent)
         logger->success(Langs::getString("welcome_normal"));
     }
 
+//    logger->display("Some info");
+//    logger->warning("Some info");
+//    logger->error("Some info");
+
     connect(&maintainer,&MaintenanceManager::progressUpdate,this,&MainWindow::onProgressUpdate);
     connect(&maintainer,&MaintenanceManager::message,this,&MainWindow::onNewMessage);
     connect(&maintainer,&MaintenanceManager::finished,this,&MainWindow::onMaintenanceFinished);
@@ -145,3 +149,4 @@ void MainWindow::setDisplayMode(DisplayMode dm){
         break;
     }
 }
+

@@ -49,7 +49,8 @@ MessageLogger::MessageLogger(QListWidget *lister) {
     colorSuccess.setStyle(Qt::SolidPattern);
     colorWarning.setColor(QColor("#aca70d"));
     colorWarning.setStyle(Qt::SolidPattern);
-    colorText.setColor(QColor("#242424"));
+
+    colorText.setColor(QColor("#ffffff"));
     colorText.setStyle(Qt::SolidPattern);
 
 
