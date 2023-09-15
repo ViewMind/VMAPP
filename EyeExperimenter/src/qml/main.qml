@@ -100,7 +100,7 @@ ApplicationWindow {
         onRestartRequired: {
             messageDiag.vmLarge = false
             messageDiag.loadFromKey("viewsettings_restart_msg")
-            messageDiag.open();
+            messageDiag.open();            
         }
     }
 
@@ -250,6 +250,10 @@ ApplicationWindow {
 
     function getCurrentSwipeIndex(){
         return swiperControl.currentIndex;
+    }
+
+    function requestApplicationActiveFocus(){
+        requestActivate()
     }
 
     function showCalibrationValidation(){
