@@ -12,12 +12,25 @@ MaintenanceManager::Action MaintenanceManager::getAction() const {
     return this->currentAction;
 }
 
+MaintenanceManager::Action MaintenanceManager::getRecommendedAction() const {
+    return this->recommendedAction;
+}
+
 bool MaintenanceManager::wasLastActionASuccess() const {
     return actionSuccessfull;
 }
 
 QString MaintenanceManager::getEyeExpWorkDir() const {
     return eyeExpWorkDir;
+}
+
+void MaintenanceManager::onDirCompareProgress(double p, QString filename){
+
+    QString msg = Langs::getString("action_checking_file");
+    msg = msg.replace("<F>",filename);
+    p = qRound(p);
+    emit MaintenanceManager::progressUpdate(p,msg);
+
 }
 
 void MaintenanceManager::run() {
@@ -27,13 +40,17 @@ void MaintenanceManager::run() {
 
     switch (currentAction){
     case ACTION_UPDATE:
-        updateTheApp();
+        doActionUpdate();
+        break;
+    case ACTION_DIAGNOSE:
+        doActionRunDiagnostics();
         break;
     }
 }
 
+/////////////////////////////////// Update Sequence
 
-void MaintenanceManager::updateTheApp(){
+void MaintenanceManager::doActionUpdate(){
 
     // First thing is first we get the directory of the currently installed app.
     QString path = DebugOptions::DebugString(Globals::DebugOptions::FORCE_EYEEXP_PATH);
@@ -75,16 +92,11 @@ void MaintenanceManager::updateTheApp(){
     emit MaintenanceManager::progressUpdate(qRound(step_couter*100/nsteps),Langs::getString("action_uncompress_dir"));
 
     // The next step is to un compress the app.zip.
-    QProcess process;
-    QStringList arguments;
-    arguments << "-xvzf" << Globals::Paths::APPZIP << "-C"  << dirContainingInstallDir.absolutePath();
-    process.setProcessChannelMode(QProcess::MergedChannels);
-    process.start(Globals::Paths::TAR_EXE,arguments);
-
-    if (!process.waitForFinished()){
-        QString output = QString::fromUtf8(process.readAllStandardOutput());
+    QString output = "";
+    QString errorString;
+    if (!uncompressAppPackage(dirContainingInstallDir.absolutePath(),&output,&errorString)){
         error(Langs::getString("error_uncompress"));
-        log("Untarring packet failed with " + process.errorString() + ". Tar output:\n" + output);
+        log("Untarring packet failed with " + errorString + ". Tar output:\n" + output);
         return;
     }
 
@@ -159,6 +171,147 @@ void MaintenanceManager::updateTheApp(){
     succes(Langs::getString("success_update"));
 
 }
+
+/////////////////////////////////// Diagnostics
+
+void MaintenanceManager::doActionRunDiagnostics() {
+
+    anyDiagnosisStepsFailed = false;
+
+    // First thing is first we get the directory where the installation directory should be located.
+    QString eeInstallDirPath = DebugOptions::DebugString(Globals::DebugOptions::FORCE_EYEEXP_PATH);
+    if (eeInstallDirPath == ""){
+        eeInstallDirPath = "../";
+    }
+
+    QDir eeInstallDir(eeInstallDirPath);
+    eeInstallDirPath = eeInstallDir.absolutePath();
+    log("Running diagnostics. Installation Directory Location: '" + eeInstallDirPath + "'");
+
+    QString tempRenamedOldInstallDirPath = eeInstallDirPath + "/" + Globals::Paths::DIR_TEMP_EYEEXP;
+    QString tempUncompressedNewInstallDirPath = eeInstallDirPath + "/" + Globals::Paths::DIR_TEMP_EYEEXP_NEW;
+    QString normalInstallDirPath = eeInstallDirPath + "/" + Globals::Paths::EYEEXP_INSTALL_DIR;
+
+    // Now we check if the original installation renamed directory exists.
+    eebkpExists = QDir(tempRenamedOldInstallDirPath).exists();
+
+    // Now we check if the copied, newly unpacked ee directory exists.
+    eyeExpUnderScoreExists = QDir(tempUncompressedNewInstallDirPath).exists();
+
+    // Now we check if a current installation directory exists.
+    currentInstallExists = QDir(normalInstallDirPath).exists();
+
+    emit MaintenanceManager::progressUpdate(0,Langs::getString("action_checking_installation"));
+
+    eebkpContainsETData = false;
+    eyeExpUnderScoreContainsETData = false;
+    if (eebkpExists){
+        eebkpContainsETData = QDir(tempRenamedOldInstallDirPath + "/" + Globals::Paths::VMETDATA).exists();
+    }
+    if (eyeExpUnderScoreExists){
+        eyeExpUnderScoreContainsETData = QDir(tempUncompressedNewInstallDirPath + "/" + Globals::Paths::VMETDATA).exists();
+    }
+
+
+    if (!currentInstallExists){
+        // If the current installation doesn't exist we can't run any further diagnostics. And the decisions need to be made the the available information.
+        missingFilesInInstall.clear();
+        corruptedFilesInInstall.clear();
+        currentDBCorrupted = false;
+        currentLicenseFileCorrupted = false;
+        getRecommendedActionFromDiagnosisResults(eeInstallDirPath);
+        return;
+    }
+
+    log("Dirctory exist flags.\n   EEBKP: " + QString::number(eebkpExists)
+        + ".\n   EyeExperimenter_: " + QString::number(eyeExpUnderScoreExists)
+        + ".\n   EyeExperimenter_/viewmind_etdata: " + QString::number(eyeExpUnderScoreContainsETData)
+        + ".\n   EEBKP/viewmind_etdata: " + QString::number(eebkpContainsETData)
+        + ".\n   EyeExperimenter: " + QString::number(currentInstallExists)
+    );
+
+    emit MaintenanceManager::progressUpdate(0,Langs::getString("action_uncompress_dir"));
+
+    // If we got here, the current installation exists and we verify it. For that we need to uncompress to the current working dir.
+    QString output = "";
+    QString errorString = "";
+    if (!uncompressAppPackage(".",&output,&errorString)){
+        error(Langs::getString("error_uncompress"));
+        log("Untarring packet failed with " + errorString + ". Tar output:\n" + output);
+        anyDiagnosisStepsFailed = true;
+        getRecommendedActionFromDiagnosisResults(eeInstallDirPath);
+        return;
+    }
+
+
+    // We check that the uncompressed directory exists.
+    QDir refInstallDir(Globals::Paths::DIR_TEMP_EYEEXP_NEW);
+    if (!refInstallDir.exists()){
+        error(Langs::getString("error_uncompress"));
+        log("After untarring, was unable to locate the reference install dir at location: " + refInstallDir.absolutePath());
+        anyDiagnosisStepsFailed = true;
+        getRecommendedActionFromDiagnosisResults(eeInstallDirPath);
+        return;
+    }
+
+    emit MaintenanceManager::progressUpdate(0,Langs::getString("action_verify_install"));
+
+    // Now we check the directories integrity.
+    DirCompare dirCompare;
+    connect(&dirCompare,&DirCompare::updateProgress,this,&MaintenanceManager::onDirCompareProgress);
+    dirCompare.setDirs(refInstallDir.absolutePath(),normalInstallDirPath);
+    dirCompare.runInThread();
+
+    missingFilesInInstall = dirCompare.getFileList(DirCompare::FLT_NOT_IN_CHECK);
+    corruptedFilesInInstall = dirCompare.getFileList(DirCompare::FLT_BAD_CHECSUM);
+
+    log("List of files missing in install\n   " + missingFilesInInstall.join("\n   "));
+    log("List of files corrupted in install\n   " + corruptedFilesInInstall.join("\n   "));
+
+    emit MaintenanceManager::progressUpdate(100,Langs::getString("action_finishing"));
+
+
+}
+
+/////////////////////////////////// Recommended Action logic
+void MaintenanceManager::getRecommendedActionFromDiagnosisResults(const QString &eeInstallDirPath) {
+
+    // First coherence check
+    if ((eebkpExists) && (currentInstallExists)){
+
+        // When installing the current installation is renamed to the temporary location they can't both exists at the same time. Requires a human to take a look.
+        log("Both the EEBKP and EyeExperimenter directory exists at location '" + eeInstallDirPath + "'. Unknonw situation. Recommending contact");
+        error(Langs::getString("error_incosistent_situation"));
+        this->recommendedAction = ACTION_NONE;
+        return;
+
+    }
+
+    if ((!eebkpExists) && (!currentInstallExists)){
+
+        // When installing the current installation is renamed to the temporary location they can't both not exist.
+        log("Neither the EEBKP and EyeExperimenter directory exists at location '" + eeInstallDirPath + "'. Unknonw situation. Recommending contact");
+        error(Langs::getString("error_incosistent_situation"));
+        this->recommendedAction = ACTION_NONE;
+        return;
+
+    }
+
+}
+
+/////////////////////////////////// Sub Actions.
+bool MaintenanceManager::uncompressAppPackage(const QString &destination, QString *output, QString *errorString){
+    QProcess process;
+    QStringList arguments;
+    arguments << "-xvzf" << Globals::Paths::APPZIP << "-C"  << destination; //dirContainingInstallDir.absolutePath();
+    process.setProcessChannelMode(QProcess::MergedChannels);
+    process.start(Globals::Paths::TAR_EXE,arguments);
+    bool ans = process.waitForFinished();
+    *errorString = process.errorString();
+    *output = QString::fromUtf8(process.readAllStandardOutput());
+    return ans;
+}
+
 
 /////////////////////////////////// Logging functions
 

@@ -105,6 +105,9 @@ void MainWindow::onMaintenanceFinished(){
         }
 
     }
+    else if (action == MaintenanceManager::ACTION_DIAGNOSE){
+        logger->success("Diagnostics done");
+    }
 
 }
 
@@ -115,6 +118,8 @@ void MainWindow::onProgressUpdate(qreal p, QString message){
 }
 
 void MainWindow::on_pbMainAction_clicked(){
+    maintainer.setAction(MaintenanceManager::ACTION_DIAGNOSE);
+    maintainer.start();
 }
 
 void MainWindow::setDisplayMode(DisplayMode dm){
@@ -126,10 +131,11 @@ void MainWindow::setDisplayMode(DisplayMode dm){
         ui->pbMainAction->setVisible(false);
         break;
     case DM_NORMAL_MODE:
-        ui->labProgress->setVisible(false);
-        ui->labFile->setVisible(false);
-        ui->progressBar->setVisible(false);
+        ui->labProgress->setVisible(true);
+        ui->labFile->setVisible(true);
+        ui->progressBar->setVisible(true);
         ui->pbMainAction->setVisible(true);
+        ui->pbMainAction->setText(Langs::getString("btn_main_action_diag"));
         break;
     default:
         ui->labProgress->setVisible(true);

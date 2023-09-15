@@ -47,6 +47,16 @@ void DirCompare::compare(){
 }
 
 void DirCompare::run(){
+    doComparison();
+}
+
+void DirCompare::runInThread(){
+    ref.run();
+    dir.run();
+    doComparison();
+}
+
+void DirCompare::doComparison(){
 
     QStringList refFileList = ref.getListOfPaths();
     QStringList checkFileList = dir.getListOfPaths();
@@ -95,6 +105,7 @@ void DirCompare::run(){
 
         qreal p = i+1;
         p = p*100.0/total;
+        reffile.replace(this->baseRefDir,""); // So that the files are not as long.
         emit DirCompare::updateProgress(p,reffile);
 
     }

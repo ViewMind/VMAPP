@@ -44,6 +44,11 @@ public:
      */
     QStringList getFileList(FileListType flt) const;
 
+    /**
+     * @brief runInThread - Runs the comparison in the calling thread. Either call compare or calll this, after calling setDirs.
+     */
+    void runInThread();
+
 signals:
     void updateProgress(qreal p, QString fileBeingChecked);
 
@@ -70,6 +75,7 @@ private:
     const QCryptographicHash::Algorithm CheckSumAlg = QCryptographicHash::Sha1;
 
     QString computeFileCheckSum(const QString& filename);
+    void doComparison();
 
 };
 

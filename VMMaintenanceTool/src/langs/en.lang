@@ -4,7 +4,7 @@ welcome_update = Welcome to the ViewMind Maintenance Tool. The tool will now att
 If any issue should arise it will provide instructions to the best way of solving it.;
 
 welcome_normal = Welcome to the ViewMind Maintenance Tool. Please make sure that the ViewMind application is closed.
-Once ready, please press the Diagnostics Button and it will attempt to find and fix common issues.;
+Once ready, please press the Diagnostics Button to verify current installation;
 
 error_no_current_install = Unable to find the the current installation;
 error_fail_rename = Unable to temporary rename installation directory;
@@ -37,6 +37,9 @@ action_copying_db_bkps       = Copying database backups ...;
 action_copying_license       = Copying license ...;
 action_cleaning_up           = Cleaning up ... ;
 action_desktop_shorcut       = Creating desktop shortcut ...;
+action_checking_file         = Checking <F> ...;
+action_verify_install        = Verifying installation integrity ...;
+action_finishing             = Finishing up ...;
 
 unable_to_update = The update did not finish correctly. In order to try and fix this error, we recomend the following steps:
 1) Restart the computer
@@ -45,3 +48,5 @@ unable_to_update = The update did not finish correctly. In order to try and fix 
 4) If a solution is offered click on RUN CORRECTIVE ACTION BUTTON.
 If you have issues with any of the steps above and the problem persists, contact ViewMind.;
 
+error_incosistent_situation = The diagnostics has found unexpected inconsistency in the installation.
+Plese contact ViewMind for support.;

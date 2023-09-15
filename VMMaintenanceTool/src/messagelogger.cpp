@@ -40,7 +40,7 @@ MessageLogger::MessageLogger(QListWidget *lister) {
     // Creating all the colors and constants.
     font.setPointSize(11);
     font.setFamily("Segoe UI");
-    font.setWeight(QFont::Bold);
+    font.setWeight(QFont::DemiBold);
     colorDisplay.setColor(QColor("#939393"));
     colorDisplay.setStyle(Qt::SolidPattern);
     colorError.setColor(QColor("#fd3d60"));
