@@ -12,7 +12,8 @@
 #include "langs.h"
 #include "debugoptions.h"
 #include "maintenancemanager.h"
-
+#include "paths.h"
+#include "supportcontact.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -31,6 +32,7 @@ private slots:
     void onProgressUpdate(qreal p, QString filename);
     void onNewMessage(qint32 type, QString message);
     void onMaintenanceFinished();
+    void onContactSupportReturs();
 
     void on_pbMainAction_clicked();
 
@@ -41,8 +43,10 @@ private:
     Ui::MainWindow *ui;
     MessageLogger *logger;
     MaintenanceManager maintainer;
+    SupportContact support;
 
     void setDisplayMode(DisplayMode dm);
+    void contactSupport(const QString &message);
 
 };
 #endif // MAINWINDOW_H

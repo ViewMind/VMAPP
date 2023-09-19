@@ -14,16 +14,26 @@ error_move_db_bkp = Unable to to move the DB backups;
 error_move_config = Unable to move the license file;
 error_move_patdata = Unable to move the patient data to the directory;
 error_cant_start_ee = Failed to start Eye Explorer. Please attempt to start manually;
+error_incosistent_situation = The diagnostics has found unexpected inconsistency in the installation.
+Plese contact ViewMind for support.;
+error_diagnostic_failed = Unexpected behaviour when running diagnostics. Unable to determined the situation.
+Please contact ViewMind for support.;
+error_mail_failed = Failed to send support email to ViewMind Support.
+Please contact ViewMind by other means;
 
 warning_cleanup = Unable to clean up temporary directory;
 warning_shortcut = Unable to create desktop shortcut;
 
 success_update = Finished update process will now restart the application again;
+success_mail = ViewMind Support Email successfully sent.
+You can close the application now.;
 
-notification_wait = Please wait while we run a check on the current installation;
+notification_wait = Please wait while we run a check on the current installation ...;
+notification_mail = Please wait while send the support request ...;
 
-btn_main_action_diag = RUN DIAGNOSTICS;
-btn_main_action_fix  = RUN CORRECTIVE ACTION;
+btn_main_action_diag         = RUN DIAGNOSTICS;
+btn_main_action_fix          = RUN CORRECTIVE ACTION;
+btn_main_action_contact      = CONTACT SUPPORT;
 
 action_checking_installation = Checking installation ...;
 action_checking_config       = Checking license ...;
@@ -48,5 +58,4 @@ unable_to_update = The update did not finish correctly. In order to try and fix 
 4) If a solution is offered click on RUN CORRECTIVE ACTION BUTTON.
 If you have issues with any of the steps above and the problem persists, contact ViewMind.;
 
-error_incosistent_situation = The diagnostics has found unexpected inconsistency in the installation.
-Plese contact ViewMind for support.;
+

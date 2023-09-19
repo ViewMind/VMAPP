@@ -21,11 +21,14 @@ namespace Globals {
        static const QString VMETDATA            = "viewmind_etdata";
        static const QString VMTOOLDBUG          = "vmtooldebug";
        static const QString TAR_EXE             = "tar.exe";
+       static const QString LICENSE_FILE        = "vmconfiguration";
+       static const QString DB_FILE             = "localdb.dat";
     }
 
     namespace DebugOptions {
        static const QString FORCE_EYEEXP_PATH  = "ee_dir";
        static const QString SAME_LOG = "same_log";
+       static const QString OVERIDE_API = "api";
     }
 
 

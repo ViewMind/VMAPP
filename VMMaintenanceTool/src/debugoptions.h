@@ -1,6 +1,7 @@
 #ifndef DEBUGOPTIONS_H
 #define DEBUGOPTIONS_H
 
+#include <QDebug>
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "defines.h"
 

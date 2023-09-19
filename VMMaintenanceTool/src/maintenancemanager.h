@@ -7,6 +7,9 @@
 #include <QFileInfo>
 #include <QFile>
 #include <QProcess>
+#include <QJsonParseError>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include "../../CommonClasses/DirTools/dirrunner.h"
 #include "../../CommonClasses/DirTools/dircompare.h"
@@ -14,6 +17,7 @@
 #include "debugoptions.h"
 #include "defines.h"
 #include "langs.h"
+#include "paths.h"
 
 
 class MaintenanceManager : public QThread
@@ -23,6 +27,7 @@ public:
 
     typedef enum {ACTION_UPDATE,
                   ACTION_DIAGNOSE,
+                  ACTION_CONTACT_SUPPORT,
                   ACTION_NONE
     } Action;
 
@@ -37,8 +42,6 @@ public:
 
     bool wasLastActionASuccess() const;
 
-    QString getEyeExpWorkDir() const;
-
 signals:
 
     void message(qint32 type, QString message);
@@ -52,7 +55,6 @@ private:
     Action currentAction;
     Action recommendedAction;
     bool actionSuccessfull;    
-    QString eyeExpWorkDir;
 
     // Variables resuling from running diagnosis.
     bool anyDiagnosisStepsFailed;
@@ -85,10 +87,12 @@ private:
     /**
      * @brief getRecommendedActionFromDiagnosisResults - Uses the diagnosis results to implemente a recommended action logic.
      */
-    void getRecommendedActionFromDiagnosisResults(const QString &eeInstallDirPath);
+    void getRecommendedActionFromDiagnosisResults();
 
 
     bool uncompressAppPackage(const QString &destination, QString *output, QString *errorString);
+    QString computeMD5ForFile(const QString &filename);
+    bool isCurrentDBOk();
 };
 
 #endif // MAINTENANCEMANAGER_H

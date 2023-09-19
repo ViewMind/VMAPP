@@ -60,6 +60,10 @@ void MessageLogger::log(const QString msg){
     this->addToLog("LOG",msg);
 }
 
+QString MessageLogger::getLogFile() const {
+    return this->logFile;
+}
+
 void MessageLogger::display(const QString msg){
     QListWidgetItem *item = new QListWidgetItem(this->uilist);
     item->setFont(font);

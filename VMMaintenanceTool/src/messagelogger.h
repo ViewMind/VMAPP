@@ -28,6 +28,8 @@ public:
     void success(const QString msg);
     void display(const QString msg);
 
+    QString getLogFile() const;
+
 private:
 
     QBrush colorWarning;

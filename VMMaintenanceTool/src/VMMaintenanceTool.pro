@@ -12,23 +12,29 @@ SOURCES += \
    ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
    ../../CommonClasses/DirTools/dircompare.cpp \
    ../../CommonClasses/DirTools/dirrunner.cpp \
+   ../../CommonClasses/RestAPIController/restapicontroller.cpp \
    debugoptions.cpp \
    langs.cpp \
    main.cpp \
    maintenancemanager.cpp \
    mainwindow.cpp \
-   messagelogger.cpp
+   messagelogger.cpp \
+   paths.cpp \
+   supportcontact.cpp
 
 HEADERS += \
    ../../CommonClasses/ConfigurationManager/configurationmanager.h \
    ../../CommonClasses/DirTools/dircompare.h \
    ../../CommonClasses/DirTools/dirrunner.h \
+   ../../CommonClasses/RestAPIController/restapicontroller.h \
    debugoptions.h \
    defines.h \
    langs.h \
    maintenancemanager.h \
    mainwindow.h \
-   messagelogger.h
+   messagelogger.h \
+   paths.h \
+   supportcontact.h
 
 
 CONFIG -= debug_and_release
