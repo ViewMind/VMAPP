@@ -1,15 +1,17 @@
 # Language File English.
 
-welcome_update = Welcome to the ViewMind Maintenance Tool. The tool will now attempt to perform an update of the current ViewMind Application version.
+welcome_update = Welcome to the ViewMind Update. The tool will now attempt to perform an update of the current ViewMind Application version.
 If any issue should arise it will provide instructions to the best way of solving it.;
 
-welcome_normal = Welcome to the ViewMind Maintenance Tool. Please make sure that the ViewMind application is closed.
+welcome_normal = Welcome to the ViewMind Update. Please make sure that the ViewMind application is closed.
 Once ready, please press the Diagnostics Button to verify current installation;
 
 error_no_current_install = Unable to find the the current installation;
 error_fail_rename = Unable to temporary rename installation directory;
 error_uncompress = Failed uncompressing update package;
 error_fail_rename_new = Unable to rename application directory to its proper value;
+error_fail_copy_lic = Unable to copy license file;
+error_fail_bkp_copy = Unable to backup the license file;
 error_move_db_bkp = Unable to to move the DB backups;
 error_move_config = Unable to move the license file;
 error_move_patdata = Unable to move the patient data to the directory;
@@ -20,16 +22,28 @@ error_diagnostic_failed = Unexpected behaviour when running diagnostics. Unable 
 Please contact ViewMind for support.;
 error_mail_failed = Failed to send support email to ViewMind Support.
 Please contact ViewMind by other means;
+error_cleanup = Unable to clean up temporary directory;
+error_vmupdate_failed = ViewMind Update has encountered an unexpected issues.
+Please contact ViewMind Support and relay this issue.;
 
-warning_cleanup = Unable to clean up temporary directory;
 warning_shortcut = Unable to create desktop shortcut;
+warning_no_lic_backup = No backup of license file exists;
 
 success_update = Finished update process will now restart the application again;
+
+success_maintenace = Maintenace has finished. You can now close ViewMind Update.
+Please run Eye Explorer and verify that everything is in working order.;
+
 success_mail = ViewMind Support Email successfully sent.
 You can close the application now.;
 
 notification_wait = Please wait while we run a check on the current installation ...;
 notification_mail = Please wait while send the support request ...;
+notification_corrective_actions = The diagnostics found possible isses and will now attempt to correct them.
+Please press the RUN CORRECTIVE ACTION button to start.;
+
+notification_no_issues = The diagnostics has not found any know inssues with the installation.
+If you can launch the application, then you should use the Support Button to contact ViewMind Support.;
 
 btn_main_action_diag         = RUN DIAGNOSTICS;
 btn_main_action_fix          = RUN CORRECTIVE ACTION;
@@ -53,7 +67,7 @@ action_finishing             = Finishing up ...;
 
 unable_to_update = The update did not finish correctly. In order to try and fix this error, we recomend the following steps:
 1) Restart the computer
-2) Use the Desktop Shortcut for the ViewMind Maintenance Tool to start that application.
+2) Use the Desktop Shortcut for the ViewMind Update to start that application.
 3) Click on the RUN DIAGNOSTICS button.
 4) If a solution is offered click on RUN CORRECTIVE ACTION BUTTON.
 If you have issues with any of the steps above and the problem persists, contact ViewMind.;

@@ -23,6 +23,7 @@ namespace Globals {
        static const QString TAR_EXE             = "tar.exe";
        static const QString LICENSE_FILE        = "vmconfiguration";
        static const QString DB_FILE             = "localdb.dat";
+       static const QString EYEEXP_SHORTCUT     = "Eye Explorer.lnk";       
     }
 
     namespace DebugOptions {

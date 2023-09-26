@@ -53,6 +53,8 @@ MessageLogger::MessageLogger(QListWidget *lister) {
     colorText.setColor(QColor("#ffffff"));
     colorText.setStyle(Qt::SolidPattern);
 
+    //this->uilist->setStyleSheet("QListWidget:item{border-bottom: 1px solid black;}");
+
 
 }
 
@@ -93,6 +95,7 @@ void MessageLogger::warning(const QString msg){
     item->setBackground(colorWarning);
     item->setIcon(QIcon(":/images/alert-triangle-white.png"));
     item->setText(msg);
+
     this->uilist->addItem(item);
     this->addToLog("WARNING",msg);
 }

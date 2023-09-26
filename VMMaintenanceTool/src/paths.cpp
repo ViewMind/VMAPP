@@ -17,6 +17,7 @@ QString Paths::pathToCurrentDB = "";
 QString Paths::pathToCurrentVMConfig = "";
 QString Paths::pathToCurrentDBBkp = "";
 QString Paths::pathToCurrentEXE = "";
+QString Paths::pathToCurrentVMData = "";
 
 
 Paths::Paths() {
@@ -42,6 +43,7 @@ void Paths::FillPaths(){
     pathToCurrentDB                = pathToEyeExpInstallDir + "/" + Globals::Paths::VMETDATA + "/" + Globals::Paths::DB_FILE;
     pathToCurrentDBBkp             = pathToEyeExpInstallDir + "/" + Globals::Paths::DBBKP_DIR;
     pathToCurrentVMConfig          = pathToEyeExpInstallDir + "/" + Globals::Paths::LICENSE_FILE;
+    pathToCurrentVMData            = pathToEyeExpInstallDir + "/" + Globals::Paths::VMETDATA;
     pathToCurrentEXE               = pathToEyeExpInstallDir + "/" + Globals::Paths::EYEEXP_EXECUTABLE;
 
     pathToUnCompressedNewEyeExpDir          = pathToDirContainingEyeExpInstall + "/" + Globals::Paths::DIR_TEMP_EYEEXP_NEW;
@@ -70,6 +72,8 @@ QString Paths::Path(PathID p){
         return pathToCurrentDB;
     case PI_CURRENT_VMCONFIG_FILE:
         return pathToCurrentVMConfig;
+    case PI_CURRENT_VMDATA:
+        return pathToCurrentVMData;
     case PI_INSTALL_DIR:
         return pathToEyeExpInstallDir;
     case PI_UNDERSCORE_DIR:
@@ -101,6 +105,7 @@ bool Paths::IsFile(PathID p){
     QSet<PathID> filepaths;
     filepaths << PI_BKP_VMCONFIG_FILE
               << PI_UNDERS_VMCONFIG_FILE
+              << PI_CURRENT_VMCONFIG_FILE
               << PI_CURRENT_EXE_FILE
               << PI_CURRENT_DB_FILE;
     return filepaths.contains(p);

@@ -54,6 +54,7 @@ static const QString MANUAL_DIR              = "manual";
 static const QString FAILED_CALIBRATION_DIR  = "failed_calibrations";
 static const QString SUPPORT_EMAIL_FILE      = "support_email.html";
 static const QString APPVERSION              = "appversioninfo.json";
+static const QString VM_UPDATE_LINK          = "ViewMind Update.lnk";
 }
 
 namespace SupportEmailPlaceHolders {

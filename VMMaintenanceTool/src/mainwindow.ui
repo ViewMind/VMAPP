@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ViewMind Maintenance Tool</string>
+   <string>ViewMind Update</string>
   </property>
   <property name="windowIcon">
    <iconset resource="images.qrc">
@@ -292,6 +292,9 @@ QProgressBar::chunk
 QPushButton:pressed {
     background-color:  #2883D3;
     border-style: inset;
+}
+QPushButton:disabled {
+    background-color: #D8DDE8;
 }</string>
       </property>
       <property name="text">

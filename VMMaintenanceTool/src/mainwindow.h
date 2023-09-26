@@ -14,6 +14,7 @@
 #include "maintenancemanager.h"
 #include "paths.h"
 #include "supportcontact.h"
+#include "supportdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -32,21 +33,14 @@ private slots:
     void onProgressUpdate(qreal p, QString filename);
     void onNewMessage(qint32 type, QString message);
     void onMaintenanceFinished();
-    void onContactSupportReturs();
 
     void on_pbMainAction_clicked();
 
 private:
 
-    typedef enum { DM_UPDATE_MODE, DM_NORMAL_MODE, DM_PROGRESS_MODE} DisplayMode;
-
     Ui::MainWindow *ui;
     MessageLogger *logger;
     MaintenanceManager maintainer;
-    SupportContact support;
-
-    void setDisplayMode(DisplayMode dm);
-    void contactSupport(const QString &message);
 
 };
 #endif // MAINWINDOW_H

@@ -32,6 +32,7 @@ public:
         PI_CURRENT_DB_FILE,
         PI_CURRENT_VMCONFIG_FILE,
         PI_CURRENT_DBBKP,
+        PI_CURRENT_VMDATA,
         PI_CURRENT_EXE_FILE
     } PathID;
 
@@ -74,6 +75,7 @@ private:
     static QString pathToCurrentDB;
     static QString pathToCurrentVMConfig;
     static QString pathToCurrentDBBkp;
+    static QString pathToCurrentVMData;
     static QString pathToCurrentEXE;
 
     static bool IsFile(PathID p);

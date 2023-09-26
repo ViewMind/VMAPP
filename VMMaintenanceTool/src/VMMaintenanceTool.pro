@@ -20,7 +20,8 @@ SOURCES += \
    mainwindow.cpp \
    messagelogger.cpp \
    paths.cpp \
-   supportcontact.cpp
+   supportcontact.cpp \
+   supportdialog.cpp
 
 HEADERS += \
    ../../CommonClasses/ConfigurationManager/configurationmanager.h \
@@ -34,7 +35,8 @@ HEADERS += \
    mainwindow.h \
    messagelogger.h \
    paths.h \
-   supportcontact.h
+   supportcontact.h \
+   supportdialog.h
 
 
 CONFIG -= debug_and_release
@@ -43,7 +45,8 @@ OBJECTS_DIR = OBJS
 RCC_DIR = QRC
 
 FORMS += \
-   mainwindow.ui
+   mainwindow.ui \
+   supportdialog.ui
 
 RESOURCES += images.qrc \
    langs.qrc

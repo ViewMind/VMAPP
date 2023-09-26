@@ -1364,7 +1364,7 @@ void Loader::updateDownloadFinished(bool allOk){
 
     // Now we create a Desktop ShortCut For the file.
     QStringList possiblePaths = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation); // the possible paths for the desktop.
-    QString pathToLink = possiblePaths.first() + "/ViewMind Maintenace Tool.lnk"; // The name of the ShortCut
+    QString pathToLink = possiblePaths.first() + "/" + Globals::Paths::VM_UPDATE_LINK; // The name of the ShortCut
     QFileInfo info(Globals::Paths::VMTOOLEXE);
     if (!QFile::link(info.absoluteFilePath(),pathToLink)){
         StaticThreadLogger::error("Loader::updateDownloadFinished","Failed in creating a shortcut for tool app. The target path: '" + pathToLink + "'. The source path: '" + info.absoluteFilePath() +  "'");

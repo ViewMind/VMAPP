@@ -31,26 +31,30 @@ MainWindow::MainWindow(QWidget *parent)
         }
     }
 
+    ui->pbMainAction->setText(Langs::getString("btn_main_action_diag"));
+
     if (isUpdate){
         logger->log("Started in UPDATE MODE");
-        this->setDisplayMode(DM_UPDATE_MODE);
-        // We show the welcome message.
+        ui->pbMainAction->setVisible(false);
         logger->success(Langs::getString("welcome_update"));
     }
     else {
         logger->log("Started in NORMAL MODE");
-        this->setDisplayMode(DM_NORMAL_MODE);
+        maintainer.setRecommendedAction(MaintenanceManager::ACTION_DIAGNOSE);
         logger->success(Langs::getString("welcome_normal"));
     }
 
-//    logger->display("Some info");
-//    logger->warning("Some info");
-//    logger->error("Some info");
+    //    logger->success("Some info");
+    //    logger->display("Some info");
+    //    logger->display("Some info");
+    //    logger->warning("Some info");
+    //    logger->warning("Some info");
+    //    logger->error("Some info");
+    //    logger->error("Some info");
 
     connect(&maintainer,&MaintenanceManager::progressUpdate,this,&MainWindow::onProgressUpdate);
     connect(&maintainer,&MaintenanceManager::message,this,&MainWindow::onNewMessage);
     connect(&maintainer,&MaintenanceManager::finished,this,&MainWindow::onMaintenanceFinished);
-    connect(&support,&SupportContact::finished,this,&MainWindow::onContactSupportReturs);
 
     ui->progressBar->setValue(0);
     ui->labProgress->setText("");
@@ -88,16 +92,18 @@ void MainWindow::onNewMessage(qint32 type, QString message){
 
 void MainWindow::onMaintenanceFinished(){
 
-    MaintenanceManager::Action action =  maintainer.getAction();
+    MaintenanceManager::Action action =  maintainer.getLastPerformedAction();
+
     if (action == MaintenanceManager::ACTION_UPDATE){
         // There was an update we need to start up the eye experimenter, if successfull
         if (maintainer.wasLastActionASuccess()){
             // We now run the EyeExperimenter.
-            QString workdir = Paths::Path(Paths::PI_CONTAINER_DIR); //maintainer.getEyeExpWorkDir();
+            QString workdir = Paths::Path(Paths::PI_INSTALL_DIR);
             qint64 pid;
-            QString program = Paths::Path(Paths::PI_CURRENT_EXE_FILE); //workdir + "/" + Globals::Paths::EYEEXP_EXECUTABLE;
+            QString program = Paths::Path(Paths::PI_CURRENT_EXE_FILE);
 
             logger->log("Launching the EyeExplorer from: " + program);
+            //logger->warning("Will not launch"); return;
 
             QStringList arguments;
             if (!QProcess::startDetached(program,arguments,workdir,&pid)){
@@ -114,7 +120,42 @@ void MainWindow::onMaintenanceFinished(){
 
     }
     else if (action == MaintenanceManager::ACTION_DIAGNOSE){
-        logger->success("Diagnostics done");
+
+        // If the suggested action is none, then there is nothing else to do.
+        if (maintainer.getRecommendedAction() == MaintenanceManager::ACTION_NONE){
+            ui->pbMainAction->setEnabled(false);
+            logger->display(Langs::getString("notification_no_issues"));
+            return;
+        }
+        else if (maintainer.getRecommendedAction() == MaintenanceManager::ACTION_CORRECT){
+            ui->pbMainAction->setEnabled(true);
+            ui->pbMainAction->setText(Langs::getString("btn_main_action_fix"));
+            logger->display(Langs::getString("notification_corrective_actions"));
+        }
+        else if (maintainer.getRecommendedAction() == MaintenanceManager::ACTION_CONTACT_SUPPORT){
+            ui->pbMainAction->setEnabled(true);
+            ui->pbMainAction->setText(Langs::getString("btn_main_action_contact"));
+            logger->error(Langs::getString("error_vmupdate_failed"));
+        }
+        else {
+            logger->error(Langs::getString("error_vmupdate_failed"));
+        }
+
+    }
+    else if (action == MaintenanceManager::ACTION_CORRECT){
+        if (maintainer.wasLastActionASuccess()){
+            ui->pbMainAction->setEnabled(false);
+            logger->success(Langs::getString("success_maintenace"));
+        }
+        else {
+            ui->pbMainAction->setEnabled(true);
+            ui->pbMainAction->setText(Langs::getString("btn_main_action_contact"));
+            maintainer.setRecommendedAction(MaintenanceManager::ACTION_CONTACT_SUPPORT);
+            logger->error(Langs::getString("error_vmupdate_failed"));
+        }
+    }
+    else {
+        logger->log("ERROR: Finihsed Action is neither CORRECT, DIAGNOSE or UPDATE");
     }
 
 }
@@ -126,71 +167,34 @@ void MainWindow::onProgressUpdate(qreal p, QString message){
 }
 
 void MainWindow::on_pbMainAction_clicked(){
-    //maintainer.setAction(MaintenanceManager::ACTION_DIAGNOSE);
-    //maintainer.start();
-    ui->pbMainAction->setEnabled(false);
-    this->logger->display(Langs::getString("notification_mail"));
-    contactSupport("This is a test message");
-}
 
-void MainWindow::onContactSupportReturs(){
-    QString error = support.getError();
-    if (error != ""){
-        this->logger->log("ERROR: Failed sending support email. Reason: " + error);
-        this->logger->error(Langs::getString("error_mail_failed"));
-        return;
+    if (maintainer.getRecommendedAction() == MaintenanceManager::ACTION_DIAGNOSE){
+        ui->pbMainAction->setEnabled(false);
+        maintainer.setAction(MaintenanceManager::ACTION_DIAGNOSE);
+        maintainer.start();
+    }
+    else if (maintainer.getRecommendedAction() == MaintenanceManager::ACTION_CONTACT_SUPPORT){
+        SupportDialog diag;
+        diag.setLoggger(logger);
+        diag.exec();
+        QString error = diag.getSupportContactResult();
+        if (error == ""){
+            logger->success(Langs::getString("success_mail"));
+        }
+        else {
+            logger->log("ERROR: Failed sending support mail. Reason: " + error);
+            logger->error(Langs::getString("error_mail_failed"));
+        }
+    }
+    else if (maintainer.getRecommendedAction() == MaintenanceManager::ACTION_CORRECT){
+        ui->pbMainAction->setEnabled(false);
+        maintainer.setAction(MaintenanceManager::ACTION_CORRECT);
+        maintainer.start();
+    }
+    else {
+        ui->pbMainAction->setEnabled(false);
+        logger->log("ERROR: On Action Triggered, but Action is neither DIAGNOSE, SUPPORT or CORRECT.");
     }
 
-    this->logger->success(Langs::getString("success_mail"));
-}
-
-void MainWindow::contactSupport(const QString &message){
-
-    // We need to try and read the vm configuration file.
-    ConfigurationManager license;
-    if (!license.loadConfiguration(Paths::Path(Paths::PI_CURRENT_VMCONFIG_FILE))){
-        this->logger->error(Langs::getString("error_mail_failed"));
-        this->logger->log("ERROR: Unable to read license file from : " + Paths::Path(Paths::PI_CURRENT_VMCONFIG_FILE) + ". Reason: " + license.getError());
-        return;
-    }
-
-    QString institution = license.getString("institution_id");
-    QString instance = license.getString("instance_number");
-    QString key = license.getString("instance_key");
-    QString hash = license.getString("instance_hash_key");
-
-    // We configure the credentials.
-    support.configure(institution,instance,key,hash);
-
-    // Set the message to send and the path to the current logfiel to send as an attachment.
-    support.setMessageAndLogFileName(message,this->logger->getLogFile());
-
-    // We send the actual request.
-    support.send();
-
-}
-
-void MainWindow::setDisplayMode(DisplayMode dm){
-    switch (dm){
-    case DM_UPDATE_MODE:
-        ui->labProgress->setVisible(true);
-        ui->labFile->setVisible(true);
-        ui->progressBar->setVisible(true);
-        ui->pbMainAction->setVisible(false);
-        break;
-    case DM_NORMAL_MODE:
-        ui->labProgress->setVisible(true);
-        ui->labFile->setVisible(true);
-        ui->progressBar->setVisible(true);
-        ui->pbMainAction->setVisible(true);
-        ui->pbMainAction->setText(Langs::getString("btn_main_action_diag"));
-        break;
-    default:
-        ui->labProgress->setVisible(true);
-        ui->labFile->setVisible(true);
-        ui->progressBar->setVisible(true);
-        ui->pbMainAction->setVisible(true);
-        break;
-    }
 }
 
