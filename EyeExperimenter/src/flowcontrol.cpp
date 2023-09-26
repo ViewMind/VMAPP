@@ -425,7 +425,7 @@ void FlowControl::onCalibrationDone(qint32 code){
     else {
         StaticThreadLogger::error("FlowControl::onCalibrationDone","Calibration could not be completed");
 
-        renderWaitScreen("");
+        renderWaitScreen("",true);
 
         // We need to wait a few milliseconds otherwise the end screen does NOT get shown.
         emit FlowControl::calibrationDone(false);

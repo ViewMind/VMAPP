@@ -86,15 +86,14 @@ QSize CalibrationManager::getResolution() const{
 
 ////////////////////// Finalize the calibration process //////////////////
 
-void CalibrationManager::finalizeCalibrationProcess(qint32 code){
+void CalibrationManager::createFailedCalibrationData(){
+    configureValidationGeneration();
+    calibrationValidation.generateAFailedCalibrationReport();
+    isCalibrated = false;
+    emit CalibrationManager::calibrationDone(CALIBRATION_FAILED);
+}
 
-
-    // We compute the correction coefficients only if the calibration was successfull.
-    if (!correctionCoefficients.computeCoefficients()){
-        StaticThreadLogger::error("CalibrationManager::finalizeCalibrationProcess","Failed in computing the correction coefficients. Reason: " + correctionCoefficients.getLastError());
-        code = CALIBRATION_FAILED;    
-    }
-
+void CalibrationManager::configureValidationGeneration(){
     // We need to compute the target diameter.
     qreal targetDiameter = resolutionWidth*K_LARGE_D;
 
@@ -115,6 +114,39 @@ void CalibrationManager::finalizeCalibrationProcess(qint32 code){
                                               list,
                                               targetDiameter,
                                               calibrationMode3D);
+}
+
+void CalibrationManager::finalizeCalibrationProcess(qint32 code){
+
+
+    // We compute the correction coefficients only if the calibration was successfull.
+    if (!correctionCoefficients.computeCoefficients()){
+        StaticThreadLogger::error("CalibrationManager::finalizeCalibrationProcess","Failed in computing the correction coefficients. Reason: " + correctionCoefficients.getLastError());
+        code = CALIBRATION_FAILED;    
+    }
+
+//    // We need to compute the target diameter.
+//    qreal targetDiameter = resolutionWidth*K_LARGE_D;
+
+//    // And we need to compute the target "corners" of the square which contains each fo the 2D targets.
+//    QVariantList list;
+//    for (qint32 i = 0; i < targetPoints2D.size(); i++){
+//        QVariantMap point;
+//        QPointF p = targetPoints2D.at(i);
+//        point["x"] = p.x();
+//        point["y"] = p.y();
+//        list << point;
+//    }
+
+//    // We now configure everthing to get the calibration report.
+//    calibrationValidation.configureValidation(calibrationValidationData,
+//                                              nonNormalizedTargetVectors,
+//                                              validationRadious,
+//                                              list,
+//                                              targetDiameter,
+//                                              calibrationMode3D);
+
+    configureValidationGeneration();
 
     // And we actually generate it.
     bool wasSuccessfull = calibrationValidation.generateCalibrationReport(correctionCoefficients);
@@ -138,12 +170,6 @@ void CalibrationManager::finalizeCalibrationProcess(qint32 code){
 void CalibrationManager::processCalibrationData(const RenderServerPacket &calibrationData){
 
     //qDebug() << "Printing The Calibration Data";
-    //Debug::prettpPrintQVariantMap(calibrationData.getPayload());
-//    QFile file("test_calib_data.json");
-//    file.open(QFile::WriteOnly);
-//    QTextStream writer(&file);
-//    writer << Debug::QVariantMapToString(calibrationData.getPayload());
-//    file.close();
 
     nonNormalizedTargetVectors.clear();
     targetPoints2D.clear();
@@ -228,19 +254,23 @@ void CalibrationManager::processCalibrationData(const RenderServerPacket &calibr
         qint32 start_index = start_index_list.value(i).toInt();
         bool there_was_an_error = false;
         if (start_index == -1){
+        //if ((start_index == -1) || (i == 2)){
             StaticThreadLogger::error("CalibrationManager::processCalibrationData","The calibration start index for calibration point  " + QString::number(i) + " has not been set");
+            StaticThreadLogger::error("CalibrationManager::processCalibrationData","Printing Packet For Reference:\n" + Debug::QVariantMapToString(calibrationData.getPayload()));
             start_index = 0;
             there_was_an_error = true;
         }
         else if (start_index >= (M-1)) {
             StaticThreadLogger::error("CalibrationManager::processCalibrationData","The calibration start index for calibration point  " + QString::number(i) + " has been set to "
                                       + QString::number(start_index) + " however the number of data points is " + QString::number(M));
+            StaticThreadLogger::error("CalibrationManager::processCalibrationData","Printing Packet For Reference:\n" + Debug::QVariantMapToString(calibrationData.getPayload()));
             start_index = 0;
             there_was_an_error = true;
         }
 
         if (there_was_an_error){
-            finalizeCalibrationProcess(CALIBRATION_FAILED);
+            //finalizeCalibrationProcess(CALIBRATION_FAILED);
+            createFailedCalibrationData();
             return;
         }
 

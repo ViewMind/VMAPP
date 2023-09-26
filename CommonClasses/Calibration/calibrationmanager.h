@@ -103,6 +103,8 @@ private:
 
     ////////////////////////////// GENERAL Functions /////////////////
     void finalizeCalibrationProcess(qint32 code);
+    void createFailedCalibrationData();
+    void configureValidationGeneration();
     void sendCalibrationCoefficientPacket();
     void addEyeDataToCalibrationPoint(float xl, float xr, float yl, float yr, float zl, float zr, qint32 index);
 

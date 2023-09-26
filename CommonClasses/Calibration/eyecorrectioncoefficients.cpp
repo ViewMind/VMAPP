@@ -238,6 +238,10 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
 
         qint32 start_point = cuttoffForCalibrationDataForCumputation.at(i);
 
+        if ((start_point < 0) || (start_point > points2Fit.at(i).size())){
+            start_point = 0;
+        }
+
         for (qint32 j = start_point; j < points2Fit.at(i).size(); j++){
 
             EyeTrackerData input = points2Fit.at(i).at(j);
@@ -255,15 +259,11 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
         fittedEyeDataPoints << f;
     }
 
-
-
     R2.xr = fitterXR.R2();
     R2.yr = fitterYR.R2();
 
     R2.xl = fitterXL.R2();
     R2.yl = fitterYL.R2();
-
-    // qDebug() << "R: EyeR " << R2.xr << R2.yr << " EyeL " << R2.xl << R2.yl;
 
     return true;
 

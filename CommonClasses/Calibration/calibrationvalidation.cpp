@@ -50,8 +50,8 @@ void CalibrationValidation::configureValidation(const QVariantMap &calibrationVa
     calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_PTS_NO_DATA]                    = QVariantList();
     calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_TARGET_PERCENTS]                = QVariantList();
     calibrationAttempt[VMDC::CalibrationAttemptFields::COFICIENT_OF_DETERMINATION]                 = QVariantList();
-    calibrationAttempt[VMDC::CalibrationAttemptFields::CORRECTION_COEFICIENTS]                     = QVariantList();
-    calibrationAttempt[VMDC::CalibrationAttemptFields::LEFT_EYE_DATA]                              = QVariantList();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::CORRECTION_COEFICIENTS]                     = QVariantMap();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::LEFT_EYE_DATA]                              = QVariantMap();
     calibrationAttempt[VMDC::CalibrationAttemptFields::RIGHT_EYE_DATA]                             = QVariantList();
     calibrationAttempt[VMDC::CalibrationAttemptFields::MATH_ISSUES_FOR_CALIBRATION]                = false;
     calibrationAttempt[VMDC::CalibrationAttemptFields::SUCCESSFUL]                                 = false;
@@ -87,6 +87,18 @@ void CalibrationValidation::configureValidation(const QVariantMap &calibrationVa
 
 QString CalibrationValidation::getValidationReport() const{
     return validationReport;
+}
+
+void CalibrationValidation::generateAFailedCalibrationReport(){
+    qint32 N = calibrationConfiguration[VMDC::CalibrationConfigurationFields::NUMBER_OF_CALIBRAION_POINTS].toInt();
+    QVariantList all;
+    for (qint32 i = 0; i < N; i++){
+        all << i;
+    }
+    calibrationAttempt[VMDC::CalibrationAttemptFields::MATH_ISSUES_FOR_CALIBRATION]      = true;
+    calibrationAttempt[VMDC::CalibrationAttemptFields::COFICIENT_OF_DETERMINATION]       = QVariantMap();
+    calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_PTS_NO_DATA]          = all;
+    validationReport = "Requested forced failed calibration report";
 }
 
 bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoefficients &coeffs){

@@ -84,7 +84,7 @@ Rectangle {
                 flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
             }
             else {
-                flowControl.renderWaitScreen("");
+                flowControl.renderWaitScreen("",true);
             }
 
             if (isCurrentEvaluationA3DStudy()){

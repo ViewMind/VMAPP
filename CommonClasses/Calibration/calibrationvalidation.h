@@ -39,6 +39,10 @@ public:
     // Used the created data to generate the calibration report values. Returns whether the calibration was successfull or not.
     bool generateCalibrationReport(const EyeCorrectionCoefficients & coeffs);
 
+    // When the data from the RRS comes too screwed up we still need to generate a validation report so that system can show the error message safely.
+    // This function is used to generate exactly that.
+    void generateAFailedCalibrationReport();
+
     // Prints some stats per target to see how well the calibration was. For the Log, mostly.
     QString getValidationReport() const;
 
