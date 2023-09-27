@@ -52,8 +52,7 @@ SOURCES += main.cpp \
     loader.cpp \
     flowcontrol.cpp \
     localdb.cpp \
-    studyendoperations.cpp \
-    updater.cpp
+    studyendoperations.cpp
 
 
 HEADERS += \
@@ -89,14 +88,15 @@ HEADERS += \
     ../../CommonClasses/debug.h \
     ../../CommonClasses/eyetracker_defines.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    FlowControlLoaderNotifications.h \
     apiclient.h \
     eyexperimenter_defines.h \
     loader.h \
     flowcontrol.h \
     localdb.h \
-    studyendoperations.h \
-    updater.h
+    studyendoperations.h
 
+RC_ICONS = vm.ico
 
 LIBS += -lWinTrust
 LIBS += -lRpcRT4

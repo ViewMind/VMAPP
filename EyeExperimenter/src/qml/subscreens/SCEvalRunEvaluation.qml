@@ -353,7 +353,8 @@ Rectangle {
             // Necessary to avoid confusing message between the end of an evaluation and the start of the next one.
             studyExplanationText.text = "";
             flowControl.startStudyEvaluationPhase();
-
+            // This should guarantee that we get the key presses during evaluation
+            mainWindow.requestApplicationActiveFocus();
         }
         else if (vmEvaluationStage == vmSTAGE_EVALUATION){
             advanceStudy();

@@ -14,12 +14,20 @@ static const QString TYPE_STUDY_DATA               = "study_data";              
 static const QString TYPE_CALIB_CONTROL            = "calibration_control";      // Calibration control packet.
 static const QString TYPE_HAND_CALIB_CONTROL       = "hand_calibration_control"; // Controls hand calibration.
 static const QString TYPE_WAIT_MSG                 = "wait_msg";                 // Renders the wait screen.
+static const QString TYPE_FREQ_UPDATE              = "freq_update";              // Periodic updates sent to the client regarding the measured sampling frequency.
 }
 
 namespace PacketLogLocation {
 static const QString LOG_LOCATION  = "log_location";
 static const QString APP_NAME      = "app_designation";
 static const QString VERSION       = "rrs_version";
+static const QString EYETRACKER    = "eye_tracker_version";
+}
+
+namespace PacketFreqUpdate {
+static const QString FRQ = "frequency";
+static const QString AVG = "average";
+static const QString MAX = "maximum";
 }
 
 namespace PacketDebugControl {

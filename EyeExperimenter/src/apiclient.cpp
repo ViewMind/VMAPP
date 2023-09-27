@@ -5,6 +5,7 @@ APIClient::APIClient(QObject *parent) : QObject(parent)
     API = Globals::API_URL;
     rest_controller.setBaseAPI(API);
     lastGeneratedLogFileName = "";
+    this->eyeTrackerKey = "";
     connect(&rest_controller,&RESTAPIController::gotReplyData,this,&APIClient::gotReply);
 
 }
@@ -26,6 +27,14 @@ void APIClient::configure(const QString &institution_id, const QString &instance
     this->region = region;
 }
 
+void APIClient::setEyeTrackerKey(const QString &key){
+    this->eyeTrackerKey = key;
+}
+
+QString APIClient::getEyeTrackerKey() const {
+    return this->eyeTrackerKey;
+}
+
 bool APIClient::requestOperatingInfo(const QString &hardware_description_string, bool sendLog, bool logOnly){
 
     error = "";
@@ -38,7 +47,7 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string,
     // qDebug() << "URL for OI" << ENDPOINT_OPERATING_INFO + "/" + institution_id;
     rest_controller.setAPIEndpoint(ENDPOINT_OPERATING_INFO + "/" + institution_id);
     QVariantMap map;
-    map.insert(URLPARAM_PPKEY,Globals::EyeTracker::PROCESSING_PARAMETER_KEY);
+    map.insert(URLPARAM_PPKEY,this->eyeTrackerKey);
     map.insert(URLPARAM_VERSION,this->version);
     map.insert(URLPARAM_INSTANCE,instance_number);
 

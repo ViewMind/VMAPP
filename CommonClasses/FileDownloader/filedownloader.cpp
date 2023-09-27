@@ -64,9 +64,9 @@ void FileDownloader::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
     qreal hours = qFloor(minutes/60);
     minutes = minutes - hours*60;
 
-    qDebug() << hours << minutes << seconds;
+    //qDebug() << hours << minutes << seconds;
 
-    emit FileDownloader::downloadProgress(p,hours,minutes,seconds);
+    emit FileDownloader::downloadProgress(p,hours,minutes,seconds,bytesReceived,bytesTotal);
 
 
 }

@@ -99,6 +99,11 @@ Item {
             // If you then click out of the application the active focus will change and focus will remaion on.
             // Clicking back in the box will AGAIN change the active focus to true and focus will still be true.
             onActiveFocusChanged: {
+
+                if (activeFocus){
+                    mainWindow.requestApplicationActiveFocus();
+                }
+
                 if (focus){
                     if (vmCurrentText == "") {
                         text = ""

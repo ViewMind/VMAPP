@@ -11,6 +11,24 @@ ApplicationWindow {
     title: qsTr("EyeExplorer - ") + loader.getWindowTilteVersion()
     visibility: Window.Maximized
 
+    Connections {
+        target: loader
+        function onTitleBarUpdate(){
+            title = qsTr("EyeExplorer - ") + loader.getWindowTilteVersion()
+        }
+
+        function onDownloadProgressUpdate(progress, hours, minutes, seconds, bytesDowloaded, bytesTotal){
+            let text = loader.getStringForKey("viewwait_download_remaining")
+            let MB = Math.round(bytesDowloaded/(1024*1024))
+            let MBT = Math.round(bytesTotal/(1024*1024));
+            text = text.replace("<M>",Math.round(minutes));
+            text = text.replace("<S>",Math.round(seconds));
+            text = text.replace("<MB>",MB);
+            text = text.replace("<MBT>",MBT);
+            waitScreen.updateProgress(Math.ceil(progress),text);
+        }
+    }
+
     readonly property alias vmSegoeNormal: segoeui_normal
     readonly property alias vmSegoeHeavy: segoeui_heavy
     readonly property alias vmSegoeBold: segoeui_bold
@@ -82,7 +100,7 @@ ApplicationWindow {
         onRestartRequired: {
             messageDiag.vmLarge = false
             messageDiag.loadFromKey("viewsettings_restart_msg")
-            messageDiag.open();
+            messageDiag.open();            
         }
     }
 
@@ -210,6 +228,12 @@ ApplicationWindow {
         waitScreen.show()
     }
 
+    function openWaitAsProgress(message){
+        waitScreen.vmText = message
+        waitScreen.showWithProgress();
+        waitScreen.updateProgress(0,"");
+    }
+
     function closeWait(){
         waitScreen.hide();
     }
@@ -226,6 +250,10 @@ ApplicationWindow {
 
     function getCurrentSwipeIndex(){
         return swiperControl.currentIndex;
+    }
+
+    function requestApplicationActiveFocus(){
+        requestActivate()
     }
 
     function showCalibrationValidation(){

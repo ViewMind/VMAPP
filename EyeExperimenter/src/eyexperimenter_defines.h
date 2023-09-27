@@ -43,7 +43,8 @@ static const QString DBBKPDIR                = "dbbkp";
 static const QString CONFIGURATION           = "vmconfiguration";
 static const QString APPSPEC                 = "vmappspec";
 static const QString UPDATE_PACKAGE          = "app.zip";
-static const QString UPDATE_SCRIPT           = "update.bat";
+static const QString VMTOOLDIR               = "../VMMaintenanceTool";
+static const QString VMTOOLEXE               = "../VMMaintenanceTool/VMMaintenanceTool.exe";
 static const QString CHANGELOG_LOCATION      = "changelog";
 static const QString CHANGELOG_BASE          = "changelog_";
 static const QString DEBUG_OPTIONS_FILE      = "vmdebug";
@@ -52,6 +53,8 @@ static const QString LOGFILE                 = "logfile.log";
 static const QString MANUAL_DIR              = "manual";
 static const QString FAILED_CALIBRATION_DIR  = "failed_calibrations";
 static const QString SUPPORT_EMAIL_FILE      = "support_email.html";
+static const QString APPVERSION              = "appversioninfo.json";
+static const QString VM_UPDATE_LINK          = "ViewMind Update.lnk";
 }
 
 namespace SupportEmailPlaceHolders {
@@ -138,8 +141,7 @@ static QVariantMap GetNameCodeMap() {
 }
 
 namespace Share {
-static const QString EXPERIMENTER_VERSION_NUMBER = "26.0.0.dev.0";
-extern QString EXPERIMENTER_VERSION;
+static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.0";
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
 static const QString PATIENT_UID = "patient_uid";
@@ -172,14 +174,6 @@ static bool SetUpRegion(const QString &reg){
         return true;
     }
     return false;
-}
-
-static void SetExperimenterVersion(const QString institutionDescription) {
-    QString dbug_str = Debug::CreateDebugOptionSummary();
-    Share::EXPERIMENTER_VERSION = Share::EXPERIMENTER_VERSION_NUMBER + " - " + EyeTracker::NAME + " - " + institutionDescription  + " - " + REGION;
-    if (!dbug_str.isEmpty()){
-        Share::EXPERIMENTER_VERSION = Share::EXPERIMENTER_VERSION + " - " + dbug_str;
-    }
 }
 
 namespace BaseFileNames {

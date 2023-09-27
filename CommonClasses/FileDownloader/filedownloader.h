@@ -31,7 +31,7 @@ public:
 
 signals:
     void downloadCompleted(bool allOk);
-    void downloadProgress(qreal progress, qreal hours, qreal minutes, qreal seconds);
+    void downloadProgress(qreal progress, qreal hours, qreal minutes, qreal seconds, qint64 bytesDowloaded, qint64 bytesTotal);
 
 private slots:
     void downloadComplete(QNetworkReply * netreply);

@@ -38,6 +38,12 @@ public:
     // If logOnly is true AND sendLog is true, then the code for the last API request is set to API_OP_INFO_LOG_ONLY
     bool requestOperatingInfo(const QString &hardware_description_string, bool sendLog, bool logOnly);
 
+    // Once we get the key from the RRS it needs to be set here.
+    void setEyeTrackerKey(const QString &key);
+
+    // The key is stored in the studies, so it needs to be retrieved.
+    QString getEyeTrackerKey() const;
+
     // Requensts sending a support email.
     bool requestSupportEmail(const QString &subject, const QString &email_file);
 
@@ -91,6 +97,7 @@ private:
     qint32 lastRequest;
     QString lastGeneratedLogFileName;
     QString lastRequestEmailFile;
+    QString eyeTrackerKey;
 
     // The actual endpoints.    
     const QString ENDPOINT_OPERATING_INFO      = "/institution/operating_information";

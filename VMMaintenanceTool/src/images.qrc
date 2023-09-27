@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/icon.png</file>
+        <file>images/alert-triangle-white.png</file>
+        <file>images/info_notification.png</file>
+        <file>images/check-circle-white.png</file>
+        <file>images/logo.png</file>
+        <file>images/loader.gif</file>
+    </qresource>
+</RCC>

@@ -94,6 +94,12 @@ Item {
             vmTextAreaInput.textChanged();
         }
 
+        onActiveFocusChanged: {
+            if (activeFocus){
+                mainWindow.requestApplicationActiveFocus();
+            }
+        }
+
     }
 
 

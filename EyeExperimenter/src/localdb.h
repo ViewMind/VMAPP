@@ -66,6 +66,7 @@ public:
     static const char * MAIN_QC_PARAMETERS;
     static const char * MAIN_APP_VERSION;
     static const char * MAIN_APP_UPDATE_DELAY_COUNTER;
+    static const char * MAIN_LAST_APP_DOWNLOADED;
     static const char * MAIN_DB_VERSION;
     static const char * MAIN_RECOVERY_PASSWORD;
     static const char * MAIN_QC_STUDY_INDEX;
@@ -222,6 +223,9 @@ public:
     // Error string. For logging purposes.
     QString getError() const;
 
+    // The version of the app that was last downloaded.
+    QString getLastDownloadedApp() const;
+
     // Sets the current version. If it exists and it's different it returns true. Otherwise it returns false. Allows simple check to know when a version changed.
     // Also if version change (or was created) update postpone counter is reset.
     bool setApplicationVersion(const QString &version);
@@ -255,6 +259,9 @@ public:
 
     // Sets a preferences in the DB.
     bool setPreference(const QString &preference, const QVariant &variant);
+
+    // Sets the last downloaded app.
+    bool setLastDownloadedApp(const QString &version);
 
     // Returns a preference that was set, as a string. As of the writing of this, we only need strings.
     // The second parameter can be used to return a store and return a value if the required one doesn't exist
