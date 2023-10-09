@@ -186,7 +186,7 @@ void MaintenanceManager::doActionRunDiagnostics() {
     missingFilesInInstall = dirCompare.getFileList(DirCompare::FLT_NOT_IN_CHECK);
     corruptedFilesInInstall = dirCompare.getFileList(DirCompare::FLT_BAD_CHECSUM);
 
-    log("List of files missing in install\n   " + missingFilesInInstall.join("\n   "));       
+    log("List of files missing in install\n   " + missingFilesInInstall.join("\n   "));
     log("List of files corrupted in install\n   " + corruptedFilesInInstall.join("\n   "));
 
     // After all the diagnostics are done, we figure out the recommended action.
@@ -243,7 +243,7 @@ void MaintenanceManager::getRecommendedActionFromDiagnosisResults() {
             log("The License File is corrupted adding action to restore it from backup");
 
             // This is assuming the licence file exists.
-            if (Paths::Exists(Paths::PI_CURRENT_VMCONFIG_FILE)){                
+            if (Paths::Exists(Paths::PI_CURRENT_VMCONFIG_FILE)){
                 addCorrectiveAction(CA_DELETE_FILE,Paths::Path(Paths::PI_CURRENT_VMCONFIG_FILE),"");
             }
 
@@ -546,10 +546,22 @@ bool MaintenanceManager::performCorrectiveActions(bool sayNotDo) {
             log("CorrectiveAction: Moving directory from '" + ca.source + "' to '" + ca.destination + "'");
             if (sayNotDo) continue;
 
-            QDir dir;
-            if (!dir.rename(ca.source,ca.destination)){
-                log("ERROR: Unable move directories");
-                printError = true;
+            qint32 ntries = 10;
+            QElapsedTimer timer;
+
+            while (ntries > 0){
+                QDir dir;
+                if (!dir.rename(ca.source,ca.destination)){
+                    ntries--;
+                    log("ERROR: Unable move directories. " + QString::number(ntries) + " remainig tries");
+                    printError = true;
+                    timer.start();
+                    while (timer.elapsed() < 1000){}
+                }
+                else {
+                    printError = false;
+                    break;
+                }
             }
         }
         else if (ca.type == CA_REMOVE_DIR){

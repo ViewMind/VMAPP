@@ -10,6 +10,7 @@
 #include <QJsonParseError>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QElapsedTimer>
 
 #include "../../CommonClasses/DirTools/dirrunner.h"
 #include "../../CommonClasses/DirTools/dircompare.h"

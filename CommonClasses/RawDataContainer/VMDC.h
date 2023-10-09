@@ -182,7 +182,8 @@ namespace VMDC {
        static const QString X_R = "xr";
        static const QString Y_L = "yl";
        static const QString Y_R = "yr";
-       static const QStringList valid{TIMESTAMP,CHAR_L,CHAR_R,PUPIL_L,PUPIL_R,WORD_L,WORD_R,X_L,X_R,Y_L,Y_R};
+       static const QString COUNTER = "c";
+       static const QStringList valid{TIMESTAMP,CHAR_L,CHAR_R,PUPIL_L,PUPIL_R,WORD_L,WORD_R,X_L,X_R,Y_L,Y_R,COUNTER};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Data Vector Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   

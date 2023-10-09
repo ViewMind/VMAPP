@@ -418,7 +418,22 @@ qreal StudyEndOperations::computeNumberOfDataPointsIn2DStudy(const QVariantList 
         for (qint32 j = 0; j < dataset_names.size(); j++){
             QVariantMap dataSet = data.value(dataset_names.at(j)).toMap();
             //qDebug() << "   Dataset: " << dataset_names.at(j) << dataSet.value(VMDC::DataSetField::RAW_DATA).toList().size();
-            pointsInTrial = pointsInTrial + dataSet.value(VMDC::DataSetField::RAW_DATA).toList().size();
+
+            // We check to see if the counter is present to compute the QCI with the counter.
+            QVariantList list = dataSet.value(VMDC::DataSetField::RAW_DATA).toList();
+            qint32 temp_npoints = 0;
+            if (list.size() > 0){
+                if (list.first().toMap().contains(VMDC::DataVectorField::COUNTER)){
+                    qlonglong first = list.first().toMap().value(VMDC::DataVectorField::COUNTER).toLongLong();
+                    qlonglong last  = list.last().toMap().value(VMDC::DataVectorField::COUNTER).toLongLong();
+                    temp_npoints = last - first + 1;
+                }
+                else {
+                    temp_npoints = dataSet.value(VMDC::DataSetField::RAW_DATA).toList().size();
+                }
+            }
+
+            pointsInTrial = pointsInTrial + temp_npoints;// dataSet.value(VMDC::DataSetField::RAW_DATA).toList().size();
         }
 
     }

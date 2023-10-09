@@ -29,7 +29,10 @@ void Paths::FillPaths(){
     // First thing is first we get the directory of the currently installed app.
     QString path = DebugOptions::DebugString(Globals::DebugOptions::FORCE_EYEEXP_PATH);
     if (path == ""){
-        path = "../";
+        QDir dir(".");
+        dir.cdUp(); //
+        path = dir.absolutePath();
+        qDebug() << path;
     }
 
     pathToDirContainingEyeExpInstall = path;
