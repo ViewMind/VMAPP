@@ -415,7 +415,8 @@ namespace VMDC {
        static const QString EYE_LEFT               = "eye_left";
        static const QString EYE_RIGHT              = "eye_right";
        static const QString TIME_VECTOR            = "time_vector";
-       static const QStringList valid{ELEMENT_SAMPLES,EYE_LEFT,EYE_RIGHT,TIME_VECTOR};
+       static const QString FRAME_COUNTER          = "frame_counter";
+       static const QStringList valid{ELEMENT_SAMPLES,EYE_LEFT,EYE_RIGHT,TIME_VECTOR,FRAME_COUNTER};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study 3D Data Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }

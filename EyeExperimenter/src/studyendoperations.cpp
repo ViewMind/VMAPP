@@ -89,6 +89,8 @@ void StudyEndOperations::doStudyFileProcessing(){
     qreal sampling_frequency = pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
     sampling_period = 1000.0/sampling_frequency; // In milliseconds.
 
+    //qDebug() << "Sampling Frequency:" << sampling_frequency << ". The period" << sampling_period;
+
     // Now we need to know how to compute the QC Index for each study in the file. All studies need to approve individually.
     // If any of them fail then the QC Index should be set to bad.
 
@@ -202,8 +204,19 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
     else if ( (study == VMDC::Study::GONOGO_SPHERE) || (study == VMDC::Study::PASSBALL) ){
 
 
-        QVariant temp = vmdc.get3DStudyData(study,VMDC::Study3DDataFields::TIME_VECTOR);
-        numberOfDataPointsObatained = temp.toList().size();
+        //QVariant temp  = vmdc.get3DStudyData(study,VMDC::Study3DDataFields::TIME_VECTOR);
+        QVariantList frame_numbers = vmdc.get3DStudyData(study,VMDC::Study3DDataFields::FRAME_COUNTER).toList();
+        if (frame_numbers.size() > 0){
+            numberOfDataPointsObatained = frame_numbers.last().toLongLong() - frame_numbers.first().toLongLong();
+        }
+        else {
+            numberOfDataPointsObatained = 0;
+        }
+
+//        qDebug() << "Number of time vector data points" << temp.toList().size() << "Number of frame counter data points" << frame_numbers.size();
+//        qDebug() << "Last value of the frame counter" << frame_numbers.last().toLongLong()  << "First value of the frame counter" << frame_numbers.first().toLongLong();
+
+        //numberOfDataPointsObatained = temp.toList().size();
         numberOfTrials = 1;
         timeWithNoDataPerTrial = 0;
 
@@ -432,6 +445,7 @@ qreal StudyEndOperations::computeNumberOfDataPointsIn2DStudy(const QVariantList 
                     temp_npoints = dataSet.value(VMDC::DataSetField::RAW_DATA).toList().size();
                 }
             }
+            //temp_npoints = dataSet.value(VMDC::DataSetField::RAW_DATA).toList().size();
 
             pointsInTrial = pointsInTrial + temp_npoints;// dataSet.value(VMDC::DataSetField::RAW_DATA).toList().size();
         }
