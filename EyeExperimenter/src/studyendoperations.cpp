@@ -204,13 +204,13 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
     else if ( (study == VMDC::Study::GONOGO_SPHERE) || (study == VMDC::Study::PASSBALL) ){
 
 
-        //QVariant temp  = vmdc.get3DStudyData(study,VMDC::Study3DDataFields::TIME_VECTOR);
+        QVariant temp  = vmdc.get3DStudyData(study,VMDC::Study3DDataFields::TIME_VECTOR);
         QVariantList frame_numbers = vmdc.get3DStudyData(study,VMDC::Study3DDataFields::FRAME_COUNTER).toList();
         if (frame_numbers.size() > 0){
             numberOfDataPointsObatained = frame_numbers.last().toLongLong() - frame_numbers.first().toLongLong();
         }
         else {
-            numberOfDataPointsObatained = 0;
+            numberOfDataPointsObatained = temp.toList().size();
         }
 
 //        qDebug() << "Number of time vector data points" << temp.toList().size() << "Number of frame counter data points" << frame_numbers.size();
@@ -229,7 +229,8 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
         numberOfDataPointsObatained = computeNumberOfDataPointsIn2DStudy(trials);
         numberOfTrials = trials.size();
         // Nback studies are not collecting data ONLY when transition from one trial to the next.
-        timeWithNoDataPerTrial = config.value(VMDC::StudyParameter::NBACK_TRANSITION).toReal() + pauseDuration/numberOfTrials;
+        //qDebug() << "For NBack. Transition Time" << config.value(VMDC::StudyParameter::NBACK_TRANSITION).toReal() << "And the Pause Duration" << pauseDuration;
+        timeWithNoDataPerTrial = config.value(VMDC::StudyParameter::NBACK_TRANSITION).toReal(); // + pauseDuration/numberOfTrials;
 
     }
 
@@ -253,9 +254,9 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
     qreal expectedNumberOfDataPoints = estimatedDataGatheringTime/sampling_period;
     qreal qci = qMin(numberOfDataPointsObatained*100.0/expectedNumberOfDataPoints,100.0);
 
-//    qDebug() << "Study duration" << studyDuration << ". Time with No Data PerTrial" << timeWithNoDataPerTrial << ". Number of Trials" << numberOfTrials;
-//    qDebug() << "Expected Data Gathering Time" << estimatedDataGatheringTime << "Expected Number of Data Points" << expectedNumberOfDataPoints;
-//    qDebug() << "Number of points obtained" << numberOfDataPointsObatained << "QCI" << qci;
+    qDebug() << "Study duration" << studyDuration << ". Time with No Data PerTrial" << timeWithNoDataPerTrial << ". Number of Trials" << numberOfTrials;
+    qDebug() << "Expected Data Gathering Time" << estimatedDataGatheringTime << "Expected Number of Data Points" << expectedNumberOfDataPoints;
+    qDebug() << "Number of points obtained" << numberOfDataPointsObatained << "QCI" << qci;
 
     return qci;
 

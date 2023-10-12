@@ -145,6 +145,8 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
 
         QList<EyeTrackerData> adjustedRawData;
 
+        //qDebug() << "On EyeCorrectionCoefficients::computeCoefficients2D, at calibration data point " << i << " the size is " << calibrationData.at(i).size();
+
         for (qint32 j = 0; j < calibrationData.at(i).size(); j++){
 
             EyeTrackerData erd = calibrationData.at(i).at(j);
@@ -236,13 +238,12 @@ bool EyeCorrectionCoefficients::computeCoefficients2D(){
 
         QList<EyeTrackerData> f;
 
-        qint32 start_point = cuttoffForCalibrationDataForCumputation.at(i);
-
-        if ((start_point < 0) || (start_point > points2Fit.at(i).size())){
-            start_point = 0;
-        }
-
-        for (qint32 j = start_point; j < points2Fit.at(i).size(); j++){
+//        qint32 start_point = cuttoffForCalibrationDataForCumputation.at(i);
+//        if ((start_point < 0) || (start_point > points2Fit.at(i).size())){
+//            start_point = 0;
+//        }
+//        for (qint32 j = start_point; j < points2Fit.at(i).size(); j++){
+        for (qint32 j = 0; j < points2Fit.at(i).size(); j++){
 
             EyeTrackerData input = points2Fit.at(i).at(j);
             EyeTrackerData prediction;
@@ -664,7 +665,6 @@ bool EyeCorrectionCoefficients::isVectorCloseEnough(QVector3D tv, qreal x, qreal
     return (dis <= validationRadious);
 }
 
-
 QVariantMap EyeCorrectionCoefficients::getCalibrationControlPacketCompatibleMap(bool left_eye) const{
 
     QVariantMap map;
@@ -684,7 +684,6 @@ QVariantMap EyeCorrectionCoefficients::getCalibrationControlPacketCompatibleMap(
 
     return map;
 }
-
 
 bool EyeCorrectionCoefficients::loadFromTextMatrix(const QString &text){
 

@@ -37,6 +37,23 @@ void CalibrationManager::startCalibration(bool mode3D,
     renderServerPacket.setPayloadField(RRS::PacketCalibrationControl::MOVE_TIME,calibration_wait_time);
     renderServerPacket.setPayloadField(RRS::PacketCalibrationControl::N_CALIB_POINTS,numberOfCalibrationPoints);
 
+    QString debugLoadCalibrationReturnPacketPath = DBUGSTR(Debug::Options::CALIBRATION_RAW_DATA_INPUT);
+
+    if (debugLoadCalibrationReturnPacketPath != ""){
+        StaticThreadLogger::warning("CalibrationManager::startCalibration","[DBUG] forcing the return packet");
+        QString error = "";
+        QVariantMap packet_data = Globals::LoadJSONFileToVariantMap(debugLoadCalibrationReturnPacketPath,&error);
+        if (error != ""){
+            StaticThreadLogger::error("CalibrationManager::startCalibration","Failed to load force return packet data. Reason: " + error);
+        }
+        else {
+            RenderServerPacket packet;
+            packet.setFullPayload(packet_data);
+            processCalibrationData(packet);
+            return;
+        }
+    }
+
     // If we got here, this is a normal calibration.
     if (calibrationMode3D){
         // We need to send a packet to the render server to start the 3D Calibration.
@@ -187,7 +204,7 @@ void CalibrationManager::processCalibrationData(const RenderServerPacket &calibr
     QVariantList ty = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIBRATION_TARGETS_Y).toList();
     QVariantList tz = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIBRATION_TARGETS_Z).toList();
 
-    // Creating the target vectors.
+    // The number of calibration targets is the size of the vectors.
     qsizetype N = tx.size();
 
     QVariantList start_index_list = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_START_IND).toList();    
@@ -251,14 +268,14 @@ void CalibrationManager::processCalibrationData(const RenderServerPacket &calibr
         qsizetype M = cdxr.size(); // They should all be the same size.
         qint32 currentCalibrationPointIndex = static_cast<qint32>(i)-1;
 
+        //qDebug() << "The size of the data vectors for calibration point " << i << " is " << M;
+
         qint32 start_index = start_index_list.value(i).toInt();
         bool there_was_an_error = false;
         if (start_index == -1){
-        //if ((start_index == -1) || (i == 2)){
-            StaticThreadLogger::error("CalibrationManager::processCalibrationData","The calibration start index for calibration point  " + QString::number(i) + " has not been set");
-            StaticThreadLogger::error("CalibrationManager::processCalibrationData","Printing Packet For Reference:\n" + Debug::QVariantMapToString(calibrationData.getPayload()));
+            StaticThreadLogger::warning("CalibrationManager::processCalibrationData","The calibration start index for calibration point  " + QString::number(i) + " has not been set. Forcing to zero");
+            //StaticThreadLogger::error("CalibrationManager::processCalibrationData","Printing Packet For Reference:\n" + Debug::QVariantMapToString(calibrationData.getPayload()));
             start_index = 0;
-            there_was_an_error = true;
         }
         else if (start_index >= (M-1)) {
             StaticThreadLogger::error("CalibrationManager::processCalibrationData","The calibration start index for calibration point  " + QString::number(i) + " has been set to "

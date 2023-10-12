@@ -221,7 +221,7 @@ Item {
             }
 
             let index = parts[2]; // The third part of the key name is the calibration point index
-            start_index = start_indexes[index];
+            start_index = start_indexes[index];            
 
             //console.log("The key is now " + key + " so the index would be " + index +  " and the start would be " + start_index);
 

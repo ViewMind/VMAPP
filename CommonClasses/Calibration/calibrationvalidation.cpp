@@ -180,6 +180,8 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
         rightEyeData["validation_target_" + QString::number(i)] = rightDataList;
         leftEyeData["validation_target_" + QString::number(i)] = leftDataList;
 
+        //qDebug() << "Validation target " << i << " sizes. Right" << rightDataList.size() << "Left" << leftDataList.size();
+
         // Stroing the percent for the target point and if it passed or not. However this is only truly used in 3D Mode.
         QVariantMap mpl, mpr;
         mpl["p"] = pl;
@@ -257,6 +259,9 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
 
     calibrationAttempt[VMDC::CalibrationAttemptFields::LEFT_EYE_DATA]                    = leftEyeData;
     calibrationAttempt[VMDC::CalibrationAttemptFields::RIGHT_EYE_DATA]                   = rightEyeData;
+
+
+
     calibrationAttempt[VMDC::CalibrationAttemptFields::CALIBRATION_DATA_USE_START_INDEX] = coeffs.getCutoffIndexesListAsVariantList();
     calibrationAttempt[VMDC::CalibrationAttemptFields::MATH_ISSUES_FOR_CALIBRATION]      = !coeffs.getResultOfLastComputation();
     calibrationAttempt[VMDC::CalibrationAttemptFields::COFICIENT_OF_DETERMINATION]       = Rreport;
