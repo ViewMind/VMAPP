@@ -495,7 +495,7 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     metadata.insert(VMDC::MetadataField::PROTOCOL,protocol);
     metadata.insert(VMDC::MetadataField::DISCARD_REASON,"");
     metadata.insert(VMDC::MetadataField::COMMENTS,"");
-    metadata.insert(VMDC::MetadataField::APP_VERSION,this->getWindowTilteVersion());
+    metadata.insert(VMDC::MetadataField::APP_VERSION,this->getVersionNumber());
 
     // Creating the subject data
     QVariantMap subject_data;

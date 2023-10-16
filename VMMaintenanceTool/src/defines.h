@@ -5,7 +5,7 @@
 
 namespace Globals {
 
-    static const QString VERSION       = "1.0.0";
+    static const QString VERSION       = "1.0.1";
     static const QString DIR_LOGS      = "logs";
     static const QString LOG_FILE_BASE = "maitenance_log_";
 
@@ -23,7 +23,7 @@ namespace Globals {
        static const QString TAR_EXE             = "tar.exe";
        static const QString LICENSE_FILE        = "vmconfiguration";
        static const QString DB_FILE             = "localdb.dat";
-       static const QString EYEEXP_SHORTCUT     = "Eye Explorer.lnk";       
+       static const QString EYEEXP_SHORTCUT     = "ViewMind Atlas.lnk";
     }
 
     namespace DebugOptions {
