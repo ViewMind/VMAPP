@@ -25,6 +25,8 @@ namespace HWKeys {
    const QString TOTAL_RAM    = "total_ram";      /// SystemInfo - Available Physical Memory
    const QString HMD_BRAND    = "hmd_brand";      /// Depeding on which serial number we are able to find, we kown the hmd brand.
    const QString HMD_SN       = "hmd_sn";         /// If available, the serial number of the headset
+   const QString OS_NAME      = "os_name";
+   const QString OS_VERSION   = "os_version";
 }
 
 /**
@@ -91,6 +93,8 @@ private:
     const QString SYSINFO_KEY_SYS_MANUFACTURER                = "System Manufacturer";
     const QString SYSINFO_KEY_SYS_MODEL                       = "System Model";
     const QString SYSINFO_KEY_RAM                             = "Total Physical Memory";
+    const QString SYSINFO_KEY_OS_NAME                         = "OS Name";
+    const QString SYSINFO_KEY_OS_VERSION                      = "OS Version";
 
     // WMIC Keys
     const QString WMIC_KEY_NAME                               = "Name";

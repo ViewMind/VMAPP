@@ -15,6 +15,8 @@ HWRecognizer::HWRecognizer()
     specs[HWKeys::DISK_SN] = "";
     specs[HWKeys::HMD_SN] = "";
     specs[HWKeys::HMD_BRAND] = "";
+    specs[HWKeys::OS_NAME] = "";
+    specs[HWKeys::OS_VERSION] = "";
 
     // We parse the sytem info.
     parseSystemInfo();
@@ -42,6 +44,9 @@ HWRecognizer::HWRecognizer()
     keys_to_copy[SYSINFO_KEY_SYS_MANUFACTURER] = HWKeys::PC_BRAND;
     keys_to_copy[SYSINFO_KEY_SYS_MODEL] = HWKeys::PC_MODEL;
     keys_to_copy[SYSINFO_KEY_RAM] = HWKeys::TOTAL_RAM;
+    keys_to_copy[SYSINFO_KEY_OS_NAME] = HWKeys::OS_NAME;
+    keys_to_copy[SYSINFO_KEY_OS_VERSION] = HWKeys::OS_VERSION;
+
     QStringList keys = keys_to_copy.keys();
     for (qint32 i = 0; i < keys.size(); i++){
         QString sysinfo_key = keys.at(i);
@@ -84,7 +89,16 @@ HWRecognizer::HWRecognizer()
     if (!info.isEmpty()){
         QStringList list = info.value(WMIC_KEY_NAME);
         if (!list.empty()){
-            //qDebug() << "MODELO";
+
+            // We might have more than ONE GPU. If this is the case we ONLY want to NON intel ones.
+            if (list.size() > 1){
+                QStringList temp;
+                for (qint32 i = 0; i < list.size(); i++){
+                    if (list.at(i).contains("Intel")) continue;
+                    temp << list.at(i);
+                }
+                if (temp.size() > 0) list = temp;
+            }
             specs[HWKeys::GPU_MODEL] = list.first();
         }
     }
