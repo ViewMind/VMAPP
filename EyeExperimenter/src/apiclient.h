@@ -9,6 +9,7 @@
 #include <QFileInfo>
 #include <QMessageAuthenticationCode>
 #include "../../CommonClasses/RestAPIController/restapicontroller.h"
+#include "../../CommonClasses/LogInterface/logprep.h"
 #include "eyexperimenter_defines.h"
 
 class APIClient : public QObject

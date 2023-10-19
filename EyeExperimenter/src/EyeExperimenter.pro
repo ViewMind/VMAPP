@@ -35,6 +35,7 @@ SOURCES += main.cpp \
     ../../CommonClasses/LinearLeastSquares/ordinaryleastsquares.cpp \
     ../../CommonClasses/LinearLeastSquares/simplematrix.cpp \
     ../../CommonClasses/LogInterface/loggerthread.cpp \
+    ../../CommonClasses/LogInterface/logprep.cpp \
     ../../CommonClasses/LogInterface/staticthreadlogger.cpp \
     ../../CommonClasses/RawDataContainer/viewminddatacontainer.cpp \
     ../../CommonClasses/RenderServerClient/RenderServerPackets/renderserverpacket.cpp \
@@ -70,6 +71,7 @@ HEADERS += \
     ../../CommonClasses/LinearLeastSquares/ordinaryleastsquares.h \
     ../../CommonClasses/LinearLeastSquares/simplematrix.h \
     ../../CommonClasses/LogInterface/loggerthread.h \
+    ../../CommonClasses/LogInterface/logprep.h \
     ../../CommonClasses/LogInterface/staticthreadlogger.h \
     ../../CommonClasses/RawDataContainer/VMDC.h \
     ../../CommonClasses/RawDataContainer/viewminddatacontainer.h \

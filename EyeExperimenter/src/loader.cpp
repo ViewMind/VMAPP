@@ -1055,14 +1055,6 @@ void Loader::onNotificationFromFlowControl(QVariantMap notification){
             return;
         }
 
-        // At this point we need to create the Application Version File.
-        QVariantMap appversioninfo;
-        appversioninfo["version"] = Globals::Share::EXPERIMENTER_VERSION_NUMBER;
-        appversioninfo["hmd"] = key;
-        if (!Globals::SaveVariantMapToJSONFile(Globals::Paths::APPVERSION,appversioninfo,true)){
-            StaticThreadLogger::error("Loader::onNotificationFromFlowControl","Was unable to create the Application Version File for use for the EyeMaintenance");
-        }
-
         apiclient.setEyeTrackerKey(key);
         emit Loader::titleBarUpdate();
     }
@@ -1096,7 +1088,13 @@ void Loader::receivedRequest(){
             if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO_AND_LOG){
                 StaticThreadLogger::log("Loader::receivedRequest","Returned from operating information call with log uplaod"); // This log line serves as the purpose of ensuring that the logfile.log will exist.
 
-                QFile::remove(apiclient.getLastGeneratedLogFileName()); // This will fail if no file exists. So we don't check for errors.
+                //QFile::remove(apiclient.getLastGeneratedLogFileName()); // This will fail if no file exists. So we don't check for errors.
+
+                // This ensures that we ONLY clean this when there is no error.
+                QString instance_number = configuration->getString(Globals::VMConfig::INSTANCE_NUMBER);
+                QString inst_id = configuration->getString(Globals::VMConfig::INSTITUTION_ID);
+                LogPrep lp(Globals::Paths::LOGFILE,inst_id,instance_number);
+                lp.cleanLogDir();
 
                 // We mark now as the last log upload.
                 localDB.setLogUploadMark();
@@ -1295,7 +1293,13 @@ void Loader::receivedRequest(){
 
             // We need to clear the sent files to avoid garbage build up.
             apiclient.clearFileToSendHandles();
-            QFile::remove(apiclient.getLastGeneratedLogFileName()); // This will fail if no file exists. So we don't check for errors.
+
+            // This ensures that we ONLY clean this when there is no error.
+            QString instance_number = configuration->getString(Globals::VMConfig::INSTANCE_NUMBER);
+            QString inst_id = configuration->getString(Globals::VMConfig::INSTITUTION_ID);
+            LogPrep lp(Globals::Paths::LOGFILE,inst_id,instance_number);
+            lp.cleanLogDir();
+
             QFile::remove(apiclient.getLatestGeneratedSupportEmail());
 
             emit Loader::sendSupportEmailDone(true);

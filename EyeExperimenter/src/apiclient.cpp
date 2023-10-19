@@ -63,11 +63,15 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string,
     // In order to append the log file we need to make a copy of it and change it's name.
     // Othewise when storing in the server the files would be overwritten.
     if (sendLog){
-        lastGeneratedLogFileName = institution_id + "_" + instance_number + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss") + ".log";
-        if (!QFile::rename(Globals::Paths::LOGFILE,lastGeneratedLogFileName)){
-            error = "Unable to remane the logfile to a new temporary name of " + lastGeneratedLogFileName;
+
+        LogPrep logPrep(Globals::Paths::LOGFILE,institution_id,instance_number);
+        QString tempName = logPrep.createFullLogBackup();
+        if (tempName == ""){
+            error = "Unable to create Log Backup. Reason: " + logPrep.getError();
             return false;
         }
+
+        lastGeneratedLogFileName = tempName;
 
         if (!rest_controller.appendFileForRequest(lastGeneratedLogFileName,FILE_KEY)){
             error = "Could not append log File " + lastGeneratedLogFileName + " for request. Reason: " + rest_controller.getErrors().join("\n");
@@ -127,12 +131,15 @@ bool APIClient::requestSupportEmail(const QString &subject, const QString &email
     rest_controller.setPOSTDataToSend(postdata);
     rest_controller.setURLParameters(QVariantMap());
 
-    // Appending the log file for the support request.
-    lastGeneratedLogFileName = institution_id + "_" + instance_number + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss") + ".log";
-    if (!QFile::rename(Globals::Paths::LOGFILE,lastGeneratedLogFileName)){
-        error = "Unable to remane the logfile to a new temporary name of " + lastGeneratedLogFileName;
+    // Appending the log file for the support request.    
+    LogPrep logPrep(Globals::Paths::LOGFILE,institution_id,instance_number);
+    QString tempName = logPrep.createFullLogBackup();
+    if (tempName == ""){
+        error = "Unable to create Log Backup. Reason: " + logPrep.getError();
         return false;
     }
+
+    lastGeneratedLogFileName = tempName;
 
     if (!rest_controller.appendFileForRequest(lastGeneratedLogFileName,SUPPORT_EMAIL_LOG)){
         error = "Could not append log File " + lastGeneratedLogFileName + " for request. Reason: " + rest_controller.getErrors().join("\n");
