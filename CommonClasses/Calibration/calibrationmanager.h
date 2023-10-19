@@ -49,6 +49,7 @@ public:
 
     // For Debugging ONLY.
     void debugSaveCalibrationValidationData(const QString &filename);
+    void debugPrintLastCalibrationPacket();
 
 signals:
     void newPacketAvailable();
@@ -72,6 +73,9 @@ private:
 
     // The file name in which to save.
     QString coefficientFileName;
+
+    // The String version of the last received calibration packet. To be printed whenever something goes amiss.
+    QString lastCalibrationPacketString;
 
     // Flag that indicates the configured calibration mode.
     bool calibrationMode3D;

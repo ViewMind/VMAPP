@@ -142,27 +142,6 @@ void CalibrationManager::finalizeCalibrationProcess(qint32 code){
         code = CALIBRATION_FAILED;    
     }
 
-//    // We need to compute the target diameter.
-//    qreal targetDiameter = resolutionWidth*K_LARGE_D;
-
-//    // And we need to compute the target "corners" of the square which contains each fo the 2D targets.
-//    QVariantList list;
-//    for (qint32 i = 0; i < targetPoints2D.size(); i++){
-//        QVariantMap point;
-//        QPointF p = targetPoints2D.at(i);
-//        point["x"] = p.x();
-//        point["y"] = p.y();
-//        list << point;
-//    }
-
-//    // We now configure everthing to get the calibration report.
-//    calibrationValidation.configureValidation(calibrationValidationData,
-//                                              nonNormalizedTargetVectors,
-//                                              validationRadious,
-//                                              list,
-//                                              targetDiameter,
-//                                              calibrationMode3D);
-
     configureValidationGeneration();
 
     // And we actually generate it.
@@ -187,6 +166,8 @@ void CalibrationManager::finalizeCalibrationProcess(qint32 code){
 void CalibrationManager::processCalibrationData(const RenderServerPacket &calibrationData){
 
     //qDebug() << "Printing The Calibration Data";
+
+    lastCalibrationPacketString = Debug::QVariantMapToString(calibrationData.getPayload());
 
     nonNormalizedTargetVectors.clear();
     targetPoints2D.clear();
@@ -353,6 +334,10 @@ void CalibrationManager::compute2DTargetLocations(){
 ////////////////////// DEBUG LOAD FUNCTIONS //////////////////
 void CalibrationManager::debugSaveCalibrationValidationData(const QString &filename){
     calibrationValidation.saveToJSONFile(filename);
+}
+
+void CalibrationManager::debugPrintLastCalibrationPacket(){
+    StaticThreadLogger::log("CalibrationManager::debugPrintLastCalibrationPacket","[DEBUG] Printing Last Calibration Packet\n" + this->lastCalibrationPacketString);
 }
 
 RenderServerPacket CalibrationManager::debugLoadFixed3DCalibrationParameters() {

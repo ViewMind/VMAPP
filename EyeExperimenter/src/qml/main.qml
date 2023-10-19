@@ -260,6 +260,7 @@ ApplicationWindow {
 
         var map = flowControl.getCalibrationValidationData();
 
+
         let no_data_key = "calibration_points_with_too_few_data_points";
         let calib_target_key = "calibration_target_location";
         let math_issues_key = "math_issues_for_calibration";
@@ -297,6 +298,17 @@ ApplicationWindow {
                 messageDiag.open(true) // The flag is to stop message diag from closing the applicaiton.
                 return;
             }
+
+        }
+        else {
+            // Something is wrong. First we print the packet.
+            flowControl.printLastCalibrationPacketReceived();
+
+            // Then we suggest retry.
+            messageDiag.vmLarge = true; // Makes it a bit taller, so that more text can fit.
+            messageDiag.loadFromKey("viewevaluation_calib_abnormal_calibration_condition",true);
+            messageDiag.open(true) // The flag is to stop message diag from closing the applicaiton.
+            return;
 
         }
 

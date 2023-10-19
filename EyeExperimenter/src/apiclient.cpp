@@ -51,11 +51,16 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string,
     map.insert(URLPARAM_VERSION,this->version);
     map.insert(URLPARAM_INSTANCE,instance_number);
 
+    // Slashes are problematic. We replace them with dashes.
+    QString hwstring = hardware_description_string;
+    hwstring = hwstring.replace("/","-");
+    hwstring = hwstring.replace("\\","-");
+
     // Setting the required post data.
     QVariantMap postdata;
     postdata.insert(POST_FIELD_INSTITUTION_ID,institution_id);
     postdata.insert(POST_FIELD_INSTITUTION_INSTANCE,instance_number);
-    postdata.insert(POST_FIELD_HW_STRING, hardware_description_string);
+    postdata.insert(POST_FIELD_HW_STRING, hwstring);
     rest_controller.setPOSTDataToSend(postdata);
 
     rest_controller.setURLParameters(map);

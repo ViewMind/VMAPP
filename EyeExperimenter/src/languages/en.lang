@@ -262,6 +262,14 @@ viewevaluation_calib_suggest_adjust =
 Calibration could not be completed|
 Please readjust the headset on the patient's head and try again.;
 
+
+viewevaluation_calib_abnormal_calibration_condition = 
+Unexpected Calibration Situation
+The calibration data is not properly formatted. 
+Please send a support email as soon as possible.
+After this, please retry the calibration. 
+If the problem persists, restart the computer. 
+
 viewevaluation_calib_suggest_too_low = 
 Calibration could not be completed|
 The headset seems to be located too low on the patient's head.

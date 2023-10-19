@@ -263,6 +263,13 @@ viewevaluation_calib_suggest_adjust =
 La calibración no pudo ser completada|
 Por favor, acomode nuevamente el casco sobre el paciente e inténtelo nuevamente.;
 
+viewevaluation_calib_abnormal_calibration_condition = 
+Situación Inesperada de Calibración|
+Los datos de calibración son anómalos. 
+Por favor envié un mail de soporte cuanto antes.
+Luego de hacer eso, por favor reintente calibrar.
+Si el problema persiste. por favor reinicie su computadora;
+
 viewevaluation_calib_suggest_too_low = 
 La calibración no pudo ser completada|
 El casco parece estar ubicado demasiado bajo en la cabeza del paciente.

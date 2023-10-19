@@ -893,6 +893,14 @@ void Loader::requestOperatingInfo(bool logOnly){
         sendLog = localDB.checkForLogUpload();
     }
 
+    if (!sendLog){
+        // We still, AT LEAST copy the RRS files.
+        QString inst_id = configuration->getString(Globals::VMConfig::INSTITUTION_ID);
+        QString inst_number = configuration->getString(Globals::VMConfig::INSTANCE_NUMBER);
+        LogPrep lp(Globals::Paths::LOGFILE,inst_id,inst_number);
+        lp.findAndCopyRRSLogs();
+    }
+
     if (!apiclient.requestOperatingInfo(hwRecognizer.toString(false),sendLog,logOnly)){
         StaticThreadLogger::error("Loader::requestOperatingInfo","Request operating info error: "  + apiclient.getError());
         emit Loader::finishedRequest();

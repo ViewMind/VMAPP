@@ -28,6 +28,10 @@ FlowControl::FlowControl(QObject *parent, ConfigurationManager *c) : QObject(par
 
 }
 
+void FlowControl::printLastCalibrationPacketReceived(){
+    this->calibrationManager.debugPrintLastCalibrationPacket();
+}
+
 void FlowControl::startRenderServerAndSetWindowID(WId winID){
     mainWindowID = winID;
     // The redner server client can only be started once we have the window ID.

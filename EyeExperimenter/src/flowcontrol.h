@@ -68,6 +68,9 @@ public:
     // Required for the ID setting handshake.
     void startRenderServerAndSetWindowID(WId winID);
 
+    // For debugging.
+    Q_INVOKABLE void printLastCalibrationPacketReceived();
+
 signals:
 
     // This tells QML that the experiment has finished.
