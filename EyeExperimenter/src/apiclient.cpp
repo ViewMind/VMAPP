@@ -284,23 +284,21 @@ void APIClient::gotReply(){
 
     retdata.clear();
     QByteArray raw_reply = rest_controller.getReplyData();
-    if (rest_controller.didReplyHaveAnError()){
-        error = "Request reply had errors:\n   " + rest_controller.getErrors().join("\n   ");
-        error = error + "\nRaw Reply Data: " +  QString(raw_reply);
+
+    QJsonParseError json_error;
+    QJsonDocument doc = QJsonDocument::fromJson(QString(raw_reply).toUtf8(),&json_error);
+    if (doc.isNull()){
+        error = "Error decoding JSON Data: " + json_error.errorString();
+        error = error + "\nRaw Reply Data: " +  QString(raw_reply) + "\n";
     }
     else {
+        error = "";
+    }
+    retdata = doc.object().toVariantMap();
 
-        QJsonParseError json_error;
-        QJsonDocument doc = QJsonDocument::fromJson(QString(raw_reply).toUtf8(),&json_error);
-        if (doc.isNull()){
-            error = "Error decoding JSON Data: " + json_error.errorString();
-            error = error + "\nRaw Reply Data: " +  QString(raw_reply);
-        }
-        else{
-            retdata = doc.object().toVariantMap();
-        }
-
-
+    if (rest_controller.didReplyHaveAnError()){
+        error = error + "Request reply had errors:\n   " + rest_controller.getErrors().join("\n   ");
+        error = error + "\nRaw Reply Data: " +  QString(raw_reply);
     }
     emit APIClient::requestFinish();
 }

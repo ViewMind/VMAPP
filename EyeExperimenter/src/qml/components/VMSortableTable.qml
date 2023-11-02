@@ -24,6 +24,9 @@ Rectangle {
     property var vmActionEnabledTexts: [];
     property var vmDataMatrix: [];
     property bool vmCustomActionsEnabled: true;
+    property bool vmEditActionEnabled: true;
+    property bool vmDeleteActionEnabled: true;
+    property bool vmArchiveActionEnabled: true;
     property var vmShowNumericWheel: []
 
     signal sortChanged(int col, string order)
@@ -342,6 +345,7 @@ Rectangle {
                     vmThinButton: true
                     anchors.verticalCenter: parent.verticalCenter
                     visible: (vmActionEnabledTexts[vmActionEdit] !== "")
+                    vmEnabled: vmEditActionEnabled
                     onClickSignal: {
                         editClicked(vmIndex)
                     }
@@ -356,6 +360,7 @@ Rectangle {
                     vmThinButton: true
                     anchors.verticalCenter: parent.verticalCenter
                     visible: (vmActionEnabledTexts[vmActionDelete] !== "")
+                    vmEnabled: vmDeleteActionEnabled
                     onClickSignal: {
                         deleteClicked(vmIndex)
                     }
@@ -370,6 +375,7 @@ Rectangle {
                     vmThinButton: true
                     anchors.verticalCenter: parent.verticalCenter
                     visible: (vmActionEnabledTexts[vmActionArchive] !== "")
+                    vmEnabled: vmArchiveActionEnabled
                     onClickSignal: {
                         archiveClicked(vmIndex)
                     }

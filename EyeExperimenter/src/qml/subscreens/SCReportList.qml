@@ -76,6 +76,16 @@ Rectangle {
         reportListTable.setList(tableTexts)
         reportListTable.setSortIndicator(vmSORT_COLUMNS.indexOf(vmCurrentSortOrder),vmCurrentOrderDirection)
 
+        // We now check if this is an enabled instance to know if we need to disabled the buttons.
+        if (loader.instanceDisabled()){
+            reportListTable.vmArchiveActionEnabled = false;
+            reportListTable.vmCustomActionsEnabled = false;
+        }
+        else {
+            reportListTable.vmArchiveActionEnabled = true;
+            reportListTable.vmCustomActionsEnabled = true;
+        }
+
     }
 
     function changeSortColumn(newColumn,newDirection){
@@ -113,7 +123,6 @@ Rectangle {
         anchors.leftMargin: VMGlobals.adjustWidth(10)
         visible: vmNumberOfReports !== 0
     }
-
 
     VMSortableTable {
 
@@ -158,6 +167,7 @@ Rectangle {
 
             // Defining the enabled actions (A custom button and the Edit action) by simply setting the language texts.
             var actions = ["","","",""];
+
             actions[reportListTable.vmActionButton] = loader.getStringForKey("viewqc_send")
             actions[reportListTable.vmActionArchive] = loader.getStringForKey("viewqc_archive");
             reportListTable.vmActionEnabledTexts = actions;
@@ -181,10 +191,10 @@ Rectangle {
 
             let data = OLS.getDataAtIndex(vmIndex);
 
-//            console.log("Getting the data at vmIndex: " + vmIndex)
-//            console.log(JSON.stringify(data));
-//            let studyNameMap = loader.getStudyNameMap()
-//            let study_name = studyNameMap[data.type];
+            //            console.log("Getting the data at vmIndex: " + vmIndex)
+            //            console.log(JSON.stringify(data));
+            //            let studyNameMap = loader.getStudyNameMap()
+            //            let study_name = studyNameMap[data.type];
 
             // Getting the configuration data for the QC View.
             viewQC.configurePatientInformation(data.subject_name,

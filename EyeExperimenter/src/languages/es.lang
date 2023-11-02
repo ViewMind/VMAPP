@@ -10,6 +10,13 @@ viewstart_configuration_failed = No es posible cargar la configuracion|La aplica
 Por favor contáctese con ViewMind;
 viewstart_vr_disconnect = <b>Pérdida de conexión al HMD</b><br>Por favor reinicie la aplicación;
 
+viewstart_disabled_instance = Instancia Deshabilitada|Mientras la instancia esté desahbilitada, 
+no se podrá actualizar, procesar evaluaciones o eviar emails de soporte. 
+
+Podrá administrar evaluaciones. 
+Para solucionar este problema, por favor contacte a ViewMind.;
+
+
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Avanzado;
 viewsettings_about = Acerca de;

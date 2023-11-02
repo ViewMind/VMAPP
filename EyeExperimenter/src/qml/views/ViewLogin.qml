@@ -15,6 +15,15 @@ ViewBase {
         passwordInput.clear()
     }
 
+    function checkInstanceDisabled(){
+        if (loader.instanceDisabled()){
+            messageDiag.vmLarge = true
+            messageDiag.vmCloseAppOnDismissed = false;
+            messageDiag.loadFromKey("viewstart_disabled_instance")
+            messageDiag.open();
+        }
+    }
+
     function logInAttempt(){
 
         var user = evaluatorSelection.vmCurrentText;

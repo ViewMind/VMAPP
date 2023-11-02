@@ -14,9 +14,10 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     ConfigurationManager::CommandVerifications cv;
     ConfigurationManager::Command cmd;
 
-
     loadingError = false;
     configuration = c;
+
+    instanceIsDisabled = false;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
@@ -101,6 +102,10 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
 //////////////////////////////////////////////////////// UI Functions ////////////////////////////////////////////////////////
 bool Loader::isVMConfigPresent() const {
     return isLicenceFilePresent;
+}
+
+bool Loader::instanceDisabled() const {
+    return this->instanceIsDisabled;
 }
 
 void Loader::storeNewStudySequence(const QString &name, const QVariantList &sequence){
@@ -1082,13 +1087,31 @@ void Loader::onNotificationFromFlowControl(QVariantMap notification){
 void Loader::receivedRequest(){
 
     if (!apiclient.getError().isEmpty()){
-        processingUploadError = FAIL_CODE_SERVER_ERROR;
-        StaticThreadLogger::error("Loader::receivedRequest","Error Receiving Request :"  + apiclient.getError());
-        if (apiclient.getLastRequestType() == APIClient::API_SENT_SUPPORT_EMAIL){
-            emit Loader::sendSupportEmailDone(false);
+
+        // We need to check if the instance is disabled or not.
+
+        QVariantMap retdata = apiclient.getMapDataReturned();
+        qint32 http_code = retdata.value(APINames::MAIN_HTTP_CODE).toInt();
+        if (http_code == APINames::DISABLED_INSTANCE_HTTP_CODE){
+            this->instanceIsDisabled = true;
+            StaticThreadLogger::error("Loader::receivedRequest","Received instance disabled code");
+            processingUploadError = FAIL_INSTANCE_DISABLED;
         }
+        else {
+            this->instanceIsDisabled = false;
+            processingUploadError = FAIL_CODE_SERVER_ERROR;
+            StaticThreadLogger::error("Loader::receivedRequest","Error Receiving Request :"  + apiclient.getError());
+            if (apiclient.getLastRequestType() == APIClient::API_SENT_SUPPORT_EMAIL){
+                emit Loader::sendSupportEmailDone(false);
+            }
+        }
+
     }
     else{
+
+        // Disabled instance will ONLY come as an API error. Just a specific one. So if there was no error the instance is NOT disabled.
+        this->instanceIsDisabled = false;
+
         if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO || apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO_AND_LOG){
 
             apiclient.clearFileToSendHandles();

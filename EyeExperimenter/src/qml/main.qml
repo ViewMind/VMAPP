@@ -168,7 +168,7 @@ ApplicationWindow {
             ViewGetVMConfig {
                 id: viewGetVMConfig
                 onSuccessActivation: {
-                    messageDiag.vmLarge = false;
+                    messageDiag.vmLarge = false;                    
                     messageDiag.loadFromKey("viewgetconfig_success")
                     messageDiag.open();
                 }
@@ -203,6 +203,7 @@ ApplicationWindow {
                 viewMainSetup.swipeIntoMain()
                 break;
             case VMGlobals.vmSwipeIndexLogin:
+                viewLogin.checkInstanceDisabled();
                 viewLogin.updateProfileList();
                 break;
             case VMGlobals.vmSwipeIndexAddEval:

@@ -51,6 +51,7 @@ public:
     Q_INVOKABLE void openUserManual();
     Q_INVOKABLE bool processingParametersArePresent() const;
     Q_INVOKABLE void openURLInBrowser(const QString &url);
+    Q_INVOKABLE bool instanceDisabled() const;
 
     //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QString getNewUpdateVersionAvailable() const;
@@ -164,6 +165,9 @@ private:
     // Flag used to indicate whethre the app.zip file was redownloaded or not.
     bool updateDownloadSkipped;
 
+    // Flag to indicate disabled instance.
+    bool instanceIsDisabled;
+
     // The local database
     LocalDB localDB;
 
@@ -190,6 +194,7 @@ private:
     static const qint32 FAIL_BAD_ACTIVATION_RETURN = 1;
     static const qint32 FAIL_CODE_SERVER_ERROR = 2;
     static const qint32 FAIL_FILE_CREATION = 3;
+    static const qint32 FAIL_INSTANCE_DISABLED = 4;
 
     // List of available studies with no reports ready.
     static const QStringList NO_REPORT_STUDIES;

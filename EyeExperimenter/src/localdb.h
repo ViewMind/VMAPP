@@ -17,7 +17,11 @@
 
 namespace APINames {
 
-   static const char * MAIN_DATA = "data";
+   static const char * MAIN_DATA      = "data";
+   static const char * MAIN_HTTP_CODE = "http_code";
+   static const char * MAIN_MESSAGE   = "message";
+
+   static const qint32 DISABLED_INSTANCE_HTTP_CODE = 599;
 
    namespace ProcParams {
       static const char * NAME = "proc_params";

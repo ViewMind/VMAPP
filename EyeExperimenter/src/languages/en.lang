@@ -10,6 +10,13 @@ viewstart_configuration_failed = Unable to Load Configuration|The application is
 Please contatct ViewMind for help;
 viewstart_vr_disconnect = <b>Connection to HMD Lost</b><br>Please restart the application;
 
+viewstart_disabled_instance = Instance Disabled|As long as this instance is disabled, 
+you will not be able to update, send evaluations or send support emails. 
+
+You will still be able to administer evaluations. 
+To fix this issue, you must contact ViewMind.;
+
+
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Advanced;
 viewsettings_about = About;
