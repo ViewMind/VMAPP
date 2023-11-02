@@ -1161,6 +1161,16 @@ void Loader::receivedRequest(){
                 StaticThreadLogger::error("Loader::receivedRequest","Failed to set processing parameters from server: " + localDB.getError());
             }
 
+            if (mainData.contains(APINames::Institution::INST_COUNTRY)){
+                QString inst_country = mainData.value(APINames::Institution::INST_COUNTRY).toString();
+                if (!localDB.setInstitutionCountryCode(inst_country)){
+                    StaticThreadLogger::error("Loader::receivedRequest","Failed storing changes to country code. Reason: " + localDB.getError());
+                }
+                else {
+                    StaticThreadLogger::log("Loader::receivedRequest","Setting the institution country to: " + inst_country);
+                }
+            }
+
             if (DBUGBOOL(Debug::Options::PRINT_QC)){
                 QVariantMap qc = mainData.value(APINames::FreqParams::NAME).toMap();
                 QString qcstr = Debug::QVariantMapToString(qc);

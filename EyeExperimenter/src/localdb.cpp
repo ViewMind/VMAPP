@@ -17,6 +17,7 @@ const char * LocalDB::MAIN_LAST_LOG_UPLOAD                   = "last_log_upload"
 const char * LocalDB::MAIN_STORED_SEQUENCES                  = "stored_sequences";
 const char * LocalDB::MAIN_PREFERENCES                       = "preferences";
 const char * LocalDB::MAIN_LAST_APP_DOWNLOADED               = "last_downloaded_app";
+const char * LocalDB::MAIN_INSTITUTION_COUNTRY_CODE          = "institution_country_code";
 
 // Evaluator fields
 const char * LocalDB::APPUSER_NAME          = "name";
@@ -803,6 +804,15 @@ bool LocalDB::setLastDownloadedApp(const QString &version){
     return saveAndBackup();
 }
 
+////////////////////////////// Institution Country Code ///////////////////////////////
+QString LocalDB::getInstitutionCountryCode() const {
+    return data.value(MAIN_INSTITUTION_COUNTRY_CODE).toString();
+}
+
+bool LocalDB::setInstitutionCountryCode(const QString &country_code){
+    data[MAIN_INSTITUTION_COUNTRY_CODE] = country_code;
+    return saveAndBackup();
+}
 
 ////////////////////////////// PREFERENCES ///////////////////////////////
 bool LocalDB::setPreference(const QString &preference, const QVariant &variant){

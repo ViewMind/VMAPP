@@ -39,6 +39,10 @@ namespace APINames {
       static const char *URL = "url";
    }
 
+   namespace Institution {
+      static const char *INST_COUNTRY = "institution_country";
+   }
+
    namespace UpdateParams{
       static const char * UPDATE_ET_CHANGE = "update_et_change";
       static const char * UPDATE_VERSION   = "update_version";
@@ -77,6 +81,7 @@ public:
     static const char * MAIN_LAST_LOG_UPLOAD;
     static const char * MAIN_STORED_SEQUENCES;
     static const char * MAIN_PREFERENCES;
+    static const char * MAIN_INSTITUTION_COUNTRY_CODE;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -270,6 +275,10 @@ public:
     // Returns a preference that was set, as a string. As of the writing of this, we only need strings.
     // The second parameter can be used to return a store and return a value if the required one doesn't exist
     QVariant getPreference(const QString &preference, const QString &retAndStoreIfDoenstExist = "");
+
+    // Stores and retrieves the institution country. The backup is created only if the value changes.
+    bool setInstitutionCountryCode(const QString &country_code);
+    QString getInstitutionCountryCode() const;
 
 private:
 
