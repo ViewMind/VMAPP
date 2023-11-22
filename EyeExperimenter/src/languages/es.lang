@@ -23,7 +23,7 @@ viewsettings_about = Acerca de;
 viewsettings_tech_support = Soporte;
 viewsettings_default_country = País por defecto;
 viewsettings_def_country_placeholder = Seleccione el pais por defecto;
-viewsettings_language = Selleccionar el idioma de la aplicación;
+viewsettings_language = Seleccionar el idioma de la aplicación;
 viewsettings_langs = English|Español;
 viewsettings_umanual = Manual de Usuario;
 viewsettings_cancel = CANCELAR;
@@ -52,7 +52,7 @@ viewwait_download_remaining = Tiempo Estimado: <M> minutos <S> segundos (<MB> MB
 
 #********************************* LOGIN SCREEN *********************************
 viewlogin_title = Ingreso Evaluador;
-viewlogin_subtitle = Ingrese a Su Perfíl o Agregue un Nuevo Evaluador;
+viewlogin_subtitle = Ingrese a Su Perfil o Agregue un Nuevo Evaluador;
 viewlogin_label_evaluator = Evaluador;
 viewlogin_label_pass = Contraseña;
 viewlogin_placeholder_evaluator = Seleccione Evaluador;
@@ -65,7 +65,7 @@ viewlogin_wrong_pass = Contraseña incorrecta;
 
 #********************************* ADD NEW EVALUATOR SCREEN *********************************
 viewaddeval_title = Nuevo Evaluador;
-viewaddeval_subtitle = Por favor, llene la información debajo;
+viewaddeval_subtitle = Por favor, complete la información debajo;
 viewaddeval_fname = Nombre;
 viewaddeval_lname = Apellido;
 viewaddeval_email = Correo Electrónico;
@@ -133,11 +133,11 @@ viewpatform_success_add = <b></b><br>ha sido agregado como paciente;
 #********************************* SEND SUPPORT EMAIL *********************************
 viewsendsupport_email_title = PEDIDO DE SOPORTE;
 viewsendsupport_email_subject = Mótivo del pedido de soporte;
-viewsendsupport_email_subject_ph = Seleccion el motivo que mas se asemeje;
+viewsendsupport_email_subject_ph = Seleccione el motivo que más se asemeje;
 viewsendsupport_email_sender  = Evaluador;
 viewsendsupport_email_sender_ph  = Seleccione un evaluador;
 viewsendsupport_email_issue   = Por favor describa el problema;
-viewsendsupport_email_issue_ph   = Ingrese aqui su descripción;
+viewsendsupport_email_issue_ph   = Ingrese aquí su descripción;
 viewsendsupport_email_reasons = 
 Calibration-Calibración|
 EyeTracking-Segumiento Ocular|
@@ -172,7 +172,7 @@ viewevaluation_eval_nbackslow  = N-Back;
 viewevaluation_eval_nbackvs    = N-Back RT Entrenamiento;
 viewevaluation_eval_nbackms    = N-Back MS;
 viewevaluation_eval_gonogo     = Go NoGo;
-viewevaluation_eval_gonogo3D   = Esféras Go NoGo;
+viewevaluation_eval_gonogo3D   = Esferas Go NoGo;
 viewevaluation_eval_passball   = Balón Pase;
 viewevaluation_error_patient_dir = Falla de Disco|No se pudo crear el directorio del paciente;
 viewevaluation_must_select_doctor = Se debe seleccionar un doctor;
@@ -330,7 +330,7 @@ NBack|N-Back|
 NBack RT|N-Back Tipo RT|
 NBack VS|N-Back De Entranamiento|
 Go No-Go|Go NoGo|
-Go No-Go Sphere|Esféras Go No-Go|
+Go No-Go Sphere|Esferas Go No-Go|
 PassBall|Balón Pase;
 viewqc_previous = ANTERIOR;
 viewqc_archive = ARCHIVAR;
@@ -383,7 +383,7 @@ studystatus_reading = Tiempo de lectura promedio: <<N>> ms;
 studystatus_nback_sequence_hit = Secuencias Completadas: <<N>>;
 studystatus_nback_sequence_timeout = Secuencias No Completadas: <<N>>;
 studystatus_nback_target_speed = Objetivos en pantalla por <<N>> ms;
-studystatus_gonogo_ok = Respuestas Éxitosas: <<N>>;
+studystatus_gonogo_ok = Respuestas Exitosas: <<N>>;
 studystatus_gonogo_timeout = Veces que el tiempo expiró: <<N>>;
 studystatus_gonogo_avg = Tiempo promedio de ensayo: <<N>> ms;
 studystatus_gonogo3D_green_hit = Contacto con <<N>> esferas verdes;

@@ -17,6 +17,7 @@ Item {
     property string vmPlaceHolderText: "Placeholder"
     property string vmLabel: ""
     property bool vmShowRemoveButton: false
+    property bool vmIfShowRemoveButtonHideInFirst: false
 
     readonly property int vmMOUSE_OUT_TIME: 200
 
@@ -262,7 +263,15 @@ Item {
                     anchors.rightMargin: VMGlobals.adjustWidth(10)
                     hoverEnabled: true
                     propagateComposedEvents: true
-                    visible: vmShowRemoveButton
+                    visible: {//vmShowRemoveButton && ( (index !== 0) && vmIfShowRemoveButtonHideInFirst )
+                        if (!vmShowRemoveButton) return false;
+                        // We need to show the remove button, if we got here.
+                        if (vmIfShowRemoveButtonHideInFirst){
+                            if (index === 0) return false;  // We need to show the remove button, but not in the first one.
+                            return true;
+                        }
+                        return true;
+                    }
                     onClicked: {
                         let text = itemList.get(vmIndex).vmText
                         removeClicked(vmIndex,text)

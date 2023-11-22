@@ -37,9 +37,11 @@ Please run Eye Explorer and verify that everything is in working order.;
 success_mail = ViewMind Support Email successfully sent.
 You can close the application now.;
 
+contact_canceled = No support email has been sent;
+
 notification_wait = Please wait while we run a check on the current installation ...;
 notification_mail = Please wait while send the support request ...;
-notification_corrective_actions = The diagnostics found possible isses and will now attempt to correct them.
+notification_corrective_actions = The diagnostics found possible issues and will now attempt to correct them.
 Please press the RUN CORRECTIVE ACTION button to start.;
 
 notification_no_issues = The diagnostics has not found any know inssues with the installation.

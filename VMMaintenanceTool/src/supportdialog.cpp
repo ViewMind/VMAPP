@@ -16,6 +16,8 @@ SupportDialog::SupportDialog(QWidget *parent) :
     ui->labLoader->setMovie(mv);
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
 
+    this->wasCanceled = false;
+
     connect(&sc,&SupportContact::finished,this,&SupportDialog::onSCContactFinished);
 
 }
@@ -55,6 +57,10 @@ void SupportDialog::setLoggger(MessageLogger *logger){
     this->logger = logger;
 }
 
+bool SupportDialog::wasItCanceled() const {
+    return this->wasCanceled;
+}
+
 SupportDialog::~SupportDialog()
 {
     delete ui;
@@ -79,6 +85,7 @@ void SupportDialog::on_pushButton_clicked() {
 
 
 void SupportDialog::on_pbCancel_clicked(){
+    this->wasCanceled = true;
     this->accept();
 }
 

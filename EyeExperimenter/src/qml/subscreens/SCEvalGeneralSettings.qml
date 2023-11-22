@@ -143,6 +143,7 @@ Rectangle {
             width: parent.width
             vmLabel: loader.getStringForKey("viewevaluation_eval_setup")
             vmShowRemoveButton: true
+            vmIfShowRemoveButtonHideInFirst: true
             z: doctorSelection.z + 1
             Component.onCompleted: {
                 reloadEvalSequenceList()

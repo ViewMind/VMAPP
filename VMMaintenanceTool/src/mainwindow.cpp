@@ -65,6 +65,9 @@ MainWindow::MainWindow(QWidget *parent)
         maintainer.setAction(MaintenanceManager::ACTION_UPDATE);
         maintainer.start();
     }
+
+    this->setWindowTitle(this->windowTitle() + " - " + Globals::VERSION);
+
 }
 
 MainWindow::~MainWindow()
@@ -179,7 +182,12 @@ void MainWindow::on_pbMainAction_clicked(){
         diag.exec();
         QString error = diag.getSupportContactResult();
         if (error == ""){
-            logger->success(Langs::getString("success_mail"));
+            if (diag.wasItCanceled()){
+                logger->display(Langs::getString("contact_canceled"));
+            }
+            else {
+                logger->success(Langs::getString("success_mail"));
+            }
         }
         else {
             logger->log("ERROR: Failed sending support mail. Reason: " + error);

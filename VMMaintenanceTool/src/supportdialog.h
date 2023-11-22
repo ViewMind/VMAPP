@@ -22,6 +22,7 @@ public:
 
     void setLoggger(MessageLogger *logger);
     QString getSupportContactResult() const;
+    bool wasItCanceled() const;
 
 private slots:
     void on_pushButton_clicked();
@@ -32,6 +33,7 @@ private:
     Ui::SupportDialog *ui;
     SupportContact sc;
     MessageLogger *logger;
+    bool wasCanceled;
 
     void contactSupport();
 
