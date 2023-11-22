@@ -1149,6 +1149,14 @@ void Loader::receivedRequest(){
                 StaticThreadLogger::error("Loader::receivedRequest","Failed to set medical professionals info from server: " + localDB.getError());
             }
 
+            qint32 patients_added = localDB.mergePatientDBFromRemote(mainData);
+            if (patients_added < 0){
+                StaticThreadLogger::error("Loader::receivedRequest","Failed to merge the patient database. Reason: " + localDB.getError());
+            }
+            else {
+                StaticThreadLogger::log("Loader::receiveRequest", "Added " + QString::number(patients_added) + " new subjects");
+            }
+
             if (DBUGBOOL(Debug::Options::PRINT_PP)){
                 QVariantMap pp = mainData.value(APINames::ProcParams::NAME).toMap();
                 QString ppstr = Debug::QVariantMapToString(pp);

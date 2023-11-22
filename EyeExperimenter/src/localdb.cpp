@@ -27,21 +27,22 @@ const char * LocalDB::APPUSER_EMAIL         = "email";
 const char * LocalDB::APPUSER_VIEWMIND_ID   = "viewmind_id";
 
 // Subject Fields
-const char * LocalDB::SUBJECT_NAME                  = "name";
-const char * LocalDB::SUBJECT_LASTNAME              = "lastname";
-const char * LocalDB::SUBJECT_INSTITUTION_ID        = "supplied_institution_id";
-const char * LocalDB::SUBJECT_BIRTHDATE             = "birthdate";
-const char * LocalDB::SUBJECT_BIRTHCOUNTRY          = "birthcountry";
-const char * LocalDB::SUBJECT_YEARS_FORMATION       = "years_formation";
-const char * LocalDB::SUBJECT_CREATION_DATE         = "creation_date";
-const char * LocalDB::SUBJECT_CREATION_DATE_INDEX   = "creation_date_index";
-const char * LocalDB::SUBJECT_BDATE_DISPLAY         = "bdate_display";
-const char * LocalDB::SUBJECT_SORTABLE_NAME         = "sortable_name";
-const char * LocalDB::SUBJECT_GENDER                = "gender";
-const char * LocalDB::SUBJECT_STUDY_MARKERS         = "subject_study_markers";
-const char * LocalDB::SUBJECT_LOCAL_ID              = "local_id";
-const char * LocalDB::SUBJECT_ASSIGNED_MEDIC        = "assigned_medic";
-const char * LocalDB::SUBJECT_EMAIL                 = "email";
+const char * LocalDB::SUBJECT_NAME                     = "name";
+const char * LocalDB::SUBJECT_LASTNAME                 = "lastname";
+const char * LocalDB::SUBJECT_INSTITUTION_ID           = "supplied_institution_id";
+const char * LocalDB::SUBJECT_BIRTHDATE                = "birthdate";
+const char * LocalDB::SUBJECT_BIRTHCOUNTRY             = "birthcountry";
+const char * LocalDB::SUBJECT_YEARS_FORMATION          = "years_formation";
+const char * LocalDB::SUBJECT_CREATION_DATE            = "creation_date";
+const char * LocalDB::SUBJECT_CREATION_DATE_INDEX      = "creation_date_index";
+const char * LocalDB::SUBJECT_BDATE_DISPLAY            = "bdate_display";
+const char * LocalDB::SUBJECT_SORTABLE_NAME            = "sortable_name";
+const char * LocalDB::SUBJECT_GENDER                   = "gender";
+const char * LocalDB::SUBJECT_STUDY_MARKERS            = "subject_study_markers";
+const char * LocalDB::SUBJECT_LOCAL_ID                 = "local_id";
+const char * LocalDB::SUBJECT_ASSIGNED_MEDIC           = "assigned_medic";
+const char * LocalDB::SUBJECT_EMAIL                    = "email";
+const char * LocalDB::SUBJECT_FIELD_IN_SERVER_RESPONSE = "subjects";
 
 
 const char * LocalDB::STORED_SEQ_LAST_SELECTED      = "last_selected";
@@ -487,6 +488,34 @@ bool LocalDB::setMedicInformationFromRemote(const QVariantMap &response){
 
     data[MAIN_MEDICS] = serverMedics;
     return saveAndBackup();
+}
+
+qint32 LocalDB::mergePatientDBFromRemote(const QVariantMap &response){
+
+    if (!response.contains(SUBJECT_FIELD_IN_SERVER_RESPONSE)){
+        error = "Expected subjects field but it wasn't found";
+        return -1;
+    }
+
+    // We check subject by subject and we only add if the IS is not there.
+    QVariantMap newSubjectMap = response.value(SUBJECT_FIELD_IN_SERVER_RESPONSE).toMap();
+    QStringList subject_ids = newSubjectMap.keys();
+
+    qint32 ret = 0;
+
+    QVariantMap currentSubjects = data.value(MAIN_SUBJECT_DATA).toMap();
+    for (qint32 i = 0; i < subject_ids.size(); i++){
+        QString id = subject_ids.at(i);
+        if (!currentSubjects.contains(id)){
+            currentSubjects[id] = newSubjectMap.value(id);
+            ret++;
+        }
+    }
+
+    data[MAIN_SUBJECT_DATA] = currentSubjects;
+    if (!saveAndBackup()) return -1;
+    return ret;
+
 }
 
 bool LocalDB::setProcessingParametersFromServerResponse(const QVariantMap &response){

@@ -106,6 +106,7 @@ public:
     static const char * SUBJECT_BDATE_DISPLAY;
     static const char * SUBJECT_SORTABLE_NAME;
     static const char * SUBJECT_EMAIL;
+    static const char * SUBJECT_FIELD_IN_SERVER_RESPONSE;
 
     // Stored sequences field.
     static const char * STORED_SEQ_LAST_SELECTED;
@@ -219,6 +220,9 @@ public:
 
     // Set the medical info from the database.
     bool setMedicInformationFromRemote(const QVariantMap &response);
+
+    // Merges the patient data with the current data in the DB. Returns the number of subjects added.
+    qint32 mergePatientDBFromRemote(const QVariantMap &response);
 
     // Sets the recovery password from the operating information.
     bool setRecoveryPasswordFromServerResponse(const QVariantMap &response);
