@@ -56,5 +56,6 @@
         <file>qml/components/VMProgressBar.qml</file>
         <file>qml/components/VMSimpleNameList.qml</file>
         <file>qml/components/VMPossibleDupeDialog.qml</file>
+        <file>qml/components/VMInfoHeaderIcon.qml</file>
     </qresource>
 </RCC>

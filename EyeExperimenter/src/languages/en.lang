@@ -320,7 +320,10 @@ Please start Eye Explorer again to begin using it.;
 viewqc_no_reports_to_evaluate = No reports available for processing;
 viewqc_study = Study;
 viewqc_dr    = Doctor;
-viewqc_data_quality = Data Quality;
+viewqc_data_quality = Data Captured;
+viewqc_data_quality_tooltip = Reflects if the data collected by the VR headset is robust enough to be analyzed. 
+If the index is Green, the study can be processed. 
+If it's red, it must be Archived and the test should be performed again.;
 viewqc_wait_msg = Please wait while study quality is checked;
 viewqc_qc_failed = <b>Quality Control Failed</b><br>Please contact ViewMind for support;
 viewqc_SubPoints = Data Points;

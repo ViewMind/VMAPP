@@ -23,6 +23,7 @@ Rectangle {
     property var vmColSortable: [];
     property var vmActionEnabledTexts: [];
     property var vmDataMatrix: [];
+    property var vmToolTips: [];
     property bool vmCustomActionsEnabled: true;
     property bool vmEditActionEnabled: true;
     property bool vmDeleteActionEnabled: true;
@@ -35,11 +36,17 @@ Rectangle {
     signal archiveClicked(int rowIndex)
     signal customButtonClicked(int rowIndex)
 
-    function configureTable(nameWidthMap,actionColName){
+    function configureTable(nameWidthMap,actionColName,tooltips){
         //console.log("Updating header names");
         vmColWidths = [];
         vmColSortable = [];
         vmActionOffset = 0;
+        vmToolTips = [];
+
+        if (tooltips === undefined){
+            tooltips = [];
+        }
+
         var sumW = 0;
         for (var key in nameWidthMap){
             //console.log("ELEMENT: " + JSON.stringify(nameWidthMap[key]))
@@ -49,11 +56,18 @@ Rectangle {
             sumW = sumW + w
             vmColWidths.push(w)
             vmActionOffset = vmActionOffset + w;
+            if (key in tooltips){
+                vmToolTips.push(tooltips[key])
+            }
+            else {
+                vmToolTips.push("");
+            }
         }
 
         vmColWidths.push(width - sumW);
         //console.log("Column widths " + JSON.stringify(vmColWidths))
         vmColNames.push(actionColName)
+        vmToolTips.push(""); // To make sure the action column does not a have tooltip.
         vmColSortable.push(false);
 
         headerNames.clear()
@@ -163,6 +177,20 @@ Rectangle {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     x: (index === 0) ? vmLeftMargin : 0
+                }
+
+                VMInfoHeaderIcon {
+                    id: infoHeaderIcon
+                    anchors.top: headerName.top
+                    anchors.left: sortIndicator.visible? sortIndicator.right : headerName.right
+                    anchors.leftMargin: VMGlobals.adjustWidth(1)
+                    height: 0.2*vmRowHeight
+                    vmToolTip: {
+                        // To avoid unncessary warnings.
+                        if (vmToolTips[index] !== undefined) return vmToolTips[index];
+                        else return "";
+                    }
+                    visible: (vmToolTips[index] !== "")
                 }
 
                 Canvas {

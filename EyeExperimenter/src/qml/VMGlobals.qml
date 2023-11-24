@@ -52,6 +52,7 @@ QtObject {
     readonly property color vmGrayDialogDivider:        "#C4C4C4"
     readonly property color vmGrayLightGrayText:        "#BAC0CF"
     readonly property color vmGrayStudyDivisor:         "#828996"
+    readonly property color vmGrayTooltipBackground:    "#F2F2F2"
 
     readonly property color vmWhite:                    "#ffffff"
     readonly property color vmWhite50Translucent:       "#80ffffff"

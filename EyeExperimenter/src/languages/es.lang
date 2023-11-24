@@ -320,7 +320,10 @@ Por favor, para comenzar a usar el EyeExplorer vuelva a iniciarla;
 viewqc_no_reports_to_evaluate = No hay reportes disponibles para procesar;
 viewqc_study = Estudio;
 viewqc_dr    = Doctor;
-viewqc_data_quality = Data Quality;
+viewqc_data_quality = Datos Obtenidos;
+viewqc_data_quality_tooltip = Refleja si los datos obtenidos por el casco VR son lo suficientemente robusto para análisis.
+Si el índice es verde, este puede ser procesado. 
+Si es rojo, debe ser archivado y el estudio realizado nuevamente;
 viewqc_wait_msg = Por favor espere mientras la calidad del estudio es verificada;
 viewqc_qc_failed = <b>Control de Calidad Ha Fallado</b><br>Por favor contacte a ViewMind para soporte;
 viewqc_SubPoints = Puntos de Datos;

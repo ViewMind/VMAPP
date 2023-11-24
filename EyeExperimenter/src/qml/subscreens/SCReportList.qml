@@ -163,7 +163,10 @@ Rectangle {
 
             // console.log("Settign up sortable table with: " + JSON.stringify(nameWidthMap));
 
-            reportListTable.configureTable(nameWidthMap,loader.getStringForKey("viewpatlist_action"))
+            var tooltips = {};
+            tooltips[loader.getStringForKey("viewqc_data_quality")] = loader.getStringForKey("viewqc_data_quality_tooltip")
+
+            reportListTable.configureTable(nameWidthMap,loader.getStringForKey("viewpatlist_action"),tooltips);
 
             // Defining the enabled actions (A custom button and the Edit action) by simply setting the language texts.
             var actions = ["","","",""];
