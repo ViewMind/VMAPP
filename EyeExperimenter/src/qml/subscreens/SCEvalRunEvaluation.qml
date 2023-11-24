@@ -95,6 +95,7 @@ Rectangle {
             }
 
             vmInCalibration = false;
+            evaluationsView.enableNextButton(true);
             evaluationRun.vmSlowCalibrationSelected = false; // This is very important. If the slow calibration was selected, it was a once off. It needs to be reselected.
             mainWindow.showCalibrationValidation();
 
@@ -320,6 +321,7 @@ Rectangle {
 
             vmIsCalibrated = false;
             vmInCalibration = true;
+            evaluationsView.enableNextButton(false);
             flowControl.calibrateEyeTracker(vmSlowCalibrationSelected, mode3d);
 
         }

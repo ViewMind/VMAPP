@@ -43,6 +43,8 @@ const char * LocalDB::SUBJECT_LOCAL_ID                 = "local_id";
 const char * LocalDB::SUBJECT_ASSIGNED_MEDIC           = "assigned_medic";
 const char * LocalDB::SUBJECT_EMAIL                    = "email";
 const char * LocalDB::SUBJECT_FIELD_IN_SERVER_RESPONSE = "subjects";
+const char * LocalDB::SUBJECT_MODIFIED_FLAG            = "modified_but_not_sent";
+const char * LocalDB::SUBJECT_UPDATED_IDS              = "updated_subjects_ids";
 
 
 const char * LocalDB::STORED_SEQ_LAST_SELECTED      = "last_selected";
@@ -286,9 +288,28 @@ bool LocalDB::addOrModifySubject(const QString &subject_id, QVariantMap subject_
         subject_data[SUBJECT_CREATION_DATE] = subject_data_map.value(subject_id).toMap().value(SUBJECT_CREATION_DATE).toString();
     }
     subject_data[SUBJECT_LOCAL_ID] = subject_id;
+    subject_data[SUBJECT_MODIFIED_FLAG] = true;
     subject_data_map[subject_id] = subject_data;
     data[MAIN_SUBJECT_DATA] = subject_data_map;
     // We save after ANY modification;
+    return saveAndBackup();
+}
+
+bool LocalDB::markSubjectsAsUpdated(const QVariantList &subject_ids){
+
+    QVariantMap subject_data_map = data.value(MAIN_SUBJECT_DATA).toMap();
+    for (qint32 i = 0; i < subject_ids.size(); i++){
+
+        QString subject_id = subject_ids.at(i).toString();
+
+        if (subject_data_map.contains(subject_id)){
+            QVariantMap subject = subject_data_map.value(subject_id).toMap();
+            subject[SUBJECT_MODIFIED_FLAG] = false;
+            subject_data_map[subject_id] = subject;
+            qDebug() << "MARKING " << subject_id << " AS UPDATED";
+        }
+    }
+    data[MAIN_SUBJECT_DATA] = subject_data_map;
     return saveAndBackup();
 }
 
@@ -507,8 +528,30 @@ qint32 LocalDB::mergePatientDBFromRemote(const QVariantMap &response){
     for (qint32 i = 0; i < subject_ids.size(); i++){
         QString id = subject_ids.at(i);
         if (!currentSubjects.contains(id)){
-            currentSubjects[id] = newSubjectMap.value(id);
+            QVariantMap record = newSubjectMap.value(id).toMap();
+            // Subject creation date is local. If we don't do this, it won't appear.
+            record[SUBJECT_CREATION_DATE] = QDateTime::currentDateTime().toString("dd/MM/yyyy HH:mm");
+            currentSubjects[id] = record;
             ret++;
+        }
+        else {
+            // We need to check if we need to update it or not.
+            QVariantMap patient = currentSubjects.value(id).toMap();
+            if (!patient.value(SUBJECT_MODIFIED_FLAG,false).toBool()){
+                // This can be false if the flag doesn't exist or it does exist and it is set to false.
+                // We don't increase the counter as this is NOT a new record. But rather an update.
+                // Finally we only replace the fields with the current ones. We don't overwrite
+
+                QStringList keys_to_replace = newSubjectMap.value(id).toMap().keys();
+                QVariantMap currentRecord = currentSubjects.value(id).toMap();
+                for (qint32 i = 0; i < keys_to_replace.size(); i++){
+                    currentRecord[keys_to_replace.at(i)] = newSubjectMap.value(id).toMap().value(keys_to_replace.at(i));
+                }
+                currentSubjects[id] = currentRecord;
+            }
+            else {
+                qDebug() << "Skipping SUBJECT as it is marked to be updated";
+            }
         }
     }
 
@@ -627,17 +670,7 @@ QVariantMap LocalDB::getDisplaySubjectList(QString filter, const QStringList &mo
             //map[SUBJECT_CREATION_DATE_INDEX] = QDateTime::fromString(map.value(SUBJECT_CREATION_DATE).toString(),"dd/MM/yyyy HH:mm").toSecsSinceEpoch();
 
             // Building the display date: Day 3LetterMonth Year.
-            QStringList bdate_parts = map.value(SUBJECT_BIRTHDATE).toString().split("-");
-            QString bdate = "";
-            if (bdate_parts.size() == 3){
-                qint32 monthIndex = bdate_parts.at(1).toInt();
-                monthIndex--;
-                bdate = " UKN ";
-                if ((monthIndex >= 0) && (monthIndex < months.size())){
-                    bdate = " " + months.at(monthIndex) + " ";
-                }
-                bdate = bdate_parts.last() + bdate + bdate_parts.first();
-            }
+            QString bdate = buildDisplayBirthDate(map.value(SUBJECT_BIRTHDATE).toString(),months);
             map[SUBJECT_BDATE_DISPLAY] = bdate;
             map[SUBJECT_SORTABLE_NAME] = map.value(SUBJECT_LASTNAME).toString() + ", " + map.value(SUBJECT_NAME).toString();
 
@@ -646,6 +679,21 @@ QVariantMap LocalDB::getDisplaySubjectList(QString filter, const QStringList &mo
     }
 
     return ans;
+}
+
+QString LocalDB::buildDisplayBirthDate(const QString &iso_bdate, const QStringList &months) const {
+    QStringList bdate_parts = iso_bdate.split("-");
+    QString bdate = "";
+    if (bdate_parts.size() == 3){
+        qint32 monthIndex = bdate_parts.at(1).toInt();
+        monthIndex--;
+        bdate = " UKN ";
+        if ((monthIndex >= 0) && (monthIndex < months.size())){
+            bdate = " " + months.at(monthIndex) + " ";
+        }
+        bdate = bdate_parts.last() + bdate + bdate_parts.first();
+    }
+    return bdate;
 }
 
 QVariantMap LocalDB::getMedicDisplayList() const {
@@ -664,6 +712,40 @@ QVariantMap LocalDB::getMedicData(const QString &key) const{
     //Debug::prettpPrintQVariantMap(data.value(MAIN_MEDICS).toMap());
 
     return data.value(MAIN_MEDICS).toMap().value(key).toMap();
+}
+
+QVariantMap LocalDB::getSubjectDataToUpdate() const {
+
+    QVariantMap all_subject_data = data.value(MAIN_SUBJECT_DATA).toMap();
+    QStringList subject_ids = all_subject_data.keys();
+    QVariantMap to_update;
+
+    for (qint32 i = 0; i < subject_ids.size(); i++){
+
+        // Creating the subject data. Each record is created EXACTLY as it is for the study file, so the same methodology can be used to updated it in the server.
+        QVariantMap record;
+        QString subject_id = subject_ids.at(i);
+        QVariantMap subject_data = all_subject_data.value(subject_id).toMap();
+
+        // We only add it if it has been modified.
+        if (subject_data.value(SUBJECT_MODIFIED_FLAG).toBool()){
+            record.insert(VMDC::SubjectField::BIRTH_COUNTRY,subject_data.value(LocalDB::SUBJECT_BIRTHCOUNTRY));
+            record.insert(VMDC::SubjectField::BIRTH_DATE,subject_data.value(LocalDB::SUBJECT_BIRTHDATE));
+            record.insert(VMDC::SubjectField::GENDER,subject_data.value(LocalDB::SUBJECT_GENDER));
+            record.insert(VMDC::SubjectField::INSTITUTION_PROVIDED_ID,subject_data.value(LocalDB::SUBJECT_INSTITUTION_ID));
+            record.insert(VMDC::SubjectField::LASTNAME,subject_data.value(LocalDB::SUBJECT_LASTNAME));
+            record.insert(VMDC::SubjectField::LOCAL_ID,subject_id);
+            record.insert(VMDC::SubjectField::NAME,subject_data.value(LocalDB::SUBJECT_NAME));
+            record.insert(VMDC::SubjectField::YEARS_FORMATION,subject_data.value(LocalDB::SUBJECT_YEARS_FORMATION));
+            record.insert(VMDC::SubjectField::EMAIL,subject_data.value(LocalDB::SUBJECT_EMAIL));
+            to_update[subject_id] = record;
+            qDebug() << "Adding subject " << subject_id << " to update";
+        }
+
+    }
+
+    return to_update;
+
 }
 
 QStringList LocalDB::getUsernameEmails(bool withname) const {
@@ -871,4 +953,77 @@ QVariant LocalDB::getPreference(const QString &preference, const QString &retAnd
     //else qDebug() << "Map contains" << preference << ". Will return" << map.value(preference).toString();
 
     return map.value(preference).toString();
+}
+
+////////////////////////////// FUZZY String Compare ///////////////////////////////
+QVariantList LocalDB::possibleNewPatientMatches(QString name, QString lastname, QString personalID ,QString iso_birthdate, const QStringList &months) const {
+
+    QVariantMap patients = data.value(MAIN_SUBJECT_DATA).toMap();
+    QStringList patient_ids = patients.keys();
+
+    QVariantList list;
+    FuzzyStringCompare comparator;
+
+    for (qint32 i = 0; i < patient_ids.size(); i++){
+        QString id = patient_ids.at(i);
+        QVariantMap patient = patients.value(id).toMap();
+        QString bdate = patient.value(SUBJECT_BIRTHDATE).toString();
+
+        //qDebug() << "Comparing BDATE" << bdate << "with search BDATE" << iso_birthdate;
+
+        // The very first filter is the year of birth.
+        if (bdate == iso_birthdate){
+        //if (iso_birthdate != ""){ // For testing purposes, so that the date always matches.
+
+            // Now we do the fuzzy search.
+            QString fname = patient.value(SUBJECT_NAME).toString();
+            QString lname = patient.value(SUBJECT_LASTNAME).toString();
+            QString id    = patient.value(SUBJECT_INSTITUTION_ID).toString();
+
+            qreal match_val_fname = comparator.compare(fname,name);
+            qreal match_val_lname = comparator.compare(lname,lastname);
+            qreal match_val_id    = comparator.compare(id,personalID);
+
+            //qDebug() << "FNAME:" << name << "->" << fname << ": " << match_val_fname << ". LNAME" << lastname << "->" << lname << ": " << match_val_lname;
+
+            bool possible_match = false;
+
+            // The comparison logic depends on the information provided.
+            if (lastname == ""){
+                // We only check for exact matches in personal ID, when no last name is provided.
+                possible_match = (match_val_id > 0.99);
+            }
+            else {
+                // If a last name is provided we only check the name thresholds
+                possible_match = (match_val_fname > FNAME_FUZZY_MATCH_THRESHOLD) && (match_val_lname > LNAME_FUZZY_MATCH_THRESHOLD);
+            }
+
+            if (possible_match) {
+
+//                Debug::prettpPrintQVariantMap(patient);
+//                qDebug() << "==============================";
+
+                // We have a fuzzy match. We add the record to the list.
+
+                QString display_bdate = buildDisplayBirthDate(bdate,months);
+                QVariantMap record;
+                // The name of the fields for the record match the names required by the
+                // QML Item that displays each matching record.
+
+                record["vmName"] = lname + ", " + fname;
+                record["vmBirthDate"] = display_bdate;
+                record["vmSubjectID"] = id;
+                record["vmPersonalID"] = patient.value(SUBJECT_INSTITUTION_ID).toString();
+
+                //qDebug() << "   Adding it to record";
+
+                list << record;
+            }
+
+        }
+
+    }
+
+    return list;
+
 }

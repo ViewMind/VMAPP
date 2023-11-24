@@ -22,7 +22,6 @@ public:
     static const qint32 API_REQUEST_REPORT         = 2;
     static const qint32 API_REQUEST_UPDATE         = 3;
     static const qint32 API_ACTIVATE               = 4;
-    static const qint32 API_OP_INFO_LOG_ONLY       = 5;
     static const qint32 API_OPERATING_INFO_AND_LOG = 6;
     static const qint32 API_SENT_SUPPORT_EMAIL     = 7;
 
@@ -37,7 +36,7 @@ public:
     // Request the list of medical professionals associated with this institution, along with QC threshold and processing parameters.
     // If sendLog is true then the current logfile is uploaded.
     // If logOnly is true AND sendLog is true, then the code for the last API request is set to API_OP_INFO_LOG_ONLY
-    bool requestOperatingInfo(const QString &hardware_description_string, bool sendLog, bool logOnly);
+    bool requestOperatingInfo(const QString &hardware_description_string, bool sendLog, QVariantMap updated_subject_records);
 
     // Once we get the key from the RRS it needs to be set here.
     void setEyeTrackerKey(const QString &key);
@@ -65,6 +64,9 @@ public:
 
     // If requesting the operating information generated a new logfile name, that name will be stored and will can be read using this fucntion.
     QString getLastGeneratedLogFileName() const;
+
+    // If requesting the operating information genrated a new subject update json file, then the filename will be stored and it can be read using this function.
+    QString getLastGeneratedSubjectJSONFile() const;
 
     // We need this name to clear the file after it has finished.
     QString getLatestGeneratedSupportEmail() const;
@@ -98,6 +100,7 @@ private:
     qint32 lastRequest;
     QString lastGeneratedLogFileName;
     QString lastRequestEmailFile;
+    QString lastSubjectUpdateJSONFile;
     QString eyeTrackerKey;
 
     // The actual endpoints.    
@@ -131,6 +134,7 @@ private:
     const QString FAILED_CALIBRATION_FILE_PREFIX  = "FailedCalibrationFile_";
     const QString SUPPORT_EMAIL_LOG               = "SupportEmailLog";
     const QString SUPPORT_EMAIL_FILE              = "SupportEmailFile";
+    const QString SUBJECT_UPDATE_FILE             = "SubjectUpdateFile";
 
     // Signs the message and sends the request.
     bool sendRequest(bool nosign = false);

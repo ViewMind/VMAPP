@@ -147,7 +147,7 @@ void FlowControl::onNewPacketArrived(){
         QString version = packet.getPayloadField(RRS::PacketLogLocation::VERSION).toString();
         QString hmdkey  = packet.getPayloadField(RRS::PacketLogLocation::EYETRACKER).toString();
         StaticThreadLogger::log("FlowControl::onNewPacketArrived","Receieved log location response. RRS Version: " + version + " - " + hmdkey);
-        QVariantMap info; info[FCL::HMD_KEY_RECEIVED] = hmdkey;
+        QVariantMap info; info[Globals::FCL::HMD_KEY_RECEIVED] = hmdkey;
         emit FlowControl::notifyLoader(info);
     }
     else if ( (packet.getType() == RRS::PacketType::TYPE_STUDY_CONTROL ) ||
@@ -159,9 +159,9 @@ void FlowControl::onNewPacketArrived(){
     }
     else if (packet.getType() == RRS::PacketType::TYPE_FREQ_UPDATE){
         QVariantMap notification;
-        notification[FCL::UPDATE_AVG_FREQ] = packet.getPayloadField(RRS::PacketFreqUpdate::AVG).toReal();
-        notification[FCL::UPDATE_SAMP_FREQ] = packet.getPayloadField(RRS::PacketFreqUpdate::FRQ).toReal();
-        notification[FCL::UPDATE_MAX_FREQ] = packet.getPayloadField(RRS::PacketFreqUpdate::MAX).toReal();
+        notification[Globals::FCL::UPDATE_AVG_FREQ] = packet.getPayloadField(RRS::PacketFreqUpdate::AVG).toReal();
+        notification[Globals::FCL::UPDATE_SAMP_FREQ] = packet.getPayloadField(RRS::PacketFreqUpdate::FRQ).toReal();
+        notification[Globals::FCL::UPDATE_MAX_FREQ] = packet.getPayloadField(RRS::PacketFreqUpdate::MAX).toReal();
         emit FlowControl::notifyLoader(notification);
     }
     else {

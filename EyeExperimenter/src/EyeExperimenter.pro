@@ -50,6 +50,7 @@ SOURCES += main.cpp \
     ../../CommonClasses/StudyControl/studyconfigurator.cpp \
     ../../CommonClasses/StudyControl/studycontrol.cpp \
     apiclient.cpp \
+    fuzzystringcompare.cpp \
     loader.cpp \
     flowcontrol.cpp \
     localdb.cpp \
@@ -90,9 +91,9 @@ HEADERS += \
     ../../CommonClasses/debug.h \
     ../../CommonClasses/eyetracker_defines.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
-    FlowControlLoaderNotifications.h \
     apiclient.h \
     eyexperimenter_defines.h \
+    fuzzystringcompare.h \
     loader.h \
     flowcontrol.h \
     localdb.h \

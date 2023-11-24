@@ -12,7 +12,7 @@ ViewBase {
             // Close the connection dialog and open the user selection dialog.
             //console.log("Finished request")
             if ( (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPINFO_REQUEST) ||
-                 (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPERATING_INFO_AND_LOG)){
+                    (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPERATING_INFO_AND_LOG)){
                 //console.log("Last request was an OP INFO call")
                 mainWindow.closeWait()
 
@@ -81,7 +81,7 @@ ViewBase {
 
         // If this is the first time running this version the changes are shown.
         if (loader.isFirstTimeRun()){
-        //if (1 === 1){
+            //if (1 === 1){
             var title_and_body = loader.getLatestVersionChanges();
 
             let versionText = title_and_body[0];
@@ -138,7 +138,7 @@ ViewBase {
         anchors.topMargin: VMGlobals.adjustHeight(30)
         onClickSignal: {
             mainWindow.openWait(loader.getStringForKey("viewwait_synching"))
-            loader.requestOperatingInfo(false);
+            loader.requestOperatingInfo();
         }
     }
 
@@ -212,27 +212,47 @@ ViewBase {
         }
     }
 
-// We add test stuff to main when developing components as we can test it as sson as the app starts.
-// I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
-//        VMButton {
-//            id: testBox
-//            vmText: "Test Stuff";
-//            width: VMGlobals.adjustWidth(100)
-//            anchors.left: btnAddNew.right
-//            anchors.top: btnAddNew.top
-//            anchors.leftMargin: 10
-//            onClickSignal: {
-//                waitScreen.vmText = "Some Text";
-//                //waitScreen.show()
-//                waitScreen.showWithProgress();
-//                let text = loader.getStringForKey("viewwait_download_remaining")
-//                text = text.replace("<M>",38);
-//                text = text.replace("<S>",30);
-//                text = text.replace("<MB>",52);
-//                text = text.replace("<MBT>",138);
-//                waitScreen.updateProgress(24,text);
-//            }
+//    VMPossibleDupeDialog {
+//        id: testDiag
+//        onSaveNewPatient: {
+//            console.log("Clicked saved patient")
 //        }
+//        onGoBackToPatientList: {
+//            console.log("Go back to patient list");
+//        }
+//    }
+
+//     We add test stuff to main when developing components as we can test it as sson as the app starts.
+//     I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
+//    VMButton {
+//        id: testBox
+//        vmText: "Test Stuff";
+//        width: VMGlobals.adjustWidth(100)
+//        anchors.left: btnAddNew.right
+//        anchors.top: btnAddNew.top
+//        anchors.leftMargin: 10
+//        onClickSignal: {
+
+//            let name = "";
+//            let lname = "test";
+//            let bdate = "1970-01-01";
+//            let list = loader.findPossibleDupes(name,lname,"",bdate);
+
+//            testDiag.setNameList(list);
+//            testDiag.open();
+
+
+////            waitScreen.vmText = "Some Text";
+////            //waitScreen.show()
+////            waitScreen.showWithProgress();
+////            let text = loader.getStringForKey("viewwait_download_remaining")
+////            text = text.replace("<M>",38);
+////            text = text.replace("<S>",30);
+////            text = text.replace("<MB>",52);
+////            text = text.replace("<MBT>",138);
+////            waitScreen.updateProgress(24,text);
+//        }
+//    }
 
 
 

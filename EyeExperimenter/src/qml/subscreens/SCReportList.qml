@@ -191,10 +191,8 @@ Rectangle {
 
             let data = OLS.getDataAtIndex(vmIndex);
 
-            //            console.log("Getting the data at vmIndex: " + vmIndex)
-            //            console.log(JSON.stringify(data));
-            //            let studyNameMap = loader.getStudyNameMap()
-            //            let study_name = studyNameMap[data.type];
+//            console.log("Getting the data at vmIndex: " + vmIndex)
+//            console.log(JSON.stringify(data));
 
             // Getting the configuration data for the QC View.
             viewQC.configurePatientInformation(data.subject_name,

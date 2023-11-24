@@ -28,8 +28,6 @@
 
 #include "eyexperimenter_defines.h"
 
-#include "FlowControlLoaderNotifications.h"
-
 class FlowControl : public QObject
 {
     Q_OBJECT

@@ -296,6 +296,7 @@ Rectangle {
                         let value = vmDataMatrix[vmIndex][index]
 
                         // In order to specify both the value and if it passes or not, the string used cotains the number | the boolean.
+                        if (value === null) return 0;
                         let value_parts = value.split("|");
 
                         if (value_parts.length !== 2){

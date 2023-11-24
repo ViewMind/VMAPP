@@ -27,7 +27,6 @@ void RESTAPIController::setBaseAPI(const QString baseAPI){
     }
 }
 
-
 void RESTAPIController::setAPIEndpoint(const QString &endpoint){
     this->endpoint = endpoint;
 
@@ -89,7 +88,6 @@ void RESTAPIController::stringifyData(){
         dataToSend[keys.at(i)] = dataToSend.value(keys.at(i)).toString();
     }
 }
-
 
 void RESTAPIController::setBasicAuth(const QString &username, const QString &password){
     basicAuthPassword = password;
@@ -398,7 +396,6 @@ void RESTAPIController::clearFileToSendHandles(){
     }
     filesToSendHandles.clear();
 }
-
 
 void RESTAPIController::addSalt(){
     dataToSend[SALT_FIELD] = QDateTime::currentDateTime().toString("dd_MM_yyyy_hh_mm_ss_zzz");

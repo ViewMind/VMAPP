@@ -21,7 +21,6 @@
 #include "countries.h"
 #include "localdb.h"
 #include "apiclient.h"
-#include "FlowControlLoaderNotifications.h"
 
 class Loader : public QObject
 {
@@ -52,6 +51,7 @@ public:
     Q_INVOKABLE bool processingParametersArePresent() const;
     Q_INVOKABLE void openURLInBrowser(const QString &url);
     Q_INVOKABLE bool instanceDisabled() const;
+    Q_INVOKABLE QVariantList findPossibleDupes(QString name, QString lname, QString personalID, QString birthDate);
 
     //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QString getNewUpdateVersionAvailable() const;
@@ -101,7 +101,7 @@ public:
     Q_INVOKABLE qint32 wasThereAnProcessingUploadError() const;
 
     ////////////////////////// API REQUESTS ////////////////////////////
-    Q_INVOKABLE void requestOperatingInfo(bool logOnly);
+    Q_INVOKABLE void requestOperatingInfo();
     Q_INVOKABLE void sendStudy(QString discard_reason, const QString &comment);
     Q_INVOKABLE qint32 getLastAPIRequest();
     Q_INVOKABLE void requestActivation(int institution, int instance, const QString &key);

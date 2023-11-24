@@ -81,6 +81,7 @@ static const QString STUDY_FILE          = "file";
 static const QString PASS                = "qci_pass";
 static const QString DATE_ORDERCODE      = "order_code";
 static const QString EVALUATOR           = "evaluator";
+static const QString SUBJECT_VM_ID       = "subject_vm_id";
 
 }
 
@@ -185,6 +186,16 @@ static const QString NBACK       = "nback";
 static const QString GONOGO_3D   = "gonogo_spheres";
 static const QString GONOGO      = "gonogo";
 static const QString PASSBALL    = "passball";
+}
+
+// These are keys for notification that come from flow control (which is the object conneted to the RRS) to the Loader.
+// For now there is only one thing that the Loader needs to be notified.
+// There might be more in the future.
+namespace FCL {
+   static const QString HMD_KEY_RECEIVED = "hmd_key_received";
+   static const QString UPDATE_SAMP_FREQ = "update_sampling_frequecy";
+   static const QString UPDATE_AVG_FREQ  = "update_avg_frequecy";
+   static const QString UPDATE_MAX_FREQ  = "update_max_frequecy";
 }
 
 }

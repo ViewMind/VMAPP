@@ -108,6 +108,11 @@ viewaccount_mod_success = <b></b><br>has been successfully modified;
 
 #********************************* PATIENT FORM *********************************
 viewpatform_title = Add Patient;
+viewpatform_dupe_title = Possible Duplicates;
+viewpatform_dupe_warning = A patient with a similar name and the same date of birth exists.
+Please ensure that you are not duplicating records;
+viewpatform_dupe_add = SAVE PATIENT;
+viewpatform_dupe_back = GO BACK TO LIST;
 viewpatform_title_edit = Edit Patient;
 viewpatform_subtitle = Please fill the information below;
 viewpatform_sex_ph = Select sex;
@@ -118,12 +123,13 @@ viewpatform_year_ph = Year;
 viewpatform_months = January|February|March|April|May|June|July|August|September|October|November|Decemeber;
 viewpatform_country = Country;
 viewpatform_country_ph = Select country;
-viewpatform_personal_id_ph = Enter Personal ID;
+viewpatform_personal_id_ph = Enter Patient ID;
 viewpatform_years_of_education = Years of Education;
 viewpatform_years_of_education_ph = Enter number of years;
 viewpatform_optional = Optional;
 viewpatform_incorrect = Incorrect;
 viewpatform_cannotbeempty = Cannot be empty;
+viewpatform_last_or_id = Either Patient ID or Last Name must be filled;
 viewpatform_isnotanumber = Not a number;
 viewpatform_invalid_range = Invalid range;
 viewpatform_success_edit = <b></b><br>has been updated;

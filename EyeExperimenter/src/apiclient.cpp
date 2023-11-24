@@ -5,6 +5,7 @@ APIClient::APIClient(QObject *parent) : QObject(parent)
     API = Globals::API_URL;
     rest_controller.setBaseAPI(API);
     lastGeneratedLogFileName = "";
+    lastSubjectUpdateJSONFile = "";
     this->eyeTrackerKey = "";
     connect(&rest_controller,&RESTAPIController::gotReplyData,this,&APIClient::gotReply);
 
@@ -35,7 +36,7 @@ QString APIClient::getEyeTrackerKey() const {
     return this->eyeTrackerKey;
 }
 
-bool APIClient::requestOperatingInfo(const QString &hardware_description_string, bool sendLog, bool logOnly){
+bool APIClient::requestOperatingInfo(const QString &hardware_description_string, bool sendLog, QVariantMap updated_subject_records){
 
     error = "";
     lastGeneratedLogFileName = "";
@@ -84,6 +85,27 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string,
         }
     }
 
+    if (!updated_subject_records.isEmpty()){
+
+        // We need to create the Subject Update File.
+        QString filename = institution_id + "_" + instance_number + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss") + ".json";
+        lastSubjectUpdateJSONFile = Globals::Paths::WORK_DIRECTORY + "/" + filename;
+
+        if (!Globals::SaveVariantMapToJSONFile(lastSubjectUpdateJSONFile,updated_subject_records,false)){
+            error = "Failed in creating the subject file for updating at: " + lastSubjectUpdateJSONFile;
+            return false;
+        }
+
+        if (!rest_controller.appendFileForRequest(lastSubjectUpdateJSONFile,SUBJECT_UPDATE_FILE)){
+            error = "Could not append log File " + lastSubjectUpdateJSONFile + " for request. Reason: " + rest_controller.getErrors().join("\n");
+            return false;
+        }
+
+    }
+    else {
+        lastSubjectUpdateJSONFile = "";
+    }
+
     // Whether we are sending the log or not. If there are failed calibration files we send them.
     QDir calib_dir(Globals::Paths::FAILED_CALIBRATION_DIR);
     if (calib_dir.exists()){
@@ -104,10 +126,7 @@ bool APIClient::requestOperatingInfo(const QString &hardware_description_string,
 
 
     // If we are using this endpoint ONLY to send the log then we need to check that.
-    if (sendLog && logOnly){
-        lastRequest = API_OP_INFO_LOG_ONLY;
-    }
-    else if (sendLog){
+    if (sendLog){
         lastRequest = API_OPERATING_INFO_AND_LOG;
     }
     else {
@@ -263,6 +282,10 @@ QString APIClient::getLastGeneratedLogFileName() const {
     return lastGeneratedLogFileName;
 }
 
+QString APIClient::getLastGeneratedSubjectJSONFile() const {
+    return lastSubjectUpdateJSONFile;
+}
+
 QString APIClient::getLatestGeneratedSupportEmail() const {
     return lastRequestEmailFile;
 }
@@ -274,7 +297,6 @@ QString APIClient::getError() const{
 void APIClient::clearFileToSendHandles() {
     rest_controller.clearFileToSendHandles();
 }
-
 
 void APIClient::gotReply(){
 

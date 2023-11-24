@@ -66,9 +66,15 @@ Item {
                 }
             }
 
+            onActiveFocusChanged: {
+                if (activeFocus){
+                    mainWindow.requestApplicationActiveFocus();
+                }
+            }
+
             onTextEdited: {
                 vmCurrentText = inputText.text
-                vmSearchInput.textChanged();                
+                vmSearchInput.textChanged();
             }
 
             onEditingFinished: {

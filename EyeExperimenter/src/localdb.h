@@ -13,6 +13,7 @@
 #include <QDebug>
 #include "../../CommonClasses/debug.h"
 #include "../../CommonClasses/RawDataContainer/VMDC.h"
+#include "fuzzystringcompare.h"
 
 
 namespace APINames {
@@ -107,6 +108,8 @@ public:
     static const char * SUBJECT_SORTABLE_NAME;
     static const char * SUBJECT_EMAIL;
     static const char * SUBJECT_FIELD_IN_SERVER_RESPONSE;
+    static const char * SUBJECT_MODIFIED_FLAG;
+    static const char * SUBJECT_UPDATED_IDS;
 
     // Stored sequences field.
     static const char * STORED_SEQ_LAST_SELECTED;
@@ -144,6 +147,9 @@ public:
 
     // Add or modify a subject. Modification ocurrs if the subject ID exists.
     bool addOrModifySubject(const QString &subject_id, QVariantMap subject_data);
+
+    // Whenver data for a subject is uploaded, their modifed flag should be set to false.
+    bool markSubjectsAsUpdated(const QVariantList &subject_ids);
 
     // This function is specifically for changing the assigned medic for a given the subject. The subject MUST exist.
     bool modifyAssignedMedicToSubject(const QString &subject_id, const QString &medic);
@@ -187,6 +193,9 @@ public:
 
     // Gets full medic data map.
     QVariantMap getMedicData(const QString &key) const;
+
+    // Generates the map to update the data in the server in the next operating information call.
+    QVariantMap getSubjectDataToUpdate() const;
 
     // List the emails of all evaluators. If withname is true then the string list returns Name - email.
     QStringList getUsernameEmails(bool withname = false) const;
@@ -284,6 +293,9 @@ public:
     bool setInstitutionCountryCode(const QString &country_code);
     QString getInstitutionCountryCode() const;
 
+    // Does a fuzzy search for the name lastname and year of birth and returns possible matches.
+    QVariantList possibleNewPatientMatches(QString name, QString lastname, QString personalID, QString iso_birthdate, const QStringList &months) const;
+
 private:
 
     QVariantMap data;
@@ -307,9 +319,17 @@ private:
     // The log upload frequency, expressed in milisecons.
     const qint64 LOG_UPLOAD_FREQ_IN_MS = 2*24*60*60*1000; // 2 Days expressed in ms.
 
+    // The thresholds for considering a match when searching for names recently entered.
+    const qreal FNAME_FUZZY_MATCH_THRESHOLD = -0.1; // So that a zero will match withouth having to add the equal to the comparison
+    const qreal LNAME_FUZZY_MATCH_THRESHOLD = 0.3;
+
     // The contents of this function will change every time the DB changes versions as it might require modification of existing data.
     // It needs to be called upon successfull loading of DB;
     void updatesToPreviousDBVersions();
+
+    // Transforms an ISO date to Day 3LetterMonth Year. It's univeral for display.
+    QString buildDisplayBirthDate(const QString &iso_bdate, const QStringList &months) const;
+
 
 };
 

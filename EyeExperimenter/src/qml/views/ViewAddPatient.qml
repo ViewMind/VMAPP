@@ -19,6 +19,7 @@ ViewBase {
         yearsOfEducation.clear()
         email.clear()
         acceptTerms.vmIsOn = false;
+        acceptTerms.visible = true;
 
         month.setSelection(-1)
         sex.setSelection(-1)
@@ -52,6 +53,10 @@ ViewBase {
             month.setSelection(m);
         }
 
+        // The accept term conditions should be checked by default
+        acceptTerms.vmIsOn = true;
+        //acceptTerms.visible = false;
+
     }
 
     function numberCheck(text,range){
@@ -62,16 +67,21 @@ ViewBase {
         return 1;
     }
 
-    function checkAndSave(){
+    function checkAndSave(checkForDupes){
 
-        if (fname.vmCurrentText === ""){
-            fname.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+        // The logic is that either the patient ID or the last name bust be filled.
+        if ((lname.vmCurrentText === "") && (personalID.vmCurrentText === "")){
+            lname.vmErrorMsg = loader.getStringForKey("viewpatform_last_or_id")
+            personalID.vmErrorMsg = loader.getStringForKey("viewpatform_last_or_id")
             return;
         }
 
-        if (lname.vmCurrentText === ""){
-            lname.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
-            return;
+        if (lname.vmCurrentText !== ""){
+            // We only force the first name to be filled if the last name was.
+            if (fname.vmCurrentText === ""){
+                fname.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                return;
+            }
         }
 
         if (day.vmCurrentText === ""){
@@ -128,10 +138,21 @@ ViewBase {
 
         //console.log("Selected sex index: " + selected_sex)
 
-
         let mm = (month.vmCurrentIndex + 1)
-        if (mm.length < 2) mm = "0" + mm
-        let bdate = year.vmCurrentText + "-" + mm + "-" + day.vmCurrentText;
+        if (mm < 10) mm = "0" + mm // WE need to compare with 10 because mm is a number up to this point.
+        let dd = day.vmCurrentText // We need to check string length instead of number value cause dd is a text.
+        if (dd.length < 2) dd = "0" + dd;
+        let bdate = year.vmCurrentText + "-" + mm + "-" + dd;
+
+        if (checkForDupes){
+            let list = loader.findPossibleDupes(fname.vmCurrentText,lname.vmCurrentText,personalID.vmCurrentText,bdate);
+            if (list.length > 0){
+                // We only show the dialog if there are matching dupes.
+                possibleDupeDialog.setNameList(list);
+                possibleDupeDialog.open();
+                return;
+            }
+        }
 
         loader.addOrModifySubject(vmCurrentlyLoadedPatient,
                                   fname.vmCurrentText,lname.vmCurrentText,
@@ -147,6 +168,19 @@ ViewBase {
         mainWindow.popUpNotify(VMGlobals.vmNotificationGreen,message);
         mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
     }
+
+    VMPossibleDupeDialog {
+        id: possibleDupeDialog
+        onSaveNewPatient: {
+            close();
+            checkAndSave(false);
+        }
+        onGoBackToPatientList: {
+            close();
+            mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
+        }
+    }
+
 
     VMButton {
         id: backButton
@@ -281,6 +315,9 @@ ViewBase {
                     vmLabel: loader.getStringForKey("viewaddeval_lname")
                     vmPlaceHolderText: loader.getStringForKey("viewaddeval_lname_ph")
                     Keys.onTabPressed: day.vmFocus = true
+                    onVmCurrentTextChanged: {
+                        personalID.vmErrorMsg = "";
+                    }
                 }
 
                 VMComboBox {
@@ -301,6 +338,9 @@ ViewBase {
                     vmLabel: loader.getStringForKey("viewpatlist_id")
                     vmPlaceHolderText: loader.getStringForKey("viewpatform_personal_id_ph")
                     Keys.onTabPressed: email.vmFocus = true
+                    onVmCurrentTextChanged: {
+                        lname.vmErrorMsg = "";
+                    }
                 }
 
             }
@@ -338,7 +378,9 @@ ViewBase {
             anchors.rightMargin: VMGlobals.adjustWidth(29)
             vmEnabled: acceptTerms.vmIsOn
             onClickSignal: {
-                checkAndSave()
+                // Dupe checking should only happen when CREATING subjects.
+                let checkForDupes = (vmCurrentlyLoadedPatient === "");
+                checkAndSave(checkForDupes)
             }
         }
 

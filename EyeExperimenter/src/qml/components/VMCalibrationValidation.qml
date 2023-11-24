@@ -276,7 +276,6 @@ Item {
         flowControl.showRenderWindow();
     }
 
-
     MouseArea {
         id: mouseCatcher
         anchors.fill: parent

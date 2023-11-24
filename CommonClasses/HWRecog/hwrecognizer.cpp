@@ -503,7 +503,7 @@ QString HWRecognizer::findVarjoAeroSN(){
     QList< QMap<QString,QString> > search_results = searchPNPInfo(PNP_KEY_INSTID,VARJO_SN_INST_ID_PREFIX,true);
     if (search_results.count() == 0){
         // We didn't find anything.
-        qDebug() << "No varjo prefix found";
+        //qDebug() << "No varjo prefix found";
         return "";
     }
 
@@ -513,7 +513,7 @@ QString HWRecognizer::findVarjoAeroSN(){
     QStringList parts = inst_id.split("\\",Qt::SkipEmptyParts);
     QString serial_number = parts.last();
 
-    qDebug() << "Proposed serial number" << serial_number;
+    //qDebug() << "Proposed serial number" << serial_number;
 
     if (serial_number.startsWith(VARJO_SN_INST_ID_PREFIX)){
         // The string starts with qvrjv however only the last v is part of the serial number so the qvrj is removed.

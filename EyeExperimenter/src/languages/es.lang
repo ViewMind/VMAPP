@@ -109,6 +109,11 @@ viewaccount_mod_success = <b></b><br>ha sido modificado exitosamente;
 
 #********************************* PATIENT FORM *********************************
 viewpatform_title = Añadir Paciente;
+viewpatform_dupe_title = Posibles Duplicados;
+viewpatform_dupe_warning = Un paciento con nombre similar y la misma fecha de nacimiento ya exite.
+Por favor, asegúrese de que no se esta creado un registro duplicado;
+viewpatform_dupe_add = GUARDAR PACIENTE;
+viewpatform_dupe_back = VOLVER A LA LISTA;
 viewpatform_title_edit = Editar Paciente;
 viewpatform_subtitle = Por favor, complete la siguiente información;
 viewpatform_sex_ph = Selecione el sexo;
@@ -119,12 +124,13 @@ viewpatform_year_ph = Año;
 viewpatform_months = Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre;
 viewpatform_country = País;
 viewpatform_country_ph = Seleccione la nacionalida;
-viewpatform_personal_id_ph = Ingrese ID Personal;
+viewpatform_personal_id_ph = Ingrese ID de Paciente;
 viewpatform_years_of_education = Años de educación;
 viewpatform_years_of_education_ph = Ingrese el número de años;
 viewpatform_optional = Opcional;
 viewpatform_incorrect = Incorrecto;
 viewpatform_cannotbeempty = No puede estar vacío;
+viewpatform_last_or_id = Debe completar Apellido or ID de Paciente;
 viewpatform_isnotanumber = No es un número;
 viewpatform_invalid_range = Rango inválido;
 viewpatform_success_edit = <b></b><br>ha sido editado;

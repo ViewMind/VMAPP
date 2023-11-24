@@ -108,6 +108,10 @@ bool Loader::instanceDisabled() const {
     return this->instanceIsDisabled;
 }
 
+QVariantList Loader::findPossibleDupes(QString name, QString lname, QString personalID, QString birthDate){
+    return localDB.possibleNewPatientMatches(name,lname,personalID,birthDate,getStringListForKey("viewpatlist_months"));
+}
+
 void Loader::storeNewStudySequence(const QString &name, const QVariantList &sequence){
     if (!localDB.storeStudySequence(name,sequence)){
         StaticThreadLogger::error("Loader::storeNewStudySequence","Failed to write db file to disk on storing new study sequence");
@@ -847,6 +851,7 @@ QVariantMap Loader::getReportsForLoggedEvaluator(){
             // Now we set the subject.
             map[Globals::QCIFields::SUBJECT]            = subject_name;
             map[Globals::QCIFields::SUBJECT_INST_ID]    = subject_inst_id;
+            map[Globals::QCIFields::SUBJECT_VM_ID]      = subject_id;
 
             // And we need to set the study file.
             map[Globals::QCIFields::STUDY_FILE]         = study_file;
@@ -875,7 +880,7 @@ void Loader::setCurrentStudyFileToSendOrDiscard(const QString &file){
 
 ////////////////////////////////////////////////////////////////// API FUNCTIONS //////////////////////////////////////////////////////////////////
 
-void Loader::requestOperatingInfo(bool logOnly){
+void Loader::requestOperatingInfo(){
 
     newVersionAvailable = "";
     processingUploadError = FAIL_CODE_NONE;
@@ -892,11 +897,7 @@ void Loader::requestOperatingInfo(bool logOnly){
     // And now we request the operating info
     //qDebug() << "Requesting Operating Info";
 
-    bool sendLog = false;
-    if (logOnly) sendLog = true; // The ONLY purpose of the call is to send the log.
-    else {
-        sendLog = localDB.checkForLogUpload();
-    }
+    bool sendLog = localDB.checkForLogUpload();
 
     if (!sendLog){
         // We still, AT LEAST copy the RRS files.
@@ -906,7 +907,10 @@ void Loader::requestOperatingInfo(bool logOnly){
         lp.findAndCopyRRSLogs();
     }
 
-    if (!apiclient.requestOperatingInfo(hwRecognizer.toString(false),sendLog,logOnly)){
+    // We get the list of the subject updates.
+    QVariantMap updated_subject_info = localDB.getSubjectDataToUpdate();
+
+    if (!apiclient.requestOperatingInfo(hwRecognizer.toString(false),sendLog,updated_subject_info)){
         StaticThreadLogger::error("Loader::requestOperatingInfo","Request operating info error: "  + apiclient.getError());
         emit Loader::finishedRequest();
     }
@@ -1054,9 +1058,9 @@ void Loader::onFileDownloaderUpdate(qreal progress, qreal hours, qreal minutes, 
 }
 
 void Loader::onNotificationFromFlowControl(QVariantMap notification){
-    if (notification.contains(FCL::HMD_KEY_RECEIVED)){
+    if (notification.contains(Globals::FCL::HMD_KEY_RECEIVED)){
         // We now know which headset we are dealing with.
-        QString key = notification.value(FCL::HMD_KEY_RECEIVED).toString();
+        QString key = notification.value(Globals::FCL::HMD_KEY_RECEIVED).toString();
         if (Globals::EyeTrackerKeys::HP == key){
             this->eyeTrackerName = Globals::EyeTrackerNames::HP;
         }
@@ -1071,11 +1075,11 @@ void Loader::onNotificationFromFlowControl(QVariantMap notification){
         apiclient.setEyeTrackerKey(key);
         emit Loader::titleBarUpdate();
     }
-    else if (notification.contains(FCL::UPDATE_SAMP_FREQ)){
+    else if (notification.contains(Globals::FCL::UPDATE_SAMP_FREQ)){
         // This is a sampling frequency update packet.
-        QString F = notification.value(FCL::UPDATE_SAMP_FREQ).toString();
-        QString A = notification.value(FCL::UPDATE_AVG_FREQ).toString();
-        QString M = notification.value(FCL::UPDATE_MAX_FREQ).toString();
+        QString F = notification.value(Globals::FCL::UPDATE_SAMP_FREQ).toString();
+        QString A = notification.value(Globals::FCL::UPDATE_AVG_FREQ).toString();
+        QString M = notification.value(Globals::FCL::UPDATE_MAX_FREQ).toString();
         this->frequencyString = "F: " + F + " Hz. Avg: " + A + " Hz. Max: " + M + " Hz.";
         emit Loader::titleBarUpdate();
     }
@@ -1137,8 +1141,32 @@ void Loader::receivedRequest(){
             // Just in case we clear the calibration failed directory.
             cleanCalibrationDirectory();
 
+            // If the subject update file was generated then, we need to delete it if it exists.
+            bool expecting_subject_ids = false;
+            if (apiclient.getLastGeneratedSubjectJSONFile() != ""){
+                expecting_subject_ids = true;
+                QFile deletefile(apiclient.getLastGeneratedSubjectJSONFile());
+                if (deletefile.exists()){
+                    if (deletefile.remove()){
+                        StaticThreadLogger::log("Loader::receivedRequest","Deleted subject update JSON file of: "  + deletefile.fileName());
+                    }
+                    else {
+                        StaticThreadLogger::warning("Loader::receivedRequest","Failed to delete subject update JSON file of: "  + deletefile.fileName());
+                    }
+                }
+            }
+
             QVariantMap ret = apiclient.getMapDataReturned();
             QVariantMap mainData = ret.value(APINames::MAIN_DATA).toMap();
+
+            if (expecting_subject_ids){
+                if (mainData.contains(LocalDB::SUBJECT_UPDATED_IDS)){
+                    localDB.markSubjectsAsUpdated(mainData.value(LocalDB::SUBJECT_UPDATED_IDS).toList());
+                }
+                else{
+                    StaticThreadLogger::warning("Loader::receivedRequest","There was an existent subject update file, however not updated ids");
+                }
+            }
 
             if (DBUGBOOL(Debug::Options::PRINT_SERVER_RESP)){
                 QString toprint = "DBUG: Received response:\n" + Debug::QVariantMapToString(mainData);
@@ -1331,11 +1359,7 @@ void Loader::receivedRequest(){
             vmconfig_file.close();
 
         }
-        else if (apiclient.getLastRequestType() == APIClient::API_OP_INFO_LOG_ONLY){
-            // In this case there is nothing todo really other than notify the fron end.
-            StaticThreadLogger::log("Loader::receivedRequest","Tech support log upload, successful");
-            emit Loader::sendSupportEmailDone(true);
-        }
+
         else if (apiclient.getLastRequestType() == APIClient::API_SENT_SUPPORT_EMAIL){
             // In this case there is nothing todo really other than notify the fron end.
             StaticThreadLogger::log("Loader::receivedRequest","Tech support email sent successfully");

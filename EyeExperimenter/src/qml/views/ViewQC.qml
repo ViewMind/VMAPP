@@ -15,6 +15,7 @@ ViewBase {
     readonly property int vmSC_INDEX_SEND_REPORT:    0
     readonly property int vmSC_INDEX_ARCHIVE:        1
 
+
     function configurePatientInformation(name, id, reportdate, study_name, toSend){
         var patient = loader.getStringForKey("viewevaluation_patient") + ",<br>";
         patient = patient + "<b>" + name + "</b>";
