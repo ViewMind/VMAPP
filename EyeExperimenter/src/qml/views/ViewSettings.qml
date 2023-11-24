@@ -219,55 +219,64 @@ Item {
         }
     }
 
-    // The user manual hyperlink
-    MouseArea {
-        id: userManualClickableArea
-        hoverEnabled: true;
-        cursorShape: userManualClickableArea.containsMouse? Qt.PointingHandCursor : Qt.ArrowCursor
-        height: VMGlobals.adjustHeight(18)
-        width: metrics.width + icon.width + icon.anchors.leftMargin
+    //    // The user manual hyperlink
+    //    MouseArea {
+    //        id: userManualClickableArea
+    //        hoverEnabled: true;
+    //        cursorShape: userManualClickableArea.containsMouse? Qt.PointingHandCursor : Qt.ArrowCursor
+    //        height: VMGlobals.adjustHeight(18)
+    //        width: metrics.width + icon.width + icon.anchors.leftMargin
+    //        anchors.bottom: dialog.bottom
+    //        anchors.left: dialog.left
+    //        anchors.bottomMargin: VMGlobals.adjustHeight(21)
+    //        anchors.leftMargin: VMGlobals.adjustWidth(20)
+
+    //        onClicked: {
+    //            loader.openUserManual()
+    //        }
+
+    //        Text {
+    //            id: userManualText
+    //            font: metrics.font
+    //            text: metrics.text
+    //            color: {
+    //                if (userManualClickableArea.containsMouse){
+    //                    if (userManualClickableArea.pressed) return VMGlobals.vmBlueButtonHighlight
+    //                    else return VMGlobals.vmBlueButtonPressed
+    //                }
+    //                return VMGlobals.vmBlueSelected
+    //            }
+    //            verticalAlignment: Text.AlignVCenter
+    //            height: parent.height
+    //        }
+
+    //        Image {
+    //            id: icon
+    //            source: "qrc:/images/external-link.png"
+    //            height: VMGlobals.adjustHeight(18)
+    //            fillMode: Image.PreserveAspectFit
+    //            anchors.verticalCenter: parent.verticalCenter
+    //            anchors.left: userManualText.right
+    //            anchors.leftMargin: VMGlobals.adjustWidth(5)
+    //        }
+
+    //        TextMetrics {
+    //            id: metrics
+    //            text: loader.getStringForKey("viewsettings_umanual")
+    //            font.pixelSize: VMGlobals.vmFontLarger
+    //            font.underline: userManualClickableArea.containsMouse
+    //            font.weight: 600
+    //        }
+
+    //    }
+
+
+    VMUserManualHyperLink {
+        id: userManualHyperLink
         anchors.bottom: dialog.bottom
         anchors.left: dialog.left
         anchors.bottomMargin: VMGlobals.adjustHeight(21)
         anchors.leftMargin: VMGlobals.adjustWidth(20)
-
-        onClicked: {
-            loader.openUserManual()
-        }
-
-        Text {
-            id: userManualText
-            font: metrics.font
-            text: metrics.text
-            color: {
-                if (userManualClickableArea.containsMouse){
-                    if (userManualClickableArea.pressed) return VMGlobals.vmBlueButtonHighlight
-                    else return VMGlobals.vmBlueButtonPressed
-                }
-                return VMGlobals.vmBlueSelected
-            }
-            verticalAlignment: Text.AlignVCenter
-            height: parent.height
-        }
-
-        Image {
-            id: icon
-            source: "qrc:/images/external-link.png"
-            height: VMGlobals.adjustHeight(18)
-            fillMode: Image.PreserveAspectFit
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: userManualText.right
-            anchors.leftMargin: VMGlobals.adjustWidth(5)
-        }
-
-        TextMetrics {
-            id: metrics
-            text: loader.getStringForKey("viewsettings_umanual")
-            font.pixelSize: VMGlobals.vmFontLarger
-            font.underline: userManualClickableArea.containsMouse
-            font.weight: 600
-        }
-
     }
 
 }
