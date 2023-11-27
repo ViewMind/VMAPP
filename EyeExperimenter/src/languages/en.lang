@@ -73,10 +73,12 @@ viewaddeval_fname_ph = Enter First Name;
 viewaddeval_lname_ph = Enter Last Name;
 viewaddeval_addeval = ADD EVALUATOR;
 viewaddeval_verifpass = Verify Password;
+viewaddeval_verifemail = Verify Email;
 viewaddeval_err_empty = Cannot be empty;
 viewaddeval_exmail_exists = Email is already being used;
 viewaddeval_added = <b></b><br>has been added as evaluator;
 viewaddeval_accept = I have read and agree to the <a href="https://www.viewmind.com/terms-conditions/">Terms of Use</a> and <a href="https://www.viewmind.com/privacy-policy/">Privacy Policy</a>;
+viewaddeval_badverifemail = Emails do not match;
 
 #********************************* PATIENT LIST *********************************
 viewpatlist_title = Patient List;
@@ -177,7 +179,7 @@ viewevaluation_eval_nbackslow  = N-Back;
 viewevaluation_eval_nbackvs    = N-Back RT Training;
 viewevaluation_eval_nbackms    = N-Back MS;
 viewevaluation_eval_gonogo     = Go NoGo;
-viewevaluation_eval_gonogo3D   = Go NoGo Spheres;
+viewevaluation_eval_gonogo3D   = Spheres;
 viewevaluation_eval_passball   = PassBall;
 viewevaluation_error_patient_dir = Disk Write Error|Failed creating subject directory;
 viewevaluation_must_select_doctor = A doctor must be selected;
@@ -257,6 +259,7 @@ viewevaluation_save_sequence = SAVE SEQUENCE;
 viewevaluation_seq_name = Save sequence as;
 viewevaluation_popup_save = Sequence<br><b></b><br> has been successfully saved;
 viewevaluation_goback = PATIENT LIST;
+viewevalution_arrow_use = Click on the arrow to continue;
 
 viewevaluation_hand_calib_h = 
 Place your hands horizontally. 
@@ -339,7 +342,7 @@ NBack|N-Back|
 NBack RT|N-Back RT|
 NBack VS|N-Back For Training|
 Go No-Go|Go NoGo|
-Go No-Go Sphere| Go No-Go Spheres|
+Go No-Go Sphere|Spheres|
 PassBall|Pass Ball;
 viewqc_previous = PREVIOUS;
 viewqc_archive = ARCHIVE;

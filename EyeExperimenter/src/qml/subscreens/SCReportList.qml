@@ -252,4 +252,17 @@ Rectangle {
     }
 
 
+    VMButton {
+        id: btnGoBackToPatientsList
+        vmText: loader.getStringForKey("viewpatlist_title").toUpperCase();
+        anchors.horizontalCenter: subtitle.horizontalCenter
+        anchors.top: subtitle.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(10)
+        visible: vmNumberOfReports === 0
+        onClickSignal: {
+            viewMainSetup.goBackToPatientList();
+        }
+    }
+
+
 }

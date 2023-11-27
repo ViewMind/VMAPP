@@ -38,6 +38,11 @@ ViewBase {
             return;
         }
 
+        if (email.vmCurrentText !== verifyEmail.vmCurrentText){
+            verifyEmail.vmErrorMsg = loader.getStringForKey("viewaddeval_badverifemail");
+            return;
+        }
+
         // Ensuring tha the password is not empty and the email does not already exist.
         if (password.vmCurrentText === ""){
             password.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty");
@@ -59,6 +64,8 @@ ViewBase {
         mainWindow.popUpNotify(VMGlobals.vmNotificationGreen,message)
         mainWindow.swipeTo(VMGlobals.vmSwipeIndexHome);
     }
+
+
 
 
     Text {
@@ -87,70 +94,96 @@ ViewBase {
         anchors.topMargin: VMGlobals.adjustHeight(10)
     }
 
-    Column {
+    Row {
 
-        id: inputColumn
-        width: VMGlobals.adjustWidth(320)
-        spacing: VMGlobals.adjustHeight(40)
+        id: form
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: subtitle.bottom
-        anchors.topMargin: VMGlobals.adjustHeight(54)
+        anchors.topMargin: VMGlobals.adjustHeight(70)
+        spacing: VMGlobals.adjustWidth(20)
 
-        VMTextInput {
-            id: fname
-            vmPlaceHolderText: loader.getStringForKey("viewaddeval_fname_ph")
-            vmLabel: loader.getStringForKey("viewaddeval_fname")
-            width: parent.width
-            vmAlignErrorLeft: false
-            Keys.onTabPressed: lname.vmFocus = true;
+        Column {
+
+            id: inputColumnLeft
+            width: VMGlobals.adjustWidth(320)
+            spacing: VMGlobals.adjustHeight(60)
+
+
+            VMTextInput {
+                id: fname
+                vmPlaceHolderText: loader.getStringForKey("viewaddeval_fname_ph")
+                vmLabel: loader.getStringForKey("viewaddeval_fname")
+                width: parent.width
+                vmAlignErrorLeft: false
+                Keys.onTabPressed: lname.vmFocus = true;
+            }
+
+            VMTextInput {
+                id: email
+                width: parent.width
+                vmPlaceHolderText: loader.getStringForKey("viewaddeval_email_ph")
+                vmLabel: loader.getStringForKey("viewaddeval_email")
+                vmAlignErrorLeft: false
+                Keys.onTabPressed: verifyEmail.vmFocus = true;
+            }
+
+            VMPasswordInput {
+                id: password
+                width: parent.width
+                vmLabel: loader.getStringForKey("viewlogin_label_pass")
+                vmPlaceHolderText: loader.getStringForKey("viewlogin_placeholder_password")
+                vmShowText: loader.getStringForKey("viewlogin_show")
+                vmHideText: loader.getStringForKey("viewlogin_hide")
+                vmAlignErrorLeft: false
+                Keys.onTabPressed: verifyPassword.vmFocus = true;
+            }
+
         }
 
-        VMTextInput {
-            id: lname
-            width: parent.width
-            vmPlaceHolderText: loader.getStringForKey("viewaddeval_lname_ph")
-            vmLabel: loader.getStringForKey("viewaddeval_lname")
-            vmAlignErrorLeft: false
-            Keys.onTabPressed: email.vmFocus = true;
-        }
 
-        VMTextInput {
-            id: email
-            width: parent.width
-            vmPlaceHolderText: loader.getStringForKey("viewaddeval_email_ph")
-            vmLabel: loader.getStringForKey("viewaddeval_email")
-            vmAlignErrorLeft: false
-            Keys.onTabPressed: password.vmFocus = true;
-        }
+        Column {
 
-        VMPasswordInput {
-            id: password
-            width: parent.width
-            vmLabel: loader.getStringForKey("viewlogin_label_pass")
-            vmPlaceHolderText: loader.getStringForKey("viewlogin_placeholder_password")
-            vmShowText: loader.getStringForKey("viewlogin_show")
-            vmHideText: loader.getStringForKey("viewlogin_hide")
-            vmAlignErrorLeft: false
-            Keys.onTabPressed: verifyPassword.vmFocus = true;
-        }
+            id: inputColumnRight
+            width: VMGlobals.adjustWidth(320)
+            spacing: VMGlobals.adjustHeight(60)
 
-        VMPasswordInput {
-            id: verifyPassword
-            width: parent.width
-            vmLabel: loader.getStringForKey("viewaddeval_verifpass")
-            vmPlaceHolderText: loader.getStringForKey("viewlogin_placeholder_password")
-            vmShowText: loader.getStringForKey("viewlogin_show")
-            vmHideText: loader.getStringForKey("viewlogin_hide")
-            vmAlignErrorLeft: false
-            Keys.onTabPressed: fname.vmFocus = true;
+            VMTextInput {
+                id: lname
+                width: parent.width
+                vmPlaceHolderText: loader.getStringForKey("viewaddeval_lname_ph")
+                vmLabel: loader.getStringForKey("viewaddeval_lname")
+                vmAlignErrorLeft: false
+                Keys.onTabPressed: email.vmFocus = true;
+            }
+
+            VMTextInput {
+                id: verifyEmail
+                width: parent.width
+                vmPlaceHolderText: loader.getStringForKey("viewaddeval_verifemail")
+                vmLabel: loader.getStringForKey("viewaddeval_email")
+                vmAlignErrorLeft: false
+                Keys.onTabPressed: password.vmFocus = true;
+            }
+
+            VMPasswordInput {
+                id: verifyPassword
+                width: parent.width
+                vmLabel: loader.getStringForKey("viewaddeval_verifpass")
+                vmPlaceHolderText: loader.getStringForKey("viewlogin_placeholder_password")
+                vmShowText: loader.getStringForKey("viewlogin_show")
+                vmHideText: loader.getStringForKey("viewlogin_hide")
+                vmAlignErrorLeft: false
+                Keys.onTabPressed: fname.vmFocus = true;
+            }
+
         }
 
     }
 
     VMCheckBox {
         id: acceptTerms
-        anchors.top: inputColumn.bottom
-        anchors.left: inputColumn.left
+        anchors.top: form.bottom
+        anchors.left: form.left
         anchors.topMargin: VMGlobals.adjustHeight(35)
         vmText: loader.getStringForKey("viewaddeval_accept")
         Keys.onTabPressed: fname.vmFocus = true;
@@ -162,9 +195,9 @@ ViewBase {
     VMButton {
         id: addEvaluButton
         vmText: loader.getStringForKey("viewaddeval_addeval")
-        vmCustomWidth: inputColumn.width
+        //vmCustomWidth: inputColumn.width
         anchors.top: acceptTerms.bottom
-        anchors.topMargin: VMGlobals.adjustHeight(20)
+        anchors.topMargin: VMGlobals.adjustHeight(40)
         anchors.horizontalCenter: parent.horizontalCenter
         vmEnabled: acceptTerms.vmIsOn
         onClickSignal: {

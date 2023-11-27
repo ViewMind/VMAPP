@@ -220,7 +220,6 @@ ViewBase {
     }
 
 
-
 //     We add test stuff to main when developing components as we can test it as sson as the app starts.
 //     I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
 //    VMButton {

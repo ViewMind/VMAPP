@@ -542,10 +542,24 @@ Rectangle {
             anchors.right: pressKeyToContinue.left
             anchors.rightMargin: VMGlobals.adjustWidth(1);
             vmArrowPointsForward: false
-            visible: (vmEvaluationStage === vmSTAGE_EXPLANATION)
+            //visible: (vmEvaluationStage === vmSTAGE_EXPLANATION)
+            // It is apparently NEVER necessary to go back. But I leave the code here just in case.
+            visible: false;
             onArrowPressed: {
                 flowControl.keyboardKeyPressed(Qt.Key_B);
             }
+        }
+
+        Text {
+            text: "(" + loader.getStringForKey("viewevalution_arrow_use") + ")"
+            color: VMGlobals.vmBlackText
+            font.pixelSize: VMGlobals.vmFontBaseSize
+            font.weight: 800
+            font.italic: true
+            //anchors.right: (pressKeyToGoBack.visible) ? pressKeyToGoBack.left : pressKeyToContinue.left
+            anchors.left: studyExplanationText.left
+            anchors.top: studyExplanationText.bottom
+            visible: pressKeyToContinue.visible
         }
 
     }
