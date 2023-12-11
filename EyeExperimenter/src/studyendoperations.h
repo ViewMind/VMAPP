@@ -34,7 +34,7 @@ public:
      * @brief setFileListToProcess - Batch processing function
      * @param fileList - The file list of files on which to do processing.
      * @details If this function is called then all files in this list will be processed when run. The list assumes a .json file list
-     * which will all conduce to an .idx file and qci file creation. This class will the detect the type fo file (legacy or current)
+     * which will all conduce to an _metadata.json file and qci file creation. This class will the detect the type fo file (legacy or current)
      * and compute QCI accordingly.
      */
     void setFileListToProcess(const QStringList &fileList);

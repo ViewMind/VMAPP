@@ -25,7 +25,7 @@ namespace Debug {
         return QString(data);
     }
 
-    static void prettpPrintQVariantMap(const QVariantMap &map){
+    static void prettyPrintQVariantMap(const QVariantMap &map){
         std::cout << QVariantMapToString(map).toStdString() << std::endl;
     }
 

@@ -453,3 +453,30 @@ QString ConfigurationManager::setValue(const QString &fileName,
     return "";
 
 }
+
+QString ConfigurationManager::toCSVFile(const QString &filename){
+
+    QStringList csvRows;
+    csvRows << "\"KEY\",\"VALUE\"";
+
+    QStringList keys = data.keys();
+
+    for (qint32 i = 0; i < keys.size(); i++){
+        QString key = keys.at(i);
+        if (!data.value(key).canConvert(QVariant::String)) continue; // We ignore all those values that cannot be converted to string.
+        QString row = "\"" + key + "\"";
+        row = row  + ",\"" + data.value(key).toString() + "\"";
+        csvRows << row;
+    }
+
+    QFile file(filename);
+    if (!file.open(QFile::WriteOnly)){
+        return "Could not open file " + filename + " for writing";
+    }
+    QTextStream writer(&file);
+    writer << csvRows.join("\n");
+    file.close();
+
+    return "";
+
+}

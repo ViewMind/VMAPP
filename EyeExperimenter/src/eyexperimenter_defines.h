@@ -142,7 +142,7 @@ static QVariantMap GetNameCodeMap() {
 }
 
 namespace Share {
-static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.7";
+static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.9";
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
 static const QString PATIENT_UID = "patient_uid";
@@ -186,6 +186,13 @@ static const QString NBACK       = "nback";
 static const QString GONOGO_3D   = "gonogo_spheres";
 static const QString GONOGO      = "gonogo";
 static const QString PASSBALL    = "passball";
+static QString MakeMetdataFileName(const QString &basename){
+    return basename + "_metadata.json";
+}
+static bool IsMetadataFileName(const QString &filename){
+    return filename.endsWith("_metadata.json");
+}
+
 }
 
 // These are keys for notification that come from flow control (which is the object conneted to the RRS) to the Loader.

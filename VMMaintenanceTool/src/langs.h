@@ -17,6 +17,7 @@ public:
     static bool LoadLanguageFile(const QString &langcode);
     static QString getString(const QString &key);
     static QStringList getStringList(const QString &key);
+    static QString saveToCSV(const QString &filename);
 
 private:
     static ConfigurationManager language;

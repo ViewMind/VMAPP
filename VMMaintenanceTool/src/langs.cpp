@@ -23,3 +23,7 @@ QStringList Langs::getStringList(const QString &key){
     if (language.containsKeyword(key)) return language.getStringList(key);
     else return QStringList();
 }
+
+QString Langs::saveToCSV(const QString &filename){
+    return language.toCSVFile(filename);
+}

@@ -496,7 +496,7 @@ bool StudyControl::saveDataToHardDisk(){
     // Hence it is much much lighter to quickly load for information reference.
     QFileInfo info(fullPathCurrentStudyFile);
     QString basename = info.baseName();
-    fullPathCurrentIDXFile = workingDirectory + "/" + basename + ".idx";
+    fullPathCurrentIDXFile = workingDirectory + "/" + Globals::BaseFileNames::MakeMetdataFileName(basename);  //basename + "_metadata.json";
 
     bool ans = rawdata.saveJSONFile(fullPathCurrentStudyFile);
     if (!ans) return false;

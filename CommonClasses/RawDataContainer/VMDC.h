@@ -289,6 +289,7 @@ namespace VMDC {
        static const QString BIRTH_COUNTRY = "birth_country";
        static const QString BIRTH_DATE = "birth_date";
        static const QString YEARS_FORMATION = "years_formation";
+       static const QString AGE_AT_EVALUATION = "age";
        static const QString GENDER = "gender";
        static const QString INSTITUTION_PROVIDED_ID = "institution_provided_id";
        static const QString LASTNAME = "lastname";

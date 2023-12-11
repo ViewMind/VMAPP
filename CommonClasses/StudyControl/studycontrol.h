@@ -7,13 +7,14 @@
 #include "../RenderServerClient/RenderServerPackets/renderserverpacket.h"
 #include "../RawDataContainer/VMDC.h"
 #include "../RawDataContainer/viewminddatacontainer.h"
-#include "../LogInterface/staticthreadlogger.h"
 #include "../debug.h"
+#include "eyexperimenter_defines.h"
 
 #include "../StudyControl/nback/nbackconfigurator.h"
 #include "../StudyControl/gng3D/gngspheresconfigurator.h"
 #include "../StudyControl/binding/bindingconfigurator.h"
 #include "../StudyControl/gng/gngconfigurator.h"
+
 
 
 namespace StudyGlobals {

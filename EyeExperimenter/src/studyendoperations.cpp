@@ -23,7 +23,7 @@ void StudyEndOperations::setFileListToProcess(const QStringList &fileList){
         QString directory   = info.absolutePath();
         QString basename    = info.baseName();
 
-        filesToProcessIDX << directory + "/" + basename + ".idx";
+        filesToProcessIDX << directory + "/" + Globals::BaseFileNames::MakeMetdataFileName(basename);
 
     }
 
@@ -49,6 +49,10 @@ void StudyEndOperations::setFilesToProcessFromViewMindDataDirectory(){
         QStringList studyFiles = subjectDir.entryList(filters,QDir::Files);
 
         for (qint32 j = 0; j < studyFiles.size(); j++){
+
+            // We have to make sure NOT to add the metada files.
+            if (Globals::BaseFileNames::IsMetadataFileName(studyFiles.at(i))) continue;
+
             jsonFiles << path + "/" + studyFiles.at(j);
             //qDebug() << jsonFiles.last();
         }
@@ -145,12 +149,15 @@ void StudyEndOperations::doStudyFileProcessing(){
 
     }
 
-    // We now need to save to both the JSON file and ICX files.
+    // We now need to save to both the JSON file and Metadata Json (Used to be known as IDX Files) files.
+    vmdc.clearAndStoreSubjectData(); // We make sure to store the raw data anonimosuly.
     if (!vmdc.saveJSONFile(dataFile)){
         StaticThreadLogger::error("StudyEndOperations::run","Failed is saving JSON data with QC parameters to file '" + dataFile + "'");
         return;
     }
 
+    // The metadata MUST include the subject data so it is resotored.
+    vmdc.restoreSubjectData();
     vmdc.clearFieldsForIndexFileCreation();
     if (!vmdc.saveJSONFile(idxFile)){
         StaticThreadLogger::error("StudyEndOperations::run","Failed is saving JSON data with QC parameters to file '" + idxFile + "'");
@@ -270,7 +277,7 @@ bool StudyEndOperations::createTarFileAndCleanup() {
     QString basename    = info.baseName();
 
     QString localJSON   = basename + ".json";
-    QString localIDX    = basename + ".idx";
+    QString localIDX    = Globals::BaseFileNames::MakeMetdataFileName(basename);
     compressedFileName  = basename + ".zip";
     qciFile             = basename + ".qci";
     qciFile             = directory + "/"  + qciFile;
@@ -303,10 +310,8 @@ bool StudyEndOperations::createTarFileAndCleanup() {
     // If the file exists. We delete the .json and .idx files.
     localJSON = directory + "/" + localJSON;
     localIDX = directory + "/" + localIDX;
-    bool ans = QFile::remove(localJSON);
-    //qDebug() << "Removed file" << localJSON << ". Result" << ans;
-    ans = QFile::remove(localIDX);
-    //qDebug() << "Removed file" << localIDX << ". Result" << ans;
+    QFile::remove(localJSON);
+    QFile::remove(localIDX);
     return true;
 
 }

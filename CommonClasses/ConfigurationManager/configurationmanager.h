@@ -101,6 +101,9 @@ public:
                             ConfigurationManager *configToChange = nullptr,
                             const Delimiters &delimiters = Delimiters());
 
+    // Helper function to export when configuration is jsut a list of strings.
+    QString toCSVFile(const QString &filename);
+
 
 private:
 

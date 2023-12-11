@@ -89,6 +89,7 @@ HEADERS += \
     ../../CommonClasses/StudyControl/studyconfigurator.h \
     ../../CommonClasses/StudyControl/studycontrol.h \
     ../../CommonClasses/debug.h \
+    ../../CommonClasses/debug.h \
     ../../CommonClasses/eyetracker_defines.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
     apiclient.h \

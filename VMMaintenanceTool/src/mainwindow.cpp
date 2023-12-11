@@ -24,6 +24,11 @@ MainWindow::MainWindow(QWidget *parent)
         logger->log("Failed in loading the language file");
     }
 
+// For easy print out of the screen to a CSV
+//    if (Langs::saveToCSV("ViewMindUpdate.csv") != ""){
+//        qDebug() << "Failed in making the CSV file";
+//    }
+
     bool isUpdate = false;
     if (args.size() > 1){
         if (args.at(1) == "update"){ // zero is program name.

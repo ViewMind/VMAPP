@@ -113,11 +113,9 @@ public:
 
     void markFileAsFinalized();
 
-    void clearFieldsForIndexFileCreation();
-
-    ////////////////////////// DEBUGGING FUNCTION
+    ////////////////////////// DEBUGGING FUNCTIONS
     void printRawDataCSV(const QString &filename, const QString &study, const QStringList whichRawDataValues);
-
+    void DebugPrintContentToConsole() const;
 
     /**
      * @brief GenerateStdRawDataVector Geneates a valid vector that can be inserted with add NewRawDataVector. Ensuring coherence. Standar all EyeTracking values.
@@ -181,7 +179,10 @@ public:
 
     bool isStudy3D(const QString &study) const;
 
-    void DebugPrintContentToConsole() const;
+    ////////////////////////// Convenience function
+    void clearFieldsForIndexFileCreation();
+    void clearAndStoreSubjectData();
+    void restoreSubjectData();
 
 private:
     QVariantMap data;
@@ -201,6 +202,9 @@ private:
     QVariantList currentRawDataList;
     QVariantList currentLFixationVectorL;
     QVariantList currentLFixationVectorR;
+
+    // Usefull for removing a specific field temporarily from the main data structure .
+    QVariantMap temporaryStorage;
 
     // Names and identification for currently selected study.
     QString currentDataSetType;

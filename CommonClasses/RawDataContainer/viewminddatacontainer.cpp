@@ -232,7 +232,7 @@ QString ViewMindDataContainer::getCurrentStudy() const {
 }
 
 void ViewMindDataContainer::DebugPrintContentToConsole() const{
-    Debug::prettpPrintQVariantMap(data);
+    Debug::prettyPrintQVariantMap(data);
 }
 
 bool ViewMindDataContainer::isStudy3D(const QString &study) const {
@@ -482,6 +482,7 @@ bool ViewMindDataContainer::setSubjectData(const QVariantMap &subject_data){
     return true;
 }
 
+
 void ViewMindDataContainer::setQCParameters(const QVariantMap &qcparams){
     // This assumes that the parameters have already been checked.
     data[MAIN_FIELD_FREQUENCY_CHECK_PARAMETERS] = qcparams;
@@ -661,8 +662,32 @@ void ViewMindDataContainer::clearFieldsForIndexFileCreation(){
         study[VMDC::StudyField::STUDY_DATA] = QVariantMap(); // This is for 3D Studies
         study[VMDC::StudyField::EXPERIMENT_DESCRIPTION] = QVariantMap(); // In 3D studies this can contain base64 encoded files which are very large.
         allstudymaps[allstudies.at(i)] = study;
-    }
+    }    
     data[MAIN_FIELD_STUDIES] = allstudymaps;
+}
+
+void ViewMindDataContainer::clearAndStoreSubjectData(){
+    // Now we anonymize the study file.
+    this->temporaryStorage =  data.value(MAIN_FIELD_SUBJECT_DATA).toMap();
+    QVariantMap temp;
+    QStringList tocopy; tocopy << VMDC::SubjectField::LOCAL_ID; tocopy << VMDC::SubjectField::YEARS_FORMATION; tocopy << VMDC::SubjectField::GENDER;
+    for (qint32 i = 0; i < tocopy.size(); i++){
+        temp[tocopy.at(i)] = this->temporaryStorage.value(tocopy.at(i));
+    }
+
+    // Computing the current age.
+    QDate bdate = temporaryStorage.value(VMDC::SubjectField::BIRTH_DATE).toDate();
+    int days = bdate.daysTo(QDate::currentDate());
+    int age = qFloor(days/365);
+    temp[VMDC::SubjectField::AGE_AT_EVALUATION] = age;
+
+    //qDebug() << "Birth date is" << temporaryStorage.value(VMDC::SubjectField::BIRTH_DATE).toString() << "So age is" << age;
+
+    data[MAIN_FIELD_SUBJECT_DATA] = temp;
+}
+
+void ViewMindDataContainer::restoreSubjectData(){
+    data[MAIN_FIELD_SUBJECT_DATA] = this->temporaryStorage;
 }
 
 bool ViewMindDataContainer::setFullTrialList(const QVariantList &fullTrialList,
