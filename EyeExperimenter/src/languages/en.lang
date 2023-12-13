@@ -422,3 +422,4 @@ explanation_key_to_goback   = Press B on keyboard to move one slide back;
 #********************************* LABELING *********************************
 labeling_label_select = Select label;
 label_options = ANMAT|ANVISA|EU|USA;
+label_version = Version;
