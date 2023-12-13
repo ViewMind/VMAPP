@@ -261,9 +261,9 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
     qreal expectedNumberOfDataPoints = estimatedDataGatheringTime/sampling_period;
     qreal qci = qMin(numberOfDataPointsObatained*100.0/expectedNumberOfDataPoints,100.0);
 
-    qDebug() << "Study duration" << studyDuration << ". Time with No Data PerTrial" << timeWithNoDataPerTrial << ". Number of Trials" << numberOfTrials;
-    qDebug() << "Expected Data Gathering Time" << estimatedDataGatheringTime << "Expected Number of Data Points" << expectedNumberOfDataPoints;
-    qDebug() << "Number of points obtained" << numberOfDataPointsObatained << "QCI" << qci;
+//    qDebug() << "Study duration" << studyDuration << ". Time with No Data PerTrial" << timeWithNoDataPerTrial << ". Number of Trials" << numberOfTrials;
+//    qDebug() << "Expected Data Gathering Time" << estimatedDataGatheringTime << "Expected Number of Data Points" << expectedNumberOfDataPoints;
+//    qDebug() << "Number of points obtained" << numberOfDataPointsObatained << "QCI" << qci;
 
     return qci;
 
