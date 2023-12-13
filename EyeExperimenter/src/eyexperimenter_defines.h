@@ -152,6 +152,8 @@ static const QString CURRENTLY_LOGGED_EVALUATOR = "evaluator_logged";
 static const QString SELECTED_STUDY = "selected_study";
 static const QString HAND_CALIB_RES = "hand_calibration_results";
 static const QString NBACK_WAIT_MSG = "nback_wait_msg";
+static const QString EYEEXPLORER_SYSTEM_VERSION = "27.6.5";
+static const QString APP_RELEASE_DATE = "DD-MM-YYYY";
 }
 
 static bool SetUpRegion(const QString &reg){

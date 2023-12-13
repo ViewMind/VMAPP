@@ -58,5 +58,6 @@
         <file>qml/components/VMPossibleDupeDialog.qml</file>
         <file>qml/components/VMInfoHeaderIcon.qml</file>
         <file>qml/components/VMUserManualHyperLink.qml</file>
+        <file>qml/components/VMLabelItem.qml</file>
     </qresource>
 </RCC>

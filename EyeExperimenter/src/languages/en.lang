@@ -420,24 +420,5 @@ explanation_key_to_continue = Press N on keyboard to advance;
 explanation_key_to_goback   = Press B on keyboard to move one slide back;
 
 #********************************* LABELING *********************************
-label_vm_body = <b>VIEWMIND S.A</b><br>Av. Belgrano Nro. 758, Ciudad de Sunchales Santa Fe, Argentina.<br>
-DT: Eng. Matias Shulz, MP: 1-3105-9;
-label_vm_contact = info@viewmind.com|www.viewmind.com;
-
-label_ecrep = <b>VIEWMIND S.A.R.L</b>
-<br>House of Biohealth, 27 Rue Henri Koch, 4354 Esch-sur-Alzette, Luxemburg.;
-
-label_md = EYE EXPLORER;
-
-label_manual = READ THE OPERATING INSTRUCTIONS;
-
-label_ec = EC MARKING under the Directive 93/42/EEC amended by 2007/47/EC.<br>
-AUTHORIZEDO BY ANMAT: <b>PM-2478-1</b>.<br>
-Exclusive use for professionals and health institutions;
-
-label_version = Version;
-
-label_patent = Patent Protected: This software is protected by one or more patents. 
-Unauthorized use, reproduction, or distribution may be subject to legal action.;
-
-
+labeling_label_select = Select label;
+label_options = ANMAT|ANVISA|EU|USA;
