@@ -43,6 +43,7 @@ RenderServerPacket::RXState RenderServerPacket::rxBytes(const QByteArray &bytes)
         }
 
         this->type = map.value(RRS::WrapperPacketFields::TYPE).toString();
+        this->counter = map.value(RRS::WrapperPacketFields::COUNTER).toInt();
         QString payload_string = map.value(RRS::WrapperPacketFields::PAYLOAD).toString();
 
 
@@ -69,6 +70,15 @@ void RenderServerPacket::setPacketType(const QString &type){
     this->type = type;
 }
 
+void RenderServerPacket::setCounter(const qint32 c){
+    this->counter = c;
+}
+
+qint32 RenderServerPacket::getCounter() const {
+    return this->counter;
+}
+
+
 void RenderServerPacket::setPayloadField(const QString &name, const QVariant &value){
     this->payload[name] = value;
 }
@@ -93,6 +103,7 @@ void RenderServerPacket::resetForRX(){
     this->rxBuffer.clear();
     this->type = "";
     this->payload.clear();
+    this->counter = -1;
 }
 
 QByteArray RenderServerPacket::getByteArrayToSend() const{
@@ -102,6 +113,7 @@ QByteArray RenderServerPacket::getByteArrayToSend() const{
     map[RRS::WrapperPacketFields::TYPE] = this->type;
     QJsonDocument doc = QJsonDocument::fromVariant(this->payload);
     map[RRS::WrapperPacketFields::PAYLOAD] = QString(doc.toJson(QJsonDocument::Compact));
+    map[RRS::WrapperPacketFields::COUNTER] = this->counter;
 
     // Now we transfrom the map to a byte array, pre appending the preamble.
 

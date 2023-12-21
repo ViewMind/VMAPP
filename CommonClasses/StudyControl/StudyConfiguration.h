@@ -34,6 +34,7 @@ static const QString INITIAL_SPEED =              "initial_speed";
 static const QString HAND_L_ENABLED =             "hand_l_enabled";
 static const QString N_OF_TRIALS =                "number_of_trials";
 static const QString HAND_R_ENABLED =             "hand_r_enabled";
+static const QString STUDY_FILENAME =             "study_filename";
 }
 
 }

@@ -220,6 +220,13 @@ private:
      */
     void emitNewExplanationMessage();
 
+    /**
+     * @brief processAndStoreStudyData - Stores the study data appropiately in the finalized study file.
+     * @param control. A Render server Packet, created by a temporary study file.
+     * @return True if there were no issues. False otherwise.
+     */
+    bool processAndStoreStudyData(const QVariantMap &control);
+
 
     // Different text explanation keys based on different studies.
     static inline const char * STUDY_TEXT_KEY_BINDING_UC     = "explanation_phase_list_binding_uc";

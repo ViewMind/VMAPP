@@ -184,6 +184,9 @@ public:
     void clearAndStoreSubjectData();
     void restoreSubjectData();
 
+    /// Used to free up memory.
+    void clearAllData();
+
 private:
     QVariantMap data;
     QString error;

@@ -10,7 +10,6 @@ namespace PacketType {
 static const QString TYPE_LOG_LOCATION             = "log_location";             // Sets up where the logs will be located
 static const QString TYPE_DBUG_CONTROL             = "debug_control";            // Enable and disables several debug features.
 static const QString TYPE_STUDY_CONTROL            = "study_control";            // Control packet containing generic 3D study commands that tells the server what to do.
-static const QString TYPE_STUDY_DATA               = "study_data";               // Study data which signals the end of the study.
 static const QString TYPE_CALIB_CONTROL            = "calibration_control";      // Calibration control packet.
 static const QString TYPE_HAND_CALIB_CONTROL       = "hand_calibration_control"; // Controls hand calibration.
 static const QString TYPE_WAIT_MSG                 = "wait_msg";                 // Renders the wait screen.
@@ -38,10 +37,11 @@ static const QString ENABLE_RRS_PACKET_PRINT   = "enable_printout_of_received_pa
 }
 
 namespace PacketStudyControl {
-static const QString STUDY_CNF     = "study_configuration";
-static const QString CMD           = "command";
-static const QString STUDY_CMD     = "study_command";
-static const QString STATUS_UPDATE = "study_status_updates";
+static const QString STUDY_CNF        = "study_configuration";
+static const QString CMD              = "command";
+static const QString STUDY_CMD        = "study_command";
+static const QString STATUS_UPDATE    = "study_status_updates";
+static const QString STUDY_DATA_FILE  = "study_data_filename";
 }
 
 namespace PacketWaitMsg{
@@ -103,10 +103,12 @@ namespace WrapperPacketFields {
 
 static const QString TYPE    = "type";
 static const QString PAYLOAD = "payload";
+static const QString COUNTER = "counter";
 
 static bool ArePresent(const QVariantMap &map){
     if (!map.contains(TYPE)) return false;
     if (!map.contains(PAYLOAD)) return false;
+    if (!map.contains(COUNTER)) return false;
     return true;
 }
 }
@@ -138,6 +140,7 @@ static const QString CMD_ACK                  = "acknowledge";
 static const QString CMD_ERROR                = "error";
 static const QString CMD_STUDY_END            = "study_end";
 static const QString CMD_SEND_STUDY_DATA      = "send_study_data";
+static const QString CMD_STUDY_DATA_STORED   =  "study_data_stored";
 }
 
 namespace CommandInStudy {

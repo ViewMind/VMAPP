@@ -149,29 +149,42 @@ void StudyEndOperations::doStudyFileProcessing(){
 
     }
 
-    // We now need to save to both the JSON file and Metadata Json (Used to be known as IDX Files) files.
-    vmdc.clearAndStoreSubjectData(); // We make sure to store the raw data anonimosuly.
-    if (!vmdc.saveJSONFile(dataFile)){
-        StaticThreadLogger::error("StudyEndOperations::run","Failed is saving JSON data with QC parameters to file '" + dataFile + "'");
-        return;
-    }
 
-    // The metadata MUST include the subject data so it is resotored.
-    vmdc.restoreSubjectData();
-    vmdc.clearFieldsForIndexFileCreation();
-    if (!vmdc.saveJSONFile(idxFile)){
-        StaticThreadLogger::error("StudyEndOperations::run","Failed is saving JSON data with QC parameters to file '" + idxFile + "'");
-        return;
-    }
 
     // The next steps are done ONLY if the study is finalized.
     if (vmdc.getMetadaStatus() == VMDC::StatusType::FINALIZED) {
+
+        // We now need to save to both the JSON file and Metadata Json (Used to be known as IDX Files) files.
+        vmdc.clearAndStoreSubjectData(); // We make sure to store the raw data anonimosuly.
+        if (!vmdc.saveJSONFile(dataFile)){
+            StaticThreadLogger::error("StudyEndOperations::run","Failed is saving JSON data with QC parameters to file '" + dataFile + "'");
+            return;
+        }
+
+        // The metadata MUST include the subject data so it is resotored.
+        vmdc.restoreSubjectData();
+
+        // We only clear the metadata WHEN
+        vmdc.clearFieldsForIndexFileCreation();
+        if (!vmdc.saveJSONFile(idxFile)){
+            StaticThreadLogger::error("StudyEndOperations::run","Failed is saving JSON data with QC parameters to file '" + idxFile + "'");
+            return;
+        }
 
         // Now we generate the compressed file.
         if (!createTarFileAndCleanup()) return;
 
         // Generate the Local DB Entry.
         if (!createQCIStudyFile()) return;
+
+    }
+    else {
+
+        // Since the study is not finalized, we simply store the data file as is.
+        if (!vmdc.saveJSONFile(dataFile)){
+            StaticThreadLogger::error("StudyEndOperations::run","Failed is saving JSON data of unfinished study with QC parameters to file '" + dataFile + "'");
+            return;
+        }
 
     }
 
@@ -255,6 +268,9 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
         StaticThreadLogger::error("StudyEndOperations::computeQCI","Found unexpected study type in data file '" + dataFile + "' of  '" + study + "'. Don't know how to compute time with no acquisition");
         return -1;
     }
+
+    // This is usually during testing like removing the headset for the entire study. Rather have a zero, just in case.
+    if (numberOfDataPointsObatained < 0) numberOfDataPointsObatained = 0;
 
     // Now we compute the final quality control index as the ratio of expected number of points versus the computed/obtained number of points.
     qreal estimatedDataGatheringTime = studyDuration - timeWithNoDataPerTrial*numberOfTrials;

@@ -150,8 +150,7 @@ void FlowControl::onNewPacketArrived(){
         QVariantMap info; info[Globals::FCL::HMD_KEY_RECEIVED] = hmdkey;
         emit FlowControl::notifyLoader(info);
     }
-    else if ( (packet.getType() == RRS::PacketType::TYPE_STUDY_CONTROL ) ||
-              (packet.getType() == RRS::PacketType::TYPE_STUDY_DATA) ){
+    else if (packet.getType() == RRS::PacketType::TYPE_STUDY_CONTROL ) {
 
         // These packets are processed by study control
         studyControl.receiveRenderServerPacket(packet);

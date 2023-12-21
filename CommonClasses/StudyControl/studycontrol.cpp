@@ -136,7 +136,7 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
     qreal md_percent     =  processingParameters.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
 
     // We need to create the configuration for the study.
-    if (!configurator->createStudyConfiguration(studyConfig,sampleFrequency,md_percent,studyName,shortStudies)){
+    if (!configurator->createStudyConfiguration(studyConfig,sampleFrequency,md_percent,studyName,shortStudies,fullPathCurrentStudyFile)){
         StaticThreadLogger::error("StudyControl::startStudy","Failed in creating a configuration for study of type " + studyName + ". Reason: " + configurator->getError());
         delete configurator;
         emitFailState();
@@ -191,6 +191,7 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
                 return;
             }
             else {
+                expectingAbortACK = false;
                 StaticThreadLogger::log("StudyControl::receiveRenderServerPacket","Received Abort ACK");
             }
             emitFailState(true);
@@ -236,6 +237,59 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
                 return;
             }
         }
+        else if (this->studyState == SS_WAITING_FOR_STUDY_DATA){
+
+            // Finally we check that the command is the correct one.
+            if (command != RRS::CommandStudyControl::CMD_STUDY_DATA_STORED){
+                StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Study was expecting study data stored command, but got '" + command + "' instead");
+                emitFailState();
+                return;
+            }
+
+//            qDebug() << "Printing payload of study end command";
+//            Debug::prettyPrintQVariantMap(control.getPayload());
+
+            // First we check we got the file.
+            QString study_data_filename = control.getPayloadField(RRS::PacketStudyControl::STUDY_DATA_FILE).toString();
+            if (study_data_filename == ""){
+                StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Study has ended but no file with stored study data is provided. Aborting");
+                emitFailState();
+                return;
+            }
+
+            // Now we check the file exists.
+            if (!QFile(study_data_filename).exists()){
+                StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Study has ended but no file with storoed study data is provided. Aborting");
+                emitFailState();
+                return;
+            }
+
+            StaticThreadLogger::log("StudyControl::receiveRenderServerPacket","Loading JSON Data ....");
+
+            QString error = "";
+            QVariantMap data = Globals::LoadJSONFileToVariantMap(study_data_filename,&error);
+            if (error != ""){
+                StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Unable to load study file '" + study_data_filename + "' for reading. Reason: " + error);
+                emitFailState();
+                return;
+            }
+
+            StaticThreadLogger::log("StudyControl::receiveRenderServerPacket","Processing loaded data ....");
+
+            // Process and store the data.
+            if (this->processAndStoreStudyData(data)){
+                // If all is OK we delete the file.
+                QFile(study_data_filename).remove();
+            }
+            else {
+                StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Something went wrong while processing file '" + study_data_filename + "'. Not deleting");
+            }
+
+            StaticThreadLogger::log("StudyControl::receiveRenderServerPacket","Finished processing");
+
+            return;
+
+        }
 
         // If we got here it's an unexpected command Unexpected command. - We abort.
         StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Recieved unpexcted study control command " + command + " for the current study phase. Aborting");
@@ -244,115 +298,110 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
 
 
     }
-    else if (control.getType() == RRS::PacketType::TYPE_STUDY_DATA){
-
-        // This is the end of the study, we should only receive when we are in the evaluation phase.
-        if (this->studyState != SS_WAITING_FOR_STUDY_DATA){
-            StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Received packet with study data, however the study is NOT waiting for it");
-            return;
-        }
-
-        QVariantList trialList = control.getPayloadField(RRS::PacketStudyData::TRIAL_LIST_2D).toList();
-        QVariantMap  studyData = control.getPayloadField(RRS::PacketStudyData::ELEMENTS_3D).toMap();
-        qint32 explanationDuration = control.getPayloadField(RRS::PacketStudyData::EXPLAIN_LENGTH).toInt();
-        qint32 exampleDuration = control.getPayloadField(RRS::PacketStudyData::EXAMPLE_LENGTH).toInt();
-        qint32 evalDuration = control.getPayloadField(RRS::PacketStudyData::EVAL_LENGTH).toInt();
-        qint32 pauseDuration = control.getPayloadField(RRS::PacketStudyData::PAUSE_LEGTH).toInt();
-
-        /**
-         * The list of study data fields that need to be added as processing parameters.
-         * The values are required for actually processing each study file. Whether they have content or not
-         * will depend on the study.
-         */
-        QVariantMap addToPP;
-        addToPP[RRS::PacketStudyData::FOV]          = VMDC::ProcessingParameter::FOV_3D;
-        addToPP[RRS::PacketStudyData::MESH_FILES]   = VMDC::ProcessingParameter::MESH_FILES;
-        addToPP[RRS::PacketStudyData::MESH_STRUCTS] = VMDC::ProcessingParameter::MESH_STRUCT;
-        addToPP[RRS::PacketStudyData::ORIGIN_PTS]   = VMDC::ProcessingParameter::ORIGIN_POINTS;
-        addToPP[RRS::PacketStudyData::SPHERE_R]     = VMDC::ProcessingParameter::SPHERE_RADIOUS;
-        addToPP[RRS::PacketStudyData::RES_W]        = VMDC::ProcessingParameter::RESOLUTION_WIDTH;
-        addToPP[RRS::PacketStudyData::RES_H]        = VMDC::ProcessingParameter::RESOLUTION_HEIGHT;
-
-        // The hitboxes can be go no go hitboxes or NBAck. depending on the study.
-        if ( (rawdata.getCurrentStudy() == VMDC::Study::NBACK) ||
-             (rawdata.getCurrentStudy() == VMDC::Study::NBACKVS) ||
-             (rawdata.getCurrentStudy() == VMDC::Study::NBACKRT) ){
-            addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::NBACK_HITBOXES;
-        }
-        else if (rawdata.getCurrentStudy() == VMDC::Study::GONOGO){
-            addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::GONOGO_HITBOXES;
-        }
-
-        // To do a bit of control and that is it.
-        QString ndata_points = control.getPayloadField(RRS::PacketStudyData::N_DP_DURING_EVAL).toString();
-        StaticThreadLogger::log("StudyControl::receiveRenderServerPacket","Finalized evaluation. Number of datapoints gathered is: " + ndata_points);
-
-        // First we set the processing parameter missing fields.
-        QVariantMap pp = rawdata.getProcessingParameters();
-
-        // We now add all fields.
-        QStringList packet_keys = addToPP.keys();
-        for (qint32 i = 0; i < packet_keys.size(); i++){
-            QString packetKey = packet_keys.at(i);
-            QString ppKey     = addToPP.value(packetKey).toString();
-            pp[ppKey] = control.getPayloadField(packetKey);
-        }
-
-        if (!rawdata.setProcessingParameters(pp)){
-            StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Failed to set processing parameters in raw data. Reason: " + rawdata.getError());
-            this->studyEndStatus = SES_FAILED;
-            emit StudyControl::studyEnd();
-            return;
-        }
-
-        // We need to figure out if this is file we need to finalize.
-        bool shouldBeFinalized = this->studyFinalizationLogic();
-
-        // If the trial list field is a list that is NOT empty, this a 2D study file.
-        if (trialList.size() > 0){
-            // We have a 2D file.
-            if (!rawdata.setFullTrialList(trialList,
-                                          explanationDuration,exampleDuration,pauseDuration,evalDuration,
-                                          evaluationStartTime)){
-                StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Failed to set the full trial list in raw data. Reason: " + rawdata.getError());
-                emitFailState();
-                return;
-            }
-        }
-        else {
-            // This should be a 3D study.
-            if (!rawdata.setFullElement3D(studyData,
-                                          exampleDuration,exampleDuration,pauseDuration,evalDuration,
-                                          evaluationStartTime)){
-                StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Failed to set the full 3d element data in raw data. Reason: " + rawdata.getError());
-                emitFailState();
-                return;
-            }
-        }
-
-        // Now that we are ready, then we mark the file as finalized if it is.
-        if (shouldBeFinalized){
-            rawdata.markFileAsFinalized();
-        }
-
-        // Now we save the data to hard disk.
-        if (!saveDataToHardDisk()){
-            StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Failed to save data to HD.");
-            this->studyEndStatus = SES_FAILED;
-        }
-
-        this->studyState = SS_NONE;
-        this->studyEndStatus = SES_OK;
-        //this->studyEndStatus = SES_FAILED; // Was put here to test the data transfer error situation.
-        this->studyType = ST_NOT_SET;
-        emit StudyControl::studyEnd();
-
-    }
     else {
         StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Received packet of unexpected type: " + control.getType());
         return;
     }
 
+}
+
+bool StudyControl::processAndStoreStudyData(const QVariantMap &control) {
+
+    QVariantList trialList = control.value(RRS::PacketStudyData::TRIAL_LIST_2D).toList();
+    QVariantMap  studyData = control.value(RRS::PacketStudyData::ELEMENTS_3D).toMap();
+    qint32 explanationDuration = control.value(RRS::PacketStudyData::EXPLAIN_LENGTH).toInt();
+    qint32 exampleDuration = control.value(RRS::PacketStudyData::EXAMPLE_LENGTH).toInt();
+    qint32 evalDuration = control.value(RRS::PacketStudyData::EVAL_LENGTH).toInt();
+    qint32 pauseDuration = control.value(RRS::PacketStudyData::PAUSE_LEGTH).toInt();
+
+    /**
+     * The list of study data fields that need to be added as processing parameters.
+     * The values are required for actually processing each study file. Whether they have content or not
+     * will depend on the study.
+     */
+    QVariantMap addToPP;
+    addToPP[RRS::PacketStudyData::FOV]          = VMDC::ProcessingParameter::FOV_3D;
+    addToPP[RRS::PacketStudyData::MESH_FILES]   = VMDC::ProcessingParameter::MESH_FILES;
+    addToPP[RRS::PacketStudyData::MESH_STRUCTS] = VMDC::ProcessingParameter::MESH_STRUCT;
+    addToPP[RRS::PacketStudyData::ORIGIN_PTS]   = VMDC::ProcessingParameter::ORIGIN_POINTS;
+    addToPP[RRS::PacketStudyData::SPHERE_R]     = VMDC::ProcessingParameter::SPHERE_RADIOUS;
+    addToPP[RRS::PacketStudyData::RES_W]        = VMDC::ProcessingParameter::RESOLUTION_WIDTH;
+    addToPP[RRS::PacketStudyData::RES_H]        = VMDC::ProcessingParameter::RESOLUTION_HEIGHT;
+
+    // The hitboxes can be go no go hitboxes or NBAck. depending on the study.
+    if ( (rawdata.getCurrentStudy() == VMDC::Study::NBACK) ||
+         (rawdata.getCurrentStudy() == VMDC::Study::NBACKVS) ||
+         (rawdata.getCurrentStudy() == VMDC::Study::NBACKRT) ){
+        addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::NBACK_HITBOXES;
+    }
+    else if (rawdata.getCurrentStudy() == VMDC::Study::GONOGO){
+        addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::GONOGO_HITBOXES;
+    }
+
+    // To do a bit of control and that is it.
+    QString ndata_points = control.value(RRS::PacketStudyData::N_DP_DURING_EVAL).toString();
+    StaticThreadLogger::log("StudyControl::receiveRenderServerPacket","Finalized evaluation. Number of datapoints gathered is: " + ndata_points);
+
+    // First we set the processing parameter missing fields.
+    QVariantMap pp = rawdata.getProcessingParameters();
+
+    // We now add all fields.
+    QStringList packet_keys = addToPP.keys();
+    for (qint32 i = 0; i < packet_keys.size(); i++){
+        QString packetKey = packet_keys.at(i);
+        QString ppKey     = addToPP.value(packetKey).toString();
+        pp[ppKey] = control.value(packetKey);
+    }
+
+    if (!rawdata.setProcessingParameters(pp)){
+        StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Failed to set processing parameters in raw data. Reason: " + rawdata.getError());
+        this->studyEndStatus = SES_FAILED;
+        emit StudyControl::studyEnd();
+        return false;
+    }
+
+    // We need to figure out if this is file we need to finalize.
+    bool shouldBeFinalized = this->studyFinalizationLogic();
+
+    // If the trial list field is a list that is NOT empty, this a 2D study file.
+    if (trialList.size() > 0){
+        // We have a 2D file.
+        if (!rawdata.setFullTrialList(trialList,
+                                      explanationDuration,exampleDuration,pauseDuration,evalDuration,
+                                      evaluationStartTime)){
+            StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Failed to set the full trial list in raw data. Reason: " + rawdata.getError());
+            emitFailState();
+            return false;
+        }
+    }
+    else {
+        // This should be a 3D study.
+        if (!rawdata.setFullElement3D(studyData,
+                                      exampleDuration,exampleDuration,pauseDuration,evalDuration,
+                                      evaluationStartTime)){
+            StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Failed to set the full 3d element data in raw data. Reason: " + rawdata.getError());
+            emitFailState();
+            return false;
+        }
+    }
+
+    // Now that we are ready, then we mark the file as finalized if it is.
+    if (shouldBeFinalized){
+        rawdata.markFileAsFinalized();
+    }
+
+    // Now we save the data to hard disk.
+    if (!saveDataToHardDisk()){
+        StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Failed to save data to HD.");
+        this->studyEndStatus = SES_FAILED;
+    }
+
+    this->studyState = SS_NONE;
+    this->studyEndStatus = SES_OK;
+    //this->studyEndStatus = SES_FAILED; // Was put here to test the data transfer error situation.
+    this->studyType = ST_NOT_SET;
+    emit StudyControl::studyEnd();
+    return true;
 }
 
 void StudyControl::startEvaluation(){

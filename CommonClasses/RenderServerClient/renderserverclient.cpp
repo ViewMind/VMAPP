@@ -5,9 +5,9 @@
 HWND RenderServerClient::renderHandle = nullptr;
 
 BOOL RenderServerClient::EnumChildProc(HWND hwnd, LPARAM lParam){
-   Q_UNUSED(lParam)
-   renderHandle = hwnd;
-   return TRUE; // must return TRUE; If return is FALSE it stops the recursion
+    Q_UNUSED(lParam)
+    renderHandle = hwnd;
+    return TRUE; // must return TRUE; If return is FALSE it stops the recursion
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -43,6 +43,8 @@ RenderServerClient::RenderServerClient(QObject *parent):QObject(parent)
     onClosing = false;
 
     mtimer.start();
+
+    packetCounter = -1;
 
 }
 
@@ -143,7 +145,7 @@ RenderServerPacket RenderServerClient::getPacket() {
     return p;
 }
 
-void RenderServerClient::sendPacket(const RenderServerPacket &packet){
+void RenderServerClient::sendPacket(RenderServerPacket packet){
 
 
     if (socket->state() != QAbstractSocket::ConnectedState){
@@ -153,10 +155,11 @@ void RenderServerClient::sendPacket(const RenderServerPacket &packet){
         return;
     }
 
+    this->packetCounter++;
+    packet.setCounter(this->packetCounter);
+
     sendPacketQueue << packet;
-    //qDebug() << "==Adding packet. " << packet.getType() << " at " << mtimer.elapsed() << " Packet count is" << sendPacketQueue.size();
     if (!cooldownTimer.isActive()){
-        //qDebug() << "==Activating timer at " << mtimer.elapsed();
         cooldownTimer.start(COOLDOWN_BETWEEN_PACKETS);
     }
 
@@ -169,6 +172,7 @@ void RenderServerClient::onCoolDownTimerTimeout() {
     if (!sendPacketQueue.isEmpty()){
         RenderServerPacket p = sendPacketQueue.takeFirst();
         //qDebug() << "Sending packet " << p.getType() << "at" << mtimer.elapsed() << " Remaining is " << sendPacketQueue.size();
+        emit RenderServerClient::newMessage("Sending packet of type '" + p.getType()  + "'. Frame: " + QString::number(p.getCounter()) ,MSG_TYPE_INFO);
         socket->write(p.getByteArrayToSend());
         socket->waitForBytesWritten(3000);
         //qDebug() << "Starting Cooldown timer again";
@@ -216,7 +220,11 @@ void RenderServerClient::onReadyRead() {
 
     RenderServerPacket::RXState state =  this->rxPacket.rxBytes(socket->readAll());
     if (state == RenderServerPacket::RX_DONE){
-        //qDebug() << "New Packet Arrived";
+        // We don't want to print frequency update packets.
+        this->packetCounter = this->rxPacket.getCounter();
+        if (this->rxPacket.getType() != RRS::PacketType::TYPE_FREQ_UPDATE){
+            emit RenderServerClient::newMessage("Received packet of type '" + this->rxPacket.getType()  + "'. Frame: " + QString::number(this->packetCounter) ,MSG_TYPE_INFO);
+        }
         emit RenderServerClient::newPacketArrived();
     }
     else if (state == RenderServerPacket::RX_ERROR){
@@ -272,7 +280,7 @@ void RenderServerClient::onProcessFinished(int exitCode, QProcess::ExitStatus ex
 
 void RenderServerClient::onProcessStarted(){
     // Once the process has started we need to wait a "while" and the get the window handle.
-    waitTimer.start(POLL_INTERVAL_TO_GET_WINDOW_HANDLE);    
+    waitTimer.start(POLL_INTERVAL_TO_GET_WINDOW_HANDLE);
 }
 
 void RenderServerClient::onProcessStateChanged(QProcess::ProcessState newState){

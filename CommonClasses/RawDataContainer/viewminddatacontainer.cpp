@@ -32,6 +32,10 @@ bool ViewMindDataContainer::saveJSONFile(const QString &file_name){
     return true;
 }
 
+void ViewMindDataContainer::clearAllData(){
+    this->data.clear();
+}
+
 bool ViewMindDataContainer::loadFromJSONFile(const QString &file_name){
 
     if (!QFile(file_name).exists()){

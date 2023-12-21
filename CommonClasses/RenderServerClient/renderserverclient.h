@@ -34,7 +34,7 @@ public:
 
     void startRenderServer(const QString &fullPath, WId mainWinID);
 
-    void sendPacket(const RenderServerPacket &packet);
+    void sendPacket(RenderServerPacket packet);
 
     // Two conditions must be met for render server to be working: The process must be running AND the client must be connected to the server.
     bool isRenderServerWorking() const;
@@ -105,6 +105,9 @@ private:
     // Requires wait time between sending packets.
     QTimer cooldownTimer;
     QElapsedTimer mtimer;
+
+    // Packet counter. For debugging and messaging.
+    qint32 packetCounter;
 
     // Used to see if there are any packets to send.
     QList<RenderServerPacket> sendPacketQueue;

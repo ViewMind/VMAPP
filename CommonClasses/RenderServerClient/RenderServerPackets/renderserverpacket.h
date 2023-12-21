@@ -32,11 +32,13 @@ public:
 
     // Creation and data extraction function.
     void setPacketType(const QString &type);
+    void setCounter(const qint32 c);
     void setPayloadField(const QString &name, const QVariant &vallue);
     void setFullPayload(const QVariantMap &map);
     QVariant getPayloadField(const QString &name) const;
     bool containsPayloadField(const QString &name) const;
     bool isPacketOfType (const QString &type) const;
+    qint32 getCounter() const;
 
 private:
 
@@ -44,6 +46,7 @@ private:
     QVariantMap payload;
     QByteArray rxBuffer;
     QString error;
+    qint32 counter;
 
     RenderServerPacketRecognizer recognizer;
 

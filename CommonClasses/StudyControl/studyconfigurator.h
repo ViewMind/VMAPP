@@ -10,6 +10,7 @@
 #include <QVariantMap>
 #include <QFile>
 #include <QTextStream>
+#include <QFileInfo>
 #include "StudyConfiguration.h"
 #include "../RawDataContainer/VMDC.h"
 
@@ -24,13 +25,15 @@ public:
      * @param md_percent - The maximum dispersion used for finding online fixations on a 2D plane online.
      * @param study_type - the name of the study. Some studies of similar types used the same configurator.
      * @param short_studies - Debug option to use a reduced set of studies. Crucial for testing.
+     * @param study_file_path - The location of the JSON study file.
      * @return True if no issues were found. False otherwise.
      */
     bool createStudyConfiguration(const QVariantMap &studyConfig,
                                   qreal sample_f,
                                   qreal md_percent,
                                   const QString &study_type,
-                                  const bool short_studies);
+                                  const bool short_studies,
+                                  const QString &study_file_path);
 
     /**
      * @brief getConfiguration

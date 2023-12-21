@@ -19,7 +19,8 @@ const QString REGION  = "DEV";
 }
 
 namespace LOCAL {
-const QString API_URL = "http://192.168.0.6/vmapi";
+const QString API_URL = "http://192.168.0.8/vmapi";
+//const QString API_URL = "http://192.168.96.24/vmapi";
 const QString REGION  = "DBUG";
 }
 
@@ -136,13 +137,13 @@ static QVariantMap GetNameCodeMap() {
     map["Español"]   = "es";
     //map["中国人"]   = "cn"; Chinese was a test and is not fully available yet.
     //map["Deutsch"]   = "de";
-    //map["Français "] = "fr";
+    //map["Français "] = "fr";s
     return map;
 }
 }
 
 namespace Share {
-static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.9";
+static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.11";
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
 static const QString PATIENT_UID = "patient_uid";
