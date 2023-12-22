@@ -52,18 +52,22 @@ static QVariantMap LoadJSONFileToVariantMap(const QString &filename, QString *er
         return QVariantMap();
     }
 
-    QTextStream reader(&file);
-    QString json = reader.readAll();
+
+    //data.reserve(50000000);
+    //QTextStream reader(&file);
+    //QString json = reader.readAll();
+
+    QString json(file.readAll());
     file.close();
 
     QJsonParseError json_error;
     QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8(),&json_error);
     if (doc.isNull()){
-        *error = "Error parsing the JSON string of the study description: " + json_error.errorString();
+        *error = "Error parsing the JSON string: " + json_error.errorString() + " From file: " + filename;
         return QVariantMap();
     }
-    return doc.object().toVariantMap();
 
+    return doc.object().toVariantMap();
 
 }
 

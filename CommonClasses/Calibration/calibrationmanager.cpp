@@ -8,7 +8,8 @@ CalibrationManager::CalibrationManager(QObject *parent) : QObject(parent) {
 ////////////////////// Configure and Starte Calibration //////////////////
 void CalibrationManager::startCalibration(bool mode3D,
                                           const QVariantMap &calib_valid_params,
-                                          const QString coefficient_file_name){
+                                          const QString coefficient_file_name,
+                                          const QString hmdKey){
 
     calibrationMode3D         = mode3D;
     coefficientFileName       = coefficient_file_name;
@@ -20,13 +21,7 @@ void CalibrationManager::startCalibration(bool mode3D,
     isCalibrated = false;
 
     if (DBUGBOOL(Debug::Options::LOAD_PREFIX_CALIB)){
-        RenderServerPacket p;
-        if (mode3D){            
-            p = debugLoadFixed3DCalibrationParameters();
-        }
-        else {
-            p = debugLoadFixed2DCalibrationParameters();
-        }
+        RenderServerPacket p = debugLoadFixedCalibrationParameters(hmdKey,mode3D);
         this->processCalibrationData(p);
         return;
     }
@@ -340,23 +335,28 @@ void CalibrationManager::debugPrintLastCalibrationPacket(){
     StaticThreadLogger::log("CalibrationManager::debugPrintLastCalibrationPacket","[DEBUG] Printing Last Calibration Packet\n" + this->lastCalibrationPacketString);
 }
 
-RenderServerPacket CalibrationManager::debugLoadFixed3DCalibrationParameters() {
+RenderServerPacket CalibrationManager::debugLoadFixedCalibrationParameters(const QString &hmdKey, bool is3D) {
 
     QString error;
-    QVariantMap payload = Globals::LoadJSONFileToVariantMap(":/debug_files/3dCalibData.json",&error);
+    QVariantMap payload;
+    if (is3D){
+        if (hmdKey == "varjo"){
+            payload = Globals::LoadJSONFileToVariantMap(":/debug_files/3dCalibDataVarjo.json",&error);
+        }
+        else {
+            payload = Globals::LoadJSONFileToVariantMap(":/debug_files/3dCalibData.json",&error);
+        }
+    }
+    else {
+        if (hmdKey == "varjo"){
+            payload = Globals::LoadJSONFileToVariantMap(":/debug_files/2dCalibData.json",&error);
+        }
+        else {
+            payload = Globals::LoadJSONFileToVariantMap(":/debug_files/2dCalibData.json",&error);
+        }
+    }
     RenderServerPacket p;
     p.setPacketType(RRS::PacketType::TYPE_CALIB_CONTROL);
     p.setFullPayload(payload);
     return p;
-}
-
-RenderServerPacket CalibrationManager::debugLoadFixed2DCalibrationParameters(){
-
-    QString error;
-    QVariantMap payload = Globals::LoadJSONFileToVariantMap(":/debug_files/2dCalibData.json",&error);
-    RenderServerPacket p;
-    p.setPacketType(RRS::PacketType::TYPE_CALIB_CONTROL);
-    p.setFullPayload(payload);
-    return p;
-
 }

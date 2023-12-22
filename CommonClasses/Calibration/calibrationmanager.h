@@ -25,8 +25,8 @@ public:
 
     void startCalibration(bool mode3D, // To decide on either 2D or 3D calibration.
                           const QVariantMap &calib_valid_params, // The calibration validation parameters.
-                          const QString coefficient_file_name // The name of the file where we should store the resulting coefficients. If the file exists this is loaded from there.
-    );
+                          const QString coefficient_file_name, // The name of the file where we should store the resulting coefficients. If the file exists this is loaded from there.
+                          const QString hmdKey); // The hmd key is just used to know which debug calibration to load.
 
 
     QString getRecommendedEye() const;
@@ -123,8 +123,7 @@ private:
     void compute2DTargetLocations();
 
     ////////////////////////////// DEBUG LOAD FUNCTIONS /////////////////
-    RenderServerPacket debugLoadFixed3DCalibrationParameters();
-    RenderServerPacket debugLoadFixed2DCalibrationParameters();
+    RenderServerPacket debugLoadFixedCalibrationParameters(const QString &hmdKey, bool is3D);
 
     const qreal K_LARGE_D = 0.1;
     const qreal VIRTUAL_3D_W = 80/3;

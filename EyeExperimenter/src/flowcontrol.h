@@ -133,6 +133,9 @@ private:
     // Delays for a specific time.
     QTimer delayTimer;
 
+    // This identifies the eyetracker.
+    QString HMDKey;
+
     // Controlling the study class
     StudyControl studyControl;
 

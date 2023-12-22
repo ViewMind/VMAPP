@@ -89,6 +89,9 @@ void StudyEndOperations::doStudyFileProcessing(){
         return;
     }
 
+    QElapsedTimer timer;
+    qDebug() << "Doing file processing"; timer.start();;
+
     QVariantMap pp = vmdc.getProcessingParameters();
     qreal sampling_frequency = pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
     sampling_period = 1000.0/sampling_frequency; // In milliseconds.
@@ -106,6 +109,8 @@ void StudyEndOperations::doStudyFileProcessing(){
 
     // Making sure QC is cleared.
     vmdc.setQCStudyStructClear();
+
+    //qDebug() << "After QC Study Struct Clear" << timer.elapsed();
 
     for (qint32 i = 0; i < studyList.size(); i++){
 
@@ -149,8 +154,6 @@ void StudyEndOperations::doStudyFileProcessing(){
 
     }
 
-
-
     // The next steps are done ONLY if the study is finalized.
     if (vmdc.getMetadaStatus() == VMDC::StatusType::FINALIZED) {
 
@@ -161,8 +164,12 @@ void StudyEndOperations::doStudyFileProcessing(){
             return;
         }
 
+        //qDebug() << "After saving the data file" << timer.elapsed();
+
         // The metadata MUST include the subject data so it is resotored.
         vmdc.restoreSubjectData();
+
+        //qDebug() << "After restoring subjec data" << timer.elapsed();
 
         // We only clear the metadata WHEN
         vmdc.clearFieldsForIndexFileCreation();
@@ -171,11 +178,17 @@ void StudyEndOperations::doStudyFileProcessing(){
             return;
         }
 
+        //qDebug() << "After creating Metadata File" << timer.elapsed();
+
         // Now we generate the compressed file.
         if (!createTarFileAndCleanup()) return;
 
+        //qDebug() << "After creating Tar File" << timer.elapsed();
+
         // Generate the Local DB Entry.
         if (!createQCIStudyFile()) return;
+
+        //qDebug() << "After creating QCI File" << timer.elapsed();
 
     }
     else {

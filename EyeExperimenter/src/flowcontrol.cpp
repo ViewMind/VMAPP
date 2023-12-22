@@ -148,6 +148,7 @@ void FlowControl::onNewPacketArrived(){
         QString hmdkey  = packet.getPayloadField(RRS::PacketLogLocation::EYETRACKER).toString();
         StaticThreadLogger::log("FlowControl::onNewPacketArrived","Receieved log location response. RRS Version: " + version + " - " + hmdkey);
         QVariantMap info; info[Globals::FCL::HMD_KEY_RECEIVED] = hmdkey;
+        this->HMDKey = hmdkey;
         emit FlowControl::notifyLoader(info);
     }
     else if (packet.getType() == RRS::PacketType::TYPE_STUDY_CONTROL ) {
@@ -412,7 +413,8 @@ void FlowControl::calibrateEyeTracker(bool useSlowCalibration, bool mode3D){
 
     calibrationManager.startCalibration(mode3D,
                                         calibrationValidationParameters,
-                                        coefficient_file);
+                                        coefficient_file,
+                                        this->HMDKey);
 
 }
 
