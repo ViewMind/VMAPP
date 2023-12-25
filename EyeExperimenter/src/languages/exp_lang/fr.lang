@@ -203,3 +203,24 @@ explanation_phase_list_pass_ball = |
 |
 |
 |;
+
+
+examples_binding_uc_3 =
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Same</i> out loud.|;
+
+examples_binding_uc_2 =
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Same</i> out loud.||
+|||The patient should say <i>Different</i> out loud.|;
+
+examples_binding_bc_3 =
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Same</i> out loud.|;
+
+examples_binding_bc_2 =
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Same</i> out loud.|;

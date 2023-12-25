@@ -193,7 +193,9 @@ private:
 
     // Index that determines which explanation screen we should be writing.
     qint32 currentStudyExplanationScreen;
+    qint32 currentStudyExampleScreen;
     QString studyExplanationLanguageKey;
+    QString studyExampleLanguageKey;
 
     /**
      * @brief saveDataToHardDisk - Saves raw data file to disk.
@@ -221,6 +223,11 @@ private:
     void emitNewExplanationMessage();
 
     /**
+     * @brief emitNewExampleMessage - Shortcut function to emit the index of the current example screen that should be displayed.
+     */
+    void emitNewExampleMessage();
+
+    /**
      * @brief processAndStoreStudyData - Stores the study data appropiately in the finalized study file.
      * @param control. A Render server Packet, created by a temporary study file.
      * @return True if there were no issues. False otherwise.
@@ -240,11 +247,18 @@ private:
     static inline const char * STUDY_TEXT_KEY_NBACK_4        = "explanation_phase_list_nback_4";
     static inline const char * STUDY_TEXT_KEY_NBACKVS        = "explanation_phase_list_nbackvs";
 
+    // Different text explanation keys based on different studies.
+    static inline const char * EXAMPLE_TEXT_KEY_BINDING_UC_2 = "examples_binding_uc_2";
+    static inline const char * EXAMPLE_TEXT_KEY_BINDING_UC_3 = "examples_binding_uc_3";
+    static inline const char * EXAMPLE_TEXT_KEY_BINDING_BC_2 = "examples_binding_bc_2";
+    static inline const char * EXAMPLE_TEXT_KEY_BINDING_BC_3 = "examples_binding_bc_3";
+
     // The normal, slow and variable speed values fo rthe GONOGO are codified in the numbers 0,1 and 2 respectively.
     // We need to detect the 2 specifically to change the explanantion language key.
     const qint32 CODE_FOR_GNG3D_VS = 2;
 
     static QMap<QString,int> NumberOfExplanationSlides;
+    static QMap<QString,int> NumberOfExampleSlides;
 };
 
 #endif // STUDYCONTROL_H

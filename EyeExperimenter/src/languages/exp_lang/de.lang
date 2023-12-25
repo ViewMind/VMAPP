@@ -199,4 +199,23 @@ indem Sie auf das Rechteck schauen, wo der erste Kreis erschienen ist.
 Sind Sie bereit, zu beginnen?;
 
 
+examples_binding_uc_3 =
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Same</i> out loud.|;
+
+examples_binding_uc_2 =
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Same</i> out loud.||
+|||The patient should say <i>Different</i> out loud.|;
+
+examples_binding_bc_3 =
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Same</i> out loud.|;
+
+examples_binding_bc_2 =
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Different</i> out loud.||
+|||The patient should say <i>Same</i> out loud.|;
 

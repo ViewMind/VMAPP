@@ -263,6 +263,7 @@ viewevaluation_popup_save = Sequence<br><b></b><br> has been successfully saved;
 viewevaluation_goback = PATIENT LIST;
 viewevalution_arrow_use = Click on the arrow to continue;
 viewevalution_arrow_use_examples = Click on Examples to continue;
+viewevalution_arrow_use_eval = Click on Start Evaluation to continue;
 
 viewevaluation_hand_calib_h = 
 Place your hands horizontally. 

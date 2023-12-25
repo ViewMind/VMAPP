@@ -109,6 +109,8 @@ Rectangle {
 
         function onNewExperimentMessages(string_value_map){
 
+            // console.log(JSON.stringify(string_value_map));
+
             if (vmEvaluationStage == vmSTAGE_EVALUATION){
                 let list = "<ul>"
                 for (let key in string_value_map){
@@ -121,7 +123,7 @@ Rectangle {
                 //console.log("DBUG: Setting Study Message: " + list)
                 studyMessages.text = list;
             }
-            else if (vmEvaluationStage == vmSTAGE_EXPLANATION){
+            else if ((vmEvaluationStage == vmSTAGE_EXPLANATION) || (vmEvaluationStage == vmSTAGE_EXAMPLES)){
                 // This should contains only one key. and it's value is the index value in the screen.
                 for (let key in string_value_map){
                     let message_list = loader.getStringListForKey(key,false)
@@ -134,7 +136,12 @@ Rectangle {
 
                     // The arrow use instruction changes on the last explanation slide.
                     if (index === (message_list.length -1)){
-                        arrowUseText.text = "(" + loader.getStringForKey("viewevalution_arrow_use_examples") + ")"
+                        if (vmEvaluationStage == vmSTAGE_EXAMPLES){
+                            arrowUseText.text = "(" + loader.getStringForKey("viewevalution_arrow_use_eval") + ")"
+                        }
+                        else {
+                           arrowUseText.text = "(" + loader.getStringForKey("viewevalution_arrow_use_examples") + ")"
+                        }
                     }
                     else {
                         arrowUseText.text = "(" + loader.getStringForKey("viewevalution_arrow_use") + ")"

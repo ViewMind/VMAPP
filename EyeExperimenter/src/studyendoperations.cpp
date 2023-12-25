@@ -83,14 +83,16 @@ void StudyEndOperations::run(){
 
 void StudyEndOperations::doStudyFileProcessing(){
 
+    qDebug() << "Doing the Stuy End Operations File Processing for" << dataFile;
+
     // First we load the file and make sure it's ok.
     if (!vmdc.loadFromJSONFile(dataFile)){
         StaticThreadLogger::error("StudyEndOperations::run","Could not load the raw data file: '" + dataFile + "'. Reason: " + vmdc.getError());
         return;
     }
 
-    QElapsedTimer timer;
-    qDebug() << "Doing file processing"; timer.start();;
+    //QElapsedTimer timer;
+    //qDebug() << "Doing file processing"; timer.start();
 
     QVariantMap pp = vmdc.getProcessingParameters();
     qreal sampling_frequency = pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();

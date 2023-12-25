@@ -96,6 +96,9 @@ Item {
             else if (key.key === Qt.Key_Backspace){
                 searchText = searchText.slice(0,-1)
             }
+            else if (key.text === "|"){
+                return;
+            }
             else if ((key.key === Qt.Key_Enter) || (key.key === Qt.Key_Return)){
                 //console.log("We've got an enter");
                 if (vmListSize == 1){
@@ -111,10 +114,11 @@ Item {
             // We need to check it fits.
             if (textMeasure.width > displayText.width){
                 // We remove the last character and do nothing.
+                searchText = bkp;
                 searchText = searchText.slice(0,-1)
             }
 
-            displayText.text = searchText;
+            displayText.text = searchText + "|";
             filter();
         }
 
@@ -124,6 +128,12 @@ Item {
                 itemList.append(filteredList[i]);
             }
             vmListSize = filteredList.length
+        }
+
+        function prepForSearching(){
+            display.searchText = "";
+            displayText.text = "|";
+            display.filter()
         }
 
         function filter(){
@@ -239,8 +249,7 @@ Item {
                 if (vmEnabled){
                     if (itemList.count === 0) return;
                     listContainer.visible = true;
-                    display.searchText = "";
-                    display.filter();
+                    display.prepForSearching();
                     vmErrorMsg = "";
                 }
             }

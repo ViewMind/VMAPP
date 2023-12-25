@@ -1,6 +1,7 @@
 #include "studycontrol.h"
 
 QMap<QString,int> StudyControl::NumberOfExplanationSlides;
+QMap<QString,int> StudyControl::NumberOfExampleSlides;
 
 StudyControl::StudyControl() {
     this->studyState = SS_NONE;
@@ -49,6 +50,10 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
 
     // Now we create the configurator.
     StudyConfigurator *configurator = nullptr;
+
+    // Most studies do not have text in examples so.
+    studyExampleLanguageKey = "";
+
     if (studyName == VMDC::Study::NBACK){
         configurator = new NBackConfigurator();
         if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 3){
@@ -68,11 +73,23 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
         configurator = new BindingConfigurator(false,studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt());
         studyExplanationLanguageKey = STUDY_TEXT_KEY_BINDING_UC;
         studyType = ST_2D;
+        if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 3){
+            studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_UC_3;
+        }
+        else {
+            studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_UC_2;
+        }
     }
     else if (studyName == VMDC::Study::BINDING_BC) {
         configurator = new BindingConfigurator(true,studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt());
         studyExplanationLanguageKey = STUDY_TEXT_KEY_BINDING_BC;
         studyType = ST_2D;
+        if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 3){
+            studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_BC_3;
+        }
+        else {
+            studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_BC_2;
+        }
     }
     else if (studyName == VMDC::Study::GONOGO){
         configurator = new GNGConfigurator();
@@ -427,6 +444,11 @@ void StudyControl::startExamplesPhase(){
     rspacket.setPayloadField(RRS::PacketStudyControl::CMD,RRS::CommandStudyControl::CMD_START_EXAMPLE);
     emit StudyControl::newPacketAvailable();
     this->studyState = SS_EXAMPLE;
+
+    if (studyExampleLanguageKey == "") return; // We don't need to do anything, in this case.
+    currentStudyExampleScreen = 0;
+    emitNewExampleMessage();
+
 }
 
 void StudyControl::nextExampleSlide(){
@@ -438,6 +460,13 @@ void StudyControl::nextExampleSlide(){
     rspacket.setPacketType(RRS::PacketType::TYPE_STUDY_CONTROL);
     rspacket.setPayloadField(RRS::PacketStudyControl::CMD,RRS::CommandStudyControl::CMD_NEXT_EXAMPLE);
     emit StudyControl::newPacketAvailable();
+
+    if (studyExampleLanguageKey == "") return; // We don't need to do anything, in this case.
+    currentStudyExampleScreen++;
+    if (currentStudyExampleScreen == NumberOfExampleSlides[studyExampleLanguageKey]){
+        currentStudyExampleScreen = 0;
+    }
+    emitNewExampleMessage();
 }
 
 void StudyControl::previousExplanationSlide(){
@@ -588,9 +617,17 @@ void StudyControl::emitNewExplanationMessage(){
     emit StudyControl::updateStudyMessages(stringToDisplay);
 }
 
+void StudyControl::emitNewExampleMessage(){
+    QVariantMap stringToDisplay;
+    stringToDisplay[studyExampleLanguageKey] = currentStudyExampleScreen;
+    emit StudyControl::updateStudyMessages(stringToDisplay);
+}
+
 
 void StudyControl::FillNumberOfSlidesInExplanations(ConfigurationManager *language){
     NumberOfExplanationSlides.clear();
+    NumberOfExampleSlides.clear();
+
     QStringList allkeys;
     allkeys << STUDY_TEXT_KEY_BINDING_BC << STUDY_TEXT_KEY_BINDING_UC << STUDY_TEXT_KEY_GONOGO << STUDY_TEXT_KEY_GONOGO_3D
             << STUDY_TEXT_KEY_NBACKRT << STUDY_TEXT_KEY_NBACKVS << STUDY_TEXT_KEY_NBACK_3 << STUDY_TEXT_KEY_NBACK_4
@@ -599,4 +636,13 @@ void StudyControl::FillNumberOfSlidesInExplanations(ConfigurationManager *langua
         //qDebug() << language->getStringList(allkeys.at(i));
         NumberOfExplanationSlides[allkeys.at(i)] = language->getStringList(allkeys.at(i)).size();
     }
+
+    allkeys.clear();
+    allkeys << EXAMPLE_TEXT_KEY_BINDING_UC_2;
+    allkeys << EXAMPLE_TEXT_KEY_BINDING_UC_3;
+    for (qint32 i = 0; i < allkeys.size(); i++){
+        //qDebug() << language->getStringList(allkeys.at(i));
+        NumberOfExampleSlides[allkeys.at(i)] = language->getStringList(allkeys.at(i)).size();
+    }
+
 }
