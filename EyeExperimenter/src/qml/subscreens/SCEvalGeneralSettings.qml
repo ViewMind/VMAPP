@@ -165,7 +165,7 @@ Rectangle {
             }
         }
 
-        VMComboBox {
+        VMFilteringComboBox {
             id: doctorSelection
             width: parent.width
             vmLabel: loader.getStringForKey("viewevaluation_doctor")

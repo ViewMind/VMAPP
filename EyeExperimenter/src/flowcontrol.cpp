@@ -36,6 +36,10 @@ void FlowControl::startRenderServerAndSetWindowID(WId winID){
     mainWindowID = winID;
     // The redner server client can only be started once we have the window ID.
     QString location = Globals::RemoteRenderServerParameters::DIR + "/" + Globals::RemoteRenderServerParameters::EXE;
+    if (DBUGBOOL(Debug::Options::NO_RRS)) {
+        StaticThreadLogger::warning("startRenderServerAndSetWindowID","STARTING APP WITH NO RRS");
+        return;
+    }
     renderServerClient.startRenderServer(location,winID);
 }
 

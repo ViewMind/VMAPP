@@ -55,6 +55,7 @@ namespace Debug {
        const QString PRINT_INCOMMING            = "print_incomming_packets";
        const QString OVERRIDE_UPDATE_LINK       = "override_update_link";
        const QString CALIBRATION_RAW_DATA_INPUT = "calibration_gathering_results_packet";
+       const QString NO_RRS                     = "no_rrs";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

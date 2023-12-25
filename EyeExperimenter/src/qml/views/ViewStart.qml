@@ -155,6 +155,21 @@ ViewBase {
         }
     }
 
+//    LEFT HERE as an exmaple of where to try out new graphical elements. The comment, I mean.
+//    VMFilteringComboBox {
+//        id: testComboBox
+//        anchors.left: btnAddNew.right
+//        anchors.top: btnAddNew.top
+//        anchors.leftMargin: 20;
+//        width: btnAddNew.width;
+//        z: 10
+//        vmPlaceHolderText: "Some text";
+//        Component.onCompleted: {
+//            let list = ["John Smith", "Andrew Tate", "Jan McHallen", "Joe Fixit", "Dana White", "Peter Stone", "Michael Jordan", "Abdul Amhad"];
+//            setModelList(list);
+//        }
+//    }
+
     // The ViewMind Logo.
     Image {
         id: viewmindLogo
