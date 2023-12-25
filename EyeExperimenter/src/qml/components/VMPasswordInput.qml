@@ -184,9 +184,9 @@ Item {
         anchors.top: parent.bottom
         anchors.topMargin: 10
         x: {
-            if (vmAlignErrorLeft) return parent.x
+            if (vmAlignErrorLeft) return 0
             else {
-                return parent.x + (parent.width - width)
+                return (parent.width - width)
             }
         }
         visible: (vmErrorMsg !== "")

@@ -23,7 +23,7 @@ viewsettings_about = About;
 viewsettings_tech_support = Support;
 viewsettings_default_country = Default country;
 viewsettings_def_country_placeholder = Select the default country;
-viewsettings_language = Select the aplication language;
+viewsettings_language = Select the application language;
 viewsettings_langs = English|Español;
 viewsettings_umanual = User Manual;
 viewsettings_cancel = CANCEL;
@@ -51,7 +51,7 @@ viewwait_download_remaining = Estimated Time: <M> minutes <S> seconds (<MB> MB/<
 
 #********************************* LOGIN SCREEN *********************************
 viewlogin_title = Evaluator Login;
-viewlogin_subtitle = Login To Your Profile or Add A New Evaluator;
+viewlogin_subtitle = Login to your Profile or add a new Evaluator;
 viewlogin_label_evaluator = Evaluator;
 viewlogin_label_pass = Password;
 viewlogin_placeholder_evaluator = Select Evaluator;
@@ -64,7 +64,7 @@ viewlogin_wrong_pass = Incorrect password;
 
 #********************************* ADD NEW EVALUATOR SCREEN *********************************
 viewaddeval_title = New Evaluator;
-viewaddeval_subtitle = Please, fill the information below;
+viewaddeval_subtitle = Please fill the information below;
 viewaddeval_fname = First Name;
 viewaddeval_lname = Last Name;
 viewaddeval_email = Email;
@@ -79,15 +79,17 @@ viewaddeval_exmail_exists = Email is already being used;
 viewaddeval_added = <b></b><br>has been added as evaluator;
 viewaddeval_accept = I have read and agree to the <a href="https://www.viewmind.com/terms-conditions/">Terms of Use</a> and <a href="https://www.viewmind.com/privacy-policy/">Privacy Policy</a>;
 viewaddeval_badverifemail = Emails do not match;
+viewaddeval_new_pass = Change Password;
+viewaddeval_verif_npass = Verify New Password;
 
 #********************************* PATIENT LIST *********************************
 viewpatlist_title = Patient List;
-viewpatlist_search = Search by first, lastname or ID;
+viewpatlist_search = Search by name or ID;
 viewpatlist_addpatient = ADD PATIENT;
 viewpatlist_name = Name;
 viewpatlist_bdate = Birth Date;
 viewpatlist_sex = Sex;
-viewpatlist_id = Personal ID;
+viewpatlist_id = Patient ID;
 viewpatlist_action = Action;
 viewpatlist_edit = Edit;
 viewpatlist_study = START STUDY;
@@ -162,7 +164,7 @@ viewevaluation_date = Date;
 viewevaluation_patient = Patient;
 viewevaluation_general_settings = General Settings;
 viewevaluation_eval_settings = Evaluation Settings;
-viewevaluation_eval_setup    = Stored study sequences;
+viewevaluation_eval_setup    = Study sequences;
 viewevaluation_eval_setup_list = Custom Sequence;
 viewevaluation_doctor        = Doctor that requested the study;
 viewevaluation_doctor_ph     = Select doctor;
@@ -260,6 +262,7 @@ viewevaluation_seq_name = Save sequence as;
 viewevaluation_popup_save = Sequence<br><b></b><br> has been successfully saved;
 viewevaluation_goback = PATIENT LIST;
 viewevalution_arrow_use = Click on the arrow to continue;
+viewevalution_arrow_use_examples = Click on Examples to continue;
 
 viewevaluation_hand_calib_h = 
 Place your hands horizontally. 
@@ -326,7 +329,7 @@ viewqc_dr    = Doctor;
 viewqc_data_quality = Data Captured;
 viewqc_data_quality_tooltip = Reflects if the data collected by the VR headset is robust enough to be analyzed. 
 If the index is Green, the study can be processed. 
-If it's red, it must be Archived and the test should be performed again.;
+If it's RED, it must be Archived and the test should be performed again.;
 viewqc_wait_msg = Please wait while study quality is checked;
 viewqc_qc_failed = <b>Quality Control Failed</b><br>Please contact ViewMind for support;
 viewqc_SubPoints = Data Points;
@@ -347,7 +350,7 @@ PassBall|Pass Ball;
 viewqc_previous = PREVIOUS;
 viewqc_archive = ARCHIVE;
 viewqc_send = SEND;
-view_qc_send_report = Send Studies;
+view_qc_send_report = Send Study;
 ;viewqc_index_names = Data Point Index|Fixations Index|Sample Frequency Index;
 viewqc_index_names = Index Of Information Completion|Fixations Index;
 viewQC_limitDataPoints = Desired value to be at least <<I>>. This ensures that not signficant loss of data ocurred.;
@@ -367,7 +370,7 @@ viewqc_archive_reason_ph = Select reason ...;
 viewqc_comment_ph = Enter your comment;
 viewqc_send_wait = Please wait while information is being sent to our servers;
 viewqc_evaluator_comments = Evaluator comments will be included in the final report;
-viewqc_archive_studies = Archive Studies;
+viewqc_archive_studies = Archive Study;
 viewQC_commentSizeError = Text is too long;
 viewQC_specify_other = Specify other;
 viewqc_err_reason_missing = You must specify a reason for archiving;
@@ -386,7 +389,7 @@ protocol_successful_edit = <b></b><br>has been successfully edited;
 protocol_successful_created = <b></b><br>has been successfully created;
 protocol_err_exists = ID already exists. Protocol IDs must be unique;
 protocol_name_ph = Enter protocol name;
-protocol_id_ph = Enter protocol id;
+protocol_id_ph = Enter protocol ID;
 
 #********************************* STUDY STATUS MESSAGES *********************************
 studystatus_binding_correct = Correct Responses: <<N>>;

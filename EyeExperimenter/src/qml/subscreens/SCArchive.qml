@@ -103,7 +103,7 @@ Rectangle {
 
     VMTextAreaInput {
         id: otherBox
-        vmEnabled: ((archiveReason.vmCurrentIndex == vmIndexReasonOther) && (vmIndexReasonOther != -1))
+        //vmEnabled: ((archiveReason.vmCurrentIndex == vmIndexReasonOther) && (vmIndexReasonOther != -1))
         vmLabel: loader.getStringForKey("viewQC_specify_other")
         vmPlaceHolderText: loader.getStringForKey("viewqc_comment_ph")
         vmNumberOfLines: 10
@@ -111,9 +111,9 @@ Rectangle {
         anchors.top: archiveReason.bottom
         anchors.left: archiveReason.left
         anchors.topMargin: VMGlobals.adjustHeight(54)
-        onVmEnabledChanged: {
-            if (!vmEnabled) clear()
-        }
+//        onVmEnabledChanged: {
+//            if (!vmEnabled) clear()
+//        }
     }
 
 }

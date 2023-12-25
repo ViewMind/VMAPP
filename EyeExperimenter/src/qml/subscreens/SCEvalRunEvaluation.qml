@@ -127,15 +127,18 @@ Rectangle {
                     let message_list = loader.getStringListForKey(key,false)
                     let index = string_value_map[key];
 
-//                    console.log("Showing explanation text " + index + " in a list of " + message_list.length);
-//                    for (var i = 0; i < message_list.length; i++){
-//                        console.log("  Message in index " + i + " is " + message_list[i]);
-//                    }
-
                     if (message_list.length < 1) return; // IN this case there is nothing to do.
 
                     let message_to_display = message_list[index];
                     let current_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
+
+                    // The arrow use instruction changes on the last explanation slide.
+                    if (index === (message_list.length -1)){
+                        arrowUseText.text = "(" + loader.getStringForKey("viewevalution_arrow_use_examples") + ")"
+                    }
+                    else {
+                        arrowUseText.text = "(" + loader.getStringForKey("viewevalution_arrow_use") + ")"
+                    }
 
                     if (VMGlobals.vmSCP_NUMBER_OF_TARGETS in current_config){
                         let ntargets = current_config[VMGlobals.vmSCP_NUMBER_OF_TARGETS]
@@ -343,6 +346,8 @@ Rectangle {
         }
         else if (vmEvaluationStage == vmSTAGE_EXPLANATION){
             vmEvaluationStage = vmSTAGE_EXAMPLES;
+            // We need to make sure the right message is display as the arrow instruction.
+            arrowUseText.text = "(" + loader.getStringForKey("viewevalution_arrow_use") + ")"
             flowControl.startStudyExamplePhase();
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_starteval"),"");
             viewEvaluations.advanceStudyIndicator();
@@ -551,12 +556,12 @@ Rectangle {
         }
 
         Text {
+            id: arrowUseText
             text: "(" + loader.getStringForKey("viewevalution_arrow_use") + ")"
             color: VMGlobals.vmBlackText
             font.pixelSize: VMGlobals.vmFontBaseSize
             font.weight: 800
             font.italic: true
-            //anchors.right: (pressKeyToGoBack.visible) ? pressKeyToGoBack.left : pressKeyToContinue.left
             anchors.left: studyExplanationText.left
             anchors.top: studyExplanationText.bottom
             visible: pressKeyToContinue.visible
@@ -655,7 +660,7 @@ Rectangle {
 
         var explanations = loader.getStringListForKey("viewevaluation_keyboard_explanations");
         var keys = ["ESC","G","N","B","D","S"]
-        var to_skip = ["N","B"]; // This is added JUST so we don't need to change the language file in order to print out a smaller set of keys.
+        var to_skip = ["G","N","B"]; // This is added JUST so we don't need to change the language file in order to print out a smaller set of keys.
         //var keys = ["ESC","G","D","S"]
 
         if (keys.length !== explanations.length){

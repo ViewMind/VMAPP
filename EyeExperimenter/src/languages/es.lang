@@ -49,7 +49,6 @@ viewait_get_license = Buscando los datos en nuestros servidores.
 Por favor espere ...;
 viewwait_download_remaining = Tiempo Estimado: <M> minutos <S> segundos (<MB> MB/<MBT> MB);
 
-
 #********************************* LOGIN SCREEN *********************************
 viewlogin_title = Ingreso Evaluador;
 viewlogin_subtitle = Ingrese a Su Perfil o Agregue un Nuevo Evaluador;
@@ -80,15 +79,17 @@ viewaddeval_exmail_exists = El correo ya está en uso;
 viewaddeval_added = <b></b><br>ha sido agregado como evaluador;
 viewaddeval_accept = He leído y acepto los <a href="https://www.viewmind.com/terms-conditions/">Términos de Uso</a> y la <a href="https://www.viewmind.com/privacy-policy/">Política de Privacidad</a>;
 viewaddeval_badverifemail = Los emails no son iguales;
+viewaddeval_new_pass = Cambiar Contraseña;
+viewaddeval_verif_npass = Verificar Nueva Contraseña;
 
 #********************************* PATIENT LIST *********************************
 viewpatlist_title = Lista de Pacientes;
-viewpatlist_search = Buscar por nombre, apellido o ID;
+viewpatlist_search = Buscar por nombre o ID;
 viewpatlist_addpatient = AÑADIR PACIENTE;
 viewpatlist_name = Nombre;
 viewpatlist_bdate = Nacimiento;
 viewpatlist_sex = Sexo;
-viewpatlist_id = ID Personal;
+viewpatlist_id = ID Paciente;
 viewpatlist_action = Acción;
 viewpatlist_edit = Editar;
 viewpatlist_study = ESTUDIOS;
@@ -163,7 +164,7 @@ viewevaluation_date = Fecha;
 viewevaluation_patient = Paciente;
 viewevaluation_general_settings = Configuación General;
 viewevaluation_eval_settings = Configuración de Evaluaciones;
-viewevaluation_eval_setup    = Secuencias de estudio creadas;
+viewevaluation_eval_setup    = Secuencias de estudios;
 viewevaluation_eval_setup_list = Secuencia a medida;
 viewevaluation_doctor        = Doctor que ha pedido el estudio;
 viewevaluation_doctor_ph     = Seleccion un doctor;
@@ -261,6 +262,7 @@ viewevaluation_seq_name = Guardar sequencia como;
 viewevaluation_popup_save = La sequencia<br><b></b><br> ha sido guardada exitosamente;
 viewevaluation_goback = LISTA DE PACIENTES;
 viewevalution_arrow_use = Haga click sobre la flecha para continuar;
+viewevalution_arrow_use_examples = Haga click en Ejemplos para continuar;
 
 viewevaluation_hand_calib_h = 
 Coloque sus manos de manera horizontal. 
@@ -300,7 +302,6 @@ viewevaluation_nback_wait_msg = Presione "G"
 para
 continuar el estudio;
 
-
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = La calibración ha concluido;
 waitscreenmsg_studyEnd = El estudio ha finalizado;
@@ -319,6 +320,8 @@ viewgetconfig_error    = <b>No se pudo activar la aplicación</b><br>Pruebe nuev
 viewgetconfig_success  = Activacion Exitosa|La aplicación se cerrará.
 Por favor, para comenzar a usar el EyeExplorer vuelva a iniciarla;
 
+
+
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = No hay reportes disponibles para procesar;
 viewqc_study = Estudio;
@@ -326,7 +329,7 @@ viewqc_dr    = Doctor;
 viewqc_data_quality = Datos Obtenidos;
 viewqc_data_quality_tooltip = Refleja si los datos obtenidos por el casco VR son lo suficientemente robusto para análisis.
 Si el índice es verde, este puede ser procesado. 
-Si es rojo, debe ser archivado y el estudio realizado nuevamente;
+Si es ROJO, debe ser archivado y el estudio realizado nuevamente;
 viewqc_wait_msg = Por favor espere mientras la calidad del estudio es verificada;
 viewqc_qc_failed = <b>Control de Calidad Ha Fallado</b><br>Por favor contacte a ViewMind para soporte;
 viewqc_SubPoints = Puntos de Datos;
@@ -347,7 +350,7 @@ PassBall|Balón Pase;
 viewqc_previous = ANTERIOR;
 viewqc_archive = ARCHIVAR;
 viewqc_send = ENVIAR;
-view_qc_send_report = Enviar Estudios;
+view_qc_send_report = Enviar Estudio;
 ;viewqc_index_names = Índice de Número de Puntos|Índice de Fijaciones|Índice de Frecuencia de Muestreo;
 viewqc_index_names = Índice de Completitud de Información|Índice de Fijaciones;
 viewQC_limitDataPoints = Valor deseado de al menos <<I>>. Esto asegura que no se haya producido una pérdida signficativa de datos;
@@ -367,7 +370,7 @@ viewqc_archive_reason_ph = Seleccione el motivo ...;
 viewqc_comment_ph = Ingrese su comentario;
 viewqc_send_wait = Por favor espere mientras la información es enviada a nuestros servidores;
 viewqc_evaluator_comments = Los comentarios del evaluador serán incluídos en el reporte final;
-viewqc_archive_studies = Archivar Estudios;
+viewqc_archive_studies = Archivar Estudio;
 viewQC_commentSizeError = El texto es demasiado largo;
 viewQC_specify_other = Especificar otro;
 viewqc_err_reason_missing = Debe especificar algún motivo por la cual se archiva;

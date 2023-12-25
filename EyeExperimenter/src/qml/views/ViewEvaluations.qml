@@ -30,8 +30,8 @@ ViewBase {
 
         var patientData = loader.getCurrentSubjectInfo();
 
-        //console.log("Loading patient for Evaluation")
-        //console.log(JSON.stringify(patientData))
+        console.log("Loading patient for Evaluation")
+        console.log(JSON.stringify(patientData))
 
         var date = new Date();
         var year = date.getFullYear()
@@ -45,10 +45,29 @@ ViewBase {
         //console.log("Month List " + JSON.stringify(monthlist))
         month = monthlist[month]
 
+
+        let patientDisplayID = "";
+        let patientFname = patientData["name"];
+        let patientLname = patientData["lastname"]
+
+        if ((patientFname == null) && (patientLname == null)){
+            patientDisplayID = patientData["supplied_institution_id"];
+        }
+        else {
+            if (patientFname == null) {
+                patientDisplayID = patientLname;
+            }
+            else if (patientLname == null){
+                patientDisplayID = patientFname;
+            }
+            else {
+                patientDisplayID = patientLname + ", " + patientFname;
+            }
+        }
+
         var patient = loader.getStringForKey("viewevaluation_patient") + ",<br>";
-        vmSelectedPatientName = "<b>" + patientData["name"] + " " + patientData["lastname"] + "</b>";
+        vmSelectedPatientName = "<b>" + patientDisplayID + "</b>";
         patient = patient + vmSelectedPatientName
-        //console.log("Setting patient to " + patient)
         patientText.text = patient;
 
         dateValue.text = day + " " + month + " " +  year + ", " + hour + ":" + minutes;

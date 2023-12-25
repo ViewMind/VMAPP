@@ -812,7 +812,13 @@ QVariantMap Loader::getReportsForLoggedEvaluator(){
         // We need to get the subject data in order to get it's name.
         QVariantMap subject_data = localDB.getSubjectData(subject_id);
 
-        QString subject_name = subject_data.value(LocalDB::SUBJECT_NAME).toString() + " " + subject_data.value(LocalDB::SUBJECT_LASTNAME).toString();
+        QString fname = subject_data.value(LocalDB::SUBJECT_NAME).toString();
+        QString lname = subject_data.value(LocalDB::SUBJECT_LASTNAME).toString();
+        QString subject_name = "";
+        if ((fname != "") || (lname != "")){
+            subject_name = fname + " " + lname;
+        }
+
         QString subject_inst_id = subject_data.value(LocalDB::SUBJECT_INSTITUTION_ID).toString();
 
         // We now scan all qci files in the subject dir.
@@ -850,6 +856,12 @@ QVariantMap Loader::getReportsForLoggedEvaluator(){
 
             // Now we set the subject.
             map[Globals::QCIFields::SUBJECT]            = subject_name;
+
+            // We need to check if the subject name is empty. If it is, we need to show something, so we show the ID. Either one or the other are not empty.
+            if (subject_name == ""){
+                map[Globals::QCIFields::SUBJECT]            = subject_inst_id;
+            }
+
             map[Globals::QCIFields::SUBJECT_INST_ID]    = subject_inst_id;
             map[Globals::QCIFields::SUBJECT_VM_ID]      = subject_id;
 

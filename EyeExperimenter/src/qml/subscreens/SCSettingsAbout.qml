@@ -165,7 +165,7 @@ Rectangle {
         model.append(element);
 
         element["vmHeight"] = labelListView.height*0.15;
-        element["vmText"]   = "<b>VIEWMIND S.A.R.L.</b><br>House of Biohealth, 27 Rue Henri Koch, 4354 Esch-sur-Alzette, Luxemburg"
+        element["vmText"]   = "<b>VIEWMIND S.A.R.L.</b><br>House of Biohealth, 27 Rue Henri Koch, 4354 Esch-sur-Alzette, Luxemburgo"
         element["vmImage"]  = "qrc:/images/labeling/ec.png"
         model.append(element);
 
@@ -204,17 +204,17 @@ Rectangle {
         model.append(element);
 
         element["vmHeight"] = labelListView.height*0.14;
-        element["vmText"]   = "<b>VIEWMIND S.A.R.L.</b><br>House of Biohealth, 27 Rue Henri Koch, 4354 Esch-sur-Alzette, Luxemburg"
+        element["vmText"]   = "<b>VIEWMIND S.A.R.L.</b><br>House of Biohealth, 27 Rue Henri Koch, 4354 Esch-sur-Alzette, Luxemburgo"
         element["vmImage"]  = "qrc:/images/labeling/ec.png"
         model.append(element);
 
         element["vmHeight"] = labelListView.height*0.14;
-        element["vmText"]   = "<b>EYE EXPLORER (Global Version " + vmSYSTEM_VERSION + ")</b>"
+        element["vmText"]   = "<b>EYE EXPLORER (Versão global " + vmSYSTEM_VERSION + ")</b>"
         element["vmImage"]  = "qrc:/images/labeling/md.png"
         model.append(element);
 
         element["vmHeight"] = labelListView.height*0.15;
-        element["vmText"]   = "READ THE OPERATING INSTRUCTIONS"
+        element["vmText"]   = "LEIA AS INSTRUÇÕES DE OPERAÇÃO"
         element["vmImage"]  = "qrc:/images/labeling/manual.png"
         model.append(element);
 

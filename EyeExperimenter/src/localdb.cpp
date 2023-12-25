@@ -672,7 +672,21 @@ QVariantMap LocalDB::getDisplaySubjectList(QString filter, const QStringList &mo
             // Building the display date: Day 3LetterMonth Year.
             QString bdate = buildDisplayBirthDate(map.value(SUBJECT_BIRTHDATE).toString(),months);
             map[SUBJECT_BDATE_DISPLAY] = bdate;
-            map[SUBJECT_SORTABLE_NAME] = map.value(SUBJECT_LASTNAME).toString() + ", " + map.value(SUBJECT_NAME).toString();
+
+            QString lname = map.value(SUBJECT_LASTNAME).toString();
+            QString fname = map.value(SUBJECT_NAME).toString();
+            if ( (lname == "") && (fname == "") ){
+                map[SUBJECT_SORTABLE_NAME] = "";
+            }
+            else if (lname == "") {
+                map[SUBJECT_SORTABLE_NAME] = fname;
+            }
+            else if (fname == ""){
+                map[SUBJECT_SORTABLE_NAME] = lname;
+            }
+            else {
+                map[SUBJECT_SORTABLE_NAME] = lname + ", " + fname;
+            }
 
             ans[subject_ids.at(i)] = map;
         }

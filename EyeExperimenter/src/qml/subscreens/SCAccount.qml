@@ -121,7 +121,7 @@ Rectangle {
     VMPasswordInput {
         id: password
         width: fname.width
-        vmLabel: loader.getStringForKey("viewlogin_label_pass")
+        vmLabel: loader.getStringForKey("viewaddeval_new_pass")
         vmPlaceHolderText: loader.getStringForKey("viewlogin_placeholder_password")
         vmShowText: loader.getStringForKey("viewlogin_show")
         vmHideText: loader.getStringForKey("viewlogin_hide")
@@ -134,7 +134,7 @@ Rectangle {
     VMPasswordInput {
         id: verifyPassword
         width: fname.width
-        vmLabel: loader.getStringForKey("viewaddeval_verifpass")
+        vmLabel: loader.getStringForKey("viewaddeval_verif_npass")
         vmPlaceHolderText: loader.getStringForKey("viewlogin_placeholder_password")
         vmShowText: loader.getStringForKey("viewlogin_show")
         vmHideText: loader.getStringForKey("viewlogin_hide")

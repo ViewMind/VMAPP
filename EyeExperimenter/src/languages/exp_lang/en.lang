@@ -1,4 +1,5 @@
 viewevaluation_calibration_explanation = 
+Can you see the 4 crosses well?
 A red circle with a white dot in its center will appear on the screen. 
 Look at the white dot.
 The circle will move through the screen. You must follow it. Remember not to
@@ -37,7 +38,7 @@ In this case, you must say "Different"|
 Let's do another example|
 <<N>> boxes with crosses appear|
 Then they disappear|
-A new set then appears|
+And a new set appears|
 The color combinations between the boxes and crosses didn't change, so
 you must say out loud "Same".
 

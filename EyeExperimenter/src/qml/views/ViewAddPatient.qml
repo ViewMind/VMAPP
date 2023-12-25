@@ -24,6 +24,7 @@ ViewBase {
         month.setSelection(-1)
         sex.setSelection(-1)
         vmCurrentlyLoadedPatient = ""
+
     }
 
     function loadPatient(patientData){
@@ -163,7 +164,16 @@ ViewBase {
         var message = "";
         if (vmCurrentlyLoadedPatient == "")  message = loader.getStringForKey("viewpatform_success_add");
         else message = loader.getStringForKey("viewpatform_success_edit");
-        message = message.replace("<b></b>","<b>" + fname.vmCurrentText + " " + lname.vmCurrentText + "</b>")
+
+        let notify_id = ""
+        if (lname.vmCurrentText == ""){
+            notify_id = fname.vmCurrentText + " " + lname.vmCurrentText
+        }
+        else {
+            notify_id = personalID.vmCurrentText;
+        }
+
+        message = message.replace("<b></b>","<b>" + notify_id + "</b>")
         //console.log("Should be popping up a message");
         mainWindow.popUpNotify(VMGlobals.vmNotificationGreen,message);
         mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
