@@ -62,7 +62,8 @@ Item {
 
     function getCurrentlySelectedMetaDataField(){
         if (vmCurrentIndex === -1) return ""
-        let item =  itemList.get(vmCurrentIndex);
+        //let item =  itemList.get(vmCurrentIndex);
+        let item = display.originalList[vmCurrentIndex];
         if (item["vmMetadata"] !== undefined) return item["vmMetadata"]
         else return "";
     }
