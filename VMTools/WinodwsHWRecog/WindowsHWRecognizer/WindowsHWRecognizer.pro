@@ -9,6 +9,7 @@ CONFIG -= app_bundle
 
 SOURCES += \
         ../../../CommonClasses/HWRecog/hwrecognizer.cpp \
+        ../../../CommonClasses/HWRecog/processrecognizer.cpp \
         ../../../CommonClasses/HWRecog/tableoutputparser.cpp \
         main.cpp
 
@@ -24,4 +25,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     ../../../CommonClasses/HWRecog/hwrecognizer.h \
+    ../../../CommonClasses/HWRecog/processrecognizer.h \
     ../../../CommonClasses/HWRecog/tableoutputparser.h

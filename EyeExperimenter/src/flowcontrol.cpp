@@ -215,6 +215,36 @@ void FlowControl::onReadyToRender() {
     // We can now enable the rendering of the waitscreen. No message.
     this->renderWaitScreen("");
 
+    // At this point we check on the number of RRS.exe that are actually running.
+    ProcessRecognizer pr;
+    if (!pr.refreshProcessList()){
+        StaticThreadLogger::error("FlowControl::onReadyToRender","Failed to generate process list. Reasons: \n-> " + pr.getErrors().join("\n-> "));
+        StaticThreadLogger::error("FlowControl::onReadyToRender","Printing last output:\n" + pr.getLastTaskTable());
+        return;
+    }
+
+    qint32 ninstances = pr.getNumberOfInstancesRunningOf(Globals::RemoteRenderServerParameters::EXE);
+    //qint32 ninstances = pr.getNumberOfInstancesRunningOf("Chrome.exe");
+
+    if (ninstances < 0){
+        StaticThreadLogger::error("FlowControl::onReadyToRender","Failed to find remote render server executable. Reasons: \n-> " + pr.getErrors().join("\n-> "));
+        StaticThreadLogger::error("FlowControl::onReadyToRender","Printing last output:\n" + pr.getLastTaskTable());
+        return;
+    }
+
+    if (ninstances > 1){
+        StaticThreadLogger::error("FlowControl::onReadyToRender","Found: " + QString::number(ninstances) + " of remote render server executable. Printing TaskList:\n " + pr.getLastTaskTable());
+        return;
+    }
+
+    if (ninstances == 0) {
+        StaticThreadLogger::error("FlowControl::onReadyToRender","Remote render server executable was not found to be running. Printing TaskList:\n " + pr.getLastTaskTable());
+        return;
+    }
+
+    StaticThreadLogger::log("FlowControl::onReadyToRender","Success. Only one instance of remote render server is running");
+    StaticThreadLogger::log("FlowControl::onReadyToRender","Printing process table:\n" + pr.getLastTaskTable());
+
 }
 
 void FlowControl::resetCalibrationHistory(){

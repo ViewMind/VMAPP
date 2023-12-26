@@ -24,6 +24,8 @@
 #include "../../CommonClasses/Calibration/calibrationmanager.h"
 #include "../../CommonClasses/Calibration/calibrationhistory.h"
 
+#include "../../CommonClasses/HWRecog/processrecognizer.h"
+
 #include "studyendoperations.h"
 
 #include "eyexperimenter_defines.h"

@@ -5,6 +5,7 @@
 #include <QString>
 #include <QList>
 #include <QDebug>
+#include <QVariantMap>
 
 class TableOutputParser
 {
@@ -35,9 +36,21 @@ public:
      */
     bool parseCMDTableOuput(const QString &cmd_ouput);
 
+    /**
+     * @brief parseCMDTableOutputTableWithDivider
+     * @details Same as parseCMDTableOutput except the column division are defined by the second line which is a divider column.
+     * So more logic needs to be used as the header are actually found by divving up the first line once the values for the second line are found.
+     * @return true if no issues found. False otherwise.
+     */
+    bool parseCMDTableOutputTableWithDivider(const QString &cmd_output);
+
 private:
     ParseTableOutput result;
     QStringList errors;
+
+    QVariantMap findKeysAndKeyStartPosition(const QString &defineLine);
+    void fillOutResult(const QStringList &keys, const QList<qint32> &key_start_positions, const QStringList &lines);
+    QStringList getStringParsedByPostion(const QString &line, const QList<qint32> &key_start_positions);
 
 };
 

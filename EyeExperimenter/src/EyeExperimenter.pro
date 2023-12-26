@@ -29,6 +29,7 @@ SOURCES += main.cpp \
     ../../CommonClasses/EyeTrackingInterface/eyetrackerdata.cpp \
     ../../CommonClasses/FileDownloader/filedownloader.cpp \
     ../../CommonClasses/HWRecog/hwrecognizer.cpp \
+    ../../CommonClasses/HWRecog/processrecognizer.cpp \
     ../../CommonClasses/HWRecog/tableoutputparser.cpp \
     ../../CommonClasses/LinearLeastSquares/linearcoefficients.cpp \
     ../../CommonClasses/LinearLeastSquares/linearleastsquaresfit.cpp \
@@ -66,6 +67,7 @@ HEADERS += \
     ../../CommonClasses/EyeTrackingInterface/eyetrackerdata.h \
     ../../CommonClasses/FileDownloader/filedownloader.h \
     ../../CommonClasses/HWRecog/hwrecognizer.h \
+    ../../CommonClasses/HWRecog/processrecognizer.h \
     ../../CommonClasses/HWRecog/tableoutputparser.h \
     ../../CommonClasses/LinearLeastSquares/linearcoefficients.h \
     ../../CommonClasses/LinearLeastSquares/linearleastsquaresfit.h \
