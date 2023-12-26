@@ -252,6 +252,12 @@ private:
     static inline const char * EXAMPLE_TEXT_KEY_BINDING_UC_3 = "examples_binding_uc_3";
     static inline const char * EXAMPLE_TEXT_KEY_BINDING_BC_2 = "examples_binding_bc_2";
     static inline const char * EXAMPLE_TEXT_KEY_BINDING_BC_3 = "examples_binding_bc_3";
+    static inline const char * EXAMPLE_TEXT_KEY_NBACK_3      = "examples_nback_3";
+    static inline const char * EXAMPLE_TEXT_KEY_NBACK_4      = "examples_nback_4";
+    static inline const char * EXAMPLE_TEXT_KEY_NBACK_5      = "examples_nback_5";
+    static inline const char * EXAMPLE_TEXT_KEY_NBACK_6      = "examples_nback_6";
+    static inline const char * EXAMPLE_TEXT_KEY_GNG          = "examples_gonogo";
+    static inline const char * EXAMPLE_TEXT_KEY_GNG3D        = "examples_gng_3D";
 
     // The normal, slow and variable speed values fo rthe GONOGO are codified in the numbers 0,1 and 2 respectively.
     // We need to detect the 2 specifically to change the explanantion language key.

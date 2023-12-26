@@ -243,3 +243,19 @@ examples_binding_bc_2 =
 |||El paciente deberá decir <i>Diferente</i> en voz alta.||
 |||El paciente deberá decir <i>Diferente</i> en voz alta.||
 |||El paciente deberá decir <i>Igual</i> en voz alta.|;
+
+
+examples_gonogo = |||||;
+examples_nback_3 = ||||
+||||
+||||;
+examples_nback_4 = |||||
+|||||
+|||||;
+examples_nback_5 = ||||||
+||||||
+||||||;
+examples_nback_6 = ||||||
+||||||
+||||||;
+examples_gng_3D = |||;

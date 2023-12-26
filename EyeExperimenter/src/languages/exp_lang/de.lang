@@ -219,3 +219,17 @@ examples_binding_bc_2 =
 |||The patient should say <i>Different</i> out loud.||
 |||The patient should say <i>Same</i> out loud.|;
 
+examples_gonogo = |||||;
+examples_nback_3 = ||||
+||||
+||||;
+examples_nback_4 = |||||
+|||||
+|||||;
+examples_nback_5 = ||||||
+||||||
+||||||;
+examples_nback_6 = ||||||
+||||||
+||||||;
+examples_gng_3D = |||;

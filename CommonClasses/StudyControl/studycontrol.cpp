@@ -51,22 +51,38 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
     // Now we create the configurator.
     StudyConfigurator *configurator = nullptr;
 
-    // Most studies do not have text in examples so.
-    studyExampleLanguageKey = "";
-
     if (studyName == VMDC::Study::NBACK){
         configurator = new NBackConfigurator();
         if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 3){
             studyExplanationLanguageKey = STUDY_TEXT_KEY_NBACK_3;
+            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_3;
         }
         else {
             studyExplanationLanguageKey = STUDY_TEXT_KEY_NBACK_4;
+            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_4;
         }
         studyType = ST_2D;
     }
     else if (studyName == VMDC::Study::NBACKVS){
         configurator = new NBackConfigurator();
         studyExplanationLanguageKey = STUDY_TEXT_KEY_NBACKVS;
+
+        if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 3){
+            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_3;
+        }
+        else if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 4){
+            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_4;
+        }
+        else if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 5){
+            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_5;
+        }
+        else if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 6){
+            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_6;
+        }
+        else {
+            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_6;
+        }
+
         studyType = ST_2D;
     }
     else if (studyName == VMDC::Study::BINDING_UC) {
@@ -94,6 +110,7 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
     else if (studyName == VMDC::Study::GONOGO){
         configurator = new GNGConfigurator();
         studyExplanationLanguageKey = STUDY_TEXT_KEY_GONOGO;
+        studyExampleLanguageKey = EXAMPLE_TEXT_KEY_GNG;
         studyType = ST_2D;
     }
     else if (studyName == VMDC::Study::GONOGO_SPHERE){
@@ -105,6 +122,7 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
             studyExplanationLanguageKey = STUDY_TEXT_KEY_GONOGO_3D;
         }
         studyType = ST_3D;
+        studyExampleLanguageKey = EXAMPLE_TEXT_KEY_GNG3D;
     }
     else {
         StaticThreadLogger::error("StudyControl::startStudy","Unimplemented study type: " + studyName);
@@ -263,8 +281,8 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
                 return;
             }
 
-//            qDebug() << "Printing payload of study end command";
-//            Debug::prettyPrintQVariantMap(control.getPayload());
+            //            qDebug() << "Printing payload of study end command";
+            //            Debug::prettyPrintQVariantMap(control.getPayload());
 
             // First we check we got the file.
             QString study_data_filename = control.getPayloadField(RRS::PacketStudyControl::STUDY_DATA_FILE).toString();
@@ -445,7 +463,6 @@ void StudyControl::startExamplesPhase(){
     emit StudyControl::newPacketAvailable();
     this->studyState = SS_EXAMPLE;
 
-    if (studyExampleLanguageKey == "") return; // We don't need to do anything, in this case.
     currentStudyExampleScreen = 0;
     emitNewExampleMessage();
 
@@ -461,7 +478,6 @@ void StudyControl::nextExampleSlide(){
     rspacket.setPayloadField(RRS::PacketStudyControl::CMD,RRS::CommandStudyControl::CMD_NEXT_EXAMPLE);
     emit StudyControl::newPacketAvailable();
 
-    if (studyExampleLanguageKey == "") return; // We don't need to do anything, in this case.
     currentStudyExampleScreen++;
     if (currentStudyExampleScreen == NumberOfExampleSlides[studyExampleLanguageKey]){
         currentStudyExampleScreen = 0;
@@ -640,8 +656,12 @@ void StudyControl::FillNumberOfSlidesInExplanations(ConfigurationManager *langua
     allkeys.clear();
     allkeys << EXAMPLE_TEXT_KEY_BINDING_UC_2;
     allkeys << EXAMPLE_TEXT_KEY_BINDING_UC_3;
+    allkeys << EXAMPLE_TEXT_KEY_BINDING_BC_2;
+    allkeys << EXAMPLE_TEXT_KEY_BINDING_BC_3;
+    allkeys << EXAMPLE_TEXT_KEY_GNG << EXAMPLE_TEXT_KEY_GNG3D << EXAMPLE_TEXT_KEY_NBACK_3 << EXAMPLE_TEXT_KEY_NBACK_4
+            << EXAMPLE_TEXT_KEY_NBACK_5 << EXAMPLE_TEXT_KEY_NBACK_6;
     for (qint32 i = 0; i < allkeys.size(); i++){
-        //qDebug() << language->getStringList(allkeys.at(i));
+        //qDebug() << "Example Key" << allkeys.at(i) << language->getStringList(allkeys.at(i));
         NumberOfExampleSlides[allkeys.at(i)] = language->getStringList(allkeys.at(i)).size();
     }
 

@@ -109,7 +109,7 @@ Rectangle {
 
         function onNewExperimentMessages(string_value_map){
 
-            // console.log(JSON.stringify(string_value_map));
+            //console.log(JSON.stringify(string_value_map));
 
             if (vmEvaluationStage == vmSTAGE_EVALUATION){
                 let list = "<ul>"
@@ -132,6 +132,9 @@ Rectangle {
                     if (message_list.length < 1) return; // IN this case there is nothing to do.
 
                     let message_to_display = message_list[index];
+
+                    //console.log("Setting display message to: |" + message_to_display + "|");
+
                     let current_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
 
                     // The arrow use instruction changes on the last explanation slide.
@@ -358,7 +361,6 @@ Rectangle {
             flowControl.startStudyExamplePhase();
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_starteval"),"");
             viewEvaluations.advanceStudyIndicator();
-            studyExplanationText.text = "\n";
         }
         else if (vmEvaluationStage == vmSTAGE_EXAMPLES){
             vmEvaluationStage = vmSTAGE_EVALUATION;
