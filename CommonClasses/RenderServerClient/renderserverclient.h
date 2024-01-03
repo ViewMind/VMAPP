@@ -32,7 +32,7 @@ public:
 
     explicit RenderServerClient(QObject *parent = nullptr);
 
-    void startRenderServer(const QString &fullPath, WId mainWinID);
+    void startRenderServer(const QString &fullPath, WId mainWinID, bool notaskkill);
 
     void sendPacket(RenderServerPacket packet);
 

@@ -91,6 +91,9 @@ signals:
     // Wrongfull disconnect with remote render server.
     void renderServerDisconnect();
 
+    // Signal for more than one instance of the RRS running.
+    void checkOnRRSFailed();
+
     // Once study operations are finalized this signal is emitted. The final operations make take time. So the study end signaled so that the front end might put up
     // a wait screen. And then the study end processing is carried out on a background thread.
     void studyEndProcessingDone();

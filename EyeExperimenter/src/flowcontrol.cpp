@@ -40,7 +40,7 @@ void FlowControl::startRenderServerAndSetWindowID(WId winID){
         StaticThreadLogger::warning("startRenderServerAndSetWindowID","STARTING APP WITH NO RRS");
         return;
     }
-    renderServerClient.startRenderServer(location,winID);
+    renderServerClient.startRenderServer(location,winID,DBUGBOOL(Debug::Options::NO_RRS_KILL));
 }
 
 
@@ -223,22 +223,34 @@ void FlowControl::onReadyToRender() {
         return;
     }
 
-    qint32 ninstances = pr.getNumberOfInstancesRunningOf(Globals::RemoteRenderServerParameters::EXE);
+    qint32 ninstances = pr.getNumberOfInstancesRunningOf(Globals::RemoteRenderServerParameters::EXE,false);
     //qint32 ninstances = pr.getNumberOfInstancesRunningOf("Chrome.exe");
 
     if (ninstances < 0){
-        StaticThreadLogger::error("FlowControl::onReadyToRender","Failed to find remote render server executable. Reasons: \n-> " + pr.getErrors().join("\n-> "));
-        StaticThreadLogger::error("FlowControl::onReadyToRender","Printing last output:\n" + pr.getLastTaskTable());
-        return;
+        StaticThreadLogger::error("FlowControl::onReadyToRender","Failed to find remote render server executable. Reasons: \n-> " + pr.getErrors().join("\n-> ") + "\nRetrying in language agnostic manner");
+        ninstances = pr.getNumberOfInstancesRunningOf(Globals::RemoteRenderServerParameters::EXE,true);
+        if (ninstances < 0){
+            StaticThreadLogger::error("FlowControl::onReadyToRender","Failed to find remote render server executable even though search was language agnostic. Reasons: \n-> " + pr.getErrors().join("\n-> ") + "\nRetrying in language agnostic manner");
+            StaticThreadLogger::error("FlowControl::onReadyToRender","Printing process table:\n" + pr.getLastTaskTable());
+            if (DBUGBOOL(Debug::Options::DISALBE_RRS_FORCE_QUIT)) StaticThreadLogger::warning("FlowControl::onReadyToRender","Disabled RRS Force Quit");
+            else emit checkOnRRSFailed();
+            return;
+        }
     }
 
     if (ninstances > 1){
         StaticThreadLogger::error("FlowControl::onReadyToRender","Found: " + QString::number(ninstances) + " of remote render server executable. Printing TaskList:\n " + pr.getLastTaskTable());
+        StaticThreadLogger::error("FlowControl::onReadyToRender","Printing process table:\n" + pr.getLastTaskTable());
+        if (DBUGBOOL(Debug::Options::DISALBE_RRS_FORCE_QUIT)) StaticThreadLogger::warning("FlowControl::onReadyToRender","Disabled RRS Force Quit");
+        else emit checkOnRRSFailed();
         return;
     }
 
     if (ninstances == 0) {
         StaticThreadLogger::error("FlowControl::onReadyToRender","Remote render server executable was not found to be running. Printing TaskList:\n " + pr.getLastTaskTable());
+        StaticThreadLogger::error("FlowControl::onReadyToRender","Printing process table:\n" + pr.getLastTaskTable());
+        if (DBUGBOOL(Debug::Options::DISALBE_RRS_FORCE_QUIT)) StaticThreadLogger::warning("FlowControl::onReadyToRender","Disabled RRS Force Quit");
+        else emit checkOnRRSFailed();
         return;
     }
 

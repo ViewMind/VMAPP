@@ -7,6 +7,9 @@ viewstart_login = LOGIN;
 viewstart_addneweval = ADD A NEW EVALUATOR;
 viewstart_settings = Settings;
 viewstart_configuration_failed = Unable to Load Configuration|The application is unable to start
+viewstart_on_RRS_check_failed  = Error Detected|A software malfunction was detected that might affect 
+ViewMind Atlas.
+Please restart the computer to fix this error.;
 Please contatct ViewMind for help;
 viewstart_vr_disconnect = <b>Connection to HMD Lost</b><br>Please restart the application;
 
@@ -399,7 +402,7 @@ studystatus_reading = Average sentence time: <<N>> ms;
 studystatus_nback_sequence_hit = Completed Sequences: <<N>>;
 studystatus_nback_sequence_timeout = Timed Out Sequences: <<N>>;
 studystatus_nback_target_speed = Targets shown for <<N>> ms;
-studystatus_gonogo_ok = Sucessfull Reponses: <<N>>;
+studystatus_gonogo_ok = Sucessful Reponses: <<N>>;
 studystatus_gonogo_timeout = Timeouts: <<N>>;
 studystatus_gonogo_avg = Average trial time: <<N>> ms;
 studystatus_gonogo3D_green_hit = <<N>> green spheres hit;

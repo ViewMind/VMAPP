@@ -8,13 +8,13 @@ import "."
 ApplicationWindow {
     id: mainWindow
     visible: true
-    title: qsTr("EyeExplorer - ") + loader.getWindowTilteVersion()
+    title: loader.getWindowTilteVersion()
     visibility: Window.Maximized
 
     Connections {
         target: loader
         function onTitleBarUpdate(){
-            title = qsTr("EyeExplorer - ") + loader.getWindowTilteVersion()
+            title = loader.getWindowTilteVersion()
         }
 
         function onDownloadProgressUpdate(progress, hours, minutes, seconds, bytesDowloaded, bytesTotal){

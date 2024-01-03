@@ -278,6 +278,9 @@ QString Loader::getWindowTilteVersion(){
     if (!dbug_str.isEmpty()){
         version = version + " - " + dbug_str;
     }
+
+    version = Globals::Share::APP_NAME + " - " + version;
+
     return version;
 }
 
@@ -951,7 +954,7 @@ void Loader::sendSupportEmail(const QString &subject, const QString &body, const
 
 
     QVariantMap replacement_map;
-    replacement_map[Globals::SupportEmailPlaceHolders::APPVERSION]  = this->getWindowTilteVersion();
+    replacement_map[Globals::SupportEmailPlaceHolders::APPVERSION]  = this->getVersionNumber();
     replacement_map[Globals::SupportEmailPlaceHolders::EVALUATOR]   = evaluator_name;
     replacement_map[Globals::SupportEmailPlaceHolders::EVAL_EMAIL]  = evaluator_email;
     replacement_map[Globals::SupportEmailPlaceHolders::HWSPECS]     = hardware;

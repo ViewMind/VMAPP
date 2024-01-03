@@ -56,6 +56,7 @@ static const QString FAILED_CALIBRATION_DIR  = "failed_calibrations";
 static const QString SUPPORT_EMAIL_FILE      = "support_email.html";
 static const QString VM_UPDATE_LINK          = "ViewMind Update.lnk";
 static const QString LOGDIR                  = "logs";
+static const QString TASKKILL                = "taskkill";
 }
 
 namespace SupportEmailPlaceHolders {
@@ -143,7 +144,8 @@ static QVariantMap GetNameCodeMap() {
 }
 
 namespace Share {
-static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.11";
+static const QString APP_NAME = "EyeExplorer";
+static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.12";
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
 static const QString PATIENT_UID = "patient_uid";

@@ -70,13 +70,47 @@ void RenderServerClient::setRenderWindowHiddenFlag(bool flag){
 }
 
 
-void RenderServerClient::startRenderServer(const QString &fullPath, WId mainWinID){
+void RenderServerClient::startRenderServer(const QString &fullPath, WId mainWinID, bool notaskkill){
 
     QFileInfo processExecutableInfo(fullPath);
     if (!processExecutableInfo.exists()){
         emit RenderServerClient::newMessage("Cannot find Render Server Executable from path '" + fullPath + "'",MSG_TYPE_ERROR);
         return;
     }
+
+    QStringList arguments;
+
+    if (!notaskkill){
+
+        QString exectutable_name = processExecutableInfo.baseName() + "." + processExecutableInfo.completeSuffix();
+        QProcess killprocess;
+        killprocess.setProgram("taskkill");
+
+        arguments << "/im";
+        arguments << exectutable_name;
+        arguments << "/t";
+        arguments << "/f";
+
+        killprocess.setArguments(arguments);
+        killprocess.start();
+        if (!killprocess.waitForFinished()){
+            emit RenderServerClient::newMessage("Failed in running task kill on '" + exectutable_name + "'. Code: ",MSG_TYPE_ERROR);
+            emit RenderServerClient::newMessage("Task Kill Process standard output: '" + QString(killprocess.readAllStandardOutput()).trimmed() + "'",MSG_TYPE_ERROR);
+            emit RenderServerClient::newMessage("Task Kill Process error output: '" + QString(killprocess.readAllStandardError()).trimmed() + "'",MSG_TYPE_ERROR);
+        }
+        else {
+            emit RenderServerClient::newMessage("Successfully ran task kill on '" + exectutable_name + "'. Code: ",MSG_TYPE_INFO);
+            emit RenderServerClient::newMessage("Task Kill Process standard output: '" + QString(killprocess.readAllStandardOutput()).trimmed() + "'",MSG_TYPE_INFO);
+            emit RenderServerClient::newMessage("Task Kill Process error output: '" + QString(killprocess.readAllStandardError()).trimmed() + "'",MSG_TYPE_INFO);
+        }
+
+    }
+    else {
+        emit RenderServerClient::newMessage("DBUG: Skipping Task Kill of RRS.exe processes",MSG_TYPE_WARNING);
+    }
+
+
+    // WE've tried to kill any pre exisitng RRS processes. From now on it's a matter of checking whethere there is more than one.
 
     // Setting the working directory.
     renderServerDirectory = processExecutableInfo.absoluteDir().path();
@@ -85,7 +119,7 @@ void RenderServerClient::startRenderServer(const QString &fullPath, WId mainWinI
 
     emittedRenderHandleReady = false;
 
-    QStringList arguments;
+    arguments.clear();
     arguments << "-popupwindow";
     arguments << "-parentHWND";
     arguments << QString::number(mainWindowID);

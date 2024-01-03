@@ -50,26 +50,44 @@ bool ProcessRecognizer::refreshProcessList(){
 
 }
 
-qint32 ProcessRecognizer::getNumberOfInstancesRunningOf(const QString &processName){
+qint32 ProcessRecognizer::getNumberOfInstancesRunningOf(const QString &processName, bool searchAllColumns){
 
     QString colPname = QString(COLUMN_PNAME);
+    QStringList colsToSearch;
 
-    if (!this->processesSnapShot.contains(colPname)){
-        this->errors << "The process snapshot table does not contain the expected column of '" + colPname  + "'. Columns are: " + this->processesSnapShot.keys().join(",");
-        return -1;
+    if (searchAllColumns){
+        colsToSearch = this->processesSnapShot.keys();
     }
-
-    QStringList list = this->processesSnapShot.value(colPname);
-    QString comp = processName;
-    comp = comp.toLower();
-    qint32 counter = 0;
-
-    for (qint32 i = 0; i < list.size(); i++){
-        if (list.at(i).toLower().trimmed() == comp){
-            counter++;
+    else {
+        if (!this->processesSnapShot.contains(colPname)){
+            this->errors << "The process snapshot table does not contain the expected column of '" + colPname  + "'. Columns are: " + this->processesSnapShot.keys().join(",");
+            return -1;
+        }
+        else {
+            colsToSearch << colPname;
         }
     }
 
-    return counter;
+    QSet<qint32> rowsCounted;
+    QString comp = processName;
+    comp = comp.toLower();
+
+    for (qint32 c = 0; c < colsToSearch.size(); c++){
+
+        QString searchCol = colsToSearch.at(c);
+
+        QStringList list = this->processesSnapShot.value(searchCol);
+
+        for (qint32 i = 0; i < list.size(); i++){
+            if (rowsCounted.contains(i)) continue; // Each row can only be counted once.
+            if (list.at(i).toLower().trimmed() == comp){
+                rowsCounted << i;
+            }
+        }
+
+    }
+
+    return rowsCounted.size();
+
 
 }

@@ -1,13 +1,16 @@
 # UI Language file: Spanish
 
 #********************************* VIEWHOME SCREEN *********************************
-viewstart_welcome = Bienvenidos Eye Explorer;
+viewstart_welcome = Bienvenidos al Eye Explorer;
 viewstart_instruction = Ingrese a su perfil or agregue un nuevo evaluador;
 viewstart_login = INGRESAR;
 viewstart_addneweval = NUEVO EVALUADOR;
 viewstart_settings   = Configuración;
 viewstart_configuration_failed = No es posible cargar la configuracion|La aplicación no puede empezar.
 Por favor contáctese con ViewMind;
+viewstart_on_RRS_check_failed  = Se Detectó un Error|Un software está funcionando incorrectamente y esto puede 
+afectar al ViewMind Atlas.
+Por favor reinicie su computadora para arreglar este error;
 viewstart_vr_disconnect = <b>Pérdida de conexión al HMD</b><br>Por favor reinicie la aplicación;
 
 viewstart_disabled_instance = Instancia Deshabilitada|Mientras la instancia esté desahbilitada, 

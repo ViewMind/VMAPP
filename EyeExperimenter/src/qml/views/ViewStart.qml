@@ -46,11 +46,19 @@ ViewBase {
             mainWindow.popUpNotify(VMGlobals.vmNotificationRed,message,false);
             btnLogin.vmEnabled = false;
         }
+
+        function onCheckOnRRSFailed() {
+            criticalFailure.loadFromKey("viewstart_on_RRS_check_failed");
+            criticalFailure.open()
+            return;
+        }
+
     }
 
 
     VMMessageDialog {
         id: criticalFailure
+        vmLarge: true
         onDismissed: {
             messageDiag.close();
             Qt.quit()

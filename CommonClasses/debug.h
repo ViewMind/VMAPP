@@ -56,6 +56,8 @@ namespace Debug {
        const QString OVERRIDE_UPDATE_LINK       = "override_update_link";
        const QString CALIBRATION_RAW_DATA_INPUT = "calibration_gathering_results_packet";
        const QString NO_RRS                     = "no_rrs";
+       const QString NO_RRS_KILL                = "no_rrs_kill";
+       const QString DISALBE_RRS_FORCE_QUIT     = "disable_rrs_force_quit";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

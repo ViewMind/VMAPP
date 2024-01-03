@@ -20,7 +20,7 @@ public:
      * @param processName - The name of the process to search.
      * @return The number of times the process name was found. -1 means there was an error.
      */
-    qint32 getNumberOfInstancesRunningOf(const QString &processName);
+    qint32 getNumberOfInstancesRunningOf(const QString &processName, bool searchAllColumns);
 
 
     TableOutputParser::TableColumnList getCurrentProcesses() const;
