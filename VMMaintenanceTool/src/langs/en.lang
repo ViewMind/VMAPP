@@ -1,9 +1,9 @@
 # Language File English.
 
-welcome_update = Welcome to the ViewMind Update. The tool will now attempt to perform an update of the current ViewMind Application version.
+welcome_update = Welcome to the ViewMind Update. The tool will now attempt to perform an update of the current ViewMind Atlas version.
 If any issue should arise it will provide instructions to the best way of solving it.;
 
-welcome_normal = Welcome to the ViewMind Update. Please make sure that the ViewMind application is closed.
+welcome_normal = Welcome to the ViewMind Update. Please make sure that the ViewMind Atlas is closed.
 Once ready, please press the Diagnostics Button to verify current installation;
 
 error_no_current_install = Unable to find the the current installation;
@@ -15,7 +15,7 @@ error_fail_bkp_copy = Unable to backup the license file;
 error_move_db_bkp = Unable to to move the DB backups;
 error_move_config = Unable to move the license file;
 error_move_patdata = Unable to move the patient data to the directory;
-error_cant_start_ee = Failed to start Eye Explorer. Please attempt to start manually;
+error_cant_start_ee = Failed to start ViewMind Atlas. Please attempt to start manually;
 error_incosistent_situation = The diagnostics has found unexpected inconsistency in the installation.
 Plese contact ViewMind for support.;
 error_diagnostic_failed = Unexpected behaviour when running diagnostics. Unable to determined the situation.
@@ -32,10 +32,10 @@ warning_no_lic_backup = No backup of license file exists;
 success_update = Finished update process will now restart the application again;
 
 success_maintenace = Maintenace has finished. You can now close ViewMind Update.
-Please run Eye Explorer and verify that everything is in working order.;
+Please run ViewMind Atlas and verify that everything is in working order.;
 
 success_mail = ViewMind Support Email successfully sent.
-You can close the application now.;
+You can close this application now.;
 
 contact_canceled = No support email has been sent;
 
@@ -45,7 +45,7 @@ notification_corrective_actions = The diagnostics found possible issues and will
 Please press the RUN CORRECTIVE ACTION button to start.;
 
 notification_no_issues = The diagnostics has not found any know inssues with the installation.
-If you can launch the application, then you should use the Support Button to contact ViewMind Support.;
+If you can launch ViewMind Atlas, then you should use the Support Button to contact ViewMind Support.;
 
 btn_main_action_diag         = RUN DIAGNOSTICS;
 btn_main_action_fix          = RUN CORRECTIVE ACTION;
@@ -69,7 +69,7 @@ action_finishing             = Finishing up ...;
 
 unable_to_update = The update did not finish correctly. In order to try and fix this error, we recomend the following steps:
 1) Restart the computer
-2) Use the Desktop Shortcut for the ViewMind Update to start that application.
+2) Use the Desktop Shortcut for the ViewMind Update to start it.
 3) Click on the RUN DIAGNOSTICS button.
 4) If a solution is offered click on RUN CORRECTIVE ACTION BUTTON.
 If you have issues with any of the steps above and the problem persists, contact ViewMind.;

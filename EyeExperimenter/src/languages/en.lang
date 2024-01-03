@@ -1,7 +1,7 @@
 # UI Language file: English
 
 #********************************* VIEWHOME SCREEN *********************************
-viewstart_welcome = Welcome to Eye Explorer;
+viewstart_welcome = Welcome to ViewMind Atlas;
 viewstart_instruction = Login to your profile or add a new evaluator;
 viewstart_login = LOGIN;
 viewstart_addneweval = ADD A NEW EVALUATOR;
@@ -313,7 +313,7 @@ waitscreenmsg_calibrationEnd = Calibration has ended;
 waitscreenmsg_studyEnd = Evaluation has ended;
 
 #********************************* VM GET CONFIG SCREEN *********************************
-viewgetconfig_welcome = Welcome To EyeExplorer;
+viewgetconfig_welcome = Welcome To ViewMind Atlas;
 viewgetconfig_instructions = Please provide the following information in order to start using the app;
 viewgetconfig_institution = Institution Number;
 viewgetconfig_instance = Instance Number;
@@ -324,7 +324,7 @@ viewgetconfig_code     = Activation Code;
 viewgetconfig_get      = GET LICENSE;
 viewgetconfig_error    = <b>App Could not Be Activated</b><br>Try again.<br>If the problem persists please contact ViewMind;
 viewgetconfig_success  = Activation was Successful|The application will close now.
-Please start Eye Explorer again to begin using it.;
+Please start ViewMind Atlas again to begin using it.;
 
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = No reports available for processing;
