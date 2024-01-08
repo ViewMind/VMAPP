@@ -324,19 +324,7 @@ Rectangle {
     function onNextButtonPressed(){
         //console.log("PRESSED the NEXT Button in Stage" + vmEvaluationStage)
         if (vmEvaluationStage === vmSTAGE_CALIBRATION){
-
-            // All is good so the calibration is requested.
-
-            let mode3d = isCurrentEvaluationA3DStudy();
-
-            //console.log("Starting the eye tracking calibration with mode 3d equal to ");
-            //console.log(mode3d);
-
-            vmIsCalibrated = false;
-            vmInCalibration = true;
-            evaluationsView.enableNextButton(false);
-            flowControl.calibrateEyeTracker(vmSlowCalibrationSelected, mode3d);
-
+            eyeTrackingCheckDialog.open();
         }
         else if (vmEvaluationStage == vmSTAGE_PRE_HAND_CALIB){
             startHorizontalHandCalibration();

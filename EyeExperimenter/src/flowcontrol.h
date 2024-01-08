@@ -71,6 +71,9 @@ public:
     // For debugging.
     Q_INVOKABLE void printLastCalibrationPacketReceived();
 
+    // For checking the debug option in the front end. (QML Code). This will only return true if the vmdebug file exists with the option set to true.
+    Q_INVOKABLE bool isSkipETCheckEnabled();
+
 signals:
 
     // This tells QML that the experiment has finished.

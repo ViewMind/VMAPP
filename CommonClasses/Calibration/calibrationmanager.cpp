@@ -223,7 +223,6 @@ void CalibrationManager::processCalibrationData(const RenderServerPacket &calibr
         correctionCoefficients.configureFor2DCoefficientComputation(targetPoints2D);
     }
 
-
     // Now we add all the data.
     QVariantList rx = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_RX).toList();
     QVariantList ry = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_RY).toList();
@@ -231,6 +230,8 @@ void CalibrationManager::processCalibrationData(const RenderServerPacket &calibr
     QVariantList lx = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_LX).toList();
     QVariantList ly = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_LY).toList();
     QVariantList lz = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_LZ).toList();
+
+    bool packetPrinted = false;
 
     for (qsizetype i = 1; i < N; i++){
 
@@ -250,7 +251,11 @@ void CalibrationManager::processCalibrationData(const RenderServerPacket &calibr
         bool there_was_an_error = false;
         if (start_index == -1){
             StaticThreadLogger::warning("CalibrationManager::processCalibrationData","The calibration start index for calibration point  " + QString::number(i) + " has not been set. Forcing to zero");
-            //StaticThreadLogger::error("CalibrationManager::processCalibrationData","Printing Packet For Reference:\n" + Debug::QVariantMapToString(calibrationData.getPayload()));
+            if (!packetPrinted){
+                // When we print the packet we printed only once.
+                StaticThreadLogger::warning("CalibrationManager::processCalibrationData","Printing Packet For Reference:\n" + Debug::QVariantMapToString(calibrationData.getPayload()));
+                packetPrinted = true;
+            }
             start_index = 0;
         }
         else if (start_index >= (M-1)) {

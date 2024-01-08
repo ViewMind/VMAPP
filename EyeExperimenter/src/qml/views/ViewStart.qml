@@ -243,8 +243,8 @@ ViewBase {
     }
 
 
-//     We add test stuff to main when developing components as we can test it as sson as the app starts.
-//     I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
+////     We add test stuff to main when developing components as we can test it as sson as the app starts.
+////     I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
 //    VMButton {
 //        id: testBox
 //        vmText: "Test Stuff";
@@ -254,13 +254,15 @@ ViewBase {
 //        anchors.leftMargin: 10
 //        onClickSignal: {
 
-//            let name = "";
-//            let lname = "test";
-//            let bdate = "1970-01-01";
-//            let list = loader.findPossibleDupes(name,lname,"",bdate);
 
-//            testDiag.setNameList(list);
-//            testDiag.open();
+
+////            let name = "";
+////            let lname = "test";
+////            let bdate = "1970-01-01";
+////            let list = loader.findPossibleDupes(name,lname,"",bdate);
+
+////            testDiag.setNameList(list);
+////            testDiag.open();
 
 
 ////            waitScreen.vmText = "Some Text";
@@ -272,6 +274,9 @@ ViewBase {
 ////            text = text.replace("<MB>",52);
 ////            text = text.replace("<MBT>",138);
 ////            waitScreen.updateProgress(24,text);
+
+//            test.open();
+
 //        }
 //    }
 

@@ -60,5 +60,6 @@
         <file>qml/components/VMUserManualHyperLink.qml</file>
         <file>qml/components/VMLabelItem.qml</file>
         <file>qml/components/VMFilteringComboBox.qml</file>
+        <file>qml/components/VMEyeTrackingCheckDialog.qml</file>
     </qresource>
 </RCC>

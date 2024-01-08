@@ -1,15 +1,15 @@
 # UI Language file: Spanish
 
 #********************************* VIEWHOME SCREEN *********************************
-viewstart_welcome = Bienvenidos al ViewMind Atlas;
-viewstart_instruction = Ingrese a su perfil or agregue un nuevo evaluador;
+viewstart_welcome = Bienvenidos a ViewMind Atlas;
+viewstart_instruction = Ingrese a su perfil o agregue un nuevo evaluador;
 viewstart_login = INGRESAR;
 viewstart_addneweval = NUEVO EVALUADOR;
 viewstart_settings   = Configuración;
 viewstart_configuration_failed = No es posible cargar la configuracion|La aplicación no puede empezar.
 Por favor contáctese con ViewMind;
 viewstart_on_RRS_check_failed  = Se Detectó un Error|Un software está funcionando incorrectamente y esto puede 
-afectar al ViewMind Atlas.
+afectar a ViewMind Atlas.
 Por favor reinicie su computadora para arreglar este error;
 viewstart_vr_disconnect = <b>Pérdida de conexión al HMD</b><br>Por favor reinicie la aplicación;
 
@@ -59,7 +59,7 @@ viewlogin_label_evaluator = Evaluador;
 viewlogin_label_pass = Contraseña;
 viewlogin_placeholder_evaluator = Seleccione Evaluador;
 viewlogin_placeholder_password = Ingrese Contraseña;
-viewlogin_orline = ó;
+viewlogin_orline = o;
 viewlogin_back = Volver;
 viewlogin_show = Mostrar;
 viewlogin_hide = Ocultar;
@@ -104,7 +104,7 @@ viewpatlist_nopats = No se hallaron pacientes;
 viewpatlist_months = Ene|Feb|Mar|Abr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;
 viewpatlist_nothing_found = No se hallaron coincidencias;
 viewpatlist_nothing_found_exp = No hay pacientes para ese nombre o ID.; 
-viewpatlist_vr_failed = <b>Falla de VR</b><br>Verificar las conexiones. Los estudios fueron desahbilitados;
+viewpatlist_vr_failed = <b>Falla de VR</b><br>Verificar las conexiones. Los estudios fueron<br>desahbilitados;
 viewpatlist_protocol_delete_title = Eliminar Protocolo;
 viewpatlist_protocol_delete_message = ¿Está seguro que desea eliminar el procolo <b><<N>></b>?;
 
@@ -136,7 +136,7 @@ viewpatform_years_of_education_ph = Ingrese el número de años;
 viewpatform_optional = Opcional;
 viewpatform_incorrect = Incorrecto;
 viewpatform_cannotbeempty = No puede estar vacío;
-viewpatform_last_or_id = Debe completar Apellido or ID de Paciente;
+viewpatform_last_or_id = Debe completar Apellido o ID de Paciente;
 viewpatform_isnotanumber = No es un número;
 viewpatform_invalid_range = Rango inválido;
 viewpatform_success_edit = <b></b><br>ha sido editado;
@@ -144,7 +144,7 @@ viewpatform_success_add = <b></b><br>ha sido agregado como paciente;
 
 #********************************* SEND SUPPORT EMAIL *********************************
 viewsendsupport_email_title = PEDIDO DE SOPORTE;
-viewsendsupport_email_subject = Mótivo del pedido de soporte;
+viewsendsupport_email_subject = Motivo del pedido de soporte;
 viewsendsupport_email_subject_ph = Seleccione el motivo que más se asemeje;
 viewsendsupport_email_sender  = Evaluador;
 viewsendsupport_email_sender_ph  = Seleccione un evaluador;
@@ -230,7 +230,7 @@ viewevaluation_action_examples  = EJEMPLOS;
 viewevaluation_action_starteval = COMENZAR EVALUACIÓN;
 viewevaluation_restart_hand_calib = CALIBRAR MANOS NUEVAMENTE;
 viewevaluation_err_noconnect = <b>Falla al conectarse al EyeTracker</b><br>Por favor, contacte a ViewMind Support para más ayuda;
-viewevaluation_err_badend_study = <b>Estudio no terminó corectamente</b><br>Si el estudio no fue abortado, intente nuevamente;
+viewevaluation_err_badend_study = <b>Estudio no terminó correctamente</b><br>Si el estudio no fue abortado, intente nuevamente;
 viewevaluation_err_data_transfer = <b>Falla en la transferencia de datos</b><br>Deberá realizar nuevamente el ultimo estudio; 
 viewevaluation_err_calib_title = ¡Error de Calibración!;
 viewevaluation_err_calib_exp   = La calibración para los ojos seleccionados falló<br>
@@ -241,7 +241,7 @@ viewevaluation_err_no_pp = <b>Error al obtener datos del servidor</b><br>Por fav
 viewevaluation_err_calib_ok = <b>Éxito</b>;
 viewevaluation_err_calib_fail = <font color='#FD3D60'><b>Falla</b></font>;
 viewevaluation_err_programming = <b>Error Interno en la App</b><br>Por favor contáctse con ViewMind por soporte;
-viewevalcalibration_success = <b>Calibration Exitosa</b><br>Por favor proceda con la explicación;
+viewevalcalibration_success = <b>Calibración Exitosa</b><br>Por favor proceda con la explicación;
 viewevaluation_finish = Finalizar;
 viewevaluation_congrats = ¡Felicitaciones!;
 viewevaluation_congrats_sub = Ha finalizado exitósamente todas las evaluaciones;
@@ -261,8 +261,8 @@ viewevaluation_comfirm_abort_yes = SI;
 viewevaluation_comfirm_abort_no  = NO;
 viewevaluation_seq_name_ph    = Ingrese el nombre de la secuencia elegida;
 viewevaluation_save_sequence = GUARDAR SECUENCIA;
-viewevaluation_seq_name = Guardar sequencia como;
-viewevaluation_popup_save = La sequencia<br><b></b><br> ha sido guardada exitosamente;
+viewevaluation_seq_name = Guardar secuencia como;
+viewevaluation_popup_save = La secuencia<br><b></b><br> ha sido guardada exitosamente;
 viewevaluation_goback = LISTA DE PACIENTES;
 viewevalution_arrow_use = Haga click sobre la flecha para continuar;
 viewevalution_arrow_use_examples = Haga click en Ejemplos para continuar;
@@ -306,12 +306,27 @@ viewevaluation_nback_wait_msg = Presione "G"
 para
 continuar el estudio;
 
+viewevaluation_checket_title = Verificando el EyeTracker ...;
+viewevaluation_checket_title_fail = Sin datos del EyeTracker;
+viewevaluation_checket_title_OK = El EyeTracker funciona correctamente;
+viewevaluation_checket_btnok = COMENZAR CALIBRACIÓN;
+viewevaluation_checket_btnfail = REINTENTAR;
+viewevaluation_checket_btnback = ATRAS;
+viewevaluation_checket_fail = El EyeTracker parece no estar funcionando.
+Por favor intente lo siguiente:
+1. Asegurarse de que el casco esté bien ubicado en el paciente.
+2. Reintente, al menos una vez.
+3. Si el problema persiste, intente cerrar el programa y luego 
+reconectar el casco. 
+4. Si los pasos anteriores no funcionan, reinicia la computadora
+y pruebe nuevamente.; 
+
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = La calibración ha concluido;
 waitscreenmsg_studyEnd = El estudio ha finalizado;
 
 #********************************* VM GET CONFIG SCREEN *********************************
-viewgetconfig_welcome = Bienvenido al ViewMind Atlas;
+viewgetconfig_welcome = Bienvenido a ViewMind Atlas;
 viewgetconfig_instructions = Por favor complete los siguientes datos para comenzar a utilizar la aplicación; 
 viewgetconfig_institution = Número de Institución;
 viewgetconfig_instance = Número de Instancia;
@@ -373,7 +388,7 @@ viewqc_reason = Motivo por la cual se archiva;
 viewqc_archive_reason_ph = Seleccione el motivo ...;
 viewqc_comment_ph = Ingrese su comentario;
 viewqc_send_wait = Por favor espere mientras la información es enviada a nuestros servidores;
-viewqc_evaluator_comments = Los comentarios del evaluador serán incluídos en el reporte final;
+viewqc_evaluator_comments = Los comentarios del evaluador serán incluidos en el reporte final;
 viewqc_archive_studies = Archivar Estudio;
 viewQC_commentSizeError = El texto es demasiado largo;
 viewQC_specify_other = Especificar otro;
@@ -382,7 +397,7 @@ viewqc_err_server_error = <b>Error de Servidor</b><br>Un problema fue detectado 
 viewqc_success_on_send = <b>¡Éxito!</b><br>La información fue enviada exitosamente;
 
 #********************************* PROTOCOL VIEW *********************************
-protocol_no_protocols = No se han creado protocols;
+protocol_no_protocols = No se han creado protocolos;
 protocol_add = Nuevo Protocolo;
 protocol_edit = Editar Protocolo;
 protocol_id = ID de Protocolo;
@@ -394,6 +409,7 @@ protocol_successful_created = <b></b><br>ha sido creado exitósamente;
 protocol_err_exists = El ID ya existe. Los IDs de Protocolo deben ser únicos;
 protocol_name_ph = Ingrese el nombre del protocolo;
 protocol_id_ph = Ingrese el ID del protocolo;
+protocol_name_too_long = El nombre no debe tener mas de 30 caracteres;
 
 #********************************* STUDY STATUS MESSAGES *********************************
 studystatus_binding_correct = Respuestas Correctas: <<N>>;

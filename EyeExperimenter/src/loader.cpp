@@ -900,14 +900,14 @@ void Loader::requestOperatingInfo(){
     newVersionAvailable = "";
     processingUploadError = FAIL_CODE_NONE;
 
-    // We reset the startup sequence flag.
-    startUpSequenceFlag = 0;
+    // We reset the startup sequence flag. In order to avoid unncessary processing we set the flag to one and disable the qcChecker at the start.
+    startUpSequenceFlag = 1;
 
     // Now we set the work directory for generate any missing QCI files.
-    qcChecker.setFilesToProcessFromViewMindDataDirectory();
+    // qcChecker.setFilesToProcessFromViewMindDataDirectory();
 
     // We start the qcChecker in the background.
-    qcChecker.start();
+    //qcChecker.start();
 
     // And now we request the operating info
     //qDebug() << "Requesting Operating Info";

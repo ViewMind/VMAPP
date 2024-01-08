@@ -104,7 +104,7 @@ viewpatlist_nopats = No patients found;
 viewpatlist_months = Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;
 viewpatlist_nothing_found = No entries found;
 viewpatlist_nothing_found_exp = There are not patients matching the specified name or ID.; 
-viewpatlist_vr_failed = <b>VR Intialization Failed</b><br>Please verify your setup. Studies are disabled;
+viewpatlist_vr_failed = <b>VR Intialization Failed</b><br>Please verify your setup.<br>Studies are disabled;
 viewpatlist_protocol_delete_title = Delete Protocol;
 viewpatlist_protocol_delete_message = Are you sure you want to delete protocol <b><<N>></b>?;
 
@@ -306,6 +306,19 @@ Please adjust the height as necessary and retry the calibration.;
 viewevaluation_nback_wait_msg = Press "G" to
 continue with study;
 
+viewevaluation_checket_title = Checking EyeTracker ...;
+viewevaluation_checket_title_fail = Unable to detect eye tracking;
+viewevaluation_checket_title_OK = EyeTracker is working correctly;
+viewevaluation_checket_btnok = START CALIBRATION;
+viewevaluation_checket_btnfail = RETRY;
+viewevaluation_checket_btnback = GO BACK;
+viewevaluation_checket_fail = The eyetracking does not seem to be working
+Plese try the following:
+1. Make sure that the headset is correctly placed on the patient
+2. Retry, at least once
+3. If the problem persists, try shutting down the application and 
+reconnecting the headset
+4. If the above did not work, restart the computer and try again.;
 
 
 #********************************* VR WAIT SCREEN MESSAGES *********************************
@@ -394,6 +407,7 @@ protocol_successful_created = <b></b><br>has been successfully created;
 protocol_err_exists = ID already exists. Protocol IDs must be unique;
 protocol_name_ph = Enter protocol name;
 protocol_id_ph = Enter protocol ID;
+protocol_name_too_long = Protocol cannot exceed 30 caracters;
 
 #********************************* STUDY STATUS MESSAGES *********************************
 studystatus_binding_correct = Correct Responses: <<N>>;

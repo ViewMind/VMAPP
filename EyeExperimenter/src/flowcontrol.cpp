@@ -32,6 +32,14 @@ void FlowControl::printLastCalibrationPacketReceived(){
     this->calibrationManager.debugPrintLastCalibrationPacket();
 }
 
+bool FlowControl::isSkipETCheckEnabled() {
+    bool ans = DBUGBOOL(Debug::Options::SKIP_ET_CHECK);
+    if (ans){
+        StaticThreadLogger::warning("FlowControl::isSkipETCheckEnabled","DBUG Option to SKIP ET Check is ENABLED");
+    }
+    return ans;
+}
+
 void FlowControl::startRenderServerAndSetWindowID(WId winID){
     mainWindowID = winID;
     // The redner server client can only be started once we have the window ID.

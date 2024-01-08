@@ -83,7 +83,7 @@ void StudyEndOperations::run(){
 
 void StudyEndOperations::doStudyFileProcessing(){
 
-    qDebug() << "Doing the Stuy End Operations File Processing for" << dataFile;
+    // qDebug() << "Doing the Stuy End Operations File Processing for" << dataFile;
 
     // First we load the file and make sure it's ok.
     if (!vmdc.loadFromJSONFile(dataFile)){

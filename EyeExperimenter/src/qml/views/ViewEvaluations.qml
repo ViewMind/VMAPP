@@ -200,6 +200,24 @@ ViewBase {
         }
     }
 
+    VMEyeTrackingCheckDialog {
+        id: eyeTrackingCheckDialog
+        onDismissed: function (allgood) {
+            if (allgood) {
+                let mode3d = evaluationRun.isCurrentEvaluationA3DStudy();
+                //console.log("Starting the eye tracking calibration with mode 3d equal to ");
+                //console.log(mode3d);
+                evaluationRun.vmIsCalibrated = false;
+                evaluationRun.vmInCalibration = true;
+                evaluationsView.enableNextButton(false);
+                flowControl.calibrateEyeTracker(evaluationRun.vmSlowCalibrationSelected, mode3d);
+            }
+            else {
+                // Need to go back to the patient list.
+                mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
+            }
+        }
+    }
 
     VMButton {
         id: backButton

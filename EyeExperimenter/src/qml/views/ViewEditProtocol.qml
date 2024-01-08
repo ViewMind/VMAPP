@@ -31,13 +31,18 @@ ViewBase {
 
     function checkAndSave(){
 
-        if (protocolID.vmCurrentText === ""){
-            protocolID.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+        if (protocolName.vmCurrentText === ""){
+            protocolName.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
             return;
         }
 
-        if (protocolName.vmCurrentText === ""){
-            protocolName.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+        if (protocolName.vmCurrentText.length > 30){
+            protocolName.vmErrorMsg = loader.getStringForKey("protocol_name_too_long");
+            return;
+        }
+
+        if (protocolID.vmCurrentText === ""){
+            protocolID.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
             return;
         }
 

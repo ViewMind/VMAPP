@@ -36,11 +36,41 @@ bool BindingConfigurator::studySpecificConfiguration(const QVariantMap &studyCon
         qint32 ntrials = studyConfig.value(VMDC::StudyParameter::NUM_TRIALS).toInt();
         if (ntrials > 0){
             this->configuration[RRS::StudyConfigurationFields::N_OF_TRIALS] = ntrials;
-        }
+
+        }        
         else {
             this->configuration[RRS::StudyConfigurationFields::N_OF_TRIALS] = this->configuration.value(RRS::StudyConfigurationFields::BINDING_TRIALS).toList().size();
         }
+
+
+        /// DEBUG CODE: Prints the number of same and different trials.
+
+        QString type = "BC";
+        if (!this->isBC){
+            type = "UC";
+        }
+        type = type + "-" + QString::number(this->number_of_targets);
+
+        QVariantList trial_list = this->configuration.value(RRS::StudyConfigurationFields::BINDING_TRIALS).toList();
+        qint32 scounter = 0;
+        qint32 dcounter = 0;
+        qint32 trial_count = this->configuration[RRS::StudyConfigurationFields::N_OF_TRIALS].toInt();
+        for (qint32 i = 0; i < trial_count; i++){
+            if (trial_list.at(i).toMap().value(RRS::Binding::Trial::IS_SAME).toBool()){
+                scounter++;
+            }
+            else {
+                dcounter++;
+            }
+        }
+        qDebug() << "Same and Different Counts. Binding Type: " << type << ". With NTrials: " << trial_count;
+        qDebug() << "SAME: " << scounter;
+        qDebug() << "DIFF: " << dcounter;
+
     }
+
+
+
 
     //qDebug() << "Configured number of trials to " << this->configuration[RRS::StudyConfigurationFields::N_OF_TRIALS].toInt();
 
@@ -64,6 +94,8 @@ bool BindingConfigurator::parseStudyDescription(){
     QStringList lines = this->studyDescriptionContent.split("\n",Qt::SkipEmptyParts);
     QStringList tokens = lines.first().split(" ",Qt::SkipEmptyParts);
     this->versionString = tokens.last();
+
+    //qDebug() << "Loading version string" << this->versionString;
 
     // Make sure the file matches the number of targets passed.
     if (tokens.first().toInt() != this->number_of_targets){
