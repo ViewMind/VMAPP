@@ -47,5 +47,6 @@
         <file>images/sequence_blue.png</file>
         <file>images/sequence_gray.png</file>
         <file>images/labeling/patent.png</file>
+        <file>images/where_is_taskbar.png</file>
     </qresource>
 </RCC>

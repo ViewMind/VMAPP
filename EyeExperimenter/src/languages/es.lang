@@ -19,6 +19,13 @@ no se podrá actualizar, procesar evaluaciones o eviar emails de soporte.
 Podrá administrar evaluaciones. 
 Para solucionar este problema, por favor contacte a ViewMind.;
 
+viewstart_app_is_running_title = Una instancia de ViewMind Atlas se encuentra en ejecución;
+
+viewstart_app_is_running = El ViewMind Atlas ya esta corriendo.
+Por favor intente hallar el ícono en su barra de tareas (en la parte inferior de la pantalla).
+Cierre el diálogo y luego haga click sobre el ícono de la aplicación. 
+De no poder hallar el ícono, por favor reinicie su computadora;
+
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Avanzado;

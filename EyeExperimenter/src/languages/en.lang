@@ -19,6 +19,13 @@ you will not be able to update, send evaluations or send support emails.
 You will still be able to administer evaluations. 
 To fix this issue, you must contact ViewMind.;
 
+viewstart_app_is_running_title = An instance of ViewMind Atlas is already running;
+
+viewstart_app_is_running = ViewMind Atlas should be running.
+Please try to locate the icon for the application in the task bar below (in the bottom of the screen)
+Close this dialog, then click on the icon to restore the application. 
+If you are unable to find the icon, please restart the computer;
+
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Advanced;

@@ -2,6 +2,7 @@
 #define BINDINGCONFIGURATOR_H
 
 #include "../studyconfigurator.h"
+#include "../../debug.h"
 
 namespace RRS {
 
@@ -44,6 +45,11 @@ private:
     bool createBindingTrialFromTrialStringMatrix(const QList<QStringList> &matrix, QVariantMap *trial);
     bool parseFlagPositions(const QString &pos, QVariantMap *flag);
     QVariantMap createFlag(const QString &pos, const QString &back, const QString &cross);
+
+    // Debug description functions.
+    void verifyTrial(const QVariantMap &trial);
+    void trialTypeBreakDown();
+    qint32 verifyAndCount(const QVariantList &list, qint32 start, qint32 number);
 
 };
 

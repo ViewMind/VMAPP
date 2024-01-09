@@ -8,6 +8,7 @@
 #include "../../CommonClasses/LogInterface/staticthreadlogger.h"
 #include "loader.h"
 #include "flowcontrol.h"
+#include "vmrunningloader.h"
 
 // Global Configuration
 static ConfigurationManager configuration;
@@ -100,21 +101,31 @@ int main(int argc, char *argv[])
     bool isRunning;                                                 // variable to test the already running application
     if (sharedMemory.attach()){                                     // We are trying to attach a copy of the shared memory to an existing segment
         isRunning = true;                                           // If successful, it determines that there is already a running instance
-    }else{
+    }
+    else{
         sharedMemory.create(1);                                     // Otherwise allocate 1 byte of memory
         isRunning = false;                                          // And determines that another instance is not running
     }
     semaphore.release();
 
-
-    Loader loader(nullptr,&configuration);
     if (isRunning){
+        app.setWindowIcon(QIcon(":/images/info_blue.png"));
         StaticThreadLogger::error("main","Another instance of the application was detected. Exiting");
-        return 0;
+        QQmlApplicationEngine engine2;
+        VMRunningLoader vmrunningloader;
+        engine2.rootContext()->setContextProperty("loader",&vmrunningloader);
+        engine2.load(QUrl(QStringLiteral("qrc:/qml/VMAlreadyRunningDialog.qml")));
+        if (engine2.rootObjects().isEmpty()){
+            StaticThreadLogger::error("main","Failed to open VM Already Running Window");
+        }
+        StaticThreadLogger::kill();
+        return app.exec();
     }
 
     // The icon
     app.setWindowIcon(QIcon(":/images/icon.png"));
+
+    Loader loader(nullptr,&configuration);
 
     // The QML Engine
     QQmlApplicationEngine engine;

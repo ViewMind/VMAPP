@@ -1,4 +1,4 @@
-2 v2
+2 v3
 0-test-different-0 x d
 02     12     
 b49299 7f8000 
@@ -62,13 +62,13 @@ fed700 81007f
 00     11    
 4682b4 b49299
 fed700 81007f
-0-test-different-9 x d
-01     10     
-ff01d5 00e8e8 
-b49299 fa8071 
-00     12     
-ff01d5 00e8e8 
-fa8071 b49299 
+0-test-same-9 x s
+02     10
+4682b4 7f8000
+00e8e8 81007f
+00     12
+4682b4 7f8000
+00e8e8 81007f
 01-trial-different-10 x d
 01     12     
 00e8e8 ff01d5 
@@ -216,20 +216,20 @@ fa8071 00e8e8
 01     12     
 4682b4 7f8000 
 00e8e8 fa8071 
-22-trial-different-31 x d
-01     11     
-fed700 b49299 
-fa8071 4682b4 
-02     10     
-fed700 b49299 
-4682b4 fa8071 
-23-trial-same-32 x s
+22-trial-same-31 x s
 01     10     
 fed700 4682b4 
 992a1b 81007f 
 02     11     
 fed700 4682b4 
 992a1b 81007f 
+23-trial-different-32 x d
+01     11
+fed700 b49299
+fa8071 4682b4
+02     10
+fed700 b49299
+4682b4 fa8071
 24-trial-same-33 x s
 02     10     
 b49299 992a1b 

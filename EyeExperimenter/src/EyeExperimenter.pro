@@ -55,7 +55,8 @@ SOURCES += main.cpp \
     loader.cpp \
     flowcontrol.cpp \
     localdb.cpp \
-    studyendoperations.cpp
+    studyendoperations.cpp \
+    vmrunningloader.cpp
 
 
 HEADERS += \
@@ -100,7 +101,8 @@ HEADERS += \
     loader.h \
     flowcontrol.h \
     localdb.h \
-    studyendoperations.h
+    studyendoperations.h \
+    vmrunningloader.h
 
 RC_ICONS = vm.ico
 

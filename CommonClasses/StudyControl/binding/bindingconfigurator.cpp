@@ -24,8 +24,12 @@ BindingConfigurator::BindingConfigurator(bool isBC, qint32 ntargets){
 
 bool BindingConfigurator::studySpecificConfiguration(const QVariantMap &studyConfig){
 
+
     // Now we parse the trial. If it worked the configuration is loaded with the NBack trials.
     if (!parseStudyDescription()) return false;
+
+    // THIS IS DEBUG FUNCTION ONLY
+    // trialTypeBreakDown();
 
     // If all good, then we set the number of trials.
     if (this->shortStudies){
@@ -42,35 +46,7 @@ bool BindingConfigurator::studySpecificConfiguration(const QVariantMap &studyCon
             this->configuration[RRS::StudyConfigurationFields::N_OF_TRIALS] = this->configuration.value(RRS::StudyConfigurationFields::BINDING_TRIALS).toList().size();
         }
 
-
-        /// DEBUG CODE: Prints the number of same and different trials.
-
-        QString type = "BC";
-        if (!this->isBC){
-            type = "UC";
-        }
-        type = type + "-" + QString::number(this->number_of_targets);
-
-        QVariantList trial_list = this->configuration.value(RRS::StudyConfigurationFields::BINDING_TRIALS).toList();
-        qint32 scounter = 0;
-        qint32 dcounter = 0;
-        qint32 trial_count = this->configuration[RRS::StudyConfigurationFields::N_OF_TRIALS].toInt();
-        for (qint32 i = 0; i < trial_count; i++){
-            if (trial_list.at(i).toMap().value(RRS::Binding::Trial::IS_SAME).toBool()){
-                scounter++;
-            }
-            else {
-                dcounter++;
-            }
-        }
-        qDebug() << "Same and Different Counts. Binding Type: " << type << ". With NTrials: " << trial_count;
-        qDebug() << "SAME: " << scounter;
-        qDebug() << "DIFF: " << dcounter;
-
     }
-
-
-
 
     //qDebug() << "Configured number of trials to " << this->configuration[RRS::StudyConfigurationFields::N_OF_TRIALS].toInt();
 
@@ -163,7 +139,6 @@ bool BindingConfigurator::parseStudyDescription(){
         // Now we parse the matrix into the flag list.
         //qDebug() << "Creating Binding Matrix";
         if (!createBindingTrialFromTrialStringMatrix(trialMatrix,&trial)) return false;
-        //qDebug() << "Adding the created trial";
         trials << trial;
     }
 
@@ -258,3 +233,98 @@ bool BindingConfigurator::parseFlagPositions(const QString &pos, QVariantMap *fl
     return true;
 }
 
+////////////////////////////////////////////////////////////// DEBUG FUNCTIONS //////////////////////////////////////////////////////
+
+void BindingConfigurator::verifyTrial(const QVariantMap &trial){
+
+    bool issame = trial.value(RRS::Binding::Trial::IS_SAME).toBool();
+    QString name = trial.value(RRS::Binding::Trial::NAME).toString();
+    QVariantList encode = trial.value(RRS::Binding::Trial::ENCODE).toList();
+    QVariantList retrieval = trial.value(RRS::Binding::Trial::RETRIEVAL).toList();
+
+    qint32 n = encode.size();
+
+    if (n != retrieval.size()){
+        qDebug() << "Trial " << name << "has " << encode.size() << "in encode and in retrieval it has"  << retrieval.size();
+        return;
+    }
+
+    qint32 same = 0;
+    for (qint32 i = 0; i < n; i++){
+        QString back  = retrieval.at(i).toMap().value(RRS::Binding::Flag::BACK).toString();
+        QString cross = retrieval.at(i).toMap().value(RRS::Binding::Flag::CROSS).toString();
+        for (qint32 j = 0; j < n; j++){
+            QString b  = encode.at(j).toMap().value(RRS::Binding::Flag::BACK).toString();
+            QString c = encode.at(j).toMap().value(RRS::Binding::Flag::CROSS).toString();
+            if ((back == b) && (cross == c)){
+                same++;
+                break;
+            }
+        }
+    }
+
+    qint32 ndiff = n - same;
+
+    if ((same == n) && (!issame)){
+        qDebug() << "Trial" << name << "is not marked as same but it IS same";
+        Debug::prettyPrintQVariantMap(trial);
+    }
+    else if ((same != n) && (issame)){
+        qDebug() << "Trial" << name << "is marked as same but it IS DIFFERENT";
+        Debug::prettyPrintQVariantMap(trial);
+    }
+    else if ((!issame) && (ndiff != 2)){
+        // Correctness of trial type different. In both 2 and 3 targets at 2 targets must change.
+        qDebug() << "Trial" << name << "is DIFFERENT but has diff flag count that is not 2 but " << ndiff;
+        Debug::prettyPrintQVariantMap(trial);
+
+    }
+
+}
+
+void BindingConfigurator::trialTypeBreakDown(){
+
+    QString type = "BC";
+    if (!this->isBC){
+        type = "UC";
+    }
+    type = type + "-" + QString::number(this->number_of_targets);
+    qDebug() << "Binding" << type << "Version" << this->versionString;
+
+    QVariantList trialList = this->configuration.value(RRS::StudyConfigurationFields::BINDING_TRIALS).toList();
+
+    // The breakdown should be. The first 10, the Next 22 and the Last 10, for a total of 42 Trials.
+    qint32 N = 42;
+    if (trialList.size() != N){
+        qDebug() << "Trial List is NOT " << N;
+        return;
+    }
+
+    qint32 same = 0;
+    qint32 number;
+
+    number = 10;
+    same = verifyAndCount(trialList,0,number);
+    qDebug() << "   First 10 Trials S: " << same << "D: " << (number - same);
+
+    number = 22;
+    same = verifyAndCount(trialList,10,number);
+    qDebug() << "   Middle 22 Trials S: " << same << "D: " << (number - same);
+
+    number = 10;
+    same = verifyAndCount(trialList,32,number);
+    qDebug() << "   Last 10 Trials S: " << same << "D: " << (number - same);
+
+}
+
+qint32 BindingConfigurator::verifyAndCount(const QVariantList &list, qint32 start, qint32 number){
+
+    qint32 same = 0;
+    for (qint32 i = start; i < (start + number); i++){
+        QVariantMap trial = list.at(i).toMap();
+        verifyTrial(trial);
+        if (trial.value(RRS::Binding::Trial::IS_SAME).toBool()) same++;
+    }
+    return same;
+
+}

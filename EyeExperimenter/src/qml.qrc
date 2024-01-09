@@ -61,5 +61,6 @@
         <file>qml/components/VMLabelItem.qml</file>
         <file>qml/components/VMFilteringComboBox.qml</file>
         <file>qml/components/VMEyeTrackingCheckDialog.qml</file>
+        <file>qml/VMAlreadyRunningDialog.qml</file>
     </qresource>
 </RCC>
