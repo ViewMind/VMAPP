@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 
     // The first thing we do is start up the logger.
     StaticThreadLogger::StartLogger("EyeExplorer","logfile.log");
+    StaticThreadLogger::log("main","Started ViewMind Atlas Version " + Globals::Share::EXPERIMENTER_VERSION_NUMBER);
 
     // We need to load the defines to configure the rest of hte application.
     ConfigurationManager defines;

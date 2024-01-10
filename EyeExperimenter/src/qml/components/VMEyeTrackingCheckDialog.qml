@@ -145,6 +145,7 @@ Item {
             // This means there was a time out.
             timer.running = false;
             vmState = vmSTATE_FAIL;
+            loader.logUIMessage("Failed ET Check",true);
         }
     }
 

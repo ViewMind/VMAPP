@@ -222,8 +222,7 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
 
         if (expectingAbortACK){
             if (command != RRS::CommandStudyControl::CMD_ACK){
-                StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Study was expecting ACK from abort request. Will do nothing");
-                return;
+                StaticThreadLogger::error("StudyControl::receiveRenderServerPacket","Study was expecting ACK from abort request. Will continue with study finalization anyways");
             }
             else {
                 expectingAbortACK = false;
