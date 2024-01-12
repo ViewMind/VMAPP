@@ -10,7 +10,6 @@
 #include "../../CommonClasses/LogInterface/staticthreadlogger.h"
 #include "loader.h"
 #include "flowcontrol.h"
-#include "vmrunningloader.h"
 
 // This is used as a global variable to get a handle on the running instance of the application with the sole purpse of maximizing it if found.
 HWND HandleToRunningInstance;
@@ -140,25 +139,13 @@ int main(int argc, char *argv[])
 
     if (isRunning){
 
-//        app.setWindowIcon(QIcon(":/images/info_blue.png"));
-//        StaticThreadLogger::error("main","Another instance of the application was detected. Exiting");
-//        QQmlApplicationEngine engine2;
-//        VMRunningLoader vmrunningloader;
-//        engine2.rootContext()->setContextProperty("loader",&vmrunningloader);
-//        engine2.load(QUrl(QStringLiteral("qrc:/qml/VMAlreadyRunningDialog.qml")));
-//        if (engine2.rootObjects().isEmpty()){
-//            StaticThreadLogger::error("main","Failed to open VM Already Running Window");
-//        }
-//        StaticThreadLogger::kill();
-//        return app.exec();
-
         // Use enum windows to search for viewmind atlas. We no it exists.
         StaticThreadLogger::error("main","Another instance of the application was detected");
         EnumWindows(SearchForViewMindAtlasWindow, NULL);
         if (!HandleToRunningInstance) {
             StaticThreadLogger::error("main","Failed to find the handle to the window");
             StaticThreadLogger::kill();
-            return 0;
+            return 0; // Return 0 is necessary so that that THIS instance dies.
         }
         StaticThreadLogger::error("main","Found handle to the windows. Maximizing it. ");
         SetForegroundWindow(HandleToRunningInstance); // Give it focus.

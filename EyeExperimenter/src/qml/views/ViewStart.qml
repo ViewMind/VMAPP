@@ -117,7 +117,7 @@ ViewBase {
 
     Text {
         id: welcomeText
-        text: loader.getStringForKey("viewstart_welcome")
+        text: loader.getStringForKey("viewstart_welcome") + "™"
         font.pixelSize: VMGlobals.vmFontHuge
         font.weight: 600
         color: VMGlobals.vmBlackText
@@ -188,6 +188,16 @@ ViewBase {
         anchors.top: parent.top
         anchors.topMargin: VMGlobals.adjustHeight(148)
         source: "qrc:/images/logo.png"
+    }
+
+    Text {
+        id: registeredCircleText
+        text: "®"
+        font.pixelSize: VMGlobals.vmFontVeryLarge
+        font.weight: 600
+        color: VMGlobals.vmBlackText
+        anchors.left: viewmindLogo.right
+        anchors.top: viewmindLogo.top
     }
 
     // The Eye Design

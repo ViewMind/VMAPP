@@ -271,9 +271,10 @@ QString Loader::getWindowTilteVersion(){
         version = version + " - " + Globals::REGION ;
     }
 
-    if (this->frequencyString != ""){
-        version = version + " - " + this->frequencyString;
-    }
+// For now we remove the frequency update from the title bar.
+//    if (this->frequencyString != ""){
+//        version = version + " - " + this->frequencyString;
+//    }
 
     if (!dbug_str.isEmpty()){
         version = version + " - " + dbug_str;
@@ -1096,7 +1097,6 @@ void Loader::onNotificationFromFlowControl(QVariantMap notification){
         QString A = notification.value(Globals::FCL::UPDATE_AVG_FREQ).toString();
         QString M = notification.value(Globals::FCL::UPDATE_MAX_FREQ).toString();
         this->frequencyString = "F: " + F + " Hz. Avg: " + A + " Hz. Max: " + M + " Hz.";
-        emit Loader::titleBarUpdate();
     }
     else{
         StaticThreadLogger::warning("Loader::onNotificationFromFlowControl","Got an unknown notification: " + notification.keys().join(","));

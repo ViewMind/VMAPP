@@ -11,7 +11,7 @@ viewstart_on_RRS_check_failed  = Error Detected|A software malfunction was detec
 ViewMind Atlas.
 Please restart the computer to fix this error.;
 Please contatct ViewMind for help;
-viewstart_vr_disconnect = <b>Connection to HMD Lost</b><br>Please restart the application;
+viewstart_vr_disconnect = <b>Connection to headset lost</b><br>Please restart the application;
 
 viewstart_disabled_instance = Instance Disabled|As long as this instance is disabled, 
 you will not be able to update, send evaluations or send support emails. 
@@ -19,12 +19,6 @@ you will not be able to update, send evaluations or send support emails.
 You will still be able to administer evaluations. 
 To fix this issue, you must contact ViewMind.;
 
-viewstart_app_is_running_title = An instance of ViewMind Atlas is already running;
-
-viewstart_app_is_running = ViewMind Atlas should be running.
-Please try to locate the icon for the application in the task bar below (in the bottom of the screen)
-Close this dialog, then click on the icon to restore the application. 
-If you are unable to find the icon, please restart the computer;
 
 
 #********************************* SETTINGS DIALOG *********************************
@@ -111,7 +105,7 @@ viewpatlist_nopats = No patients found;
 viewpatlist_months = Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;
 viewpatlist_nothing_found = No entries found;
 viewpatlist_nothing_found_exp = There are not patients matching the specified name or ID.; 
-viewpatlist_vr_failed = <b>VR Intialization Failed</b><br>Please verify your setup.<br>Studies are disabled;
+viewpatlist_vr_failed = <b>Headset Intialization Failed</b><br>Please verify your setup.<br>Studies are disabled;
 viewpatlist_protocol_delete_title = Delete Protocol;
 viewpatlist_protocol_delete_message = Are you sure you want to delete protocol <b><<N>></b>?;
 
@@ -159,8 +153,8 @@ viewsendsupport_email_issue   = Please describe the issue;
 viewsendsupport_email_issue_ph   = Enter your description here;
 viewsendsupport_email_reasons = 
 Calibration-Calibration|
-EyeTracking-Eye Tracking Issues|
-VRHeadset-Issues with the Virtual Reality Headset|
+EyeTracking-Eye tracking issues|
+VRHeadset-Issues with the headset|
 Computer-Issues with the computer|
 ViewMindApp-ViewMind Application Issues|
 Other-Other;
@@ -236,7 +230,7 @@ viewevaluation_action_hcalib_end = END VERTICAL HAND CALIBRATION;
 viewevaluation_action_examples = EXAMPLES;
 viewevaluation_action_starteval = START EVALUATION;
 viewevaluation_restart_hand_calib = RESTART HAND CALIBRATION;
-viewevaluation_err_noconnect = <b>Failed Connection to EyeTracker</b><br>Please contact ViewMind Support for help;
+viewevaluation_err_noconnect = <b>Failed Connection to eye tracker</b><br>Please contact ViewMind Support for help;
 viewevaluation_err_badend_study = <b>Study ended abruptly</b><br>If the study was not aborted, please try again;
 viewevaluation_err_data_transfer = <b>Data Transfer Error</b><br>You must redo the last study; 
 viewevaluation_err_calib_title = Calibration Error!;
@@ -313,16 +307,14 @@ Please adjust the height as necessary and retry the calibration.;
 viewevaluation_nback_wait_msg = Press "G" to
 continue with study;
 
-viewevaluation_checket_title = Checking EyeTracker ...;
+viewevaluation_checket_title = Checking eye tracker ...;
 viewevaluation_checket_title_fail = Unable to detect eye tracking data;
-viewevaluation_checket_title_OK = EyeTracker is working correctly;
-viewevaluation_checket_btnok = START CALIBRATION;
 viewevaluation_checket_btnfail = RETRY;
 viewevaluation_checket_btnback = GO TO PATIENT LIST;
-viewevaluation_checket_fail = The eye tracker does not seem to be working
+viewevaluation_checket_fail = The eye tracker is not working
 Plese try the following:
 1. Make sure that the headset is correctly placed on the patient
-2. Retry to calibrate, at least once
+2. Ask the patient to opent their eyes widely and click on RETRY
 3. If the problem persists, try shutting down the application and 
 reconnecting the headset
 4. If the above did not work, restart the computer and try again.;
@@ -351,15 +343,11 @@ viewqc_no_reports_to_evaluate = No reports available for processing;
 viewqc_study = Study;
 viewqc_dr    = Doctor;
 viewqc_data_quality = Data Captured;
-viewqc_data_quality_tooltip = Reflects if the data collected by the VR headset is robust enough to be analyzed. 
+viewqc_data_quality_tooltip = Reflects if the data collected by the headset is robust enough to be analyzed. 
 If the index is Green, the study can be processed. 
 If it's RED, it must be Archived and the test should be performed again.;
 viewqc_wait_msg = Please wait while study quality is checked;
 viewqc_qc_failed = <b>Quality Control Failed</b><br>Please contact ViewMind for support;
-viewqc_SubPoints = Data Points;
-viewqc_SubFixations = Fixations;
-viewqc_SubFrequency = Sample Rate;
-viewqc_SubICI = ICI;
 viewQC_StudyNameMap = 
 Reading|Reading|
 Binding BC|Color Combinations| 
@@ -375,12 +363,6 @@ viewqc_previous = PREVIOUS;
 viewqc_archive = ARCHIVE;
 viewqc_send = SEND;
 view_qc_send_report = Send Study;
-;viewqc_index_names = Data Point Index|Fixations Index|Sample Frequency Index;
-viewqc_index_names = Index Of Information Completion|Fixations Index;
-viewQC_limitDataPoints = Desired value to be at least <<I>>. This ensures that not signficant loss of data ocurred.;
-viewQC_limitFixations = Desired value to be at least <<I>>. This ensures that subject and application behaviour during the study falls within expected parameters.;
-viewQC_limitSampleF = Desired value to be at least <<I>>. This ensures that headset worked as expected;
-viewQC_limitICI = Desired value to be at least <<I>>. This ensures that headset worked as expected;
 viewqc_confirm_archive = Yes, Archive It;
 viewqc_comment = Comments;
 viewqc_archive_explanation = If you archive the study it will not be processed but

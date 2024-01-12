@@ -13,6 +13,7 @@ ApplicationWindow {
 
     Connections {
         target: loader
+
         function onTitleBarUpdate(){
             title = loader.getWindowTilteVersion()
         }

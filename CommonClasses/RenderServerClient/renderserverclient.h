@@ -96,6 +96,8 @@ private:
     // The render server process.
     QProcess renderServerProcess;
 
+    int frequency_update_packet_counter = 0;
+
     // The ID of the main display of the application.
     WId mainWindowID;
 
@@ -132,6 +134,7 @@ private:
     const qint32 POLL_INTERVAL_TO_GET_WINDOW_HANDLE = 600;
     const qint32 POLL_INTERVAL_FOR_SEND_PACKET_CHECK = 10;
     const qint32 COOLDOWN_BETWEEN_PACKETS = 3; // Wait time between two consecutive packages.
+    const qint32 PRINT_EVERY_N_FUPDATES = 5;   // We can't print all of frequency update packets or the log will become too large. So we set an interval.
 
 //    // Resolution constants and the field of view.
 //    qint32 screenResolutionWidth;

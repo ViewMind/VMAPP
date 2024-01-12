@@ -11,20 +11,13 @@ Por favor contáctese con ViewMind;
 viewstart_on_RRS_check_failed  = Se Detectó un Error|Un software está funcionando incorrectamente y esto puede 
 afectar a ViewMind Atlas.
 Por favor reinicie su computadora para arreglar este error;
-viewstart_vr_disconnect = <b>Pérdida de conexión al HMD</b><br>Por favor reinicie la aplicación;
+viewstart_vr_disconnect = <b>Pérdida de conexión al casco</b><br>Por favor reinicie la aplicación;
 
 viewstart_disabled_instance = Instancia Deshabilitada|Mientras la instancia esté desahbilitada, 
 no se podrá actualizar, procesar evaluaciones o eviar emails de soporte. 
 
 Podrá administrar evaluaciones. 
 Para solucionar este problema, por favor contacte a ViewMind.;
-
-viewstart_app_is_running_title = Una instancia de ViewMind Atlas se encuentra en ejecución;
-
-viewstart_app_is_running = El ViewMind Atlas ya esta corriendo.
-Por favor intente hallar el ícono en su barra de tareas (en la parte inferior de la pantalla).
-Cierre el diálogo y luego haga click sobre el ícono de la aplicación. 
-De no poder hallar el ícono, por favor reinicie su computadora;
 
 
 #********************************* SETTINGS DIALOG *********************************
@@ -111,7 +104,7 @@ viewpatlist_nopats = No se hallaron pacientes;
 viewpatlist_months = Ene|Feb|Mar|Abr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;
 viewpatlist_nothing_found = No se hallaron coincidencias;
 viewpatlist_nothing_found_exp = No hay pacientes para ese nombre o ID.; 
-viewpatlist_vr_failed = <b>Falla de VR</b><br>Verificar las conexiones. Los estudios fueron<br>desahbilitados;
+viewpatlist_vr_failed = <b>Falla del casco</b><br>Verificar las conexiones. Los estudios fueron<br>desahbilitados;
 viewpatlist_protocol_delete_title = Eliminar Protocolo;
 viewpatlist_protocol_delete_message = ¿Está seguro que desea eliminar el procolo <b><<N>></b>?;
 
@@ -160,7 +153,7 @@ viewsendsupport_email_issue_ph   = Ingrese aquí su descripción;
 viewsendsupport_email_reasons = 
 Calibration-Calibración|
 EyeTracking-Segumiento Ocular|
-VRHeadset-Problemas con el visor de Realidad Virtual|
+VRHeadset-Problemas con el casco|
 Computer-Problemas con la computadora|
 ViewMindApp-Problemas con la aplicación|
 Other-Otros;
@@ -236,7 +229,7 @@ viewevaluation_action_hcalib_end = FIN CALIBRACIÓN MANOS VERTICAL;
 viewevaluation_action_examples  = EJEMPLOS;
 viewevaluation_action_starteval = COMENZAR EVALUACIÓN;
 viewevaluation_restart_hand_calib = CALIBRAR MANOS NUEVAMENTE;
-viewevaluation_err_noconnect = <b>Falla al conectarse al EyeTracker</b><br>Por favor, contacte a ViewMind Support para más ayuda;
+viewevaluation_err_noconnect = <b>Falla al conectarse al eye tracker</b><br>Por favor, contacte a ViewMind Support para más ayuda;
 viewevaluation_err_badend_study = <b>Estudio no terminó correctamente</b><br>Si el estudio no fue abortado, intente nuevamente;
 viewevaluation_err_data_transfer = <b>Falla en la transferencia de datos</b><br>Deberá realizar nuevamente el ultimo estudio; 
 viewevaluation_err_calib_title = ¡Error de Calibración!;
@@ -313,16 +306,14 @@ viewevaluation_nback_wait_msg = Presione "G"
 para
 continuar el estudio;
 
-viewevaluation_checket_title = Verificando el EyeTracker ...;
-viewevaluation_checket_title_fail = Sin datos del EyeTracker;
-viewevaluation_checket_title_OK = El EyeTracker funciona correctamente;
-viewevaluation_checket_btnok = COMENZAR CALIBRACIÓN;
+viewevaluation_checket_title = Verificando el eye tracker ...;
+viewevaluation_checket_title_fail = Sin datos del eye tracker;
 viewevaluation_checket_btnfail = REINTENTAR;
 viewevaluation_checket_btnback = IR A LISTA DE PACIENTES;
-viewevaluation_checket_fail = El EyeTracker parece no estar funcionando.
+viewevaluation_checket_fail = El eye tracker no está funcionando.
 Por favor intente lo siguiente:
 1. Asegurarse de que el casco esté bien ubicado en el paciente.
-2. Reintente, al menos una vez.
+2. Pídale al paciente que abra bien los ojos y haga click en REINTENTAR.
 3. Si el problema persiste, intente cerrar el programa y luego 
 reconectar el casco. 
 4. Si los pasos anteriores no funcionan, reinicia la computadora
@@ -347,21 +338,16 @@ viewgetconfig_success  = Activacion Exitosa|La aplicación se cerrará.
 Por favor, para comenzar a usar el ViewMind Atlas vuelva a iniciarla;
 
 
-
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = No hay reportes disponibles para procesar;
 viewqc_study = Estudio;
 viewqc_dr    = Doctor;
 viewqc_data_quality = Datos Obtenidos;
-viewqc_data_quality_tooltip = Refleja si los datos obtenidos por el casco VR son lo suficientemente robusto para análisis.
+viewqc_data_quality_tooltip = Refleja si los datos obtenidos por el casco son lo suficientemente robusto para análisis.
 Si el índice es verde, este puede ser procesado. 
 Si es ROJO, debe ser archivado y el estudio realizado nuevamente;
 viewqc_wait_msg = Por favor espere mientras la calidad del estudio es verificada;
 viewqc_qc_failed = <b>Control de Calidad Ha Fallado</b><br>Por favor contacte a ViewMind para soporte;
-viewqc_SubPoints = Puntos de Datos;
-viewqc_SubFixations = Fijaciones;
-viewqc_SubFrequency = Frecuencia de Sampleo;
-viewqc_SubICI = ICI;
 viewQC_StudyNameMap = 
 Reading|Lectura|
 Binding BC|Combinación de Colores| 
@@ -377,12 +363,6 @@ viewqc_previous = ANTERIOR;
 viewqc_archive = ARCHIVAR;
 viewqc_send = ENVIAR;
 view_qc_send_report = Enviar Estudio;
-;viewqc_index_names = Índice de Número de Puntos|Índice de Fijaciones|Índice de Frecuencia de Muestreo;
-viewqc_index_names = Índice de Completitud de Información|Índice de Fijaciones;
-viewQC_limitDataPoints = Valor deseado de al menos <<I>>. Esto asegura que no se haya producido una pérdida signficativa de datos;
-viewQC_limitFixations = Valor deseado de al menos <<I>>. Esto asegura que el comportamiento tanto del sujeto como de sistema a caído dentro de los parámetros establecidos;
-viewQC_limitSampleF = Valor deseado de al menos <<I>>. Esto aseguro que el seguidor ocular ha funcionado como se esperaba;
-viewQC_limitICI = Valor deseado de al menos <<I>>. Esto aseguro que el seguidor ocular ha funcionado como se esperaba;
 viewqc_confirm_archive = Si, Archivar el Estudio;
 viewqc_comment = Comentarios;
 viewqc_archive_explanation = Si archiva el estudio este no será procesado, pero 
