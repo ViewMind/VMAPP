@@ -4,11 +4,40 @@
 #include <QIcon>
 #include <QApplication>
 #include <QSslSocket>
+#include <Windows.h>
+#include <WinUser.h>
 
 #include "../../CommonClasses/LogInterface/staticthreadlogger.h"
 #include "loader.h"
 #include "flowcontrol.h"
 #include "vmrunningloader.h"
+
+// This is used as a global variable to get a handle on the running instance of the application with the sole purpse of maximizing it if found.
+HWND HandleToRunningInstance;
+BOOL CALLBACK SearchForViewMindAtlasWindow(HWND hwnd, LPARAM substring){
+
+    Q_UNUSED(substring);
+
+    const DWORD TITLE_SIZE = 1024;
+    TCHAR windowTitle[TITLE_SIZE];
+
+    GetWindowText(hwnd, windowTitle, TITLE_SIZE);
+    int length = ::GetWindowTextLength(hwnd);
+
+    std::wstring temp(&windowTitle[0]);
+    std::string title(temp.begin(), temp.end());
+
+    QString qtitle = QString::fromStdString(title);
+
+    if (qtitle.contains("ViewMind Atlas")){
+        // We've found it.
+        HandleToRunningInstance = hwnd;
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
 
 // Global Configuration
 static ConfigurationManager configuration;
@@ -110,17 +139,32 @@ int main(int argc, char *argv[])
     semaphore.release();
 
     if (isRunning){
-        app.setWindowIcon(QIcon(":/images/info_blue.png"));
-        StaticThreadLogger::error("main","Another instance of the application was detected. Exiting");
-        QQmlApplicationEngine engine2;
-        VMRunningLoader vmrunningloader;
-        engine2.rootContext()->setContextProperty("loader",&vmrunningloader);
-        engine2.load(QUrl(QStringLiteral("qrc:/qml/VMAlreadyRunningDialog.qml")));
-        if (engine2.rootObjects().isEmpty()){
-            StaticThreadLogger::error("main","Failed to open VM Already Running Window");
+
+//        app.setWindowIcon(QIcon(":/images/info_blue.png"));
+//        StaticThreadLogger::error("main","Another instance of the application was detected. Exiting");
+//        QQmlApplicationEngine engine2;
+//        VMRunningLoader vmrunningloader;
+//        engine2.rootContext()->setContextProperty("loader",&vmrunningloader);
+//        engine2.load(QUrl(QStringLiteral("qrc:/qml/VMAlreadyRunningDialog.qml")));
+//        if (engine2.rootObjects().isEmpty()){
+//            StaticThreadLogger::error("main","Failed to open VM Already Running Window");
+//        }
+//        StaticThreadLogger::kill();
+//        return app.exec();
+
+        // Use enum windows to search for viewmind atlas. We no it exists.
+        StaticThreadLogger::error("main","Another instance of the application was detected");
+        EnumWindows(SearchForViewMindAtlasWindow, NULL);
+        if (!HandleToRunningInstance) {
+            StaticThreadLogger::error("main","Failed to find the handle to the window");
+            StaticThreadLogger::kill();
+            return 0;
         }
+        StaticThreadLogger::error("main","Found handle to the windows. Maximizing it. ");
+        SetForegroundWindow(HandleToRunningInstance); // Give it focus.
+        PostMessage(HandleToRunningInstance, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
         StaticThreadLogger::kill();
-        return app.exec();
+        return 0;
     }
 
     // The icon

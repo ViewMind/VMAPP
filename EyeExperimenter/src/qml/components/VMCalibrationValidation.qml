@@ -236,7 +236,13 @@ Item {
 //                ctx.fill();
 //            }
 
+            // Start indexes can be -1 when they are not set. This indicates no data or problematic calbiration points.
+            if (start_index < 0) start_index = 0;
+
             for (let i = start_index; i < datapoints[key].length; i++){
+
+                console.log("Start index is " + start_index + " and length is " + datapoints[key].length)
+
                 let x = datapoints[key][i]["x"]*vmKx;
                 let y = datapoints[key][i]["y"]*vmKy;
                 ctx.beginPath();

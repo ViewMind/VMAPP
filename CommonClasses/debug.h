@@ -59,6 +59,7 @@ namespace Debug {
        const QString NO_RRS_KILL                = "no_rrs_kill";
        const QString DISALBE_RRS_FORCE_QUIT     = "disable_rrs_force_quit";
        const QString SKIP_ET_CHECK              = "skip_et_check";
+       const QString CALIB_PACKET_OVERRIDE      = "calibration_packet_override";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

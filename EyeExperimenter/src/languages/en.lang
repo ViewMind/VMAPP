@@ -314,15 +314,15 @@ viewevaluation_nback_wait_msg = Press "G" to
 continue with study;
 
 viewevaluation_checket_title = Checking EyeTracker ...;
-viewevaluation_checket_title_fail = Unable to detect eye tracking;
+viewevaluation_checket_title_fail = Unable to detect eye tracking data;
 viewevaluation_checket_title_OK = EyeTracker is working correctly;
 viewevaluation_checket_btnok = START CALIBRATION;
 viewevaluation_checket_btnfail = RETRY;
-viewevaluation_checket_btnback = GO BACK;
-viewevaluation_checket_fail = The eyetracking does not seem to be working
+viewevaluation_checket_btnback = GO TO PATIENT LIST;
+viewevaluation_checket_fail = The eye tracker does not seem to be working
 Plese try the following:
 1. Make sure that the headset is correctly placed on the patient
-2. Retry, at least once
+2. Retry to calibrate, at least once
 3. If the problem persists, try shutting down the application and 
 reconnecting the headset
 4. If the above did not work, restart the computer and try again.;

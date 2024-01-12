@@ -106,7 +106,7 @@ ViewBase {
 
     }
 
-    function setUpStudyNames(study_names, uses_h_calib){
+    function setUpStudyNames(study_names, uses_h_calib) {
 
         let eval_steps = loader.getStringListForKey("viewevaluation_evaluation_steps")
         let eval_steps_with_hcalib = loader.getStringListForKey("viewevaluation_evaluation_steps_with_hand_calib")
@@ -589,6 +589,9 @@ ViewBase {
     Keys.onPressed: function (event) {
 
         if (viewer.currentIndex !== vmSC_INDEX_EVALUATION_SCREEN) return;
+
+        // If this dialog is visible all key strokes should be ignored.
+        if (eyeTrackingCheckDialog.visible) return;
 
         //console.log("Inside the evaluation screen")
 

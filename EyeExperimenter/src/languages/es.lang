@@ -318,7 +318,7 @@ viewevaluation_checket_title_fail = Sin datos del EyeTracker;
 viewevaluation_checket_title_OK = El EyeTracker funciona correctamente;
 viewevaluation_checket_btnok = COMENZAR CALIBRACIÓN;
 viewevaluation_checket_btnfail = REINTENTAR;
-viewevaluation_checket_btnback = ATRAS;
+viewevaluation_checket_btnback = IR A LISTA DE PACIENTES;
 viewevaluation_checket_fail = El EyeTracker parece no estar funcionando.
 Por favor intente lo siguiente:
 1. Asegurarse de que el casco esté bien ubicado en el paciente.

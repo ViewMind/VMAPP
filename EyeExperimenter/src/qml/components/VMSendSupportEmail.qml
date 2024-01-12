@@ -17,6 +17,7 @@ Item {
     function open(){
         subject.setSelection(-1);
         issues.clear()
+        evaluator.setModelList(loader.getLoginEmails(true));
         visible = true
     }
 
@@ -52,7 +53,7 @@ Item {
     /////////////////////////////////////////////////////////////////////
 
     function setCurrentEvaluator(mail){
-       if (mail == "") {
+       if (mail === "") {
            evaluator.setSelection(-1);
            evaluator.vmEnabled = true;
            return;
@@ -143,9 +144,6 @@ Item {
             vmPlaceHolderText: loader.getStringForKey("viewsendsupport_email_sender_ph")
             width: mainColumn.width
             z: 10
-            Component.onCompleted: {
-                setModelList(loader.getLoginEmails(true));
-            }
         }
 
         VMTextAreaInput {

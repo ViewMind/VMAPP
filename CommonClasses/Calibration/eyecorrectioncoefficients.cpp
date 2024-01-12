@@ -570,6 +570,9 @@ QList< QList<qreal> > EyeCorrectionCoefficients::getHitPercentInTarget(qreal dim
 
         qint32 start_index = cuttoffForCalibrationDataForCumputation.at(i);
 
+        // Start index can be -1 if it wasn't set.
+        if (start_index == -1) start_index = 0;
+
         for (qint32 j = start_index; j < fittedEyeDataPoints.at(i).size(); j++){
 
             total++;

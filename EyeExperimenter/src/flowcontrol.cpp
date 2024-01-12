@@ -133,7 +133,21 @@ void FlowControl::onNewPacketArrived(){
         // The only packet regarding calibration that we should be receiving is the one with the calibration data to compute the coefficients.
         QString command = packet.getPayloadField(RRS::PacketCalibrationControl::COMMAND).toString();
         if ( (command == RRS::CommandCalibrationControls::CMD_DATA_2D) || (command == RRS::CommandCalibrationControls::CMD_DATA_3D) ){
-            calibrationManager.processCalibrationData(packet);
+
+            QString override_packet = DBUGSTR(Debug::Options::CALIB_PACKET_OVERRIDE);
+            if (override_packet != ""){
+                StaticThreadLogger::log("CalibrationManager::debugLoadFixedCalibrationParameters","[DEBUG] Loading override calibration packet: " + override_packet);
+                QString temperror;
+                QVariantMap payload = Globals::LoadJSONFileToVariantMap(override_packet,&temperror);
+                RenderServerPacket p;
+                p.setPacketType(RRS::PacketType::TYPE_CALIB_CONTROL);
+                p.setFullPayload(payload);
+                calibrationManager.processCalibrationData(p);
+            }
+            else {
+                calibrationManager.processCalibrationData(packet);
+            }
+
         }
         else {
             StaticThreadLogger::error("FlowControl::onNewPacketArrived","Received unepected calibration command of " + command);

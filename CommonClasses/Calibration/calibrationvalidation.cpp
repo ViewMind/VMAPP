@@ -105,7 +105,7 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
 
     QStringList lines;
 
-    // qDebug() << "Generating Calibration Report. Is Mode 3D" << configuredFor3D;
+    //qDebug() << "Generating Calibration Report. Is Mode 3D" << configuredFor3D;
 
     QString mode = "2D";
     if (configuredFor3D) mode = "3D";
@@ -134,8 +134,10 @@ bool CalibrationValidation::generateCalibrationReport(const EyeCorrectionCoeffic
     QList< qreal > leftHitsAsNumber;
     QList< qreal > numberOfAttemptsPerCalibrationPoint;
 
+    //qDebug() << "Get Hit Percent In Target";
     temp  = coeffs.getHitPercentInTarget(diameterFor2D,validationPointHitTolerance,false);
-    //qDebug() << "Returning" << temp.size();
+    //qDebug() << "Got coeffsGetHitPercentInTarget of size" << temp.size();
+
     rightHits = temp.first(); rightHitsAsNumber = temp.at(1);
 
     numberOfAttemptsPerCalibrationPoint = temp.last(); // The number of attempts is the same for both the right and left eye as it is the same as the number of calibration points.

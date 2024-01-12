@@ -130,7 +130,6 @@ void CalibrationManager::configureValidationGeneration(){
 
 void CalibrationManager::finalizeCalibrationProcess(qint32 code){
 
-
     // We compute the correction coefficients only if the calibration was successfull.
     if (!correctionCoefficients.computeCoefficients()){
         StaticThreadLogger::error("CalibrationManager::finalizeCalibrationProcess","Failed in computing the correction coefficients. Reason: " + correctionCoefficients.getLastError());
@@ -245,7 +244,7 @@ void CalibrationManager::processCalibrationData(const RenderServerPacket &calibr
         qsizetype M = cdxr.size(); // They should all be the same size.
         qint32 currentCalibrationPointIndex = static_cast<qint32>(i)-1;
 
-        //qDebug() << "The size of the data vectors for calibration point " << i << " is " << M;
+        //qDebug() << "Calibration Point " << i << " has Size of " << M;
 
         qint32 start_index = start_index_list.value(i).toInt();
         bool there_was_an_error = false;
@@ -344,20 +343,28 @@ RenderServerPacket CalibrationManager::debugLoadFixedCalibrationParameters(const
 
     QString error;
     QVariantMap payload;
-    if (is3D){
-        if (hmdKey == "varjo"){
-            payload = Globals::LoadJSONFileToVariantMap(":/debug_files/3dCalibDataVarjo.json",&error);
-        }
-        else {
-            payload = Globals::LoadJSONFileToVariantMap(":/debug_files/3dCalibData.json",&error);
-        }
+
+    QString override_packet = DBUGSTR(Debug::Options::CALIB_PACKET_OVERRIDE);
+    if (override_packet != ""){
+        StaticThreadLogger::log("CalibrationManager::debugLoadFixedCalibrationParameters","[DEBUG] Loading override calibration packet: " + override_packet);
+        payload = Globals::LoadJSONFileToVariantMap(override_packet,&error);
     }
     else {
-        if (hmdKey == "varjo"){
-            payload = Globals::LoadJSONFileToVariantMap(":/debug_files/2dCalibData.json",&error);
+        if (is3D){
+            if (hmdKey == "varjo"){
+                payload = Globals::LoadJSONFileToVariantMap(":/debug_files/3dCalibDataVarjo.json",&error);
+            }
+            else {
+                payload = Globals::LoadJSONFileToVariantMap(":/debug_files/3dCalibData.json",&error);
+            }
         }
         else {
-            payload = Globals::LoadJSONFileToVariantMap(":/debug_files/2dCalibData.json",&error);
+            if (hmdKey == "varjo"){
+                payload = Globals::LoadJSONFileToVariantMap(":/debug_files/2dCalibData.json",&error);
+            }
+            else {
+                payload = Globals::LoadJSONFileToVariantMap(":/debug_files/2dCalibData.json",&error);
+            }
         }
     }
     RenderServerPacket p;

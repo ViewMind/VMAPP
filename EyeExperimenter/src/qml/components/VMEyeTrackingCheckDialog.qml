@@ -53,8 +53,6 @@ Item {
     function setCheckOK(){
         timer.running = false;
         vmState = vmSTATE_PASS;
-        okButton.vmText = loader.getStringForKey("viewevaluation_checket_btnok")
-        okButton.visible = true;
     }
 
     function close(){
