@@ -124,7 +124,7 @@ public slots:
     void onNotificationFromFlowControl(QVariantMap notification);
 
 private slots:
-    void receivedRequest();
+    void receivedAPIResponse();
     void updateDownloadFinished(bool allOk);
     void startUpSequenceCheck(); // Start up sequence value checker. When it reaches 2 the start up sequence finished. Needs to be a slot that the qc checker can connect to when finished
     void onFileDownloaderUpdate(qreal progress, qreal hours, qreal minutes, qreal seconds, qint64 bytesDowloaded, qint64 bytesTotal);
@@ -161,9 +161,6 @@ private:
 
     // Flag used to indicate whethre the app.zip file was redownloaded or not.
     bool updateDownloadSkipped;
-
-    // Flag to indicate disabled instance.
-    bool instanceIsDisabled;
 
     // The local database
     LocalDB localDB;

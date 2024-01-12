@@ -53,6 +53,9 @@ Item {
     function setCheckOK(){
         timer.running = false;
         vmState = vmSTATE_PASS;
+        // If all is good we automatically move on.
+        close();
+        dismissed(true)
     }
 
     function close(){
@@ -112,7 +115,6 @@ Item {
         font.pixelSize: VMGlobals.vmFontExtraLarge
         text: {
             if (vmState === vmSTATE_FAIL) return loader.getStringForKey("viewevaluation_checket_title_fail")
-            else if (vmState === vmSTATE_PASS) return loader.getStringForKey("viewevaluation_checket_title_OK")
             else return loader.getStringForKey("viewevaluation_checket_title")
         }
         height: VMGlobals.adjustHeight(37)
@@ -190,21 +192,14 @@ Item {
 
     VMButton {
         id: okButton
-        vmText: (vmState === vmSTATE_PASS) ?  loader.getStringForKey("viewevaluation_checket_btnok") :  loader.getStringForKey("viewevaluation_checket_btnfail")
+        vmText: loader.getStringForKey("viewevaluation_checket_btnfail")
         anchors.top: divider.top
         anchors.topMargin: VMGlobals.adjustHeight(10)
         anchors.right: dialog.right
         anchors.rightMargin: VMGlobals.adjustWidth(30)
-        visible: (vmState !== vmSTATE_CHECKING)
+        visible: (vmState === vmSTATE_FAIL)
         onClickSignal: {
-            if (vmState == vmSTATE_FAIL){
-                open(); // This should just retry.
-            }
-            else {
-                // All is good.
-                close();
-                dismissed(true)
-            }
+            open();
         }
     }
 

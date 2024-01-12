@@ -19,6 +19,13 @@ no se podrá actualizar, procesar evaluaciones o eviar emails de soporte.
 Podrá administrar evaluaciones. 
 Para solucionar este problema, por favor contacte a ViewMind.;
 
+#********************************* VIEW INSTANCE DISABLED *********************************
+
+viewdisabled_title     = ViewMind Atlas;
+viewdisabled_btn_retry = VERIFICAR STATUS DE INSTANCIA;
+viewdisabled_messsage  = Esta instancia a sido deshabilitada
+Para más información, por favor contacte el Soporte de ViewMind;
+viewdisabled_recheck_failed = <b>Instancia deshabilitada</b><br>Esta instacia fue desahbilitada;
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Avanzado;

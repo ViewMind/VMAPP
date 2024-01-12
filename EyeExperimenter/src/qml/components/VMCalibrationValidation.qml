@@ -223,25 +223,12 @@ Item {
             let index = parts[2]; // The third part of the key name is the calibration point index
             start_index = start_indexes[index];            
 
-            //console.log("The key is now " + key + " so the index would be " + index +  " and the start would be " + start_index);
-
-//            for (let i = 0; i < datapoints[key].length; i++){
-//                let x = datapoints[key][i]["x"]*vmKx;
-//                let y = datapoints[key][i]["y"]*vmKy;
-//                ctx.beginPath();
-//                ctx.fillStyle = "#00ff00"
-//                ctx.strokeStyle = "#00ff00"
-//                ctx.roundedRect(x,y,2*R,2*R,R,R)
-//                ctx.stroke();
-//                ctx.fill();
-//            }
-
             // Start indexes can be -1 when they are not set. This indicates no data or problematic calbiration points.
             if (start_index < 0) start_index = 0;
 
             for (let i = start_index; i < datapoints[key].length; i++){
 
-                console.log("Start index is " + start_index + " and length is " + datapoints[key].length)
+                // console.log("Start index is " + start_index + " and length is " + datapoints[key].length)
 
                 let x = datapoints[key][i]["x"]*vmKx;
                 let y = datapoints[key][i]["y"]*vmKy;

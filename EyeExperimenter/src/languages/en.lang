@@ -19,7 +19,13 @@ you will not be able to update, send evaluations or send support emails.
 You will still be able to administer evaluations. 
 To fix this issue, you must contact ViewMind.;
 
+#********************************* VIEW INSTANCE DISABLED *********************************
 
+viewdisabled_title     = ViewMind Atlas;
+viewdisabled_btn_retry = CHECK INSTANCE STATUS;
+viewdisabled_messsage  = This instance has been disabled by ViewMind Administration.
+For more information please contact ViewMind Support. 
+viewdisabled_recheck_failed = <b>Instance disabled</b><br>This instance has been disabled;
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Advanced;

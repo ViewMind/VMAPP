@@ -176,6 +176,12 @@ ApplicationWindow {
             }
         }
 
+        Item {
+            ViewDisabledInstance {
+                id: viewDisabledInstance
+            }
+        }
+
         onCurrentIndexChanged: {
 
             flowControl.setRenderWindowState(true);
@@ -204,7 +210,6 @@ ApplicationWindow {
                 viewMainSetup.swipeIntoMain()
                 break;
             case VMGlobals.vmSwipeIndexLogin:
-                viewLogin.checkInstanceDisabled();
                 viewLogin.updateProfileList();
                 break;
             case VMGlobals.vmSwipeIndexAddEval:

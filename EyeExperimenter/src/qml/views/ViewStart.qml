@@ -12,19 +12,26 @@ ViewBase {
             // Close the connection dialog and open the user selection dialog.
             //console.log("Finished request")
             if ( (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPINFO_REQUEST) ||
-                    (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPERATING_INFO_AND_LOG)){
-                //console.log("Last request was an OP INFO call")
+                 (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPERATING_INFO_AND_LOG)){
+
                 mainWindow.closeWait()
 
-                if (loader.getNewUpdateVersionAvailable() !== ""){
-                    requestUpdateDialog.vmVersion = loader.getNewUpdateVersionAvailable()
-                    requestUpdateDialog.vmTimesRemaining = loader.getRemainingUpdateDenials();
-                    //console.log("New version Available " + loader.getNewUpdateVersionAvailable())
-                    requestUpdateDialog.open();
+                // We need to check the disabled status.
+                if (loader.instanceDisabled()){
+                    mainWindow.swipeTo(VMGlobals.vmSwipeIndexInstanceDisabled);
                 }
                 else {
-                    mainWindow.swipeTo(VMGlobals.vmSwipeIndexLogin)
+                    if (loader.getNewUpdateVersionAvailable() !== ""){
+                        requestUpdateDialog.vmVersion = loader.getNewUpdateVersionAvailable()
+                        requestUpdateDialog.vmTimesRemaining = loader.getRemainingUpdateDenials();
+                        //console.log("New version Available " + loader.getNewUpdateVersionAvailable())
+                        requestUpdateDialog.open();
+                    }
+                    else {
+                        mainWindow.swipeTo(VMGlobals.vmSwipeIndexLogin)
+                    }
                 }
+
             }
             else if (loader.getLastAPIRequest() === VMGlobals.vmAPI_UPDATE_REQUEST){
                 // If the application got here, we move on. But it means that the update failed.
@@ -82,8 +89,14 @@ ViewBase {
         }
 
         if (!loader.isVMConfigPresent()){
-            // VM Config is Not present. We need to go the licensce screent.
+            // VM Config is Not present. We need to go the licensce screen.
             mainWindow.swipeTo(VMGlobals.vmSwipeIndexGetVMConfig)
+            return;
+        }
+
+        // If the instance is disabled we need to go to that screen.
+        if (loader.instanceDisabled()){
+            mainWindow.swipeTo(VMGlobals.vmSwipeIndexInstanceDisabled)
             return;
         }
 

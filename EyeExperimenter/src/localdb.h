@@ -83,6 +83,7 @@ public:
     static const char * MAIN_STORED_SEQUENCES;
     static const char * MAIN_PREFERENCES;
     static const char * MAIN_INSTITUTION_COUNTRY_CODE;
+    static const char * MAIN_INSTANCE_ENABLED;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -295,6 +296,10 @@ public:
 
     // Does a fuzzy search for the name lastname and year of birth and returns possible matches.
     QVariantList possibleNewPatientMatches(QString name, QString lastname, QString personalID, QString iso_birthdate, const QStringList &months) const;
+
+    // Set and get the instance enabled status.
+    void setInstanceEnableTo(bool enabled);
+    bool isInstanceEnabled() const;
 
 private:
 

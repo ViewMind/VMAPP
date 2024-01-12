@@ -77,14 +77,9 @@ Rectangle {
         reportListTable.setSortIndicator(vmSORT_COLUMNS.indexOf(vmCurrentSortOrder),vmCurrentOrderDirection)
 
         // We now check if this is an enabled instance to know if we need to disabled the buttons.
-        if (loader.instanceDisabled()){
-            reportListTable.vmArchiveActionEnabled = false;
-            reportListTable.vmCustomActionsEnabled = false;
-        }
-        else {
-            reportListTable.vmArchiveActionEnabled = true;
-            reportListTable.vmCustomActionsEnabled = true;
-        }
+        reportListTable.vmArchiveActionEnabled = true;
+        reportListTable.vmCustomActionsEnabled = true;
+
 
     }
 

@@ -18,6 +18,7 @@ const char * LocalDB::MAIN_STORED_SEQUENCES                  = "stored_sequences
 const char * LocalDB::MAIN_PREFERENCES                       = "preferences";
 const char * LocalDB::MAIN_LAST_APP_DOWNLOADED               = "last_downloaded_app";
 const char * LocalDB::MAIN_INSTITUTION_COUNTRY_CODE          = "institution_country_code";
+const char * LocalDB::MAIN_INSTANCE_ENABLED                  = "instance_enabled";
 
 // Evaluator fields
 const char * LocalDB::APPUSER_NAME          = "name";
@@ -927,6 +928,18 @@ QString LocalDB::getLastDownloadedApp() const{
 bool LocalDB::setLastDownloadedApp(const QString &version){
     data[MAIN_LAST_APP_DOWNLOADED] = version;
     return saveAndBackup();
+}
+
+////////////////////////////// Instance Enable Status ///////////////////////////////
+void LocalDB::setInstanceEnableTo(bool enabled){
+    data[MAIN_INSTANCE_ENABLED] = enabled;
+    saveAndBackup();
+}
+
+bool LocalDB::isInstanceEnabled() const {
+    if (data.contains(MAIN_INSTANCE_ENABLED)) return data.value(MAIN_INSTANCE_ENABLED).toBool();
+    // The default here is true. Playing it safe.
+    else return true;
 }
 
 ////////////////////////////// Institution Country Code ///////////////////////////////

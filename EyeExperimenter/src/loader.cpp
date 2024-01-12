@@ -4,7 +4,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
 {
 
     // Connecting the API Client slot.
-    connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedRequest);
+    connect(&apiclient, &APIClient::requestFinish, this ,&Loader::receivedAPIResponse);
     connect(&fileDownloader,&FileDownloader::downloadCompleted,this,&Loader::updateDownloadFinished);
     connect(&fileDownloader,&FileDownloader::downloadProgress,this,&Loader::onFileDownloaderUpdate);
     connect(&qcChecker,&StudyEndOperations::finished,this,&Loader::startUpSequenceCheck);
@@ -16,8 +16,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
 
     loadingError = false;
     configuration = c;
-
-    instanceIsDisabled = false;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
@@ -104,7 +102,7 @@ bool Loader::isVMConfigPresent() const {
 }
 
 bool Loader::instanceDisabled() const {
-    return this->instanceIsDisabled;
+    return !this->localDB.isInstanceEnabled();
 }
 
 QVariantList Loader::findPossibleDupes(QString name, QString lname, QString personalID, QString birthDate){
@@ -1099,7 +1097,7 @@ void Loader::onNotificationFromFlowControl(QVariantMap notification){
     }
 }
 
-void Loader::receivedRequest(){
+void Loader::receivedAPIResponse(){
 
     if (!apiclient.getError().isEmpty()){
 
@@ -1108,12 +1106,12 @@ void Loader::receivedRequest(){
         QVariantMap retdata = apiclient.getMapDataReturned();
         qint32 http_code = retdata.value(APINames::MAIN_HTTP_CODE).toInt();
         if (http_code == APINames::DISABLED_INSTANCE_HTTP_CODE){
-            this->instanceIsDisabled = true;
             StaticThreadLogger::error("Loader::receivedRequest","Received instance disabled code");
             processingUploadError = FAIL_INSTANCE_DISABLED;
+            this->localDB.setInstanceEnableTo(false);
         }
         else {
-            this->instanceIsDisabled = false;
+            this->localDB.setInstanceEnableTo(true);
             processingUploadError = FAIL_CODE_SERVER_ERROR;
             StaticThreadLogger::error("Loader::receivedRequest","Error Receiving Request :"  + apiclient.getError());
             if (apiclient.getLastRequestType() == APIClient::API_SENT_SUPPORT_EMAIL){
@@ -1125,7 +1123,7 @@ void Loader::receivedRequest(){
     else{
 
         // Disabled instance will ONLY come as an API error. Just a specific one. So if there was no error the instance is NOT disabled.
-        this->instanceIsDisabled = false;
+        this->localDB.setInstanceEnableTo(true);
 
         if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO || apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO_AND_LOG){
 
