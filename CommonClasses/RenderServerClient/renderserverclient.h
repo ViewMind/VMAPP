@@ -96,8 +96,6 @@ private:
     // The render server process.
     QProcess renderServerProcess;
 
-    int frequency_update_packet_counter = 0;
-
     // The ID of the main display of the application.
     WId mainWindowID;
 

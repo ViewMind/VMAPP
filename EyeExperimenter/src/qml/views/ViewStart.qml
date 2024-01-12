@@ -117,13 +117,23 @@ ViewBase {
 
     Text {
         id: welcomeText
-        text: loader.getStringForKey("viewstart_welcome") + "™"
+        text: loader.getStringForKey("viewstart_welcome")
         font.pixelSize: VMGlobals.vmFontHuge
         font.weight: 600
         color: VMGlobals.vmBlackText
         anchors.left: viewmindLogo.left
         anchors.top: viewmindLogo.bottom
         anchors.topMargin: VMGlobals.adjustHeight(100)
+    }
+
+    Text {
+        id: welcomeTextTM
+        text: "™"
+        font.pixelSize: VMGlobals.vmFontExtraLarge
+        font.weight: 400
+        color: VMGlobals.vmBlackText
+        anchors.left: welcomeText.right
+        anchors.top: welcomeText.top
     }
 
     Text {
@@ -193,8 +203,8 @@ ViewBase {
     Text {
         id: registeredCircleText
         text: "®"
-        font.pixelSize: VMGlobals.vmFontVeryLarge
-        font.weight: 600
+        font.pixelSize: VMGlobals.vmFontLarger
+        font.weight: 400
         color: VMGlobals.vmBlackText
         anchors.left: viewmindLogo.right
         anchors.top: viewmindLogo.top

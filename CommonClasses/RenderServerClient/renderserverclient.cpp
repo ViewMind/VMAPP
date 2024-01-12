@@ -259,14 +259,6 @@ void RenderServerClient::onReadyRead() {
         if (this->rxPacket.getType() != RRS::PacketType::TYPE_FREQ_UPDATE){
             emit RenderServerClient::newMessage("Received packet of type '" + this->rxPacket.getType()  + "'. Frame: " + QString::number(this->packetCounter) ,MSG_TYPE_INFO);
         }
-        else {
-            if ((this->frequency_update_packet_counter % PRINT_EVERY_N_FUPDATES) == 0){
-                // WE print.
-                emit RenderServerPacket::newMessage("[FREQUPDATE] " + )
-            }
-            this->frequency_update_packet_counter++;
-
-        }
         emit RenderServerClient::newPacketArrived();
     }
     else if (state == RenderServerPacket::RX_ERROR){

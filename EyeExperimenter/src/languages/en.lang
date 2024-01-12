@@ -156,7 +156,8 @@ Calibration-Calibration|
 EyeTracking-Eye tracking issues|
 VRHeadset-Issues with the headset|
 Computer-Issues with the computer|
-ViewMindApp-ViewMind Application Issues|
+ViewMindApp-ViewMind Atlas issues|
+DisabledInstance-Disabled instance|
 Other-Other;
 viewsendsupport_email_error   = Cannot leave empty;
 viewsendsupport_email_fail = <b>Email Error</b><br>The support email could not be sent;

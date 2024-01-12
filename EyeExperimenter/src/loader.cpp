@@ -42,7 +42,6 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
 
 
     institutionStringIdentification = "";
-    frequencyString = "";
 
     if (isLicenceFilePresent){
         institutionStringIdentification = configuration->getString(Globals::VMConfig::INSTITUTION_NAME)
@@ -270,11 +269,6 @@ QString Loader::getWindowTilteVersion(){
     if (Globals::REGION != Globals::GLOBAL::REGION){
         version = version + " - " + Globals::REGION ;
     }
-
-// For now we remove the frequency update from the title bar.
-//    if (this->frequencyString != ""){
-//        version = version + " - " + this->frequencyString;
-//    }
 
     if (!dbug_str.isEmpty()){
         version = version + " - " + dbug_str;
@@ -1091,12 +1085,14 @@ void Loader::onNotificationFromFlowControl(QVariantMap notification){
         apiclient.setEyeTrackerKey(key);
         emit Loader::titleBarUpdate();
     }
-    else if (notification.contains(Globals::FCL::UPDATE_SAMP_FREQ)){
-        // This is a sampling frequency update packet.
-        QString F = notification.value(Globals::FCL::UPDATE_SAMP_FREQ).toString();
+    else if (notification.contains(Globals::FCL::UPDATE_AVG_FREQ)){
+
         QString A = notification.value(Globals::FCL::UPDATE_AVG_FREQ).toString();
         QString M = notification.value(Globals::FCL::UPDATE_MAX_FREQ).toString();
-        this->frequencyString = "F: " + F + " Hz. Avg: " + A + " Hz. Max: " + M + " Hz.";
+        QString F = notification.value(Globals::FCL::UPDATE_SAMP_FREQ).toString();
+
+        StaticThreadLogger::log("FREQUPDATE","Avg: " + A + " HZ. Freq: " + F + " Hz. Max: " + M  + " Hz");
+
     }
     else{
         StaticThreadLogger::warning("Loader::onNotificationFromFlowControl","Got an unknown notification: " + notification.keys().join(","));

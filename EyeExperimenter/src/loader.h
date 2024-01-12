@@ -149,9 +149,6 @@ private:
     // The pretty name for the eyetracker/HMD being used. Mainly for display on the title bar.
     QString eyeTrackerName;
 
-    // This is the string representation of the last update sampling frequency packet.
-    QString frequencyString;
-
     // Start up sequence flag. It requires two process to be done in order to actually kill the wait screen.
     quint8 startUpSequenceFlag;
 
