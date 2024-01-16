@@ -24,7 +24,7 @@ To fix this issue, you must contact ViewMind.;
 viewdisabled_title     = ViewMind Atlas;
 viewdisabled_btn_retry = CHECK INSTANCE STATUS;
 viewdisabled_messsage  = This instance has been disabled by ViewMind Administration.
-For more information please contact ViewMind Support. 
+For more information please contact ViewMind Support.;
 viewdisabled_recheck_failed = <b>Instance disabled</b><br>This instance has been disabled;
 
 #********************************* SETTINGS DIALOG *********************************

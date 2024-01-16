@@ -1123,7 +1123,9 @@ void Loader::receivedAPIResponse(){
     else{
 
         // Disabled instance will ONLY come as an API error. Just a specific one. So if there was no error the instance is NOT disabled.
-        this->localDB.setInstanceEnableTo(true);
+        // Unless comming from a support request. In that case we can't set it to true because the support request can be sent
+        // with a disabled insance.
+        if (apiclient.getLastRequestType() != APIClient::API_SENT_SUPPORT_EMAIL) this->localDB.setInstanceEnableTo(true);
 
         if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO || apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO_AND_LOG){
 
@@ -1368,7 +1370,6 @@ void Loader::receivedAPIResponse(){
             vmconfig_file.close();
 
         }
-
         else if (apiclient.getLastRequestType() == APIClient::API_SENT_SUPPORT_EMAIL){
             // In this case there is nothing todo really other than notify the fron end.
             StaticThreadLogger::log("Loader::receivedRequest","Tech support email sent successfully");
