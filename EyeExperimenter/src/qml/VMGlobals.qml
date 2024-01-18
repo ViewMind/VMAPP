@@ -91,6 +91,7 @@ QtObject {
     readonly property int vmSwipeIndexEditProtocol:     7
     readonly property int vmSwipeIndexGetVMConfig:      8
     readonly property int vmSwipeIndexInstanceDisabled: 9
+    readonly property int vmSwipeIndexFunctionalVerif:  10
 
     // Notification colors
     readonly property color vmNotificationBlue:       vmBlueSelected

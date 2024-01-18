@@ -43,6 +43,7 @@ static const QString LOCALDB                 = "viewmind_etdata/localdb.dat";
 static const QString DBBKPDIR                = "dbbkp";
 static const QString CONFIGURATION           = "vmconfiguration";
 static const QString APPSPEC                 = "vmappspec";
+static const QString VMINSTID                = "vminstid";
 static const QString UPDATE_PACKAGE          = "app.zip";
 static const QString VMTOOLDIR               = "../VMMaintenanceTool";
 static const QString VMTOOLEXE               = "../VMMaintenanceTool/VMMaintenanceTool.exe";
@@ -145,7 +146,7 @@ static QVariantMap GetNameCodeMap() {
 
 namespace Share {
 static const QString APP_NAME = "ViewMind Atlas";
-static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.18";
+static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.19";
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
 static const QString PATIENT_UID = "patient_uid";

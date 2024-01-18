@@ -182,6 +182,12 @@ ApplicationWindow {
             }
         }
 
+        Item {
+            ViewFunctionalControl {
+                id: viewFuncCtl
+            }
+        }
+
         onCurrentIndexChanged: {
 
             flowControl.setRenderWindowState(true);
@@ -220,6 +226,9 @@ ApplicationWindow {
                 break;
             case VMGlobals.vmSwipeIndexQCView:
                 viewQC.clear();
+                break;
+            case VMGlobals.vmSwipeIndexGetVMConfig:
+                viewGetVMConfig.checkOnVMID();
                 break;
             }
         }

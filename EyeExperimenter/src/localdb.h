@@ -22,6 +22,8 @@ namespace APINames {
    static const char * MAIN_HTTP_CODE = "http_code";
    static const char * MAIN_MESSAGE   = "message";
 
+   static const char * HMD_CHANGE_SN  = "hmd_change_sn";
+
    static const qint32 DISABLED_INSTANCE_HTTP_CODE = 599;
 
    namespace ProcParams {
@@ -43,6 +45,7 @@ namespace APINames {
    namespace Institution {
       static const char *INST_COUNTRY = "institution_country";
    }
+
 
    namespace UpdateParams{
       static const char * UPDATE_ET_CHANGE = "update_et_change";

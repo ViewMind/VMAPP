@@ -62,5 +62,6 @@
         <file>qml/components/VMFilteringComboBox.qml</file>
         <file>qml/components/VMEyeTrackingCheckDialog.qml</file>
         <file>qml/views/ViewDisabledInstance.qml</file>
+        <file>qml/views/ViewFunctionalControl.qml</file>
     </qresource>
 </RCC>

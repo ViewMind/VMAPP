@@ -105,6 +105,21 @@ bool Loader::instanceDisabled() const {
     return !this->localDB.isInstanceEnabled();
 }
 
+QVariantMap Loader::getInstIDFileInfo() const {
+
+    // The inst ID file info is simply a file that identifies the intances (instance and institution number) when the license file is not present
+    // It is used for both the functional verification screen and the activation screens.
+
+    ConfigurationManager config_vminstid;
+    if (!config_vminstid.loadConfiguration(Globals::Paths::VMINSTID)) return QVariantMap();
+    return config_vminstid.getMap();
+
+}
+
+QVariantMap Loader::getHWInfo() const {
+    return this->hwRecognizer.getHardwareSpecsAsVariantMap();
+}
+
 QVariantList Loader::findPossibleDupes(QString name, QString lname, QString personalID, QString birthDate){
     return localDB.possibleNewPatientMatches(name,lname,personalID,birthDate,getStringListForKey("viewpatlist_months"));
 }

@@ -52,6 +52,8 @@ public:
     Q_INVOKABLE void openURLInBrowser(const QString &url);
     Q_INVOKABLE bool instanceDisabled() const;
     Q_INVOKABLE QVariantList findPossibleDupes(QString name, QString lname, QString personalID, QString birthDate);
+    Q_INVOKABLE QVariantMap getInstIDFileInfo() const;
+    Q_INVOKABLE QVariantMap getHWInfo() const;
 
     //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QString getNewUpdateVersionAvailable() const;

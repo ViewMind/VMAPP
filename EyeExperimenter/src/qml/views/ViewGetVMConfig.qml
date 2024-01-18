@@ -8,6 +8,10 @@ ViewBase {
 
     id: viewGetVMConfig
 
+    // Map keys.
+    readonly property string vmINSTITUTION_ID: "institution_id";
+    readonly property string vmINSTANCE_NUM: "instance_number";
+
     signal successActivation()
 
     Connections {
@@ -43,6 +47,25 @@ ViewBase {
         activation_code.vmLabel = loader.getStringForKey("viewgetconfig_code")
         btnGetLicence.vmText = loader.getStringForKey("viewgetconfig_get")
         uiLanguage.vmLabel = loader.getStringForKey("viewsettings_language")
+        btnFuncVerif.vmText = loader.getStringForKey("viewgetconfig_func_verif");
+    }
+
+    function checkOnVMID() {
+        var id_data = loader.getInstIDFileInfo();
+        instance.vmEnabled = false;
+        institution.vmEnabled = false;
+        if (!(vmINSTANCE_NUM in id_data)) {
+            activation_code.vmEnabled = false;
+            btnGetLicence.vmEnabled = false;
+            btnFuncVerif.visible = true;
+            return;
+        }
+        else {
+            instance.setText(id_data[vmINSTANCE_NUM])
+            institution.setText(id_data[vmINSTITUTION_ID])
+            btnGetLicence.vmEnabled = true;
+            btnFuncVerif.visible = false;
+        }
     }
 
     // The ViewMind Logo.
@@ -128,70 +151,86 @@ ViewBase {
 
     }
 
-    Row {
-        id: rowButtonAndLang
+    VMButton {
+        id: btnGetLicence
         anchors.left: inputColumn.left
         anchors.bottom: parent.bottom
         anchors.bottomMargin: VMGlobals.adjustHeight(60)
-        spacing: VMGlobals.adjustWidth(800)
-        VMButton {
-            id: btnGetLicence
-            vmText: loader.getStringForKey("viewgetconfig_get")
-            vmCustomWidth: VMGlobals.adjustHeight(150)
-            onClickSignal: {
+        vmText: loader.getStringForKey("viewgetconfig_get")
+        vmCustomWidth: VMGlobals.adjustHeight(150)
+        onClickSignal: {
 
-                // We need to check all values are here.
-                let inst   = institution.vmCurrentText
-                let number = instance.vmCurrentText
-                let code   = activation_code.vmCurrentText
+            // We need to check all values are here.
+            let inst   = institution.vmCurrentText
+            let number = instance.vmCurrentText
+            let code   = activation_code.vmCurrentText
 
-                // For quick testing. Developing the endpoint itself
-//                inst = 1;
-//                number = 9;
-//                code = "PIDTB-WSJIE-7YFVB-WLSJU-U2XWZ-SVMHD"
+            // For quick testing. Developing the endpoint itself
+            //                inst = 1;
+            //                number = 9;
+            //                code = "PIDTB-WSJIE-7YFVB-WLSJU-U2XWZ-SVMHD"
 
-                if (inst == ""){
-                    institution.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty")
-                    return;
-                }
-
-                if (number == ""){
-                    instance.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty")
-                    return;
-                }
-
-                if (code == ""){
-                    activation_code.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty")
-                    return;
-                }
-
-
-                mainWindow.openWait(loader.getStringForKey("viewait_get_license"))
-
-                // Requesting the vm configuration data.
-                loader.requestActivation(inst,number,code);
-
+            if (inst == ""){
+                institution.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty")
+                return;
             }
+
+            if (number == ""){
+                instance.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty")
+                return;
+            }
+
+            if (code == ""){
+                activation_code.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty")
+                return;
+            }
+
+
+            mainWindow.openWait(loader.getStringForKey("viewait_get_license"))
+
+            // Requesting the vm configuration data.
+            loader.requestActivation(inst,number,code);
+
         }
-
-        VMComboBox {
-            id: uiLanguage
-            vmLabel: loader.getStringForKey("viewsettings_language")
-            width: VMGlobals.adjustWidth(150)
-            vmMaxDisplayItems: 1
-            Component.onCompleted: {
-                var langs = loader.getStringListForKey("viewsettings_langs")
-                this.setModelList(langs)
-                uiLanguage.setSelection(0);
-            }
-            onVmCurrentIndexChanged: {
-                if (loader.isVMConfigPresent()) return; // We do this because on normal operation the line below screws with language selection
-                loader.changeGetVMConfigScreenLanguage(uiLanguage.vmCurrentText);
-                reloadStrings();
-            }
-        }
-
     }
+
+
+    VMButton {
+        id: btnFuncVerif
+        anchors.left: btnGetLicence.right
+        anchors.leftMargin: VMGlobals.adjustWidth(15)
+        anchors.bottom: btnGetLicence.bottom
+        vmText: loader.getStringForKey("viewgetconfig_func_verif")
+        vmCustomWidth: VMGlobals.adjustHeight(250)
+        vmButtonType: btnFuncVerif.vmTypeSecondary;
+        onClickSignal: {
+            swiperControl.setCurrentIndex(VMGlobals.vmSwipeIndexFunctionalVerif);
+            viewFuncCtl.setIntent(viewFuncCtl.vmINTENT_FUNC_VERIF)
+        }
+    }
+
+
+    VMComboBox {
+        id: uiLanguage
+        vmLabel: loader.getStringForKey("viewsettings_language")
+        width: VMGlobals.adjustWidth(150)
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: VMGlobals.adjustHeight(60)
+        anchors.left: btnGetLicence.left
+        anchors.leftMargin: VMGlobals.adjustWidth(800)
+        vmMaxDisplayItems: 1
+        Component.onCompleted: {
+            var langs = loader.getStringListForKey("viewsettings_langs")
+            this.setModelList(langs)
+            uiLanguage.setSelection(0);
+        }
+        onVmCurrentIndexChanged: {
+            if (loader.isVMConfigPresent()) return; // We do this because on normal operation the line below screws with language selection
+            loader.changeGetVMConfigScreenLanguage(uiLanguage.vmCurrentText);
+            reloadStrings();
+        }
+    }
+
 
 
 

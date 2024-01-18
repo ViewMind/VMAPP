@@ -344,7 +344,13 @@ viewgetconfig_get      = OBTENER LICENCIA;
 viewgetconfig_error    = <b>No se pudo activar la aplicación</b><br>Pruebe nuevamente.<br>Si el problema persiste contactese con ViewMind;
 viewgetconfig_success  = Activacion Exitosa|La aplicación se cerrará.
 Por favor, para comenzar a usar el ViewMind Atlas vuelva a iniciarla;
+viewgetconfig_func_verif = VERIFICACIÓN FUNCIONAL;
 
+********************************* VM FUNC VERIF SCREEN *********************************
+viewfuncctl_title = Verificación Funcional;
+viewfuncctl_runcheck = VERIFICAR;
+viewfuncctl_text_not_run = Por favor colóquese el casco y realize la verificación;
+viewfuncctl_text_pass = Verificación de seguimiento ocular exitosa;
 
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = No hay reportes disponibles para procesar;
