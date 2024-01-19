@@ -10,7 +10,6 @@ ViewBase {
 
     readonly property int vmINTENT_FUNC_VERIF: 0
     readonly property int vmINTENT_HMD_CHANGE: 1
-    readonly property int vmINTENT_CHECK: 2
 
     readonly property int vmETCHECK_CHECKING: 0
     readonly property int vmETCHECK_PASS:     1
@@ -24,8 +23,8 @@ ViewBase {
     readonly property string vmKEY_HDD_SN: "hdd_sn"
 
     property int vmETCheckState: vmETCHECK_NOTRUN
-
     property int vmIntent: vmINTENT_FUNC_VERIF;
+    property bool vmLoadedSN: false
 
     /**
       This function should be called each time this comes into view.
@@ -36,24 +35,115 @@ ViewBase {
         vmETCheckState = vmETCHECK_NOTRUN;
 
         // We try to get the HW Info. For security we disable the action button-
-        actionButton.vmEnabled = false;
+        vmLoadedSN = false
 
         let hwinfo = loader.getHWInfo();
 
         // Now we get the PC SN and the HMD SN.
-        console.log(JSON.stringify(hwinfo))
+        // console.log(JSON.stringify(hwinfo))
 
         let pc_sn = hwinfo[vmKEY_PC_SN];
         let et_sn = hwinfo[vmKEY_ET_SN];
         let hdd_sn = hwinfo[vmKEY_HDD_SN];
 
+
         // Simple test. Might fail. But basically there are no numbers in the return strings for Desktop computers in this fields
         // So if it has numbers its a laptop and we can use the serial number.
         // If it doesn't we need to use the hdd.
         let hasNumbers = /\d/.test(pc_sn);
+        if (hasNumbers){
+            pc_sn_input.setText(pc_sn);
+        }
+        else {
+            pc_sn_input.setText(hdd_sn);
+        }
+        hmd_sn_input.setText(et_sn)
 
-        actionButton.vmEnabled = false;
+        if ((pc_sn_input.vmCurrentText != "") && (hmd_sn_input.vmCurrentText != "")){
+            vmLoadedSN = true
+        }
+        else if (hmd_sn_input.vmCurrentText == "") {
+            popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewfuncctl_btn_no_hmd_error"),false);
+            runETCheckButton.vmEnabled = false;
+        }
 
+        if (pc_sn_input.vmCurrentText == ""){
+            // Hope that this NEVER happens.
+            loader.logUI("UNABLE TO FIND A S/N for the COMPUTER",true);
+        }
+
+        if (vmIntent == vmINTENT_HMD_CHANGE){
+            // If the intent is HMD Check we need to load the institution and instance as well.
+            let instance_uid = loader.getInstanceUID();
+            let parts = instance_uid.split(".")
+            if (parts.length === 2){
+                instance.setText(parts[1])
+                institution.setText(parts[0])
+                instance.vmEnabled = false;
+                institution.vmEnabled = false;
+            }
+        }
+
+        // Uncomment this to test out.
+        // setDebugData();
+
+    }
+
+    function setDebugData(){
+        instance.setText("9");
+        institution.setText("1");
+        email.setText("ariel.arelovich@viewmind.ai")
+        if (vmIntent == vmINTENT_FUNC_VERIF){
+            password.vmCurrentText = "1234";
+        }
+        else {
+            lname.setText("Ariel")
+            fname.setText("Arelovich")
+        }
+        actionButton.vmEnabled = true;
+        vmETCheckState = vmETCHECK_PASS;
+    }
+
+
+    Connections {
+        target: loader
+        function onFinishedRequest () {
+            // Close the connection dialog and open the user selection dialog.
+            //console.log("Finished request")
+
+            mainWindow.closeWait()
+            let last_api_request = loader.getLastAPIRequest();
+
+            if ( (last_api_request === VMGlobals.vmAPI_FUNC_CTL_NEW) ||
+                 (last_api_request === VMGlobals.vmAPI_FUNC_CTL_HMD_CHANGE)){
+
+                mainWindow.closeWait()
+
+                // We check for errors.
+                let http_code = loader.getLastHTTPCodeReceived();
+                if (http_code === VMGlobals.vmHTTP_CODE_OK){
+                    if (last_api_request === VMGlobals.vmAPI_FUNC_CTL_NEW) swiperControl.setCurrentIndex(VMGlobals.vmSwipeIndexGetVMConfig)
+                    else swiperControl.setCurrentIndex(VMGlobals.vmSwipeIndexHome)
+
+                    popUpNotify(VMGlobals.vmNotificationGreen,loader.getStringForKey("viewfuncctl_success"))
+
+                    return;
+                }
+                else if (http_code === VMGlobals.vmHTTP_CODE_FUNC_VERIF_FAIL_BADSN){
+                    popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewfuncctl_error_bad_sn"))
+                }
+                else if (http_code === VMGlobals.vmHTTP_CODE_FUNC_VERIF_FAIL_BAD_PASSWD){
+                    popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewfuncctl_error_bad_password"))
+                }
+                else if (http_code === VMGlobals.vmHTTP_CODE_FUNC_VERIF_FAIL_UNAUTHUSER){
+                    popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewfuncctl_error_bad_user"))
+                }
+                else {
+                    popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewfuncctl_error_generic"))
+                }
+
+            }
+        }
     }
 
     Connections {
@@ -65,7 +155,7 @@ ViewBase {
                 if (data[vmKEY_TO_CHECK] > 100){
                     // We are good.
                     timer.running = false;
-                    vmETCheckPass = vmETCHECK_PASS;
+                    vmETCheckState = vmETCHECK_PASS;
                 }
             }
         }
@@ -122,9 +212,8 @@ ViewBase {
             }
 
             VMTextInput {
-                id: hmd_sn
-                vmPlaceHolderText: loader.getStringForKey("viewaddeval_fname_ph")
-                vmLabel: loader.getStringForKey("viewaddeval_fname")
+                id: hmd_sn_input
+                vmLabel: loader.getStringForKey("viewfuncctl_hmdsn")
                 width: parent.width
                 vmAlignErrorLeft: false
                 Keys.onTabPressed: lname.vmFocus = true;
@@ -150,11 +239,10 @@ ViewBase {
             }
 
             VMTextInput {
-                id: pc_sn
+                id: pc_sn_input
                 width: parent.width
-                vmPlaceHolderText: loader.getStringForKey("viewaddeval_lname_ph")
-                vmLabel: loader.getStringForKey("viewaddeval_lname")
-                vmAlignErrorLeft: false
+                vmLabel: loader.getStringForKey("viewfuncctl_pcsn")
+                vmAlignErrorLeft: false                
                 Keys.onTabPressed: email.vmFocus = true;
                 vmEnabled: false
             }
@@ -326,12 +414,55 @@ ViewBase {
 
     VMButton {
         id: actionButton
-        vmText: (vmIntent === vmINTENT_CHECK) ? loader.getStringForKey("viewfuncctl_btn_back") : loader.getStringForKey("viewfuncctl_btn_send")
+        vmText: loader.getStringForKey("viewfuncctl_btn_send")
         anchors.bottom: parent.bottom
         anchors.bottomMargin: VMGlobals.adjustHeight(40)
         anchors.right: parent.right
         anchors.rightMargin: VMGlobals.adjustWidth(40)
-        onClickSignal: {
+        vmEnabled: (vmLoadedSN && (vmETCheckState == vmETCHECK_PASS))
+        onClickSignal: {           
+
+            // We need to verify that the institution and instance number are loaded.
+            // And then the rest will depend on the intent.
+            if (institution.vmCurrentText == ""){
+                institution.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                return;
+            }
+
+            if (instance.vmCurrentText == ""){
+                instance.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                return;
+            }
+
+            if (email.vmCurrentText == ""){
+                email.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                return;
+            }
+
+            if (vmIntent == vmINTENT_FUNC_VERIF){
+                if (password.vmCurrentText == ""){
+                    password.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                    return;
+                }
+            }
+            else {
+
+                // We are talking about an HMD change.
+                if (lname.vmCurrentText == ""){
+                    lname.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                    return;
+                }
+
+                if (fname.vmCurrentText == ""){
+                    fname.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                    return;
+                }
+
+            }
+
+            //console.log("Actually send the API Request");
+            mainWindow.openWait(loader.getStringForKey("viewwait_synching"))
+            loader.sendFunctionalControlData(institution.vmCurrentText,instance.vmCurrentText,email.vmCurrentText,password.vmCurrentText,fname.vmCurrentText,lname.vmCurrentText)
 
         }
     }

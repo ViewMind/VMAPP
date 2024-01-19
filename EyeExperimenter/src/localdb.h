@@ -24,8 +24,6 @@ namespace APINames {
 
    static const char * HMD_CHANGE_SN  = "hmd_change_sn";
 
-   static const qint32 DISABLED_INSTANCE_HTTP_CODE = 599;
-
    namespace ProcParams {
       static const char * NAME = "proc_params";
    }
@@ -87,6 +85,7 @@ public:
     static const char * MAIN_PREFERENCES;
     static const char * MAIN_INSTITUTION_COUNTRY_CODE;
     static const char * MAIN_INSTANCE_ENABLED;
+    static const char * MAIN_HMD_CHANGE;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -288,6 +287,10 @@ public:
 
     // Sets the last downloaded app.
     bool setLastDownloadedApp(const QString &version);
+
+    // Sets/Gets the HMD Change SN
+    QString getHMDChangeSN() const;
+    bool setHMDChangeSN(const QString &sn);
 
     // Returns a preference that was set, as a string. As of the writing of this, we only need strings.
     // The second parameter can be used to return a store and return a value if the required one doesn't exist

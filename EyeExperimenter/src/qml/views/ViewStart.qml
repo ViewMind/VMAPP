@@ -6,19 +6,28 @@ import "../components"
 
 ViewBase {
 
+    readonly property int vmHMD_CHANGE_STATUS_OK: 0
+    readonly property int vmHMD_CHANGE_STATUS_BAD_SN: 1
+    readonly property int vmHMD_CHANGE_STATUS_CHANGE: 2
+
     Connections {
         target: loader
         function onFinishedRequest () {
             // Close the connection dialog and open the user selection dialog.
-            //console.log("Finished request")
-            if ( (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPINFO_REQUEST) ||
+            if ( (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPERATING_INFO) ||
                  (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPERATING_INFO_AND_LOG)){
 
                 mainWindow.closeWait()
 
+                let hmd_status = loader.checkHMDChangeStatus();
+
                 // We need to check the disabled status.
                 if (loader.instanceDisabled()){
                     mainWindow.swipeTo(VMGlobals.vmSwipeIndexInstanceDisabled);
+                }
+                else if (hmd_status !== vmHMD_CHANGE_STATUS_OK){
+                    mainWindow.swipeTo(VMGlobals.vmSwipeIndexFunctionalVerif);
+                    viewFuncCtl.setIntent(viewFuncCtl.vmINTENT_HMD_CHANGE);
                 }
                 else {
                     if (loader.getNewUpdateVersionAvailable() !== ""){
@@ -61,7 +70,6 @@ ViewBase {
         }
 
     }
-
 
     VMMessageDialog {
         id: criticalFailure

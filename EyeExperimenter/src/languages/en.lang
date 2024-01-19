@@ -34,6 +34,7 @@ viewsettings_tech_support = Support;
 viewsettings_default_country = Default country;
 viewsettings_def_country_placeholder = Select the default country;
 viewsettings_language = Select the application language;
+viewsettings_run_et_check = RUN EYE TRACKING CHECK;
 viewsettings_langs = English|Español;
 viewsettings_umanual = User Manual;
 viewsettings_cancel = CANCEL;
@@ -341,9 +342,11 @@ viewgetconfig_instance_ph = Enter the Instance Number;
 viewgetconfig_code_ph  = Enter the activation code;
 viewgetconfig_code     = Activation Code;
 viewgetconfig_get      = GET LICENSE;
-viewgetconfig_error    = <b>App Could not Be Activated</b><br>Try again.<br>If the problem persists please contact ViewMind;
+viewgetconfig_error    = <b>App Could not be activated</b><br>Try again.<br>If the problem persists please contact ViewMind;
+viewgetconfig_error_sn = <b>Incorrect Serial Numbers</b><br>Please make sure that the headset is plugged in<br>and try again;
 viewgetconfig_success  = Activation was Successful|The application will close now.
 Please start ViewMind Atlas again to begin using it.;
+viewgetconfig_error_lib = <b>Instance not liberated</b><br>Contact ViewMind and request liberation of instance ???;
 viewgetconfig_func_verif = FUNCTIONAL VERIFICATION;
 
 #********************************* VM FUNC VERIF SCREEN *********************************
@@ -352,8 +355,14 @@ viewfuncctl_runcheck = RUN CHECK;
 viewfuncctl_text_not_run = Please put on the headset and run the check;
 viewfuncctl_text_pass = Eye tracking verification sucessful;
 viewfuncctl_btn_send = SEND VERIFICATION;
-viewfuncctl_btn_back = GO BACK;
-
+viewfuncctl_pcsn     = Computer Serial Number;
+viewfuncctl_hmdsn    = Headset Serial Number;
+viewfuncctl_btn_no_hmd_error = <b>No Headeset Detected</b><br>Please make sure that the headset is<br>connected and powered on. The restart the application;
+viewfuncctl_error_bad_password = <b>Wrong Password</b><br> Please re enter your passwor and <br>try again;
+viewfuncctl_error_bad_user     = <b>Unauthorized user</b><br>This user cannot be used to perform <br>a functional verification;
+viewfuncctl_error_bad_sn     = <b>Incorrect Serial Number</b><br>The serial number of the device does match<br>internal records;
+viewfuncctl_error_generic  = <b>Unable to send the data</b><br>Please try again in a few minutes;
+viewfuncctl_success = <b>Success</b><br>Functional control data was successfully sent;
 
 
 #********************************* Quality Control *********************************

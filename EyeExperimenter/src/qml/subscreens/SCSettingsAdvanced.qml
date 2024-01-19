@@ -77,4 +77,17 @@ Rectangle {
 
     }
 
+    VMButton {
+        id: checkEyeTracking
+        vmText: loader.getStringForKey("viewsettings_run_et_check")
+        width: uiLanguage.width
+        anchors.top: uiLanguage.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(20)
+        anchors.left: uiLanguage.left
+        onClickSignal: {
+            eyeTrackingSettingsCheck.open(eyeTrackingSettingsCheck.vmINTENT_CHECK);
+            settingsDialog.close()
+        }
+    }
+
 }

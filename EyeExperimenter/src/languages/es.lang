@@ -34,6 +34,7 @@ viewsettings_tech_support = Soporte;
 viewsettings_default_country = País por defecto;
 viewsettings_def_country_placeholder = Seleccione el pais por defecto;
 viewsettings_language = Seleccionar el idioma de la aplicación;
+viewsettings_run_et_check = VERIFICAR SEGUIMIENTO OCULAR;
 viewsettings_langs = English|Español;
 viewsettings_umanual = Manual de Usuario;
 viewsettings_cancel = CANCELAR;
@@ -342,7 +343,9 @@ viewgetconfig_code_ph  = Ingrese el código de activacion;
 viewgetconfig_code     = Código de Activación;
 viewgetconfig_get      = OBTENER LICENCIA;
 viewgetconfig_error    = <b>No se pudo activar la aplicación</b><br>Pruebe nuevamente.<br>Si el problema persiste contactese con ViewMind;
+viewgetconfig_error_sn = <b>Número de series incorrectos</b><br>Asegúrese que el casco este conectado<br>e inténtelo nuevamente;
 viewgetconfig_success  = Activacion Exitosa|La aplicación se cerrará.
+viewgetconfig_error_lib = <b>La instancia no está liberada</b>Contáctese con ViewMind y pida la liberación de<br>instancia ???;
 Por favor, para comenzar a usar el ViewMind Atlas vuelva a iniciarla;
 viewgetconfig_func_verif = VERIFICACIÓN FUNCIONAL;
 
@@ -351,6 +354,17 @@ viewfuncctl_title = Verificación Funcional;
 viewfuncctl_runcheck = VERIFICAR;
 viewfuncctl_text_not_run = Por favor colóquese el casco y realize la verificación;
 viewfuncctl_text_pass = Verificación de seguimiento ocular exitosa;
+viewfuncctl_btn_send = ENVIAR VERIFICACIÓN;
+viewfuncctl_pcsn     = Número de Serie de la PC;
+viewfuncctl_hmdsn    = Número de Serie del Casco;
+viewfuncctl_btn_no_hmd_error = <b>No se detecto el casco</b><br>Asegúrese de que el casco se encuentre<br>conectado y prendido. Luego reinicie la aplicación;
+viewfuncctl_error_bad_password = <b>Contraseña incorrecta</b><br> Por favor, reingrese su contraseña e <br>inténtelo nuevamente;
+viewfuncctl_error_bad_user     = <b>Usuario no autorizado</b><br>Este usuario no tiene permitido realizar<br>la verificación funcional;
+viewfuncctl_error_bad_sn     = <b>Número de serie incorrecto</b><br>El número de serie provisto no corresponde<br>con el alamacenado por ViewMind;
+viewfuncctl_error_generic  = <b>No se pudieron mandar los datos</b><br>Por favor espere unos momentos e <br>inténtelo nuevamente;
+viewfuncctl_success = <b>Éxito</b><br>Los datos de verficación funcional fueron mandados<br>con éxito;
+
+
 
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = No hay reportes disponibles para procesar;

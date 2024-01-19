@@ -593,7 +593,10 @@ ViewBase {
         // If this dialog is visible all key strokes should be ignored.
         if (eyeTrackingCheckDialog.visible) return;
 
-        //console.log("Inside the evaluation screen")
+        // If the calibration validation is open, all key strokes should be ignored.
+        if (calibrationValidation.visible) return;
+
+        // console.log("KEY PRESSED")
 
         var allowed_keys = [];
 

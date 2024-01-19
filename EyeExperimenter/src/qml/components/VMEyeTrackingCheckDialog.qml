@@ -17,6 +17,11 @@ Item {
     readonly property int vmSTATE_FAIL: 2
     readonly property string vmKEY_TO_CHECK: "update_sampling_frequecy"
 
+    readonly property int vmINTENT_CALIBRATE: 0
+    readonly property int vmINTENT_CHECK: 1
+
+    property int vmIntent: vmINTENT_CALIBRATE
+
     property int vmState: 0
 
     signal dismissed(allok: bool);
@@ -37,10 +42,15 @@ Item {
     }
 
     ////////////////////////// BASE DIALOG FUNCTIONS ////////////////////////
-    function open(){
-        flowControl.hideRenderWindow();
+    function open(intent){
+
+        vmIntent = intent
+
+        if (vmIntent === vmINTENT_CALIBRATE) flowControl.hideRenderWindow();
+
         vmState = vmSTATE_CHECKING
         visible = true
+
         if (flowControl.isSkipETCheckEnabled()){
             console.log("DBUG: Skipping ET Check");
             setCheckOK();
@@ -54,13 +64,14 @@ Item {
         timer.running = false;
         vmState = vmSTATE_PASS;
         // If all is good we automatically move on.
+        if (vmIntent === vmINTENT_CHECK) return;
         close();
         dismissed(true)
     }
 
     function close(){
         visible = false
-        flowControl.showRenderWindow();
+        if (vmIntent === vmINTENT_CALIBRATE) flowControl.showRenderWindow();
     }
 
     MouseArea {
@@ -86,7 +97,7 @@ Item {
                 h = h + messageText.height + messageText.anchors.topMargin*2
                 noTextOrButton = false;
             }
-            if (okButton.visible){
+            if ((okButton.visible) || (goBackButton.visible)) {
                 h = h + okButton.height + okButton.anchors.topMargin*2
                 noTextOrButton = false;
             }
@@ -199,19 +210,19 @@ Item {
         anchors.rightMargin: VMGlobals.adjustWidth(30)
         visible: (vmState === vmSTATE_FAIL)
         onClickSignal: {
-            open();
+            open(vmIntent);
         }
     }
 
     VMButton {
         id: goBackButton
         vmButtonType: goBackButton.vmTypeSecondary
-        vmText: loader.getStringForKey("viewevaluation_checket_btnback")
+        vmText: (vmIntent === vmINTENT_CHECK)? loader.getStringForKey("update_close") :  loader.getStringForKey("viewevaluation_checket_btnback")
         anchors.top: divider.top
         anchors.topMargin: VMGlobals.adjustHeight(10)
         anchors.left: dialog.left
         anchors.leftMargin: VMGlobals.adjustWidth(30)
-        visible: (vmState === vmSTATE_FAIL)
+        visible: (vmState === vmSTATE_FAIL) || ((vmState != vmSTATE_CHECKING) && (vmIntent === vmINTENT_CHECK))
         onClickSignal: {
             close();
             dismissed(false)

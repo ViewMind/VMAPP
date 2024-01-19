@@ -70,12 +70,26 @@ QtObject {
     readonly property color vmRedError:                 "#FD3D60"
     readonly property color vmRedBadIndexBackground:    "#FFF5F7"
 
-    // Codes
-    readonly property int vmAPI_OPINFO_REQUEST: 1
-    readonly property int vmAPI_REPORT_REQUEST: 2
-    readonly property int vmAPI_UPDATE_REQUEST: 3
-    readonly property int vmAPI_OPERATING_INFO_AND_LOG: 6
+    // API Last Request Codes
+    readonly property int vmAPI_OPERATING_INFO         : 1;
+    readonly property int vmAPI_REQUEST_REPORT         : 2;
+    readonly property int vmAPI_REQUEST_UPDATE         : 3;
+    readonly property int vmAPI_ACTIVATE               : 4;
+    readonly property int vmAPI_OPERATING_INFO_AND_LOG : 6;
+    readonly property int vmAPI_SENT_SUPPORT_EMAIL     : 7;
+    readonly property int vmAPI_FUNC_CTL_NEW           : 8;
+    readonly property int vmAPI_FUNC_CTL_HMD_CHANGE    : 9;
 
+    // HTTP Codes used by API
+    readonly property int vmHTTP_CODE_OK                          : 200;
+    readonly property int vmHTTP_CODE_INSTANCE_DISABLED           : 599;
+    readonly property int vmHTTP_CODE_FUNC_VERIF_FAIL_BAD_PASSWD  : 700;
+    readonly property int vmHTTP_CODE_FUNC_VERIF_FAIL_UNAUTHUSER  : 701;
+    readonly property int vmHTTP_CODE_FUNC_VERIF_FAIL_BADSN       : 702;
+    readonly property int vmHTTP_CODE_ACT_FAILED_NOT_LIBERATED    : 600;
+    readonly property int vmHTTP_CODE_ACT_FAILED_INVALID_SN       : 601;
+
+    // Indicate server failure or not.
     readonly property int vmFAIL_CODE_NONE: 0
     readonly property int vmFAIL_CODE_SERVER: 2
 

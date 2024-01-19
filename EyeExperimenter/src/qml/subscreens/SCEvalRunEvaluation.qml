@@ -324,7 +324,7 @@ Rectangle {
     function onNextButtonPressed(){
         //console.log("PRESSED the NEXT Button in Stage" + vmEvaluationStage)
         if (vmEvaluationStage === vmSTAGE_CALIBRATION){
-            eyeTrackingCheckDialog.open();
+            eyeTrackingCheckDialog.open(eyeTrackingCheckDialog.vmINTENT_CALIBRATE);
         }
         else if (vmEvaluationStage == vmSTAGE_PRE_HAND_CALIB){
             startHorizontalHandCalibration();

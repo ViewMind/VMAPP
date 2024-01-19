@@ -21,7 +21,6 @@ BOOL CALLBACK SearchForViewMindAtlasWindow(HWND hwnd, LPARAM substring){
     TCHAR windowTitle[TITLE_SIZE];
 
     GetWindowText(hwnd, windowTitle, TITLE_SIZE);
-    int length = ::GetWindowTextLength(hwnd);
 
     std::wstring temp(&windowTitle[0]);
     std::string title(temp.begin(), temp.end());

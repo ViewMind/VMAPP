@@ -16,21 +16,32 @@ ViewBase {
 
     Connections {
         target: loader
-        function onFinishedRequest () {
+        function onFinishedRequest () {            
             if (mainWindow.getCurrentSwipeIndex() !== VMGlobals.vmSwipeIndexGetVMConfig) return;
+
+            if (loader.getLastAPIRequest() !== VMGlobals.vmAPI_ACTIVATE) return; // Prevents from activating the code below in functional control
 
             // Close the connection dialog and open the user selection dialog.
             mainWindow.closeWait()
             var failCode = loader.wasThereAnProcessingUploadError();
 
-            // This check needs to be done ONLY when on this screen.
-            if (failCode !== VMGlobals.vmFAIL_CODE_NONE){
-                popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewgetconfig_error"));
-                return;
+            let httpCode = loader.getLastHTTPCodeReceived();
+            if (httpCode === VMGlobals.vmHTTP_CODE_OK){
+                successActivation();
             }
-
-            //console.log("All good with the activation!!!");
-            successActivation();
+            else if (httpCode === VMGlobals.vmHTTP_CODE_ACT_FAILED_INVALID_SN){
+                popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewgetconfig_error_sn"));
+            }
+            else if (httpCode === VMGlobals.vmHTTP_CODE_ACT_FAILED_NOT_LIBERATED){
+                let msg = loader.getStringForKey("viewgetconfig_error_lib");
+                let uid =  institution.vmCurrentText + "." + instance.vmCurrentText;
+                msg = msg.replace("???",uid);
+                //console.log("Message is '" + msg + "' and uid is " + uid);
+                popUpNotify(VMGlobals.vmNotificationRed,msg);
+            }
+            else {
+                popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewgetconfig_error"));
+            }
 
         }
     }

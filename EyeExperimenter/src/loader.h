@@ -51,9 +51,12 @@ public:
     Q_INVOKABLE bool processingParametersArePresent() const;
     Q_INVOKABLE void openURLInBrowser(const QString &url);
     Q_INVOKABLE bool instanceDisabled() const;
+    Q_INVOKABLE int  checkHMDChangeStatus() const;
     Q_INVOKABLE QVariantList findPossibleDupes(QString name, QString lname, QString personalID, QString birthDate);
     Q_INVOKABLE QVariantMap getInstIDFileInfo() const;
     Q_INVOKABLE QVariantMap getHWInfo() const;
+    Q_INVOKABLE QString getInstanceUID() const;
+    Q_INVOKABLE qint32 getLastHTTPCodeReceived() const;
 
     //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QString getNewUpdateVersionAvailable() const;
@@ -108,6 +111,7 @@ public:
     Q_INVOKABLE qint32 getLastAPIRequest();
     Q_INVOKABLE void requestActivation(int institution, int instance, const QString &key);
     Q_INVOKABLE void sendSupportEmail(const QString &subject,const QString &body, const QString &evaluator_name, const QString &evaluator_email);
+    Q_INVOKABLE void sendFunctionalControlData(const QString &instituion, const QString &instance, const QString &email, const QString &password, const QString &fname, const QString &lname);
 
     //////////////////////////// PROTOCOL RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE bool addProtocol(const QString &name, const QString &id);
@@ -138,6 +142,9 @@ private:
     ConfigurationManager *configuration;
     ConfigurationManager language;
     ConfigurationManager explanationStrings;
+
+    // Temporarily store instance data while doing functional verification.
+    ConfigurationManager tempInstanceData;
 
     // Module to recognize HW in computer.
     HWRecognizer hwRecognizer;
@@ -175,6 +182,9 @@ private:
 
     // Used mainly for updating the title bar.
     QString institutionStringIdentification;
+
+    // We store the HTTP Code from the last API Request
+    qint32 lastHTTPCodeReceived;
 
     // Loads the appropiate language file.
     void changeLanguage();

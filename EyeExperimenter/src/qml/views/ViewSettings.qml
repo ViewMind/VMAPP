@@ -16,6 +16,7 @@ Item {
     property bool vmAnyChangeState: false
 
     signal restartRequired()
+    signal requestEyeCheck();
 
     ////////////////////////// BASE DIALOG FUNCTIONS ////////////////////////
     function open(){

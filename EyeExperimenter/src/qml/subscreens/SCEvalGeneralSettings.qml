@@ -39,6 +39,9 @@ Rectangle {
             }
         }
 
+        // Every time we go in here we clear the dr error just in case.
+        doctorSelection.vmErrorMsg = "";
+
         // Getting the last selected protocol
         var selectedprotocol = loader.getSettingsString("last_selected_protocol");
         var selectedProtocolIndex = 0;

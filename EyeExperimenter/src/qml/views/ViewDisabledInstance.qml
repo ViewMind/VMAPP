@@ -11,7 +11,7 @@ ViewBase {
         function onFinishedRequest () {
             // Close the connection dialog and open the user selection dialog.
             //console.log("Finished request")
-            if ( (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPINFO_REQUEST) ||
+            if ( (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPERATING_INFO) ||
                  (loader.getLastAPIRequest() === VMGlobals.vmAPI_OPERATING_INFO_AND_LOG)){
 
                 mainWindow.closeWait()

@@ -16,6 +16,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
 
     loadingError = false;
     configuration = c;
+    lastHTTPCodeReceived = 0;
 
     cmd.clear();
     cmd.type = ConfigurationManager::VT_INT;
@@ -82,7 +83,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     apiclient.configure(configuration->getString(Globals::VMConfig::INSTITUTION_ID),
                         configuration->getString(Globals::VMConfig::INSTANCE_NUMBER),
                         Globals::Share::EXPERIMENTER_VERSION_NUMBER,
-                        Globals::REGION,
+                        Globals::REGION, // Region here referst to LOCAL or DEV. During production is always APP or Global.
                         configuration->getString(Globals::VMConfig::INSTANCE_KEY),
                         configuration->getString(Globals::VMConfig::INSTANCE_HASH_KEY));
 
@@ -105,6 +106,27 @@ bool Loader::instanceDisabled() const {
     return !this->localDB.isInstanceEnabled();
 }
 
+qint32 Loader::checkHMDChangeStatus() const {
+
+    QString expected_hmd_change = this->localDB.getHMDChangeSN();
+    if (expected_hmd_change == "") return 0; // No change of HMD
+
+    // Otherwise we compare the expected with the current.
+    QString connected_hmd_sn = this->hwRecognizer.getHardwareSpecs().value(HWKeys::HMD_SN);
+    if (connected_hmd_sn != expected_hmd_change){
+        StaticThreadLogger::error("Loader::requireHMDChange","The HMD Change flag has been set. However the expected SN for HMD is: '" + expected_hmd_change + "', while the current HMD is: '" + connected_hmd_sn + "'");
+        return 1;
+    }
+
+    // We are good. Just need to do a functional check.
+    return 2;
+
+}
+
+qint32 Loader::getLastHTTPCodeReceived() const {
+    return this->lastHTTPCodeReceived;
+}
+
 QVariantMap Loader::getInstIDFileInfo() const {
 
     // The inst ID file info is simply a file that identifies the intances (instance and institution number) when the license file is not present
@@ -118,6 +140,10 @@ QVariantMap Loader::getInstIDFileInfo() const {
 
 QVariantMap Loader::getHWInfo() const {
     return this->hwRecognizer.getHardwareSpecsAsVariantMap();
+}
+
+QString Loader::getInstanceUID() const {
+    return configuration->getString(Globals::VMConfig::INSTITUTION_ID) + "." + configuration->getString(Globals::VMConfig::INSTANCE_NUMBER);
 }
 
 QVariantList Loader::findPossibleDupes(QString name, QString lname, QString personalID, QString birthDate){
@@ -998,9 +1024,22 @@ void Loader::sendSupportEmail(const QString &subject, const QString &body, const
     }
 }
 
+
+void Loader::sendFunctionalControlData(const QString &instituion, const QString &instance, const QString &email, const QString &password, const QString &fname, const QString &lname){
+    processingUploadError = FAIL_CODE_NONE;
+    QString uid = instituion + "." + instance;
+    tempInstanceData.clear();
+    tempInstanceData.addKeyValuePair(Globals::VMConfig::INSTITUTION_ID,instituion);
+    tempInstanceData.addKeyValuePair(Globals::VMConfig::INSTANCE_NUMBER,instance);
+    if (!apiclient.requestFunctionalControl(this->hwRecognizer.getHardwareSpecsAsVariantMap(),email,password,fname,lname,uid)){
+        StaticThreadLogger::error("Loader::requestActivation","Seding functional control data: "  + apiclient.getError());
+        emit Loader::finishedRequest();
+    }
+}
+
 void Loader::requestActivation(int institution, int instance, const QString &key){
     processingUploadError = FAIL_CODE_NONE;
-    if (!apiclient.requestActivation(institution,instance,key,hwRecognizer.toString(true))){
+    if (!apiclient.requestActivation(institution,instance,key,hwRecognizer.toString(true),hwRecognizer.getHardwareSpecsAsVariantMap())){
         StaticThreadLogger::error("Loader::requestActivation","Request activation error: "  + apiclient.getError());
         emit Loader::finishedRequest();
     }
@@ -1114,21 +1153,21 @@ void Loader::onNotificationFromFlowControl(QVariantMap notification){
 
 void Loader::receivedAPIResponse(){
 
+    QVariantMap retdata = apiclient.getMapDataReturned();
+    this->lastHTTPCodeReceived = retdata.value(APINames::MAIN_HTTP_CODE).toInt();
+
     if (!apiclient.getError().isEmpty()){
 
         // We need to check if the instance is disabled or not.
-
-        QVariantMap retdata = apiclient.getMapDataReturned();
-        qint32 http_code = retdata.value(APINames::MAIN_HTTP_CODE).toInt();
-        if (http_code == APINames::DISABLED_INSTANCE_HTTP_CODE){
-            StaticThreadLogger::error("Loader::receivedRequest","Received instance disabled code");
+        if (this->lastHTTPCodeReceived == HTTPCodes::INSTANCE_DISABLED){
+            StaticThreadLogger::error("Loader::receivedAPIResponse","Received instance disabled code");
             processingUploadError = FAIL_INSTANCE_DISABLED;
             this->localDB.setInstanceEnableTo(false);
         }
         else {
             this->localDB.setInstanceEnableTo(true);
             processingUploadError = FAIL_CODE_SERVER_ERROR;
-            StaticThreadLogger::error("Loader::receivedRequest","Error Receiving Request :"  + apiclient.getError());
+            StaticThreadLogger::error("Loader::receivedAPIResponse","Error Receiving Request :"  + apiclient.getError());
             if (apiclient.getLastRequestType() == APIClient::API_SENT_SUPPORT_EMAIL){
                 emit Loader::sendSupportEmailDone(false);
             }
@@ -1147,7 +1186,7 @@ void Loader::receivedAPIResponse(){
             apiclient.clearFileToSendHandles();
 
             if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO_AND_LOG){
-                StaticThreadLogger::log("Loader::receivedRequest","Returned from operating information call with log uplaod"); // This log line serves as the purpose of ensuring that the logfile.log will exist.
+                StaticThreadLogger::log("Loader::receivedAPIResponse","Returned from operating information call with log uplaod"); // This log line serves as the purpose of ensuring that the logfile.log will exist.
 
                 //QFile::remove(apiclient.getLastGeneratedLogFileName()); // This will fail if no file exists. So we don't check for errors.
 
@@ -1161,7 +1200,7 @@ void Loader::receivedAPIResponse(){
                 localDB.setLogUploadMark();
             }
             else {
-                StaticThreadLogger::log("Loader::receivedRequest","Got Operating Information. No Log Upload");
+                StaticThreadLogger::log("Loader::receivedAPIResponse","Got Operating Information. No Log Upload");
             }
 
             // Just in case we clear the calibration failed directory.
@@ -1174,38 +1213,38 @@ void Loader::receivedAPIResponse(){
                 QFile deletefile(apiclient.getLastGeneratedSubjectJSONFile());
                 if (deletefile.exists()){
                     if (deletefile.remove()){
-                        StaticThreadLogger::log("Loader::receivedRequest","Deleted subject update JSON file of: "  + deletefile.fileName());
+                        StaticThreadLogger::log("Loader::receivedAPIResponse","Deleted subject update JSON file of: "  + deletefile.fileName());
                     }
                     else {
-                        StaticThreadLogger::warning("Loader::receivedRequest","Failed to delete subject update JSON file of: "  + deletefile.fileName());
+                        StaticThreadLogger::warning("Loader::receivedAPIResponse","Failed to delete subject update JSON file of: "  + deletefile.fileName());
                     }
                 }
             }
 
-            QVariantMap ret = apiclient.getMapDataReturned();
-            QVariantMap mainData = ret.value(APINames::MAIN_DATA).toMap();
+
+            QVariantMap mainData = retdata.value(APINames::MAIN_DATA).toMap();
 
             if (expecting_subject_ids){
                 if (mainData.contains(LocalDB::SUBJECT_UPDATED_IDS)){
                     localDB.markSubjectsAsUpdated(mainData.value(LocalDB::SUBJECT_UPDATED_IDS).toList());
                 }
                 else{
-                    StaticThreadLogger::warning("Loader::receivedRequest","There was an existent subject update file, however not updated ids");
+                    StaticThreadLogger::warning("Loader::receivedAPIResponse","There was an existent subject update file, however not updated ids");
                 }
             }
 
             if (DBUGBOOL(Debug::Options::PRINT_SERVER_RESP)){
                 QString toprint = "DBUG: Received response:\n" + Debug::QVariantMapToString(mainData);
-                StaticThreadLogger::warning("Loader::receivedRequest",toprint);
+                StaticThreadLogger::warning("Loader::receivedAPIResponse",toprint);
             }
 
             if (!localDB.setMedicInformationFromRemote(mainData)){
-                StaticThreadLogger::error("Loader::receivedRequest","Failed to set medical professionals info from server: " + localDB.getError());
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set medical professionals info from server: " + localDB.getError());
             }
 
             qint32 patients_added = localDB.mergePatientDBFromRemote(mainData);
             if (patients_added < 0){
-                StaticThreadLogger::error("Loader::receivedRequest","Failed to merge the patient database. Reason: " + localDB.getError());
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to merge the patient database. Reason: " + localDB.getError());
             }
             else {
                 StaticThreadLogger::log("Loader::receiveRequest", "Added " + QString::number(patients_added) + " new subjects");
@@ -1216,20 +1255,20 @@ void Loader::receivedAPIResponse(){
                 QString ppstr = Debug::QVariantMapToString(pp);
                 ppstr = "DBUG: RECEIVED PROCESSING PARAMETERS:\n" + ppstr;
                 qDebug() << ppstr;
-                StaticThreadLogger::warning("Loader::receivedRequest",ppstr);
+                StaticThreadLogger::warning("Loader::receivedAPIResponse",ppstr);
             }
 
             if (!localDB.setProcessingParametersFromServerResponse(mainData)){
-                StaticThreadLogger::error("Loader::receivedRequest","Failed to set processing parameters from server: " + localDB.getError());
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set processing parameters from server: " + localDB.getError());
             }
 
             if (mainData.contains(APINames::Institution::INST_COUNTRY)){
                 QString inst_country = mainData.value(APINames::Institution::INST_COUNTRY).toString();
                 if (!localDB.setInstitutionCountryCode(inst_country)){
-                    StaticThreadLogger::error("Loader::receivedRequest","Failed storing changes to country code. Reason: " + localDB.getError());
+                    StaticThreadLogger::error("Loader::receivedAPIResponse","Failed storing changes to country code. Reason: " + localDB.getError());
                 }
                 else {
-                    StaticThreadLogger::log("Loader::receivedRequest","Setting the institution country to: " + inst_country);
+                    StaticThreadLogger::log("Loader::receivedAPIResponse","Setting the institution country to: " + inst_country);
                 }
             }
 
@@ -1238,16 +1277,24 @@ void Loader::receivedAPIResponse(){
                 QString qcstr = Debug::QVariantMapToString(qc);
                 qcstr = "DBUG: RECEIVED QC PARAMETERS:\n" + qcstr;
                 qDebug() << qcstr;
-                StaticThreadLogger::warning("Loader::receivedRequest",qcstr);
+                StaticThreadLogger::warning("Loader::receivedAPIResponse",qcstr);
 
             }
 
             if (!localDB.setQCParametersFromServerResponse(mainData)){
-                StaticThreadLogger::error("Loader::receivedRequest","Failed to set QC parameters from server: " + localDB.getError());
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set QC parameters from server: " + localDB.getError());
             }
 
             if (!localDB.setRecoveryPasswordFromServerResponse(mainData)){
-                StaticThreadLogger::error("Loader::receivedRequest","Failed to set recovery password from server: " + localDB.getError());
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set recovery password from server: " + localDB.getError());
+            }
+
+            if (mainData.contains(APINames::HMD_CHANGE_SN)){
+                QString sn = mainData.value(APINames::HMD_CHANGE_SN).toString();
+                if (sn != ""){
+                    StaticThreadLogger::log("Loader::receivedAPIResponse","API response contained new HMD Change S/N: '" + sn + "'");
+                    localDB.setHMDChangeSN(sn);
+                }
             }
 
             // Checking for updates.
@@ -1260,13 +1307,13 @@ void Loader::receivedAPIResponse(){
                 }
 
                 if (!newVersionAvailable.isEmpty()){
-                    StaticThreadLogger::log("Loader::receivedRequest","Update Available: " + newVersionAvailable);
+                    StaticThreadLogger::log("Loader::receivedAPIResponse","Update Available: " + newVersionAvailable);
                 }
             }
             else{
                 QString dbug = "DBUG: Update check is disabled";
                 qDebug() << dbug;
-                StaticThreadLogger::error("Loader::receivedRequest",dbug);
+                StaticThreadLogger::error("Loader::receivedAPIResponse",dbug);
             }
 
             // We straight up call the start up sequence checker and get out.
@@ -1275,7 +1322,7 @@ void Loader::receivedAPIResponse(){
 
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){
-            StaticThreadLogger::log("Loader::receivedRequest","Study file was successfully sent");
+            StaticThreadLogger::log("Loader::receivedAPIResponse","Study file was successfully sent");
 
             apiclient.clearFileToSendHandles();
 
@@ -1285,17 +1332,16 @@ void Loader::receivedAPIResponse(){
             else{
                 QString dbug = "DBUG: Studies are not moved to sent directory";
                 qDebug() << dbug;
-                StaticThreadLogger::error("Loader::receivedRequest",dbug);
+                StaticThreadLogger::error("Loader::receivedAPIResponse",dbug);
             }
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_UPDATE){
 
-            QVariantMap ret = apiclient.getMapDataReturned();
-            QVariantMap mainData = ret.value(APINames::MAIN_DATA).toMap();
+            QVariantMap mainData = retdata.value(APINames::MAIN_DATA).toMap();
 
             if (DBUGBOOL(Debug::Options::PRINT_SERVER_RESP)){
                 QString toprint = "DBUG: Received response to update request:\n" + Debug::QVariantMapToString(mainData);
-                StaticThreadLogger::warning("Loader::receivedRequest",toprint);
+                StaticThreadLogger::warning("Loader::receivedAPIResponse",toprint);
             }
 
             // Before we actually download anything we need to check if the last download app coincides with the desired app.
@@ -1304,11 +1350,11 @@ void Loader::receivedAPIResponse(){
             if (updateDownloadSkipped){
                 updateDownloadSkipped = updateDownloadSkipped && QFile(Globals::Paths::VMTOOLEXE).exists();
                 if (!updateDownloadSkipped){
-                    StaticThreadLogger::log("Loader::receivedRequest", "The last downloaded app version and the new version are the same but the VM Maintenance Tool Executable could not be found. Download will ocurr");
+                    StaticThreadLogger::log("Loader::receivedAPIResponse", "The last downloaded app version and the new version are the same but the VM Maintenance Tool Executable could not be found. Download will ocurr");
                 }
             }
             else {
-                StaticThreadLogger::log("Loader::receivedRequest", "The last downloaded app version (" + lastDownlodedApp + ") differs from the new version (" + newVersionAvailable + "). Download will ocurr");
+                StaticThreadLogger::log("Loader::receivedAPIResponse", "The last downloaded app version (" + lastDownlodedApp + ") differs from the new version (" + newVersionAvailable + "). Download will ocurr");
             }
 
             if (!updateDownloadSkipped){
@@ -1322,23 +1368,23 @@ void Loader::receivedAPIResponse(){
 
                 QString override_url = DBUGSTR(Debug::Options::OVERRIDE_UPDATE_LINK);
                 if (override_url != ""){
-                    StaticThreadLogger::warning("Loader::receivedRequest","Overriding download URL with one provided in VMDebug File override_url");
+                    StaticThreadLogger::warning("Loader::receivedAPIResponse","Overriding download URL with one provided in VMDebug File override_url");
                     dlurl = override_url;
                 }
 
                 // Before we download anything, we need to ensure that the current VM Tool is deleted.
                 if (!QDir(Globals::Paths::VMTOOLDIR).removeRecursively()){
-                    StaticThreadLogger::error("Loader::receivedRequest","Unable to delete current VMMaintenaceDir installation. Aborting update");
+                    StaticThreadLogger::error("Loader::receivedAPIResponse","Unable to delete current VMMaintenaceDir installation. Aborting update");
                     updateDownloadFinished(false);
                     return;
                 }
 
-                StaticThreadLogger::log("Loader::receivedRequest","Downloading the update package from '" + dlurl  + "'");
+                StaticThreadLogger::log("Loader::receivedAPIResponse","Downloading the update package from '" + dlurl  + "'");
                 fileDownloader.download(dlurl,expectedPath);
 
             }
             else {
-                StaticThreadLogger::log("Loader::receivedRequest", "The last downloaded app version (" + lastDownlodedApp + ") is the same as the new version (" + newVersionAvailable + "). Skipping download");
+                StaticThreadLogger::log("Loader::receivedAPIResponse", "The last downloaded app version (" + lastDownlodedApp + ") is the same as the new version (" + newVersionAvailable + "). Skipping download");
                 updateDownloadFinished(true);
             }
 
@@ -1348,10 +1394,9 @@ void Loader::receivedAPIResponse(){
         }
         else if (apiclient.getLastRequestType() == APIClient::API_ACTIVATE){
 
-            StaticThreadLogger::log("Loader::receivedRequest","Successfully finished an activation request");
+            StaticThreadLogger::log("Loader::receivedAPIResponse","Successfully finished an activation request");
 
-            QVariantMap ret = apiclient.getMapDataReturned();
-            QVariantMap mainData = ret.value(APINames::MAIN_DATA).toMap();
+            QVariantMap mainData = retdata.value(APINames::MAIN_DATA).toMap();
 
             // We need to create a file with the name of what should be the sole key.
             QStringList keys = mainData.keys();
@@ -1359,7 +1404,7 @@ void Loader::receivedAPIResponse(){
             // processingUploadError = FAIL_BAD_ACTIVATION_RETURN;
 
             if (keys.empty()){
-                StaticThreadLogger::error("Loader::receivedRequest","Received activation request with a map with no keys");
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Received activation request with a map with no keys");
                 processingUploadError = FAIL_BAD_ACTIVATION_RETURN;
                 emit Loader::finishedRequest();
                 return;
@@ -1367,14 +1412,14 @@ void Loader::receivedAPIResponse(){
 
             QString vmconfig_filename = keys.first();
             if (keys.size() > 1){
-                StaticThreadLogger::warning("Loader::receivedRequest","More that one key recieved in the map resulting in activiation request. Proceeding with first key: " + vmconfig_filename);
+                StaticThreadLogger::warning("Loader::receivedAPIResponse","More that one key recieved in the map resulting in activiation request. Proceeding with first key: " + vmconfig_filename);
             }
 
             // Now we save the contennts of the map to a file
             QString license_data = mainData.value(vmconfig_filename).toString();
             QFile vmconfig_file(vmconfig_filename);
             if (!vmconfig_file.open(QFile::WriteOnly)){
-                StaticThreadLogger::error("Loader::receivedRequest","Unable to create license file '" + vmconfig_filename + "'");
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Unable to create license file '" + vmconfig_filename + "'");
                 processingUploadError = FAIL_BAD_ACTIVATION_RETURN;
                 emit Loader::finishedRequest();
                 return;
@@ -1387,7 +1432,7 @@ void Loader::receivedAPIResponse(){
         }
         else if (apiclient.getLastRequestType() == APIClient::API_SENT_SUPPORT_EMAIL){
             // In this case there is nothing todo really other than notify the fron end.
-            StaticThreadLogger::log("Loader::receivedRequest","Tech support email sent successfully");
+            StaticThreadLogger::log("Loader::receivedAPIResponse","Tech support email sent successfully");
 
             // We need to clear the sent files to avoid garbage build up.
             apiclient.clearFileToSendHandles();
@@ -1402,8 +1447,22 @@ void Loader::receivedAPIResponse(){
 
             emit Loader::sendSupportEmailDone(true);
         }
+        else if (apiclient.getLastRequestType() == APIClient::API_FUNC_CTL_HMD_CHANGE){
+            // The HMD Change flag (the new HMD S/N) needs to be cleared.
+            StaticThreadLogger::log("Loader::receivedAPIResponse","Clearing HMD Change S/N");
+            localDB.setHMDChangeSN("");
+        }
+        else if (apiclient.getLastRequestType() == APIClient::API_FUNC_CTL_NEW){
+            // We need to create the VM ID file.
+            if (!tempInstanceData.saveToFile(Globals::Paths::VMINSTID)){
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed in creating the VMINST ID file. Reason: " + tempInstanceData.getError());
+            }
+            else {
+                StaticThreadLogger::log("Loader::receivedAPIResponse","Created VM Inst ID File");
+            }
+        }
         else {
-            StaticThreadLogger::error("Loader::receivedRequest","Received unknown API Request Type finish:  " + QString::number(apiclient.getLastRequestType()));
+            StaticThreadLogger::error("Loader::receivedAPIResponse","Received unknown API Request Type finish:  " + QString::number(apiclient.getLastRequestType()));
         }
     }
     emit Loader::finishedRequest();

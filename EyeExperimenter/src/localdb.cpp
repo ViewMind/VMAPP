@@ -19,6 +19,7 @@ const char * LocalDB::MAIN_PREFERENCES                       = "preferences";
 const char * LocalDB::MAIN_LAST_APP_DOWNLOADED               = "last_downloaded_app";
 const char * LocalDB::MAIN_INSTITUTION_COUNTRY_CODE          = "institution_country_code";
 const char * LocalDB::MAIN_INSTANCE_ENABLED                  = "instance_enabled";
+const char * LocalDB::MAIN_HMD_CHANGE                        = "hmd_change_sn";
 
 // Evaluator fields
 const char * LocalDB::APPUSER_NAME          = "name";
@@ -927,6 +928,17 @@ QString LocalDB::getLastDownloadedApp() const{
 
 bool LocalDB::setLastDownloadedApp(const QString &version){
     data[MAIN_LAST_APP_DOWNLOADED] = version;
+    return saveAndBackup();
+}
+
+////////////////////////////// HMD Change ///////////////////////////////
+QString LocalDB::getHMDChangeSN() const {
+    if (data.contains(MAIN_HMD_CHANGE)) return data.value(MAIN_HMD_CHANGE).toString();
+    else return "";
+}
+
+bool LocalDB::setHMDChangeSN(const QString &sn){
+    data[MAIN_HMD_CHANGE] = sn;
     return saveAndBackup();
 }
 

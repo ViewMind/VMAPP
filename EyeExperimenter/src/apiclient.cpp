@@ -181,7 +181,43 @@ bool APIClient::requestSupportEmail(const QString &subject, const QString &email
     return sendRequest();
 }
 
-bool APIClient::requestActivation(qint32 institution, qint32 instance, const QString &key, const QString &hardware_description_string){
+bool APIClient::requestFunctionalControl(const QVariantMap &hwInfo,
+                                         const QString &email,
+                                         const QString &password,
+                                         const QString &name,
+                                         const QString &lastname,
+                                         const QString &instance_identifier){
+
+    error = "";
+
+    // Clearing everything as per usal.
+    rest_controller.resetRequest();
+
+    // We now make the URL
+    rest_controller.setAPIEndpoint(ENDPOINT_FUNC_CTL + "/" + instance_identifier);
+
+    QString intent = "new";
+    lastRequest = API_FUNC_CTL_NEW;
+    if ((name != "") && (lastname != "")){
+        lastRequest = API_FUNC_CTL_HMD_CHANGE;
+        intent = "hmd_change";
+    }
+
+    QVariantMap json;
+    json[JFIELD_HWINFO]   = hwInfo;
+    json[JFIELD_EMAIL]    = email;
+    json[JFIELD_FNAME]    = name;
+    json[JFIELD_LNAME]    = lastname;
+    json[JFIELD_PASSWORD] = password;
+    json[JFIELD_INTENT]   = intent;
+
+    rest_controller.setJSONData(json);
+
+    return sendRequest(true);
+
+}
+
+bool APIClient::requestActivation(qint32 institution, qint32 instance, const QString &key, const QString &hardware_description_string, const QVariantMap &hwinfo){
 
     error = "";
 
@@ -198,9 +234,10 @@ bool APIClient::requestActivation(qint32 institution, qint32 instance, const QSt
     rest_controller.setURLParameters(map);
 
     // The actual hardware string is sent via POST data as the json fields are not obtained when doing activation.
-    QVariantMap postdata;
-    postdata.insert(POST_FIELD_HW_STRING, hardware_description_string);
-    rest_controller.setPOSTDataToSend(postdata);
+    QVariantMap json;
+    json[JFIELD_HWINFO] = hwinfo;
+    json[JFIELD_HW_DESC_STRING] = hardware_description_string;
+    rest_controller.setJSONData(json);
 
     lastRequest = API_ACTIVATE;
 
