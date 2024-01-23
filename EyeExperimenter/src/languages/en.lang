@@ -316,6 +316,7 @@ viewevaluation_nback_wait_msg = Press "G" to
 continue with study;
 
 viewevaluation_checket_title = Checking eye tracker ...;
+viewevaluation_checket_title_pass = Eye tracking is working;
 viewevaluation_checket_title_fail = Unable to detect eye tracking data;
 viewevaluation_checket_btnfail = RETRY;
 viewevaluation_checket_btnback = GO TO PATIENT LIST;
@@ -346,7 +347,7 @@ viewgetconfig_error    = <b>App Could not be activated</b><br>Try again.<br>If t
 viewgetconfig_error_sn = <b>Incorrect Serial Numbers</b><br>Please make sure that the headset is plugged in<br>and try again;
 viewgetconfig_success  = Activation was Successful|The application will close now.
 Please start ViewMind Atlas again to begin using it.;
-viewgetconfig_error_lib = <b>Instance not liberated</b><br>Contact ViewMind and request liberation of instance ???;
+viewgetconfig_error_lib = <b>Instance not releaased</b><br>Request instance ??? release to ViewMind;
 viewgetconfig_func_verif = FUNCTIONAL VERIFICATION;
 
 #********************************* VM FUNC VERIF SCREEN *********************************

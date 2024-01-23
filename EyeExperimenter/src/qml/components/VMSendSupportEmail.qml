@@ -18,6 +18,9 @@ Item {
         subject.setSelection(-1);
         issues.clear()
         evaluator.setModelList(loader.getLoginEmails(true));
+        subject.vmErrorMsg = "";
+        issues.vmErrorMsg = "";
+        evaluator.vmErrorMsg = "";
         visible = true
     }
 

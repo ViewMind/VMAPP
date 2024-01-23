@@ -23,13 +23,12 @@ Rectangle {
 
             // This check needs to be done ONLY when on this screen.
             if (( failCode !== VMGlobals.vmFAIL_CODE_NONE ) && (mainWindow.getCurrentSwipeIndex() === VMGlobals.vmSwipeIndexQCView)){
-
                 popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewqc_err_server_error"));
                 return;
 
             }
 
-            if (loader.getLastAPIRequest() === VMGlobals.vmAPI_REPORT_REQUEST){
+            if (loader.getLastAPIRequest() === VMGlobals.vmAPI_REQUEST_REPORT){
                 popUpNotify(VMGlobals.vmNotificationGreen,loader.getStringForKey("viewqc_success_on_send"));
                 swipeTo(VMGlobals.vmSwipeIndexMainScreen)
             }

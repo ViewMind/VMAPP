@@ -126,6 +126,7 @@ Item {
         font.pixelSize: VMGlobals.vmFontExtraLarge
         text: {
             if (vmState === vmSTATE_FAIL) return loader.getStringForKey("viewevaluation_checket_title_fail")
+            else if (vmState === vmSTATE_PASS) return loader.getStringForKey("viewevaluation_checket_title_pass")
             else return loader.getStringForKey("viewevaluation_checket_title")
         }
         height: VMGlobals.adjustHeight(37)

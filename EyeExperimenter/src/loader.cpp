@@ -93,6 +93,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     }
 
     // Getting the HW Data, and printing out for debugging.
+    StaticThreadLogger::log("Loader::Loader", "ViewMind Atlas Instance:  " + configuration->getString(Globals::VMConfig::INSTITUTION_ID) + "." + configuration->getString(Globals::VMConfig::INSTANCE_NUMBER));
     StaticThreadLogger::log("Loader::Loader","HW SPECS\n" + hwRecognizer.toString(true));
 
 }

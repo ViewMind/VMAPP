@@ -17,6 +17,13 @@ Rectangle {
         password.clear()
         verifyPassword.clear()
 
+        // Making sure no error is shown.
+        fname.vmErrorMsg = "";
+        lname.vmErrorMsg = "";
+        email.vmErrorMsg = "";
+        password.vmErrorMsg = "";
+        verifyPassword.vmErrorMsg = "";
+
     }
 
     function checkAndSave(){

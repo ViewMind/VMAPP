@@ -55,6 +55,7 @@ Rectangle {
         anchors.topMargin: VMGlobals.adjustHeight(106);
         anchors.left: parent.left
         anchors.leftMargin: VMGlobals.adjustWidth(20)
+        z: parent.z + 10
         Component.onCompleted: {
             var langs = loader.getStringListForKey("viewsettings_langs")
             setModelList(loader.getStringListForKey("viewsettings_langs"))

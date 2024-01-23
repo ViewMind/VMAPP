@@ -607,6 +607,9 @@ ViewBase {
                     flowControl.renderWaitScreen("");
                     // Store calibration history right here.
                     flowControl.storeCalibrationHistoryAsFailedCalibration();
+                    // These two "sets" are necessary to prevent certain conditions from making the skip calibration button available when it shouldn't be.
+                    evaluationRun.vmCurrentEvaluation = 0;
+                    evaluationRun.vmIsCalibrated = false;
                     mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
                 }
             }

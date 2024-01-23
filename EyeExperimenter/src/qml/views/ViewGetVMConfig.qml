@@ -76,6 +76,7 @@ ViewBase {
             institution.setText(id_data[vmINSTITUTION_ID])
             btnGetLicence.vmEnabled = true;
             btnFuncVerif.visible = false;
+            activation_code.vmEnabled = true;
         }
     }
 
