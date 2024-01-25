@@ -146,7 +146,7 @@ static QVariantMap GetNameCodeMap() {
 
 namespace Share {
 static const QString APP_NAME = "ViewMind Atlas";
-static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.20";
+static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.21";
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
 static const QString PATIENT_UID = "patient_uid";

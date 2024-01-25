@@ -348,7 +348,16 @@ bool ConfigurationManager::saveToFile(const QString &fileName, const Delimiters 
     for (qint32 i = 0; i < keys.size(); i++){
         QString value;
         QVariant datum = data.value(keys.at(i));
-        if (datum.canConvert(QMetaType(QMetaType::QVariantList))){
+
+        /**
+         * WARNING: QUICK FIX.
+         * NO TEST was done to figure our is the value is an cation list that the can conver function will thrown a false.
+         */
+
+        if (datum.canConvert(QMetaType(QMetaType::QString))){
+            value = datum.toString();
+        }
+        else{
             QVariantList list = datum.toList();
             QStringList temp;
             for (qint32 j = 0; j < list.size(); j++){
@@ -356,7 +365,6 @@ bool ConfigurationManager::saveToFile(const QString &fileName, const Delimiters 
             }
             value = temp.join(delimiters.field);
         }
-        else value = datum.toString();
 
         save = save + keys.at(i) + " " + delimiters.name + " " + value + delimiters.statement + "\n";
     }
