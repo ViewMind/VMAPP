@@ -37,6 +37,7 @@ ViewBase {
                         requestUpdateDialog.open();
                     }
                     else {
+                        console.log("Swiping at login");
                         mainWindow.swipeTo(VMGlobals.vmSwipeIndexLogin)
                     }
                 }

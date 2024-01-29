@@ -351,7 +351,6 @@ viewgetconfig_error_lib = <b>Instance not releaased</b><br>Request instance ??? 
 viewgetconfig_func_verif = FUNCTIONAL VERIFICATION;
 
 #********************************* VM FUNC VERIF SCREEN *********************************
-viewfuncctl_title = Functional Verification;
 viewfuncctl_runcheck = RUN CHECK;
 viewfuncctl_text_not_run = Please put on the headset and run the check;
 viewfuncctl_text_pass = Eye tracking verification sucessful;
@@ -364,7 +363,7 @@ viewfuncctl_error_bad_user     = <b>Unauthorized user</b><br>This user cannot be
 viewfuncctl_error_bad_sn     = <b>Incorrect Serial Number</b><br>The serial number of the device does match<br>internal records;
 viewfuncctl_error_generic  = <b>Unable to send the data</b><br>Please try again in a few minutes;
 viewfuncctl_success = <b>Success</b><br>Functional control data was successfully sent;
-
+viewfuncctl_title = Functional Verificación;
 
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = No reports available for processing;

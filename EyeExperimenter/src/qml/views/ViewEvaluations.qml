@@ -588,15 +588,21 @@ ViewBase {
 
     Keys.onPressed: function (event) {
 
+        //console.log("KEY PRESSED: " + event.key);
+
         if (viewer.currentIndex !== vmSC_INDEX_EVALUATION_SCREEN) return;
+
+        //console.log("KEY PRESSED: " + event.key);
 
         // If this dialog is visible all key strokes should be ignored.
         if (eyeTrackingCheckDialog.visible) return;
 
+        //console.log("KEY PRESSED: " + event.key);
+
         // If the calibration validation is open, all key strokes should be ignored.
         if (calibrationValidation.visible) return;
 
-        // console.log("KEY PRESSED")
+        //console.log("KEY PRESSED: " + event.key);
 
         var allowed_keys = [];
 

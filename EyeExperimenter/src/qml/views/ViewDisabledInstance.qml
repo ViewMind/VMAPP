@@ -23,7 +23,10 @@ ViewBase {
 
                 }
                 else {
-                    mainWindow.swipeTo(VMGlobals.vmSwipeIndexLogin)
+                    // This is important cause otherwise we will go to login when we shouldn't.
+                    if (loader.getNewUpdateVersionAvailable() === ""){
+                       mainWindow.swipeTo(VMGlobals.vmSwipeIndexLogin)
+                    }
                 }
 
             }

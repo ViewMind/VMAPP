@@ -14,6 +14,7 @@ ViewBase {
         password.clear()
         verifyPassword.clear()
         email.clear()
+        verifyEmail.clear();
         acceptTerms.vmIsOn = false;
     }
 
@@ -49,7 +50,7 @@ ViewBase {
             return;
         }
         if (loader.checkIfEvaluatorEmailExists(email.vmCurrentText)){
-            labelMail.vmErrorMsg = loader.getStringForKey("viewaddeval_exmail_exists");
+            email.vmErrorMsg = loader.getStringForKey("viewaddeval_exmail_exists");
             return;
         }
 

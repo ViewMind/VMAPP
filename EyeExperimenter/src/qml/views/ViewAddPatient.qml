@@ -61,6 +61,8 @@ ViewBase {
     }
 
     function numberCheck(text,range){
+        let isnum = /^\d+$/.test(text);
+        if (!isnum) return -1;
         var number = parseInt(text)
         if (isNaN(number)) return -1;
         if (number < range[0]) return 0;
@@ -111,6 +113,7 @@ ViewBase {
         }
 
         var check = numberCheck(yearsOfEducation.vmCurrentText,[0, 100])
+
         if (check !== 1){
             if (check === -1) yearsOfEducation.vmErrorMsg = loader.getStringForKey("viewpatform_isnotanumber")
             else yearsOfEducation.vmErrorMsg = loader.getStringForKey("viewpatform_invalid_range")
@@ -125,7 +128,8 @@ ViewBase {
         }
 
         let currentYear = new Date().getFullYear();
-        check = numberCheck(year.vmCurrentText,[1900, currentYear])
+        let minYear = currentYear - 120
+        check = numberCheck(year.vmCurrentText,[minYear, currentYear])
         if (check !== 1){
             if (check === -1) year.vmErrorMsg = loader.getStringForKey("viewpatform_isnotanumber")
             else year.vmErrorMsg = loader.getStringForKey("viewpatform_invalid_range")
@@ -167,10 +171,10 @@ ViewBase {
 
         let notify_id = ""
         if (lname.vmCurrentText == ""){
-            notify_id = fname.vmCurrentText + " " + lname.vmCurrentText
+            notify_id = personalID.vmCurrentText;
         }
         else {
-            notify_id = personalID.vmCurrentText;
+            notify_id = fname.vmCurrentText + " " + lname.vmCurrentText
         }
 
         message = message.replace("<b></b>","<b>" + notify_id + "</b>")
