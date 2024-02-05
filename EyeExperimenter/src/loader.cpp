@@ -128,6 +128,10 @@ qint32 Loader::getLastHTTPCodeReceived() const {
     return this->lastHTTPCodeReceived;
 }
 
+QVariantList Loader::getHiddenStudies() const {
+    return this->localDB.getHiddenStudiesList();
+}
+
 QVariantMap Loader::getInstIDFileInfo() const {
 
     // The inst ID file info is simply a file that identifies the intances (instance and institution number) when the license file is not present
@@ -1252,7 +1256,7 @@ void Loader::receivedAPIResponse(){
             }
 
             if (DBUGBOOL(Debug::Options::PRINT_PP)){
-                QVariantMap pp = mainData.value(APINames::ProcParams::NAME).toMap();
+                QVariantMap pp = mainData.value(APINames::ReturnDataFields::PROC_PARAMS).toMap();
                 QString ppstr = Debug::QVariantMapToString(pp);
                 ppstr = "DBUG: RECEIVED PROCESSING PARAMETERS:\n" + ppstr;
                 qDebug() << ppstr;
@@ -1263,8 +1267,8 @@ void Loader::receivedAPIResponse(){
                 StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set processing parameters from server: " + localDB.getError());
             }
 
-            if (mainData.contains(APINames::Institution::INST_COUNTRY)){
-                QString inst_country = mainData.value(APINames::Institution::INST_COUNTRY).toString();
+            if (mainData.contains(APINames::ReturnDataFields::INST_COUNTRY)){
+                QString inst_country = mainData.value(APINames::ReturnDataFields::INST_COUNTRY).toString();
                 if (!localDB.setInstitutionCountryCode(inst_country)){
                     StaticThreadLogger::error("Loader::receivedAPIResponse","Failed storing changes to country code. Reason: " + localDB.getError());
                 }
@@ -1273,8 +1277,14 @@ void Loader::receivedAPIResponse(){
                 }
             }
 
+            if (mainData.contains(APINames::ReturnDataFields::HIDDEN_STUDIES)){
+                QVariant studies_to_hide = mainData.value(APINames::ReturnDataFields::HIDDEN_STUDIES);
+                localDB.setHiddenStudiesList(studies_to_hide.toList());
+                StaticThreadLogger::log("Loader::receivedAPIResponse","The follwing study codes have been hidden " + studies_to_hide.toStringList().join(","));
+            }
+
             if (DBUGBOOL(Debug::Options::PRINT_QC)){
-                QVariantMap qc = mainData.value(APINames::FreqParams::NAME).toMap();
+                QVariantMap qc = mainData.value(APINames::ReturnDataFields::FREQ_PARAMS).toMap();
                 QString qcstr = Debug::QVariantMapToString(qc);
                 qcstr = "DBUG: RECEIVED QC PARAMETERS:\n" + qcstr;
                 qDebug() << qcstr;
@@ -1290,8 +1300,8 @@ void Loader::receivedAPIResponse(){
                 StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set recovery password from server: " + localDB.getError());
             }
 
-            if (mainData.contains(APINames::HMD_CHANGE_SN)){
-                QString sn = mainData.value(APINames::HMD_CHANGE_SN).toString();
+            if (mainData.contains(APINames::ReturnDataFields::HMD_CHANGE_SN)){
+                QString sn = mainData.value(APINames::ReturnDataFields::HMD_CHANGE_SN).toString();
                 if (sn != ""){
                     StaticThreadLogger::log("Loader::receivedAPIResponse","API response contained new HMD Change S/N: '" + sn + "'");
                     localDB.setHMDChangeSN(sn);
@@ -1362,7 +1372,7 @@ void Loader::receivedAPIResponse(){
 
 
                 // URL should be present.
-                QString dlurl = mainData.value(APINames::UpdateDLFields::URL).toString();
+                QString dlurl = mainData.value(APINames::ReturnDataFields::UPDATE_DL_URL).toString();
 
                 // Starting the download. And the process must now wait until the download is finished.
                 QString expectedPath = "../" + Globals::Paths::UPDATE_PACKAGE;

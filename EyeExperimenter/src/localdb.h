@@ -22,28 +22,15 @@ namespace APINames {
    static const char * MAIN_HTTP_CODE = "http_code";
    static const char * MAIN_MESSAGE   = "message";
 
-   static const char * HMD_CHANGE_SN  = "hmd_change_sn";
-
-   namespace ProcParams {
-      static const char * NAME = "proc_params";
+   namespace ReturnDataFields {
+      static const char * PROC_PARAMS    = "proc_params";
+      static const char * INST_COUNTRY   = "institution_country";
+      static const char * REC_PASSWD     = "recovery_password";
+      static const char * FREQ_PARAMS    = "freq_params";
+      static const char * UPDATE_DL_URL  = "url";
+      static const char * HMD_CHANGE_SN  = "hmd_change_sn";
+      static const char * HIDDEN_STUDIES = "hidden_studies";
    }
-
-   namespace FreqParams{
-      static const char * NAME = "freq_params";
-   }
-
-   namespace RecoveryPassword {
-      static const char * NAME = "recovery_password";
-   }
-
-   namespace UpdateDLFields {
-      static const char *URL = "url";
-   }
-
-   namespace Institution {
-      static const char *INST_COUNTRY = "institution_country";
-   }
-
 
    namespace UpdateParams{
       static const char * UPDATE_ET_CHANGE = "update_et_change";
@@ -86,6 +73,7 @@ public:
     static const char * MAIN_INSTITUTION_COUNTRY_CODE;
     static const char * MAIN_INSTANCE_ENABLED;
     static const char * MAIN_HMD_CHANGE;
+    static const char * MAIN_HIDDEN_STUDIES;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -302,6 +290,10 @@ public:
 
     // Does a fuzzy search for the name lastname and year of birth and returns possible matches.
     QVariantList possibleNewPatientMatches(QString name, QString lastname, QString personalID, QString iso_birthdate, const QStringList &months) const;
+
+    // Set and get the hidden studies list.
+    void setHiddenStudiesList(const QVariantList &hiddenStudies);
+    QVariantList getHiddenStudiesList() const;
 
     // Set and get the instance enabled status.
     void setInstanceEnableTo(bool enabled);

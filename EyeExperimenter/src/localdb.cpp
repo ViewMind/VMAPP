@@ -20,6 +20,7 @@ const char * LocalDB::MAIN_LAST_APP_DOWNLOADED               = "last_downloaded_
 const char * LocalDB::MAIN_INSTITUTION_COUNTRY_CODE          = "institution_country_code";
 const char * LocalDB::MAIN_INSTANCE_ENABLED                  = "instance_enabled";
 const char * LocalDB::MAIN_HMD_CHANGE                        = "hmd_change_sn";
+const char * LocalDB::MAIN_HIDDEN_STUDIES                    = "hidden_studies";
 
 // Evaluator fields
 const char * LocalDB::APPUSER_NAME          = "name";
@@ -445,14 +446,14 @@ bool LocalDB::processingParametersPresent() const {
 }
 
 bool LocalDB::setRecoveryPasswordFromServerResponse(const QVariantMap &response){
-    if (!response.contains(APINames::RecoveryPassword::NAME)){
-        error = "Expected field: " + QString(APINames::RecoveryPassword::NAME) + " but it wasn't found";
+    if (!response.contains(APINames::ReturnDataFields::REC_PASSWD)){
+        error = "Expected field: " + QString(APINames::ReturnDataFields::REC_PASSWD) + " but it wasn't found";
         return false;
     }
 
-    QString hash = response.value(APINames::RecoveryPassword::NAME).toString();
+    QString hash = response.value(APINames::ReturnDataFields::REC_PASSWD).toString();
     if (hash != data.value(MAIN_RECOVERY_PASSWORD,"").toString()){
-        data[MAIN_RECOVERY_PASSWORD] = response.value(APINames::RecoveryPassword::NAME).toString();
+        data[MAIN_RECOVERY_PASSWORD] = response.value(APINames::ReturnDataFields::REC_PASSWD).toString();
         return saveAndBackup();
     }
     else return true;
@@ -565,8 +566,8 @@ qint32 LocalDB::mergePatientDBFromRemote(const QVariantMap &response){
 
 bool LocalDB::setProcessingParametersFromServerResponse(const QVariantMap &response){
 
-    if (!response.contains(APINames::ProcParams::NAME)){
-        error = "Expected processing parameters field: " + QString(APINames::ProcParams::NAME) + " but it wasn't found";
+    if (!response.contains(APINames::ReturnDataFields::PROC_PARAMS)){
+        error = "Expected processing parameters field: " + QString(APINames::ReturnDataFields::PROC_PARAMS) + " but it wasn't found";
         return false;
     }
 
@@ -575,7 +576,7 @@ bool LocalDB::setProcessingParametersFromServerResponse(const QVariantMap &respo
                   << VMDC::ProcessingParameter::SAMPLE_FREQUENCY
                   << VMDC::ProcessingParameter::GAZE_ON_CENTER_RADIOUS;
 
-    QVariantMap pp = response.value(APINames::ProcParams::NAME).toMap();
+    QVariantMap pp = response.value(APINames::ReturnDataFields::PROC_PARAMS).toMap();
 
     QStringList serverkeys = pp.keys();
     for (qint32 i = 0; i < serverkeys.size(); i++){
@@ -593,15 +594,16 @@ bool LocalDB::setProcessingParametersFromServerResponse(const QVariantMap &respo
 
 bool LocalDB::setQCParametersFromServerResponse(const QVariantMap &response){
 
-    if (!response.contains(APINames::FreqParams::NAME)){
-        error = "Expected processing parameters field: " + QString(APINames::FreqParams::NAME) + " but it wasn't found";
+    if (!response.contains(APINames::ReturnDataFields::FREQ_PARAMS)){
+        error = "Expected processing parameters field: " + QString(APINames::ReturnDataFields::FREQ_PARAMS) + " but it wasn't found";
         return false;
     }
+
 
     QStringList shouldBeThere;
     shouldBeThere << VMDC::QCGlobalParameters::DQI_THRESHOLD;
 
-    QVariantMap qc_server = response.value(APINames::FreqParams::NAME).toMap();
+    QVariantMap qc_server = response.value(APINames::ReturnDataFields::FREQ_PARAMS).toMap();
     QVariantMap qc;
 
     //Debug::prettpPrintQVariantMap(qc);
@@ -940,6 +942,17 @@ QString LocalDB::getHMDChangeSN() const {
 bool LocalDB::setHMDChangeSN(const QString &sn){
     data[MAIN_HMD_CHANGE] = sn;
     return saveAndBackup();
+}
+
+////////////////////////////// Studies to Hide ///////////////////////////////
+QVariantList LocalDB::getHiddenStudiesList() const {
+    if (data.contains(MAIN_HIDDEN_STUDIES)) return data.value(MAIN_HIDDEN_STUDIES).toList();
+    else return QVariantList();
+}
+
+void LocalDB::setHiddenStudiesList(const QVariantList &hiddenStudies) {
+    data[MAIN_HIDDEN_STUDIES] = hiddenStudies;
+    saveAndBackup();
 }
 
 ////////////////////////////// Instance Enable Status ///////////////////////////////

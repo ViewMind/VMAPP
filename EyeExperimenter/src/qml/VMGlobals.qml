@@ -124,6 +124,7 @@ QtObject {
     readonly property int vmINDEX_GONOGO3D:                   8
     readonly property int vmINDEX_NBACK:                      9
 
+    ///TODO: Check if we can delete all constants below.
     readonly property string vmSTUDY_BINDING:                "Binding";
     readonly property string vmSTUDY_GONOGO :                "Go No-Go";
     readonly property string vmSTUDY_NBACKMS :               "NBack MS";

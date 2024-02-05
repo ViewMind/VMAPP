@@ -154,6 +154,14 @@ Rectangle {
         vmSelectedOptionsForEachStudy = {};
         vmSelectedStudies = [];
 
+        let studiesToHide = loader.getHiddenStudies();
+        // We need to turn the strings to int.
+        for (let i in studiesToHide){
+            studiesToHide[i] = parseInt(studiesToHide[i])
+        }
+
+        console.log("Studies to hide: " + JSON.stringify(studiesToHide));
+
         ////////////////////////////////////////////////////////////////// Binding  ////////////////////////////////////////////////////////////////////
         let item = {}
         let options = {}
@@ -180,7 +188,7 @@ Rectangle {
             vmOptionValueMap: "2|3||-1|32",
             vmIsSelected: false
         }
-        availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
+        if (!studiesToHide.includes(item.vmIndex)) availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
 //        /////////////////////////////////////////////////////////////////// NBack RT (Depracated) /////////////////////////////////////////////////////////////////////
 //        item = {}
@@ -216,8 +224,7 @@ Rectangle {
             vmOptionValueMap: "4|3", // Default NBack number of targets should be 4.
             vmIsSelected: false
         }
-        //availableEvaluations.append(item)
-        availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
+        if (!studiesToHide.includes(item.vmIndex)) availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
         //////////////////////////////////////////////////////////////// Go No Go //////////////////////////////////////////////////////////////////////////
         item = {}
@@ -231,36 +238,35 @@ Rectangle {
             vmOptionValueMap: "",
             vmIsSelected: false
         }
-        //availableEvaluations.append(item)
-        availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
+        if (!studiesToHide.includes(item.vmIndex)) availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
-        /////////////////////////////////////////////////////////// NBack Variable Speed /////////////////////////////////////////////////////////////////
-        item = {}
-        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = {}
-        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_number_of_targets");
-        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_VAlUES] = [3,4,5,6];
-        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
-        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_WIDTH] = 35;
+//        /////////////////////////////////////////////////////////// NBack Variable Speed /////////////////////////////////////////////////////////////////
+//        item = {}
+//        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = {}
+//        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_number_of_targets");
+//        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_VAlUES] = [3,4,5,6];
+//        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
+//        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_WIDTH] = 35;
 
-        options[VMGlobals.vmSCP_NBACK_LIGHTUP] = {}
-        options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_nback_light_up_title");
-        options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_nback_light_up_correct"),
-                                                                                 loader.getStringForKey("viewevaluation_nback_light_up_all")];
-        options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
-        options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_WIDTH] = 30;
+//        options[VMGlobals.vmSCP_NBACK_LIGHTUP] = {}
+//        options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_nback_light_up_title");
+//        options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_nback_light_up_correct"),
+//                                                                                 loader.getStringForKey("viewevaluation_nback_light_up_all")];
+//        options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
+//        options[VMGlobals.vmSCP_NBACK_LIGHTUP][VMGlobals.vmSCO_OPTION_WIDTH] = 30;
 
-        item = {
-            vmIndex: VMGlobals.vmINDEX_NBACKVS,
-            vmStudyName : loader.getStringForKey("viewevaluation_eval_nbackvs") ,
-            vmIsLastSelected: false,
-            vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS + "|" + VMGlobals.vmSCP_NBACK_LIGHTUP,
-            vmOptions: options,
-            vmOptionValueMap: "3|4|5|6||false|true",
-            vmIsSelected: false
-        }
-        //availableEvaluations.append(item)
-        // For now variable speed is not an option.
-        //availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
+//        item = {
+//            vmIndex: VMGlobals.vmINDEX_NBACKVS,
+//            vmStudyName : loader.getStringForKey("viewevaluation_eval_nbackvs") ,
+//            vmIsLastSelected: false,
+//            vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS + "|" + VMGlobals.vmSCP_NBACK_LIGHTUP,
+//            vmOptions: options,
+//            vmOptionValueMap: "3|4|5|6||false|true",
+//            vmIsSelected: false
+//        }
+//        //availableEvaluations.append(item)
+//        // For now variable speed is not an option.
+//        //availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
         /////////////////////////////////////////////////////////// GNG Spheres /////////////////////////////////////////////////////////////////////////
         item = {}
@@ -290,32 +296,31 @@ Rectangle {
             vmOptionValueMap: "right|left|both||0|1|2", // These are the values inside the study configuration map corresponding to each of the option values.
             vmIsSelected: false
         }
-        //availableEvaluations.append(item)
-        availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
+        if (!studiesToHide.includes(item.vmIndex)) availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
-        ////////////////////////////////////////////////////////// Pass Ball /////////////////////////////////////////////////////////////////////////
-        item = {}
-        options = {};
-        options[VMGlobals.vmSCP_HAND_TO_USE] = {}
-        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_gng3D_hand_sel");
-        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_gng3D_hand_right"),
-                                                                               loader.getStringForKey("viewevaluation_gng3D_hand_left"),
-                                                                               loader.getStringForKey("viewevaluation_gng3D_hand_both")];
-        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_SELECTED] = 2;
-        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_WIDTH] = 30;
+//        ////////////////////////////////////////////////////////// Pass Ball /////////////////////////////////////////////////////////////////////////
+//        item = {}
+//        options = {};
+//        options[VMGlobals.vmSCP_HAND_TO_USE] = {}
+//        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_gng3D_hand_sel");
+//        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_gng3D_hand_right"),
+//                                                                               loader.getStringForKey("viewevaluation_gng3D_hand_left"),
+//                                                                               loader.getStringForKey("viewevaluation_gng3D_hand_both")];
+//        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_SELECTED] = 2;
+//        options[VMGlobals.vmSCP_HAND_TO_USE][VMGlobals.vmSCO_OPTION_WIDTH] = 30;
 
-        item = {
-            vmIndex: VMGlobals.vmINDEX_PASSBALL,
-            vmStudyName : loader.getStringForKey("viewevaluation_eval_passball") ,
-            vmIsLastSelected: false,
-            vmOptions: options,
-            vmOrder: VMGlobals.vmSCP_HAND_TO_USE,
-            vmOptionValueMap: "right|left|both", // These are the values inside the study configuration map corresponding to each of the option values.
-            vmIsSelected: false
-        }
-        //Disabling ONLY the option for selecting passball.
-        ///availableEvaluations.append(item)
-        ///availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
+//        item = {
+//            vmIndex: VMGlobals.vmINDEX_PASSBALL,
+//            vmStudyName : loader.getStringForKey("viewevaluation_eval_passball") ,
+//            vmIsLastSelected: false,
+//            vmOptions: options,
+//            vmOrder: VMGlobals.vmSCP_HAND_TO_USE,
+//            vmOptionValueMap: "right|left|both", // These are the values inside the study configuration map corresponding to each of the option values.
+//            vmIsSelected: false
+//        }
+//        //Disabling ONLY the option for selecting passball.
+//        ///availableEvaluations.append(item)
+//        ///availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
 
         // Function that sets the propert study sequece, if one was selected.

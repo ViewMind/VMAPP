@@ -57,6 +57,7 @@ public:
     Q_INVOKABLE QVariantMap getHWInfo() const;
     Q_INVOKABLE QString getInstanceUID() const;
     Q_INVOKABLE qint32 getLastHTTPCodeReceived() const;
+    Q_INVOKABLE QVariantList getHiddenStudies() const;
 
     //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QString getNewUpdateVersionAvailable() const;
