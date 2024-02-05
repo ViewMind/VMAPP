@@ -14,6 +14,7 @@ HWRecognizer::HWRecognizer()
     specs[HWKeys::DISK_SIZE] = "";
     specs[HWKeys::DISK_SN] = "";
     specs[HWKeys::HMD_SN] = "";
+    specs[HWKeys::HMD_MODEL] = "";
     specs[HWKeys::HMD_BRAND] = "";
     specs[HWKeys::OS_NAME] = "";
     specs[HWKeys::OS_VERSION] = "";
@@ -28,13 +29,15 @@ HWRecognizer::HWRecognizer()
     QString hp_omnicept_sn = findHPOmniceptSN();
     if (hp_omnicept_sn != ""){
         specs[HWKeys::HMD_SN] = hp_omnicept_sn;
-        specs[HWKeys::HMD_BRAND] = HP_DEVICE_DESCRIPTION;
+        specs[HWKeys::HMD_MODEL] = HP_DEVICE_DESCRIPTION;
+        specs[HWKeys::HMD_BRAND] = HP_BRAND_NAME;
     }
     else {
        QString varjo_sn = findVarjoAeroSN();
        if (varjo_sn != ""){
            specs[HWKeys::HMD_SN] = varjo_sn;
-           specs[HWKeys::HMD_BRAND] = VARJO_MODEL;
+           specs[HWKeys::HMD_BRAND] = VARJO_BRAND;
+           specs[HWKeys::HMD_MODEL] = VARJO_MODEL;
        }
     }
 

@@ -23,6 +23,7 @@ namespace HWKeys {
    const QString DISK_SN      = "hdd_sn";         /// wmic diskdrive get model, serialNumber, size, mediaType
    const QString DISK_SIZE    = "hdd_size";       /// wmic diskdrive get model, serialNumber, size, mediaType
    const QString TOTAL_RAM    = "total_ram";      /// SystemInfo - Available Physical Memory
+   const QString HMD_MODEL    = "hmd_model";      /// Depending on which serial number we are able to find we'll now the brand and model
    const QString HMD_BRAND    = "hmd_brand";      /// Depeding on which serial number we are able to find, we kown the hmd brand.
    const QString HMD_SN       = "hmd_sn";         /// If available, the serial number of the headset
    const QString OS_NAME      = "os_name";
@@ -119,12 +120,14 @@ private:
     const QString PNP_DEV_PROP_KEY_DATA                       = "Data";
 
     // HP Omnicept related constants.
-    const QString HP_DEVICE_DESCRIPTION                       = "HP Reverb G2 Omnicept";
+    const QString HP_BRAND_NAME                               = "HP";
+    const QString HP_DEVICE_DESCRIPTION                       = "Reverb G2 Omnicept";
     const QString HP_DEVICE_SN_PNP_PROPERTY_KEY               = "{6D166322-FA1D-4223-9463-201AFD540BC8} 0";
 
     // Varjo AERO.
     const QString VARJO_SN_INST_ID_PREFIX                     = "QVRJV";
-    const QString VARJO_MODEL                                 = "Varjo Aero";
+    const QString VARJO_BRAND                                 = "Varjo";
+    const QString VARJO_MODEL                                 = "Aero";
 
     // Generic motor to run a console command in windows.
     QString runCommand(const QString &command, const QStringList &args, bool *ranOK);

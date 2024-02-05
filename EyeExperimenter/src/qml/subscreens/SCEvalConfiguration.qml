@@ -160,7 +160,7 @@ Rectangle {
             studiesToHide[i] = parseInt(studiesToHide[i])
         }
 
-        console.log("Studies to hide: " + JSON.stringify(studiesToHide));
+        //console.log("Studies to hide: " + JSON.stringify(studiesToHide));
 
         ////////////////////////////////////////////////////////////////// Binding  ////////////////////////////////////////////////////////////////////
         let item = {}
