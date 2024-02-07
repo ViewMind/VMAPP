@@ -30,8 +30,8 @@ ViewBase {
 
         var patientData = loader.getCurrentSubjectInfo();
 
-//        console.log("Loading patient for Evaluation")
-//        console.log(JSON.stringify(patientData))
+        console.log("Loading patient for Evaluation")
+        console.log(JSON.stringify(patientData))
 
         var date = new Date();
         var year = date.getFullYear()

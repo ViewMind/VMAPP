@@ -329,6 +329,16 @@ reconectar el casco.
 4. Si los pasos anteriores no funcionan, reinicia la computadora
 y pruebe nuevamente.; 
 
+viewevaluation_resume_binding_title = Estudios de Tareas de Colores Sin Finalizar ;
+viewevaluation_resume_binding_subtitle = Por favor selecciones si desea continuar uno de los
+estudios mostrados o si desea comenzar uno nuevo;
+viewevaluation_resume_binding_continue = CONTINUAR ESTUDIO;
+viewevaluation_remove_binding          = ELIMINAR;
+viewevaluation_resume_binding_new      = COMENZAR ESTUDIO NUEVO;
+viewevaluation_resume_binding_study_date  = Study Date;
+viewevaluation_resume_binding_target_num  = Targets;
+viewevaluation_resume_binding_length      = Length;
+
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = La calibración ha concluido;
 waitscreenmsg_studyEnd = El estudio ha finalizado;

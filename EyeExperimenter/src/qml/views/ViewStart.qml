@@ -284,43 +284,57 @@ ViewBase {
         anchors.leftMargin: VMGlobals.adjustWidth(10)
     }
 
+    VMResumeBindingDialog {
+        id: testDialog
+        onRemoveFile: function (filepath){
+            console.log("Requested file deletion of: " + filepath);
+        }
+        onResumeBinding: function (filepath){
+            console.log("Requested resume study from file " + filepath);
+        }
+    }
+
 
 ////     We add test stuff to main when developing components as we can test it as sson as the app starts.
 ////     I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
-//    VMButton {
-//        id: testBox
-//        vmText: "Test Stuff";
-//        width: VMGlobals.adjustWidth(100)
-//        anchors.left: btnAddNew.right
-//        anchors.top: btnAddNew.top
-//        anchors.leftMargin: 10
-//        onClickSignal: {
+    VMButton {
+        id: testBox
+        vmText: "Test Stuff";
+        width: VMGlobals.adjustWidth(100)
+        anchors.left: btnAddNew.right
+        anchors.top: btnAddNew.top
+        anchors.leftMargin: 10
+        onClickSignal: {
 
 
 
-////            let name = "";
-////            let lname = "test";
-////            let bdate = "1970-01-01";
-////            let list = loader.findPossibleDupes(name,lname,"",bdate);
+//            let name = "";
+//            let lname = "test";
+//            let bdate = "1970-01-01";
+//            let list = loader.findPossibleDupes(name,lname,"",bdate);
 
-////            testDiag.setNameList(list);
-////            testDiag.open();
+//            testDiag.setNameList(list);
+//            testDiag.open();
 
 
-////            waitScreen.vmText = "Some Text";
-////            //waitScreen.show()
-////            waitScreen.showWithProgress();
-////            let text = loader.getStringForKey("viewwait_download_remaining")
-////            text = text.replace("<M>",38);
-////            text = text.replace("<S>",30);
-////            text = text.replace("<MB>",52);
-////            text = text.replace("<MBT>",138);
-////            waitScreen.updateProgress(24,text);
+//            waitScreen.vmText = "Some Text";
+//            //waitScreen.show()
+//            waitScreen.showWithProgress();
+//            let text = loader.getStringForKey("viewwait_download_remaining")
+//            text = text.replace("<M>",38);
+//            text = text.replace("<S>",30);
+//            text = text.replace("<MB>",52);
+//            text = text.replace("<MBT>",138);
+//            waitScreen.updateProgress(24,text);
 
 //            test.open();
 
-//        }
-//    }
+            let subj_info = loader.getCurrentSubjectInfo("1_0_20210707202158295");
+            console.log("Got Subject Data: " + JSON.stringify(subj_info,null,3));
+            testDialog.open(subj_info["binding"]);
+
+        }
+    }
 
 
 }

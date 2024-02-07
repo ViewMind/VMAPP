@@ -329,6 +329,16 @@ reconnecting the headset
 4. If the above did not work, restart the computer and try again.;
 
 
+viewevaluation_resume_binding_title = Unfinished Color Task Studies;
+viewevaluation_resume_binding_subtitle = Please select weather you would like to continue one of these color tasks
+or if you would like to start a new one;
+viewevaluation_resume_binding_continue    = CONTINUE STUDY;
+viewevaluation_remove_binding             = REMOVE;
+viewevaluation_resume_binding_new         = START NEW STUDY;
+viewevaluation_resume_binding_study_date  = Study Date;
+viewevaluation_resume_binding_target_num  = Targets;
+viewevaluation_resume_binding_length      = Length;
+
 #********************************* VR WAIT SCREEN MESSAGES *********************************
 waitscreenmsg_calibrationEnd = Calibration has ended;
 waitscreenmsg_studyEnd = Evaluation has ended;

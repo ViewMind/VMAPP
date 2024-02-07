@@ -84,7 +84,7 @@ public:
     Q_INVOKABLE bool setSelectedSubject(const QString &suid);    
     Q_INVOKABLE void setStudyMarkerFor(const QString &study, const QString &value);
     Q_INVOKABLE QString getStudyMarkerFor(const QString &study);
-    Q_INVOKABLE QVariantMap getCurrentSubjectInfo();
+    Q_INVOKABLE QVariantMap getCurrentSubjectInfo(const QString override_subject_id = "");
     Q_INVOKABLE void clearSubjectSelection();
     Q_INVOKABLE QString getCurrentlySelectedAssignedDoctor() const;
     Q_INVOKABLE bool areThereAnySubjects() const;

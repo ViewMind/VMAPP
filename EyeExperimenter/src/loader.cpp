@@ -799,8 +799,83 @@ QString Loader::getStudyMarkerFor(const QString &study){
     return localDB.getMarkerForStudy(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR),study).toString();
 }
 
-QVariantMap Loader::getCurrentSubjectInfo(){
-    return localDB.getSubjectData(configuration->getString(Globals::Share::PATIENT_UID));
+QVariantMap Loader::getCurrentSubjectInfo(const QString override_subject_id){
+
+    QString subject_id;
+    if (override_subject_id != ""){
+        // This should only ever be used when debugging.
+        StaticThreadLogger::warning("Loader::getCurrentSubjectInfo","Overriding the subject ID to value '" + override_subject_id + "'");
+        subject_id = override_subject_id;
+    }
+    else subject_id = configuration->getString(Globals::Share::PATIENT_UID);
+
+    // Getting the subject data from the DB.
+    QVariantMap subject_info = localDB.getSubjectData(subject_id);
+
+    // We need to compliment the subject info with the unfinished binding studies.
+    // So we need to scan the patient directory for binding*metadata.json files.
+
+    QDir patientDirectory(Globals::Paths::WORK_DIRECTORY + "/" + subject_id);
+    if (!patientDirectory.exists()){
+        return subject_info;
+    }
+
+    QString patientDirFullPath = patientDirectory.absolutePath();
+
+    // The directory exists, we scan it for files.
+    QStringList filters; filters << Globals::BaseFileNames::MakeMetdataFileName(Globals::BaseFileNames::BINDING + "*");
+    QStringList unfinished_binding_files = patientDirectory.entryList(filters,QDir::Files,QDir::Name);
+
+    // If no files were found we return just the subject data.
+    if (unfinished_binding_files.empty()) return subject_info;
+
+    // So incomplete binding files were found. We need to actually load them and get the basic information.
+    QVariantList displayItems;
+
+    for (qint32 i = 0; i < unfinished_binding_files.size(); i++){
+        QString metadataFilePath = patientDirFullPath + "/" + unfinished_binding_files.at(i);
+        ViewMindDataContainer vmdc;
+
+        if (!vmdc.loadFromJSONFile(metadataFilePath)){
+            StaticThreadLogger::error("Loader::getCurrentSubjectInfo","Failed loading metadata of unfinished binding study. Reason:" + vmdc.getError());
+            continue;
+        }
+
+        // We must make sure the correspoinding study file is present.
+        QString studyFilePath = unfinished_binding_files.at(i);
+        studyFilePath = studyFilePath.replace("_metadata.json",".json");
+        studyFilePath = patientDirFullPath + "/" + studyFilePath;
+
+        if (!QFile(studyFilePath).exists()){
+            StaticThreadLogger::error("Loader::getCurrentSubjectInfo","Failed to find the study file '" + studyFilePath + "' for metadata file '" + metadataFilePath + "'");
+            continue;
+        }
+
+        // Incomplete binding studies should ONLY have a Binding UC study.
+        QVariantMap studyConfiguration = vmdc.getStudyConfiguration(VMDC::Study::BINDING_UC);
+        if (studyConfiguration.empty()){
+            StaticThreadLogger::error("Loader::getCurrentSubjectInfo","Failed in getting study configuration for BindingUC of file '" + metadataFilePath + "'");
+            continue;
+        }
+
+        QStringList temp = vmdc.getMetaDataDateTime();
+        QString date = "";
+        if (!temp.empty()) date = temp.first();
+
+        QVariantMap item;
+        item["metadata_file"] = metadataFilePath;
+        item["study_file"]    = studyFilePath;
+        item[VMDC::StudyParameter::NUMBER_TARGETS] = studyConfiguration.value(VMDC::StudyParameter::NUMBER_TARGETS);
+        item[VMDC::StudyParameter::NUM_TRIALS] = studyConfiguration.value(VMDC::StudyParameter::NUM_TRIALS);
+        item["date"] = temp.first();
+
+        displayItems << item;
+
+    }
+
+    subject_info["binding"] = displayItems;
+
+    return subject_info;
 }
 
 void Loader::clearSubjectSelection(){
