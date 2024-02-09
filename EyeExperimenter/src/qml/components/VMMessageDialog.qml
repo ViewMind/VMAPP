@@ -54,8 +54,18 @@ Item {
         else {
             dialog.width = vmWidthNormal
         }
+    }
 
+    function loadFromText(title, message, makeWider){
+        vmTitle = title
+        vmText = message
 
+        if (makeWider === true){
+            dialog.width = vmWidthWide
+        }
+        else {
+            dialog.width = vmWidthNormal
+        }
     }
 
     MouseArea {

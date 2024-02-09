@@ -60,6 +60,7 @@ namespace Debug {
        const QString DISALBE_RRS_FORCE_QUIT     = "disable_rrs_force_quit";
        const QString SKIP_ET_CHECK              = "skip_et_check";
        const QString CALIB_PACKET_OVERRIDE      = "calibration_packet_override";
+       const QString MISSING_STR_ERROR          = "missing_string_errors";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;
@@ -73,6 +74,10 @@ namespace Debug {
         }
         // The purpose of this is approach is that the non existance of a debug file should set all debug options to being disabled. So this is not an error.        
         return "";
+    }
+
+    static void PrintDebugOptionMap() {
+        prettyPrintQVariantMap(DEBUG_OPTIONS.getMap());
     }
 
     static QString CreateDebugOptionSummary(){

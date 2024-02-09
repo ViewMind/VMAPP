@@ -152,8 +152,8 @@ bool LocalDB::isVersionUpToDate() const{
 
 bool LocalDB::setDBFile(const QString &dbfile, const QString &bkp_dir, bool pretty_print_db, bool disable_checksum){
 
-    dbBKPdir = bkp_dir;
-    this->dbfile = dbfile;
+    dbBKPdir = bkp_dir;   
+    this->dbfile = ""; // This way if something goes wrong the db file won't be set
 
     // Checking the backup directory exists or that it can be created.
     if (!QDir(bkp_dir).exists()){
@@ -202,6 +202,7 @@ bool LocalDB::setDBFile(const QString &dbfile, const QString &bkp_dir, bool pret
         return false;
     }
 
+    this->dbfile = dbfile;
     return true;
 
 }
@@ -798,6 +799,11 @@ bool LocalDB::filterMatchSubject(const QVariantMap &subject, const QString &filt
 }
 
 bool LocalDB::saveAndBackup(){
+
+    if (this->dbfile == ""){
+        error = "Attempting to save the DB File withouth it being set";
+        return false;
+    }
 
     // Computing the hash with no checksum and then storing the checksum.
     QString previoushash = data.value(MAIN_CHECKSUM).toString();

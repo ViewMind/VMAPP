@@ -98,6 +98,10 @@ int main(int argc, char *argv[])
         StaticThreadLogger::error("main","Loading Debug Options File: " + error);
     }
 
+//    qDebug() << "DEBUG OPTIONS";
+//    Debug::PrintDebugOptionMap();
+
+
 //    qDebug() << "Active SSL BackEnd: " << QSslSocket::activeBackend();
 //    qDebug() << "Available SSL BackEnds " << QSslSocket::availableBackends();
 //    qDebug() << "SSL Lib Build version Number" <<  QSslSocket::sslLibraryBuildVersionNumber();

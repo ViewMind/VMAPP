@@ -216,21 +216,23 @@ void Loader::changeGetVMConfigScreenLanguage(const QString &var){
 }
 
 QString Loader::getStringForKey(const QString &key, bool fromLangFile){
-    //if (!fromLangFile) qDebug() << "Entering with key " << key << " but false from langfile";
     if (fromLangFile){
         if (language.containsKeyword(key)){
             return language.getString(key);
         }
         else {
-            //qDebug() << "Could nto find" << key << "in lang file";
-            return "ERROR: STRING KEY " + key +  " NOT FOUND";
+            if (DBUGBOOL(Debug::Options::MISSING_STR_ERROR)) return "ERROR: STRING KEY " + key +  " NOT FOUND";
+            else return "";
         }
     }
     else {
         if (explanationStrings.containsKeyword(key)){
             return explanationStrings.getString(key);
         }
-        else return "ERROR: EXPLANATION STRING KEY " + key +  " NOT FOUND";
+        else {
+            if (DBUGBOOL(Debug::Options::MISSING_STR_ERROR)) return "ERROR: EXPLANATION STRING KEY " + key +  " NOT FOUND";
+            else return "";
+        }
     }
 }
 

@@ -53,7 +53,6 @@ ViewBase {
 
     }
 
-
     Connections {
         target: flowControl
 
@@ -92,7 +91,7 @@ ViewBase {
     Component.onCompleted: {
         // Checking that the everything was loaded correctly.
         if (loader.getLoaderError()){
-            criticalFailure.loadFromKey("viewstart_configuration_failed");
+            criticalFailure.loadFromText("Detected Database Corruption","ViewMind Atlas has detected possible corruption of it's local database\nPlease run ViewMind Update to fix the issue\nIf the problem is not fixed, contact ViewMind Support");
             criticalFailure.open()
             return;
         }
