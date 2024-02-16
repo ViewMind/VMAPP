@@ -33,12 +33,12 @@ HWRecognizer::HWRecognizer()
         specs[HWKeys::HMD_BRAND] = HP_BRAND_NAME;
     }
     else {
-       QString varjo_sn = findVarjoAeroSN();
-       if (varjo_sn != ""){
-           specs[HWKeys::HMD_SN] = varjo_sn;
-           specs[HWKeys::HMD_BRAND] = VARJO_BRAND;
-           specs[HWKeys::HMD_MODEL] = VARJO_MODEL;
-       }
+        QString varjo_sn = findVarjoAeroSN();
+        if (varjo_sn != ""){
+            specs[HWKeys::HMD_SN] = varjo_sn;
+            specs[HWKeys::HMD_BRAND] = VARJO_BRAND;
+            specs[HWKeys::HMD_MODEL] = VARJO_MODEL;
+        }
     }
 
 
@@ -475,15 +475,31 @@ void HWRecognizer::searchForADeviceWithPropertyValue(const QString &search_for){
 QString HWRecognizer::findHPOmniceptSN(){
 
     // The first thing we do is search for the device description we know to be for the HP Device.
-    QList< QMap<QString,QString> > search_results = searchPNPInfo(PNP_KEY_DESC,HP_DEVICE_DESCRIPTION,false);
-    if (search_results.count() != 1){
+    QList< QMap<QString,QString> > search_results = searchPNPInfo(PNP_KEY_DESC,HP_DEVICE_DESCRIPTION,true);
+    if (search_results.count() == 0){
         //qDebug() << "Did not find the HP Device Description";
-        this->lastWarnings << "Wrong number of entries when search for PNP HP Omnicept Device: " + QString::number(search_results.count());
+        this->lastWarnings << "Did not find any PNP entries when searching for PNP HP Omnicept Device using value '" + HP_DEVICE_DESCRIPTION + " on key '"  + PNP_KEY_DESC  + "'. Found: " + QString::number(search_results.count());
         return "";
     }
 
+    // The following code is a very simple way in which we found the closest match to our search string.
+    // Adapts for the bug that appeared where the device description is now HP + "device description"
+    qint32 index_found = 0;
+    qint32 min_diff  = 1000000;
+
+    for (qint32 i = 0; i < search_results.size(); i++){
+        if (search_results.count() > 1){
+            qint32 diff = search_results.at(i).value(PNP_KEY_DESC).size() - HP_DEVICE_DESCRIPTION.size();
+            if (diff < 0) continue;
+            if (diff < min_diff){
+                min_diff = diff;
+                index_found = i;
+            }
+        }
+    }
+
     // If we have a single result we get the instance ID.
-    QString instance_id = search_results.first().value(PNP_KEY_INSTID);
+    QString instance_id = search_results.at(index_found).value(PNP_KEY_INSTID);
     //qDebug() << "The instance ID is " << instance_id;
     this->getDevicePropertiesByID(instance_id);
 
