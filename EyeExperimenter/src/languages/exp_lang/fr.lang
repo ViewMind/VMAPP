@@ -1,162 +1,199 @@
 viewevaluation_calibration_explanation = 
-Un cercle rouge clignotant avec un point blanc au centre va apparaître à l'écran.
-Regardez le point blanc. Le cercle se déplacera sur l'écran. Vous devez le suivre
-des yeux. Rappelez-vous de ne pas quitter le cercle des yeux jusqu'à ce qu'il
-disparaisse.
-Il apparaîtra la première fois, dans le coin supérieur gauche.;
+Pouvez-vous voir correctement les quattres croix ? 
+Un cercle rouge avec un point blanc au centre apparaîtra à l'écran. 
+Regardez le point blanc. Le cercle se déplacera à travers l'écran. 
+Vous devez le suivre. N'oubliez pas de ne pas quitter le cercle 
+des yeux jusqu'à ce qu'il disparaisse.;
 
 viewevaluation_hand_calib_h = 
-Tendez les bras le long du corps, aussi loin que possible.;
-
+Stretch your arms to the sides of your body.
+Reach as far as you can.;
 
 viewevaluation_hand_calib_v = 
-Tendez les bras vers le plafond, aussi loin que possible.;
+Stretch your arms upwards towards the ceiling and look to the front.
+Reach as far as you can.;
 
 viewevaluation_turn_on_controllers =
-Make sure the controllers are charged and turned on.
-Make sure that the patient is holding the turned on
-controllers before the hand calibration starts;
+<i>Make sure the controllers are charged and turned on.</i><br>
+<i>Make sure that the patient is holding the turned on</i><br>
+<i>controllers before the hand calibration starts</i><br>;
 
 viewevaluation_hand_verif =
 Try and touch the cubes in front of you.
 Make sure you can reach them all. If you are having trouble touching any cube
-then redo the hand calibration but this time do not fully strech your arms;
+we can redo the hand calibration, but this time do not fully stretch your arms;
 
 explanation_phase_list_binding_bc =
-Voici le test de combinaison de couleurs. Dans cette étude, <<N>> cibles apparaîtront
-à l'écran. Chaque cible a une couleur à l'extérieur et une couleur à l'intérieur.
-Vous devez vous rappeler de la combinaison de couleurs de chaque cible.|
-Lorsque les premières cibles disparaîtront, un nouvel ensemble de cibles apparaîtra. Vous
-devez déterminer si la combinaison de couleurs de chaque cible est restée la même ou si les
-couleurs ont été permutées entre les cibles. La position des cibles n'a pas d'importance.
-Si les couleurs ont été permutées entre les cibles, dites différent. Sinon, dites pareil.
-Dans cet exemple, les couleurs ont été permutées entre les cibles. Vous devez dire différent|
-Regardez le deuxième exemple.|
-Dans ce cas, la combinaison de couleurs est restée la même. Vous devez dire pareil.
-Avez-vous compris?
-Nous allons à présent nous entraîner avant de commencer le test.;
+Ceci est le Test de Combinaison de Couleurs. 
+Il peut être plus difficile que le précédent.|
+<<N>> cases avec une croix au centre vont apparaître. Dans cet exercice, vous 
+devez vous souvenir de la combinaison de couleurs entre chaque cases et croix. 
+Aucune nouvelle couleur n'apparaîtra pendant cet exercice.|
+les cases vont disparaître, et un nouvel ensemble de cases va apparaître.|
+Vous devez identifier et dire à haute voix si les combinaisons de couleurs 
+entre chaque cases et croix sont identiques ou différentes. La position des 
+cases n'est pas importante.|
+Si nous comparons les deux ensembles de cases côte à côte, nous pouvons 
+voir qu'il y a des cases qui ont échangé de couleurs.|
+Les cases qui ont échangé de couleurs sont celles mises en évidence. 
+Dans ce cas, vous devez dire "Différent".|
+Faisons un autre exemple,|
+<<N>> cases avec une croix au centre apparaissent|
+Puis disparaissent|
+Et un nouvel ensemble de cases apparaissent|
+Si nous comparons les deux ensembles, nous pouvons voir que Les combinaisons 
+de couleurs entre les cases et les croix n'ont pas changé, donc vous devez 
+dire à haute voix "Pareil". 
+Avez-vous bien compris les instructions? 
+Nous allons faire quelques exemples de pratique avant de commencer.;
+
 
 
 explanation_phase_list_binding_uc =
-Voici le test des nouvelles couleurs. Dans cette étude, <<N>> cibles apparaîtront
-à l'écran, comme les cibles que vous voyez à gauche. Chaque cible a une couleur
-à l'extérieur et une couleur à l'intérieur. Vous devez vous rappeler des couleurs
-présentes dans les cibles.|
-Lorsque les premières cibles disparaîtront, un nouvel ensemble de cibles apparaîtra.
-Vous devez déterminer si de nouvelles couleurs sont apparues ou si toutes les couleurs
-sont restées identiques. La position des cibles n'a pas d'importance. Si de nouvelles
-couleurs apparaissent, dites rapidement et à haute voix différent. Sinon, dites pareil.
-Dans cet exemple, deux nouvelles couleurs sont apparues à l'extérieur de chaque cible.
-Vous devez dire différent.|
-Regardez le deuxième exemple.|
-Dans ce cas, aucune nouvelle couleur n'est apparue. Vous devez dire pareil.
-Avez-vous compris?
-Nous allons à présent nous entraîner avant de commencer le test.;
+Ceci est le test des nouvelles couleurs.|
+<<N>>  cases avec une croix au centre vont apparaître. Vous devez vous 
+rappeler de toutes les couleurs présentes sur les cases et les croix.|
+Les cases vont disparaître, et un nouvel ensemble de cases va apparaître.|
+Vous devez identifier si de nouvelles couleurs sont apparues dans les cases 
+ou sur les croix. La position des cases n'est pas importante. Si de 
+nouvelles couleurs sont apparues, dites rapidement "Différent" à voix haute. 
+Sinon, dites "Pareil".|
+Si nous comparons les deux ensembles côte à côte, nous pouvons voir que de 
+nouvelles couleurs sont apparues.|
+Les cases qui ont changé de couleur sont celles mises en évidence. 
+Dans ce cas, vous devez dire "Différent"|
+Faisons un autre exemple. La croix centrale signale le début d'un 
+nouvel exercice.|
+<<N>> cases avec une croix au centre apparaissent.|
+Puis disparaissent.|
+Et un nouvel ensemble de cases apparaissent|
+Si nous comparons les deux ensembles nous pouvons voir que Aucune nouvelle
+couleur n'est apparue, donc vous devez dire "Pareil". 
 
-explanation_phase_list_gonogo = 
-Voici le test Go/No Go. Regardez la croix au centre de l'écran.
-La croix disparaîtra et une flèche apparaîtra.
-Si la flèche est verte, regardez dans la direction de la flèche.
-Et si elle est rouge, regardez dans la direction opposée.|
-Dans cet exemple, parce que la flèche est rouge, regardez le cercle 
-dans la direction opposée, comme indiqué par le cercle bleu.|
-Lorsque la flèche disparaît, regardez de nouveau rapidement la croix.|
-Dans ce cas, parce que la flèche est verte, regardez dans le sens de la flèche.|
-Regardez de nouveau la croix.|
-Regardez dans le sens de la flèche.|
-De nouveau la croix.|
-Regardez dans la direction opposée.
-Vous devez faire cet exercice aussi vite que possible.
-Avez-vous compris?
-Nous allons à présent nous entraîner avant de commencer le test.;
+Avez-vous bien compris les instructions? 
+Nous allons faire quelques exemples avant de commencer.;
 
 
-explanation_phase_list_gonogo_3D = 
-This is Go/No-Go Sphere Evaluation.
-During this evaluation green and red spheres will be sent from the dark
-points in front of you. Si the sphere is green you must try to touch it.
-If you make contact with the sphere you will feel your controller vibrate.|
+
+explanation_phase_list_gonogo     = 
+Ceci est le test Go/No Go. Regardez la croix qui apparait au centre de l'écran. 
+La croix va disparaître et une flèche va apparaître à sa place. Si la flèche 
+est verte, regardez rapidement dans la direction de la flèche. Et si elle est 
+rouge, regardez dans la direction opposée.|
+Dans cet exemple, comme la flèche est rouge, vous devez regarder dans la 
+direction opposée, comme indiqué par le cercle bleu.|
+Quand la flèche disparait vous devez rapidement regarder la croix,|
+Dans cet exemple, comme la flèche est verte, vous devez regarder dans la 
+direction indiquée par la flèche.|
+Regardez a nouveau la croix.|
+Regardez dans la direction de la flèche.|
+Regardez à nouveau la croix.|
+Regardez dans la direction opposée à la flèche. 
+Vous devez faire cet exercice aussi rapidement que possible. 
+Avez-vous bien compris les instructions ? 
+Nous allons faire quelques exemples de pratique avant de commencer.;
+
+
+explanation_phase_list_gonogo_3D =
+This is Go/No-Go Balls Test. During this evaluation green and 
+red balls will be sent from the points in front of you. If the ball is 
+green you must touch it and if it's red, you must avoid it. If you make 
+contact with a ball you will feel your controller vibrate. Let's do 
+an example. Try to touch the green ball.|
 |
-If the sphere is red, you must move your hands to avoid touching the sphere.
-If contact is made anyway, then your controller will still vibrate. | 
+Now avoid touching the red ball.|
 |
-Now try to touch the green sphere again. |
+Now try to touch the green ball again. |
 |
-Avoid touching the red sphere.
-The speed of the spheres shall remain constant|;
+Avoid touching the red ball.|
+Do you understand the instructions?
+
+We will do some practice examples before starting;
 
 explanation_phase_list_gonogo_3D_vs =
-This is Go/No-Go Sphere Evaluation.
-During this evaluation green and red spheres will be sent from the dark
-points in front of you. Si the sphere is green you must try to touch it.
-If you make contact with the sphere you will feel your controller vibrate.|
+This is Go/No-Go Balls Test with Variable Speed. During this evaluation 
+green and red balls will be sent from the points in front of you. If 
+the ball is green you must touch it and if it's red, you must avoid it. 
+If you make contact with a ball you will feel your controller vibrate. 
+Let's do an example. Try to touch the green ball.|
 |
-If the sphere is red, you must move your hands to avoid touching the sphere.
-If contact is made anyway, then your controller will still vibrate. |
+Now avoid touching the red ball.|
 |
-Now try to touch the green sphere again. |
+Now try to touch the green ball again. |
 |
-Avoid touching the red sphere.
-The speed of the spheres shall remain constant|;
+Now avoid touching the red ball.|
+The speed of the balls will increase as you do the test successfully. 
+If you don't, the speed of the balls will decrease.
+Do you understand the instructions?
+
+We will do some practice examples before starting;
 
 
-
-explanation_phase_list_nback_3 =
-Voici le test N-Back. Ce test est composé de 6 cases et d'une croix au centre de l'écran.
-Vous devez garder les yeux sur la croix.|
-Un cercle rouge apparaîtra sur l'une des cases, Position 1.|
-Ensuite, il apparaîtra sur une autre case. Position 2.|
-Et enfin sur une autre case. Position 3. Rappelez-vous de toujours
-garder les yeux sur la croix.|
-Lorsque la croix disparaît, vous devez rapidement regarder la position 3, où le
-dernier cercle est apparu, comme indiqué par la flèche.|
-Regardez ensuite la position 2, où le deuxième cercle est apparu.|
-Et enfin, la position 1, où le premier cercle est apparu.
-Vous suivez donc l'ordre inverse d’apparition.|
-Lorsque vous avez terminé, regardez de nouveau rapidement la croix.
-Maintenant, le test va être répété.|
+explanation_phase_list_nback_3    =
+Voici le testTest N-Back. Le test est composé de 6 cases et d'une 
+croix centrale. Gardez votre regard fixé sur la croix.|
+Un cercle rouge apparaîtra dans l'une des cases. Ceci est la Position 1.|
+Ensuite, il apparaîtra dans une autre case. C'est la Position 2.|
+Et enfin, dans une autre case,. C'est la Position 3. N'oubliez pas de garder
+votre regard fixé sur la croix,|
+Quand la croix disparaîtra, vous devez rapidement regarder la Position 3, 
+où le dernier cercle est apparu, comme l'indique la flèche.|
+Ensuite, à la Position 2, où le second cercle est apparu.|
+Et enfin, à la Position 1, où le premier cercle est apparu. 
+Dans l'ordre inverse de leur apparition.|
+Quand vous avez fini, regardez rapidement la croix. Maintenant, 
+le test sera répété.|
 Position 1.|
 Position 2.|
 Position 3.|
-Maintenant, regardez rapidement la position 3.|
+Maintenant, regardez rapidement la Position 3.|
 Position 2.|
-et Position 1.
-Avez-vous compris?
-Nous allons à présent nous entraîner avant de commencer le test.;
+Et Position 1. 
 
-explanation_phase_list_nback_4 =
-Voici le test N-Back. Ce test est composé de 6 cases et d'une croix au centre de l'écran.
-Vous devez garder les yeux sur la croix.|
-Un cercle rouge apparaîtra sur l'une des cases, Position 1.|
-Ensuite, il apparaîtra sur une autre case. Position 2.|
-Ensuite, il apparaîtra sur une autre case. Position 3.|
-Et enfin sur une autre case. Position 4. Rappelez-vous de toujours
-garder les yeux sur la croix.|
-Lorsque la croix disparaît, vous devez rapidement regarder la position 4, où le
-dernier cercle est apparu, comme indiqué par la flèche.|
-Regardez ensuite la position 3, où le deuxième cercle est apparu.|
-Regardez ensuite la position 2 où le deuxième cercle est apparu.|
-Et enfin, la position 1, où le premier cercle est apparu.
-Vous suivez donc l'ordre inverse d’apparition.|
-Lorsque vous avez terminé, regardez de nouveau rapidement la croix.
-Maintenant, le test va être répété.|
+Avez-vous compris? 
+Nous ferons quelques exemples avant de commencer.;
+
+
+
+explanation_phase_list_nback_4    =
+Voici le testTest N-Back. Le test est composé de 6 cases et d'une 
+croix centrale. Gardez votre regard fixé sur la croix.|
+Un cercle rouge apparaîtra dans l'une des cases. Ceci est la Position 1.|
+Ensuite, il apparaîtra dans une autre case. C'est la Position 2.|
+Ensuite, il apparaîtra dans une autre case. C'est la Position 3.|
+Et enfin, dans une autre case,. C'est la Position 4. N'oubliez pas de garder
+votre regard fixé sur la croix,|
+Quand la croix disparaîtra, vous devez rapidement regarder la Position 4, 
+où le dernier cercle est apparu, comme l'indique la flèche.|
+Ensuite, à la Position 3, où le troisième cercle est apparu.|
+Ensuite, à la Position 2, où le second cercle est apparu.|
+Et enfin, à la Position 1, où le premier cercle est apparu. 
+Dans l'ordre inverse de leur apparition.|
+Quand vous avez fini, regardez rapidement la croix. Maintenant, 
+le test sera répété.|
 Position 1.|
 Position 2.|
 Position 3.|
 Position 4.|
-Maintenant, regardez rapidement la position 4.|
+Maintenant, regardez rapidement la Position 4.|
 Position 3.|
 Position 2.|
-et Position 1.
-Avez-vous compris?
-Nous allons à présent nous entraîner avant de commencer le test.;
+Et Position 1. 
+
+Avez-vous compris? 
+Nous ferons quelques exemples avant de commencer.;
+
+
+
+
+
 
 explanation_phase_list_nbackrt    =
 This is the N-Back Test. The test is composed of 6 boxes and one cross in
 the center of the screen. You must keep your eyes on the cross.|
 A red circle will appear on one of the boxes. Position 1|
 Then it will appear on another box. Position 2|
-And finally on another box. Position 3. Remeber to always keep your eyes on
+And finally on another box. Position 3. Remember to always keep your eyes on
 the cross|
 When the cross disappears, you must quickly look at Position 3, where the last
 circle appeared, as indicated by the arrow.|
@@ -168,14 +205,10 @@ Position 2|
 Position 3|
 Now quickly look at Position 3|
 Position 2|
-And Position 1. Did you understand?
-We will do some practice rounds before starting the test.;
+And Position 1. Do you understand?
+We will do some practice examples before starting the test.;
 
-
-
-
-
-explanation_phase_list_nbackvs = 
+explanation_phase_list_nbackvs    = 
 This is the NBack Evaluation For Training.
 Red circles will appear on the screen in a given sequence.
 While the circles are being shown, please keep your eyes focused on the center cross. 
@@ -184,19 +217,20 @@ This example will use 3.|
 Now, a second circle will appear.| 
 Finally, the third and last circle of the sequence will be shown.|
 When the cross disappears, you must look at the rectangle where the third circle appeared. 
-During the study, a flash of light will indicate that you looked a the right rectangle.|
+During the study, a flash of light will indicate that you looked a the right rectangle.
+The screen will show indicators for the circle locations and the path your gaze must do.
+These indicators will not be present during the real study.|
 Then you must look at the rectangle where the second circle appeared before.|
 Finally you must look at the rectangle where the first circle was shown. 
 Successive completed sequences will decrease the time each circle is shown in the screen. 
 Likewise, successive failures will increase the time the circles are shown.|
-Let's try again. Fix you eyes on the center cross while first red circle.|
-Maintaining your eyes fixed on the cross while second circle 
-appears on the screen.|
+Let's try again. Fix you eyes on the center cross and notice the first red circle.|
+While maintaining your eyes fixed on the cross, notice that the second circle 
+appeared on the screen.|
 Then the final third circle is shown|
 Now look at the rectangle where the third circle was shown|
 Then at the rectangle where the second one appeared|
-And finish by looking at the rectangle where the first circle appeared.
-Are you ready to begin?;
+And finish by looking at the rectangle where the first circle appeared.;
 
 
 explanation_phase_list_pass_ball = | 
@@ -206,24 +240,26 @@ explanation_phase_list_pass_ball = |
 
 
 examples_binding_uc_3 =
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Same</i> out loud.|;
+
+
+|||Le patient devrait dire <i>Différent</i> à voix haute.||
+|||Le patient devrait dire <i>Différent</i> à voix haute.||
+|||Le patient devrait dire <i>Pareil</i> à voix haute.|;
 
 examples_binding_uc_2 =
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Same</i> out loud.||
-|||The patient should say <i>Different</i> out loud.|;
+|||Le patient devrait dire <i>Différent</i> à voix haute.||
+|||Le patient devrait dire <i>Pareil</i> à voix haute.||
+|||Le patient devrait dire <i>Différent</i> à voix haute.|;
 
 examples_binding_bc_3 =
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Same</i> out loud.|;
+|||Le patient devrait dire <i>Différent</i> à voix haute.||
+|||Le patient devrait dire <i>Différent</i> à voix haute.||
+|||Le patient devrait dire <i>Pareil</i> à voix haute.|;
 
 examples_binding_bc_2 =
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Same</i> out loud.|;
+|||Le patient devrait dire <i>Différent</i> à voix haute.||
+|||Le patient devrait dire <i>Différent</i> à voix haute.||
+|||Le patient devrait dire <i>Pareil</i> à voix haute.|;
 
 examples_gonogo = |||||;
 examples_nback_3 = |||||

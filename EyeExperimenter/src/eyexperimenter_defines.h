@@ -135,11 +135,12 @@ static const QString ES = "Español";
 namespace ExplanationLanguage {
 static QVariantMap GetNameCodeMap() {
     QVariantMap map;
-    map["English"]   = "en";
-    map["Español"]   = "es";
-    //map["中国人"]   = "cn"; Chinese was a test and is not fully available yet.
-    //map["Deutsch"]   = "de";
-    //map["Français "] = "fr";s
+    map["English"]    = "en";
+    map["Español"]    = "es";
+    //map["中国人"]    = "cn"; Chinese was a test and is not fully available yet.
+    map["Deutsch"]    = "de";
+    map["Français "]  = "fr";
+    map["Português "] = "pt";
     return map;
 }
 }

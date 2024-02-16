@@ -11,6 +11,16 @@ QtObject {
         return value*mainHeight/(768-30)
     }
 
+    function stringReplaceAll(string_to_replace, replace_with, main_string){
+        let result = main_string
+        while (true){
+            let temp = result.replace(string_to_replace,replace_with)
+            if (temp === result) break; // there were no changes. We replaced all.
+            result = temp;
+        }
+        return result
+    }
+
     // These should be over written on boot up.
     property double mainHeight: 100
     property double mainWidth:  100

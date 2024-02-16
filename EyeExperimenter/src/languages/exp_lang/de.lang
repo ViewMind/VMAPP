@@ -1,223 +1,272 @@
 viewevaluation_calibration_explanation = 
-Auf dem Bildschirm wird ein roter, pulsierender Kreis mit einem weißen Punkt in der Mitte 
-erscheinen.  Schauen Sie auf den weißen Punkt. Der Kreis wird sich auf dem Bildschirm 
-bewegen. Folgen Sie ihm mit Ihren Augen. Vergessen Sie nicht, den Kreis im Auge zu 
+Auf dem Bildschirm wird ein roter, pulsierender Kreis mit einem weißen Punkt in 
+der Mitte erscheinen. Schauen Sie auf den weißen Punkt. 
+Der Kreis wird sich auf dem Bildschirm bewegen. 
+Folgen Sie ihm mit Ihren Augen. Vergessen Sie nicht, den Kreis im Auge zu 
 behalten, bis er verschwindet.;
 
+
 viewevaluation_hand_calib_h = 
-Strecken Sie Ihre Arme zur Seite Ihres Körpers aus. Strecken Sie ihre Arme 
-soweit wie möglich.;
+Stretch your arms to the sides of your body.
+Reach as far as you can.;
 
 viewevaluation_hand_calib_v = 
-Strecken Sie Ihre Arme nach oben zur Decke aus. Strecken Sie ihre Arme 
-soweit wie möglich.;
+Stretch your arms upwards towards the ceiling and look to the front.
+Reach as far as you can.;
 
 viewevaluation_turn_on_controllers =
-Make sure the controllers are charged and turned on.
-Make sure that the patient is holding the turned on
-controllers before the hand calibration starts;
+<i>Make sure the controllers are charged and turned on.</i><br>
+<i>Make sure that the patient is holding the turned on</i><br>
+<i>controllers before the hand calibration starts</i><br>;
 
 viewevaluation_hand_verif =
 Try and touch the cubes in front of you.
 Make sure you can reach them all. If you are having trouble touching any cube
-then redo the hand calibration but this time do not fully strech your arms;
-
+we can redo the hand calibration, but this time do not fully stretch your arms;
 
 explanation_phase_list_binding_bc =
-Dies ist der Farbkombinationstest. Bei dieser Übung werden <<N>> Figuren auf dem
-Bildschirm erscheinen. Jede Figur hat eine Farbe außen und eine Farbe innen. 
-Ist dies der Fall, merken Sie sich bitte die Farbkombination jeder Figur.|
-Die ersten Figuren werden verschwinden und ein neuer Satz von Figuren wird erscheinen. Sie 
-müssen feststellen, ob die Farbkombination jeder Figur gleich geblieben ist oder ob die 
-Farben zwischen den Figuren ausgetauscht wurden. Die Position der Figuren ist dabei nicht 
-wichtig. Wenn die Farben zwischen den Figuren ausgetauscht wurden, sagen Sie "anders". 
-Wenn nicht, sagen Sie "gleich". In diesem Fall wurden die Farben zwischen den Figuren 
-ausgetauscht. Sie müssen "anders" sagen.|
-Schauen Sie sich das zweite Beispiel an.|
-In diesem Fall sind die Farbkombinationen gleich geblieben. Sie müssen "gleich" sagen.
-Haben Sie es verstanden?
-Wir werden einige Übungsrunden durchführen, bevor wir mit dem Test beginnen.;
+Dies ist der Color Combination Test. Dieser ist anspruchsvoller als der 
+vorherige, jedoch vom Prinzip ähnlich.|
+<<N>> Boxen mit einem Kreuz in der Mitte werden erscheinen. Sie müssen sich 
+die Farbkombination jeder einzelnen Box merken.|
+Die Boxen werden verschwinden und neue Boxen werden erscheinen.|
+Sie müssen herausfinden, ob die Farbkombination jeder einzelnen Box 
+gleichgeblieben ist oder sich verändert hat. Bei gleichgebliebenen 
+Farbkombinationen müssen Sie "Gleich" sagen, bei veränderten 
+Farbkombinationen müssen Sie "Anders" sagen.|
+Wenn wir die zwei Seiten vergleichen, ist zu erkennen, dass zwei Boxen
+die Farben untereinander gewechselt haben.|
+Markiert sind die Boxen, die ihre Farben untereinander getauscht haben. 
+In diesem Fall sagen Sie "Anders".|
+Lassen Sie uns ein weiteres Beispiel vornehmen.|
+<<N>> Boxen mit einem Kreuz in der Mitte erscheinen.|
+Diese verschwinden nun.|
+Ein neuer Satz von Boxen wird erscheinen.|
+Die Farbkombination in den Boxen haben sich nicht verändert. 
+In diesem Fall sagen Sie "Gleich".
+
+Haben Sie den Ablauf vom Test verstanden? 
+Wir machen vor dem Beginn noch einige Beispiele.;
+
 
 
 explanation_phase_list_binding_uc =
-Dies ist der neue Farben Test. In dieser Studie werden <<N>> Figuren auf dem 
-Bildschirm erscheinen. So, wie die Figuren, die Sie auf der linken Seite sehen. 
-Jede Figur hat eine Farbe außen und eine Farbe innen. In diesem Fall, 
-merken Sie sich bitte die Farben, die in den Figuren vorhanden sind.|
-Die ersten Figuren werden verschwinden und ein neuer Satz von Figuren wird erscheinen. 
-Sie müssen feststellen, ob neue Farben erschienen sind oder ob alle Farben gleich 
-geblieben sind. Die Position der Figuren ist dabei nicht wichtig. Wenn neue Farben 
-erschienen sind, sagen Sie "anders". Wenn nicht, sagen Sie "gleich". In diesem Fall 
-sind zwei neue Farben in jedes Ziels erschienen. Sie müssen "anders" sagen.|
-Schauen Sie sich das zweite Beispiel an.|
-In diesem Fall sind keine neuen Farben erschienen. Sie müssen "gleich" sagen.
-Haben Sie es verstanden?
-Wir werden einige Übungsrunden durchführen, bevor wir mit dem Test beginnen.;
+Das ist der New Colors Test.|
+<<N>> Boxen mit einem Kreuz in der Mitte werden erscheinen. Sie müssen sich 
+die Farben dieser <<N>> Boxen (Auẞen- sowie Innenfarbe) merken.|
+Diese Boxen werden verschwinden, und <<N>> neue Boxen werden erscheinen.|
+Sie müssen herausfinden, ob diese <<N>> Boxen farblich gleich geblieben sind, 
+oder die Farben (auẞen und innen) verändert wurden. Die Position der Boxen 
+ist nicht wichtig. Wenn die Farben geändert haben, sagen Sie einfach "Anders". 
+Wenn die Farben sich nicht geändert haben sagen Sie "Gleich".|
+In diesem Beispiel sind die Boxen links nicht gleich mit den Boxen rechts. 
+Die Boxen auf der rechten Seite haben neue Farben bekommen.|
+Hier sehen Sie die Boxen, die eine neue Farbe bekommen haben und dadurch 
+nicht gleich sind.|
+Wir machen ein neues Beispiel. Das rote Kreuz in der Mitte  signalisiert 
+den Beginn einer neuen Aufgabe.|
+Hier zu sehen sind <<N>> Boxen.|
+Diese Boxen werden verschwinden.|
+<<N>> neue Boxen werden auftauchen.|
+In diesem Beispiel sind keine neuen Farben dazugekommen. Somit müssen Sie
+einfach mit dem Wort "Gleich" antworten. 
 
-explanation_phase_list_gonogo =
-Dies ist der Go/No-Go-Test. Schauen Sie auf das Kreuz in der Mitte des Bildschirms. Das 
-Kreuz wird verschwinden und ein Pfeil wird erscheinen. Wenn der Pfeil grün ist, schauen 
-Sie in die Richtung des Pfeils. Wenn er rot ist, schauen Sie in die entgegengesetzte 
-Richtung. In diesem Fall, weil der Pfeil rot ist, schauen Sie in die entgegengesetzte 
-Richtung, so wie es durch den blauen Kreis angezeigt wird. Wenn der Pfeil verschwindet, 
-schauen Sie schnell zurück auf das Kreuz.|
-In diesem Fall, weil der Pfeil grün ist, schauen Sie in die Richtung des Pfeils. 
-Wenn der Pfeil grün ist, schauen Sie in die Richtung des Pfeils.|
-Schauen Sie zurück auf das Kreuz.|
-Schauen Sie in die Richtung des Pfeils.|
-Zurück aud das Kreuz.|
-Schauen Sie in die entgegengesetzte Richtung. Sie müssen diese Übung so 
-schnell wie möglich machen. Haben Sie alles verstanden?
-Wir werden einige Übungsrunden machen, bevor wir mit dem Test beginnen.;
+Haben Sie den Ablauf vom Test verstanden? 
+Wir machen vor dem Beginn noch einige Beispiele.;
+
+
+
+
+explanation_phase_list_gonogo     = 
+Dies ist der Go/No Go Test. Schauen Sie sich das Kreuz in der Mitte an. 
+Dieses Kreuz wird verschwinden, und ein Pfeil wird erscheinen. Wenn der 
+Pfeil grün ist, schauen Sie in seine Richtung. Ist der Pfeil jedoch rot, 
+schauen Sie in seine entgegengesetzte Richtung.|
+In diesem Fall ist der Pfeil rot. Schauen Sie in die entgegengesetzte 
+Richtung in den kleinen Kreis, der links vom Pfeil abgebildet ist.|
+Wenn der Pfeil verschwindet, schauen Sie wieder auf das Kreuz in der Mitte.|
+In diesem Fall ist der Pfeil grün. Schauen Sie in seine Richtung, genauer 
+gesagt auf den kleinen Punkt rechts.|
+Schauen Sie zurück zum Kreuz.|
+Schauen Sie in die Richtung des Pfeiles.|
+Und wieder zurück auf das Kreuz in der Mitte.|
+Schauen Sie in die entgegengesetzte Richtung des Pfeiles, so schnell es 
+Ihnen möglich ist. 
+
+Verstehen Sie diese Anweisungen? 
+Wir machen einige Beispiele, bevor wir mit dem Test beginnen.;
+
+
 
 explanation_phase_list_gonogo_3D =
-Dies ist die Go/No-Go Sphere Evaluation. Während dieser Evaluation werden grüne und
-rote Kugeln von den dunklen Punkten vor Ihnen ausgesendet. Wenn die Kugel grün ist, 
-müssen Sie versuchen, sie mit ihrer Hand zu berühren. Wenn Sie Kontakt mit der Kugel 
-haben, wird Ihr Controller vibrieren.|
+This is Go/No-Go Balls Test. During this evaluation green and 
+red balls will be sent from the points in front of you. If the ball is 
+green you must touch it and if it's red, you must avoid it. If you make 
+contact with a ball you will feel your controller vibrate. Let's do 
+an example. Try to touch the green ball.|
 |
-Wenn die Kugel rot ist, müssen Sie Ihre Hände fortbewegen, um zu vermeiden, dass 
-Sie die Kugel berühren. Wenn Sie trotzdem Kontakt haben, wird Ihr Controller i 
-vibrieren.|
+Now avoid touching the red ball.|
 |
-Versuchen Sie nun, die grüne Kugel zu berühren.|
+Now try to touch the green ball again. |
 |
-Vermeiden Sie, die rote Kugel zu berühren. Wenn Sie die grünen Kugeln richtig 
-berühren und die roten Kuglen vermeiden, werden die Kugeln schneller werden. 
-Wenn Ihre Leistung nachlässt, werden die Kugeln langsamer.|;
+Avoid touching the red ball.|
+Do you understand the instructions?
+
+We will do some practice examples before starting;
 
 explanation_phase_list_gonogo_3D_vs =
-Dies ist die Go/No-Go Sphere Evaluation. Während dieser Evaluation werden grüne und
-rote Kugeln von den dunklen Punkten vor Ihnen ausgesendet. Wenn die Kugel grün ist,
-müssen Sie versuchen, sie mit ihrer Hand zu berühren. Wenn Sie Kontakt mit der Kugel
-haben, wird Ihr Controller vibrieren.|
+This is Go/No-Go Balls Test with Variable Speed. During this evaluation 
+green and red balls will be sent from the points in front of you. If 
+the ball is green you must touch it and if it's red, you must avoid it. 
+If you make contact with a ball you will feel your controller vibrate. 
+Let's do an example. Try to touch the green ball.|
 |
-Wenn die Kugel rot ist, müssen Sie Ihre Hände fortbewegen, um zu vermeiden, dass
-Sie die Kugel berühren. Wenn Sie trotzdem Kontakt haben, wird Ihr Controller i
-vibrieren.|
+Now avoid touching the red ball.|
 |
-Versuchen Sie nun, die grüne Kugel zu berühren.|
+Now try to touch the green ball again. |
 |
-Vermeiden Sie, die rote Kugel zu berühren. Wenn Sie die grünen Kugeln richtig
-berühren und die roten Kuglen vermeiden, werden die Kugeln schneller werden.
-Wenn Ihre Leistung nachlässt, werden die Kugeln langsamer.|;
+Now avoid touching the red ball.|
+The speed of the balls will increase as you do the test successfully. 
+If you don't, the speed of the balls will decrease.
+Do you understand the instructions?
+
+We will do some practice examples before starting;
 
 
-explanation_phase_list_nbackrt    =
-Dies ist der N-Back-Test. Während des Tests sehen Sie 6 Boxen und ein Kreuz 
-in der Mitte des Bildschirms. Sie müssen Ihre Augen auf das Kreuz richten.|
-Ein roter Kreis erscheint in einer der Boxen. Position 1|
-Dann erscheint er in einer anderen Box. Position 2|
-Und schließlich in einer anderen Box. Position 3. Denken Sie daran, 
-ihren Blick immer auf das Kreuz zu richten.|
-Wenn das Kreuz verschwindet, müssen Sie schnell auf Position 3 schauen, 
-wo der letzte Kreis erschien, wie durch den Pfeil gekennzeichnet.|
-Dann schauen Sie auf Position 2, wo der zweite Kreis erschienen ist|
-Und schließlich auf Position 1, wo der erste Kreis erschien. Wenn Sie 
-fertig sind, schauen Sie schnell zurück auf das Kreuz. Jetzt wird der 
-Test wiederholt.|
+explanation_phase_list_nback_3    =
+Dies ist der N-Back Test. Dieser Test besteht aus sechs Boxen, die periphere 
+verteilt sind. In der Mitte ist ein Kreuz zu sehen. 
+Sie müssen die Augen auf das Kreuz richten.|
+Ein roter Punkt wird in einer der sechs Boxen erscheinen. 
+Dies ist die Position 1.|
+Ein weiterer Punkt wird in einer anderen Box erscheinen, 
+dies stellt die Position 2 dar.|
+Und schlussendlich der dritter Punkt in einer anderen Box,  der die 
+Position 3 darstellt. Vergessen Sie nicht, Ihre Augen immer auf das 
+Kreuz zu lassen, während die Punkte um Sie herum erscheinen.|
+Wenn das Kreuz jedoch verschwindet, müssen Sie schnellstmöglich auf 
+Position 3 schauen, wo der letzte Punkt erschienen ist.|
+Danach schauen Sie schnellstmöglich auf Position 2 mit ihren Augen.|
+Schlussendlich auf Position 1 schauen, wo der erste Punkt erschienen ist.|
+Wenn Sie dies erledigt haben, schauen Sie zurück in der Mitte auf das Kreuz. 
+Verstanden?|
 Position 1.|
 Position 2.|
 Position 3.|
-Schauen Sie jetzt schnell auf Position 3.|
-Position 2.|
-Und Position 1. Haben Sie verstanden?
-Wir werden einige Übungsrunden machen, bevor wir mit dem Test beginnen.;
+Jetzt schauen Sie schnellstmöglich auf Position 3.|
+Danach auf Position 2.|
+Schlussendlich auf Position 1 schauen, wo der erste Punkt erschienen ist. 
+
+Verstehen Sie diese Anweisungen? 
+Wir machen einige Beispiele, bevor wir mit dem Test beginnen.;
+
+
 
 explanation_phase_list_nback_4    =
-Dies ist der N-Back-Test. Während des Tests sehen Sie 6 Boxen und ein Kreuz 
-in der Mitte des Bildschirms. Sie müssen Ihre Augen auf das Kreuz richten.|
-Ein roter Kreis erscheint in einer der Boxen. Position 1|
-Dann erscheint er in einer anderen Box. Position 2|
-Dann erscheint er in einer anderen Box. Position 3|
-Und schließlich in einer anderen Box. Position 4. Denken Sie daran, 
-ihren Blick immer auf das Kreuz zu richten.|
-Wenn das Kreuz verschwindet, müssen Sie schnell auf Position 4 schauen, 
-wo der letzte Kreis erschien, wie durch den Pfeil gekennzeichnet.|
-Dann schauen Sie auf Position 3, wo der dritte Kreis erschienen ist.|
-Dann schauen Sie auf Position 2, wo der zweite Kreis erschienen ist.|
-Und schließlich auf Position 1, wo der erste Kreis erschien.|
-Wenn Sie fertig sind, schauen Sie schnell zurück auf das Kreuz. 
-Jetzt wird der Test wiederholt.|
+Dies ist der N-Back Test. Dieser Test besteht aus sechs Boxen, die periphere 
+verteilt sind. In der Mitte ist ein Kreuz zu sehen. 
+Sie müssen die Augen auf das Kreuz richten.|
+Ein roter Punkt wird in einer der sechs Boxen erscheinen. 
+Dies ist die Position 1.|
+Ein weiterer Punkt wird in einer anderen Box erscheinen, 
+dies stellt die Position 2 dar.|
+Ein dritter Punkt wird wiederum in einer anderen Box erscheinen, 
+dies stellt die Position 3 dar.|
+Und schlussendlich der vierte Punkt in einer anderen Box,  der die 
+Position 4 darstellt. Vergessen Sie nicht, Ihre Augen immer auf das 
+Kreuz zu lassen, während die Punkte um Sie herum erscheinen.|
+Wenn das Kreuz jedoch verschwindet, müssen Sie schnellstmöglich auf 
+Position 4 schauen, wo der letzte Punkt erschienen ist.|
+Danach schauen Sie schnellstmöglich auf Position 3 mit ihren Augen.|
+Weiterhin auf Position 2 schauen.|
+Schlussendlich auf Position 1 schauen, wo der erste Punkt erschienen ist.|
+Wenn Sie dies erledigt haben, schauen Sie zurück in der Mitte auf das Kreuz. 
+Verstanden?|
 Position 1.|
 Position 2.|
 Position 3.|
 Position 4.|
-Schauen Sie jetzt schnell auf Position 4.|
-Position 3.|
-Position 2.|
-Und Position 1. Haben Sie verstanden?
-Wir werden einige Übungsrunden machen, bevor wir mit dem Test beginnen.;
+Jetzt schauen Sie schnellstmöglich auf Position 4.|
+Danach auf Position 3.|
+Danach auf Position 2.|
+Schlussendlich auf Position 1 schauen, wo der erste Punkt erschienen ist. 
 
-explanation_phase_list_nback_3    =
-Dies ist der N-Back-Test. Während des Tests sehen Sie 6 Boxen und ein Kreuz 
-in der Mitte des Bildschirms. Sie müssen Ihre Augen auf das Kreuz richten.|
-Ein roter Kreis erscheint in einer der Boxen. Position 1|
-Dann erscheint er in einer anderen Box. Position 2|
-Und schließlich in einer anderen Box. Position 3. Denken Sie daran, 
-ihren Blick immer auf das Kreuz zu richten.|
-Wenn das Kreuz verschwindet, müssen Sie schnell auf Position 3 schauen, 
-wo der letzte Kreis erschien, wie durch den Pfeil gekennzeichnet.|
-Dann schauen Sie auf Position 2, wo der zweite Kreis erschienen ist.|
-Und schließlich auf Position 1, wo der erste Kreis erschien.|
-Wenn Sie fertig sind, schauen Sie schnell zurück auf das Kreuz. 
-Jetzt wird der Test wiederholt.|
-Position 1.|
-Position 2.|
-Position 3.|
-Schauen Sie jetzt schnell auf Position 3.|
-Position 3.|
-Position 2.|
-Und Position 1. Haben Sie verstanden?
-Wir werden einige Übungsrunden machen, bevor wir mit dem Test beginnen.;
+Verstehen Sie diese Anweisungen? 
+Wir machen einige Beispiele, bevor wir mit dem Test beginnen.;
 
+
+
+
+explanation_phase_list_nbackrt    =
+This is the N-Back Test. The test is composed of 6 boxes and one cross in
+the center of the screen. You must keep your eyes on the cross.|
+A red circle will appear on one of the boxes. Position 1|
+Then it will appear on another box. Position 2|
+And finally on another box. Position 3. Remember to always keep your eyes on
+the cross|
+When the cross disappears, you must quickly look at Position 3, where the last
+circle appeared, as indicated by the arrow.|
+Then look at Position 2, where the second circle appeared|
+And finally, at Position 1, where the first circle appeared. In the inverse order|
+When you finish, quickly look back at the cross. Now the test will be repeated|
+Position 1|
+Position 2|
+Position 3|
+Now quickly look at Position 3|
+Position 2|
+And Position 1. Do you understand?
+We will do some practice examples before starting the test.;
 
 explanation_phase_list_nbackvs    = 
-Dies ist die N-Back Evaluierung fürs Training. Rote Kreise werden in einer 
-bestimmten Sequenz auf dem Bildschirm erscheinen.Während die Kreise gezeigt 
-werden, halten Sie bitte Ihre Augen auf das Kreuz in der Mitte gerichtet. 
-Die Anzahl der nacheinander gezeigten Kreise hängt von der gewählten 
-Schwierigkeitsstufe ab. In diesem Beispiel werden wir 3 Kreise verwenden.|
-Jetzt wird ein zweiter Kreis erscheinen.|
-Schließlich wird der dritte und letzte Kreis der Sequenz gezeigt werden.|
-Wenn das Kreuz verschwindet, müssen Sie auf das Rechteck schauen, wo der 
-dritte Kreis erschienen ist. Während der Studie wird ein Lichtblitz 
-anzeigen, dass Sie auf das richtige Rechteck geschaut haben.|
-Dann müssen Sie auf das Rechteck schauen, wo der zweite Kreis zuvor erschienen 
-ist. Schließlich müssen Sie auf das Rechteck schauen, wo der erste Kreis 
-erschien. Erfolgreich abgeschlossene Sequenzen werden die Zeit reduzieren, in 
-der die Kreise auf dem Bildschirm angezeigt werden. Ebenso werden 
-aufeinanderfolgende Fehler die Zeit erhöhen, in der die Kreise gezeigt werden.|
-Lassen Sie uns es noch einmal versuchen. Fixieren Sie Ihre Augen auf das 
-Kreuz in der Mitte, wenn der erste rote Kreis erscheint.|
-Halten Sie Ihre Augen auf das Kreuz gerichtet, wenn der zweite Kreis auf 
-dem Bildschirm erscheint.|
-Dann wird der letzte dritte Kreis gezeigt.|
-Schauen Sie jetzt auf das Rechteck, wo der dritte Kreis erschienen ist.|
-Dann auf das Rechteck, wo der zweite Kreis erschien. Und beenden Sie damit, 
-indem Sie auf das Rechteck schauen, wo der erste Kreis erschienen ist.
-Sind Sie bereit, zu beginnen?;
+This is the NBack Evaluation For Training.
+Red circles will appear on the screen in a given sequence.
+While the circles are being shown, please keep your eyes focused on the center cross. 
+The number of circles in the sequence will depend on the selected difficulty. 
+This example will use 3.|
+Now, a second circle will appear.| 
+Finally, the third and last circle of the sequence will be shown.|
+When the cross disappears, you must look at the rectangle where the third circle appeared. 
+During the study, a flash of light will indicate that you looked a the right rectangle.
+The screen will show indicators for the circle locations and the path your gaze must do.
+These indicators will not be present during the real study.|
+Then you must look at the rectangle where the second circle appeared before.|
+Finally you must look at the rectangle where the first circle was shown. 
+Successive completed sequences will decrease the time each circle is shown in the screen. 
+Likewise, successive failures will increase the time the circles are shown.|
+Let's try again. Fix you eyes on the center cross and notice the first red circle.|
+While maintaining your eyes fixed on the cross, notice that the second circle 
+appeared on the screen.|
+Then the final third circle is shown|
+Now look at the rectangle where the third circle was shown|
+Then at the rectangle where the second one appeared|
+And finish by looking at the rectangle where the first circle appeared.;
+
+
+explanation_phase_list_pass_ball = | 
+|
+|
+|;
 
 
 examples_binding_uc_3 =
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Same</i> out loud.|;
+|||Der Patient soll <i>Anders</i> sagen.||
+|||Der Patient soll <i>Anders</i> sagen.||
+|||Der Patient soll <i>Gleich</i> sagen.|;
 
 examples_binding_uc_2 =
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Same</i> out loud.||
-|||The patient should say <i>Different</i> out loud.|;
+|||Der Patient soll <i>Anders</i> sagen.||
+|||Der Patient soll <i>Gleich</i> sagen.||
+|||Der Patient soll <i>Anders</i> sagen.|;
 
 examples_binding_bc_3 =
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Same</i> out loud.|;
+|||Der Patient soll <i>Anders</i> sagen.||
+|||Der Patient soll <i>Anders</i> sagen.||
+|||Der Patient soll <i>Gleich</i> sagen.|;
 
 examples_binding_bc_2 =
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Different</i> out loud.||
-|||The patient should say <i>Same</i> out loud.|;
+|||Der Patient soll <i>Anders</i> sagen.||
+|||Der Patient soll <i>Anders</i> sagen.||
+|||Der Patient soll <i>Gleich</i> sagen.|;
 
 examples_gonogo = |||||;
 examples_nback_3 = |||||

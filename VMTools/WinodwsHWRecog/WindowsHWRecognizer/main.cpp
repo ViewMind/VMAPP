@@ -10,12 +10,17 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     //=========================================================== HW Recog DEV ================================
-//    HWRecognizer recog;
+    HWRecognizer recog;
 
-//    if (!recog.getErrors().empty()){
-//        qDebug() << "ERRORS";
-//        qDebug().noquote() << recog.getErrors().join("\n");
-//    }
+    if (!recog.getErrors().empty()){
+        qDebug() << "ERRORS";
+        qDebug().noquote() << recog.getErrors().join("\n");
+    }
+
+    if (!recog.getWarnings().empty()){
+        qDebug() << "WARNINGS";
+        qDebug().noquote() << recog.getWarnings().join("\n");
+    }
 
 //    // We check if there is soemting to search.
 //    QString filename = "search.txt";
@@ -35,7 +40,7 @@ int main(int argc, char *argv[])
 //        return 0;
 //    }
 
-//    //qDebug().noquote() << recog.toString(true);
+    qDebug().noquote() << recog.toString(true);
 
 //    //QString search_for = "8CC047Z0HR";
 //    search_for = search_for.trimmed();
@@ -43,11 +48,11 @@ int main(int argc, char *argv[])
 //    recog.searchForADeviceWithPropertyValue(search_for);
 
 
-    //=============================== Task List Table DEV ================================
-    ProcessRecognizer pr;
-    pr.refreshProcessList();
+//    //=============================== Task List Table DEV ================================
+//    ProcessRecognizer pr;
+//    pr.refreshProcessList();
 
-    qDebug() << pr.getCurrentProcesses();
+//    qDebug() << pr.getCurrentProcesses();
 
     return 0;
 

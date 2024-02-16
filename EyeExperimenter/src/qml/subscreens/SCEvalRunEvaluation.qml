@@ -116,7 +116,8 @@ Rectangle {
                 for (let key in string_value_map){
                     let message = loader.getStringForKey(key);
                     //message = message.replace("<<N>>","<b>" + string_value_map[key] + "</b>");
-                    message = message.replace("<<N>>",string_value_map[key]);
+                    //message = message.replace("<<N>>",string_value_map[key]);
+                    message = VMGlobals.stringReplaceAll("<<N>>",string_value_map[key],message)
                     list = list + "<li>" + message + "</li>"
                 }
                 list = list + "<ul>"
@@ -152,7 +153,8 @@ Rectangle {
 
                     if (VMGlobals.vmSCP_NUMBER_OF_TARGETS in current_config){
                         let ntargets = current_config[VMGlobals.vmSCP_NUMBER_OF_TARGETS]
-                        message_to_display = message_to_display.replace("<<N>>",ntargets);
+                        //message_to_display = message_to_display.replace("<<N>>",ntargets);
+                        message_to_display = VMGlobals.stringReplaceAll("<<N>>",ntargets,message_to_display)
                     }
 
                     if (message_to_display === undefined){
