@@ -176,7 +176,7 @@ Rectangle {
         options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_binding_length");
         options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_binding_normal"),
                                                                                      loader.getStringForKey("viewevaluation_binding_short")];
-        options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
+        options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_SELECTED] = 1;
         options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_WIDTH] = 60;
 
         item = {
@@ -212,7 +212,7 @@ Rectangle {
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = {}
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_number_of_targets");
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_VAlUES] = [4,3];
-        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_SELECTED] = 1;
         options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_WIDTH] = 100;
 
         item = {
