@@ -5,7 +5,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <iostream>
-#include "../../CommonClasses/Experiments/experiment.h"
 #include "../../CommonClasses/eyetracker_defines.h"
 
 namespace Globals{
@@ -58,6 +57,8 @@ static const QString SUPPORT_EMAIL_FILE      = "support_email.html";
 static const QString VM_UPDATE_LINK          = "ViewMind Update.lnk";
 static const QString LOGDIR                  = "logs";
 static const QString TASKKILL                = "taskkill";
+static const QString SUBJECT_DIR_ABORTED     = "exp_aborted";
+static const QString SUBJECT_DIR_SENT        = "sent";
 }
 
 namespace SupportEmailPlaceHolders {

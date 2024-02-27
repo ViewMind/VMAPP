@@ -10,6 +10,7 @@
 #include <QCoreApplication>
 #include <QElapsedTimer>
 #include <QDesktopServices>
+#include <QStandardPaths>
 
 #include "../../CommonClasses/LogInterface/staticthreadlogger.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"

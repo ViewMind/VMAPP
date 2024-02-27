@@ -1591,8 +1591,8 @@ void Loader::moveProcessedFiletToProcessedDirectory(){
     QString baseFileName = info.baseName();
 
     // Creating the processed directory.
-    QDir(patientWorkingDirectory).mkdir(ExperimentGlobals::SUBJECT_DIR_SENT);
-    QString processedDir = patientWorkingDirectory + "/" + ExperimentGlobals::SUBJECT_DIR_SENT;
+    QDir(patientWorkingDirectory).mkdir(Globals::Paths::SUBJECT_DIR_SENT);
+    QString processedDir = patientWorkingDirectory + "/" + Globals::Paths::SUBJECT_DIR_SENT;
     if (!QDir(processedDir).exists()){
         StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to create patient sent directory at: " + processedDir);
         return;

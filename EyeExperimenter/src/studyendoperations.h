@@ -6,6 +6,7 @@
 
 #include "localdb.h"
 #include "eyexperimenter_defines.h"
+#include "../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
 
 namespace StudyConstTimes {
 

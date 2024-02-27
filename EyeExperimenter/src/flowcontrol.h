@@ -13,21 +13,15 @@
 #include <iostream>
 
 #include "../../CommonClasses/debug.h"
-
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
-
+#include "../../CommonClasses/RenderServerClient/RenderServerPackets/RenderServerPacketNames.h"
 #include "../../CommonClasses/RenderServerClient/renderserverclient.h"
-
 #include "../../CommonClasses/StudyControl/studycontrol.h"
-
 #include "../../CommonClasses/Calibration/calibrationmanager.h"
 #include "../../CommonClasses/Calibration/calibrationhistory.h"
-
 #include "../../CommonClasses/HWRecog/processrecognizer.h"
-
 #include "studyendoperations.h"
-
 #include "eyexperimenter_defines.h"
 
 class FlowControl : public QObject
