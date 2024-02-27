@@ -26,6 +26,7 @@ ViewBase {
     readonly property int vmSC_INDEX_EVALUATION_SCREEN:    2
     readonly property int vmSC_INDEX_EVALUATION_FINISHED:  3
 
+
     function setPatientForEvaluation(){
 
         var patientData = loader.getCurrentSubjectInfo();
@@ -94,9 +95,6 @@ ViewBase {
         nextButton.vmText = loader.getStringForKey("viewevaluation_next_button");
         nextButton.vmEnabled = true;
 
-        // Ensuring the back button is re enabled.
-        backButton.vmEnabled = true;
-
         // Ensuring the proper screen is shown.
         viewer.currentIndex = vmDebugSubScreen;
         generalSettings.prepareSettings();
@@ -141,9 +139,6 @@ ViewBase {
         // Making sure the is calibrated flag is set to false.
         evaluationRun.vmIsCalibrated = false;
 
-        // The back button is disabled past this point.
-        backButton.vmEnabled = false;
-
     }
 
     function advanceStudyIndicator(){
@@ -157,10 +152,6 @@ ViewBase {
 
     function enableNextButton(enable){
         nextButton.vmEnabled = enable;
-    }
-
-    function enableBackButton(enable){
-        backButton.vmEnabled = enable;
     }
 
     function calibrationValidated(){
@@ -228,9 +219,90 @@ ViewBase {
         anchors.bottomMargin: VMGlobals.adjustHeight(592)
         anchors.left: parent.left
         anchors.leftMargin: VMGlobals.adjustWidth(5)
-        visible: vmEnabled
+        visible: {
+            // The button should not be shown during calibration.
+            if (evaluationRun.vmInCalibration) return false;
+            // The calibration validation button should not be shown while showning the calibration results.
+            if (calibrationValidation.visible) return false;
+            // If we are totally done, this shouldn't be shown. This happens only when the btnBackToPatient is visible.
+            if (btnBackToPatientScreen.visible) return false;
+            // If the study is done and that is left to do is to press the next button, then the back button should not be shown.
+            if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EVALUATION) && (nextButton.vmEnabled)) return false;
+            // If we are doing hand calibration the abort button is not shown.
+            if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_HAND_CALIB_H) || (evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_HAND_CALIB_H)) return false;
+
+            // In any other case the button should be visible.
+            return true;
+        }
         onClickSignal: {
-            mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
+            //mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
+            // First Calibration Explanation
+            if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_CALIBRATION) && (evaluationRun.vmCurrentEvaluation == 0)){
+                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_no_issue"))
+
+            }
+            // First hand calibration explanation
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_PRE_HAND_CALIB) && (evaluationRun.vmCurrentEvaluation == 0)){
+                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_no_issue"))
+
+            }
+            // First Example/Explanation
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXAMPLES) && (evaluationRun.vmCurrentEvaluation == 0)){
+                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_first_redo_calibration"))
+
+
+            }
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXPLANATION) && (evaluationRun.vmCurrentEvaluation == 0)){
+                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_first_redo_calibration"))
+
+
+            }
+            // First hand calibration verification
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_HAND_CALIB_VERIF) && (evaluationRun.vmCurrentEvaluation == 0)){
+                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_first_redo_calibration"))
+
+
+            }
+            // First Evaluation
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EVALUATION) && (evaluationRun.vmCurrentEvaluation == 0)){
+                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_first_study"))
+
+            }
+
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXAMPLES) && (evaluationRun.vmCurrentEvaluation > 0)){
+                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_calibration"))
+
+            }
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXPLANATION) && (evaluationRun.vmCurrentEvaluation > 0)){
+                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_calibration"))
+
+            }
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EVALUATION) && (evaluationRun.vmCurrentEvaluation > 0)){
+                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_study"))
+
+            }
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_CALIBRATION) && (evaluationRun.vmCurrentEvaluation > 0)){
+                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_calibration"))
+
+            }
+            // Non first hand calibration verification
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_HAND_CALIB_VERIF) && (evaluationRun.vmCurrentEvaluation > 0)){
+                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_study"))
+
+
+            }
+
         }
     }
 
@@ -315,7 +387,9 @@ ViewBase {
     }
 
     Rectangle {
+
         property double vmBorderPadding: VMGlobals.adjustWidth(1)
+
         id: mainRect
         clip: true
         radius: VMGlobals.adjustHeight(10)
@@ -592,42 +666,17 @@ ViewBase {
 
         if (viewer.currentIndex !== vmSC_INDEX_EVALUATION_SCREEN) return;
 
-        //console.log("KEY PRESSED: " + event.key);
-
         // If this dialog is visible all key strokes should be ignored.
         if (eyeTrackingCheckDialog.visible) return;
-
-        //console.log("KEY PRESSED: " + event.key);
 
         // If the calibration validation is open, all key strokes should be ignored.
         if (calibrationValidation.visible) return;
 
-        //console.log("KEY PRESSED: " + event.key);
-
         var allowed_keys = [];
 
         switch(evaluationRun.vmEvaluationStage){
-        case evaluationRun.vmSTAGE_CALIBRATION:
-            if (event.key === Qt.Key_Escape){
-                if (!evaluationRun.vmInCalibration){
-                    flowControl.renderWaitScreen("");
-                    // Store calibration history right here.
-                    flowControl.storeCalibrationHistoryAsFailedCalibration();
-                    // These two "sets" are necessary to prevent certain conditions from making the skip calibration button available when it shouldn't be.
-                    evaluationRun.vmCurrentEvaluation = 0;
-                    evaluationRun.vmIsCalibrated = false;
-                    mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
-                }
-            }
-            break;
         case evaluationRun.vmSTAGE_EVALUATION:
-            allowed_keys = [Qt.Key_Escape, Qt.Key_S, Qt.Key_D, Qt.Key_G]
-            break;
-        case evaluationRun.vmSTAGE_EXAMPLES:
-            allowed_keys = [Qt.Key_N, Qt.Key_Escape, Qt.Key_S, Qt.Key_D]
-            break;
-        case evaluationRun.vmSTAGE_EXPLANATION:
-            allowed_keys = [Qt.Key_N, Qt.Key_B, Qt.Key_Escape];
+            allowed_keys = [Qt.Key_S, Qt.Key_D]
             break;
         default:
             return;
@@ -637,16 +686,7 @@ ViewBase {
 
         for (var i = 0; i < allowed_keys.length; i++){
             if (event.key === allowed_keys[i]){
-                //console.log("Passing on event key " + event.key)
-
-                if (event.key === Qt.Key_Escape){
-                    confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
-                                                         loader.getStringForKey("viewevaluation_comfirm_abort_msg"))
-                }
-                else {
-                    flowControl.keyboardKeyPressed(event.key);
-                }
-
+                flowControl.keyboardKeyPressed(event.key);
                 return;
             }
         }

@@ -20,6 +20,7 @@ Rectangle {
     readonly property string vmONGOING_STUDY_FIELD: "ongoing_study_file"
 
     property int vmEvaluationStage : vmSTAGE_CALIBRATION
+
     // The flag is required to indetify the moment between entering the strign and calibration actually staring.
     property bool vmInCalibration: false
     property bool vmIsCalibrated: false;
