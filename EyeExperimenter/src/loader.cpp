@@ -446,7 +446,7 @@ QVariant Loader::getDebugOption(const QString &debugOption){
 
 void Loader::setSettingsValue(const QString &key, const QVariant &var){
     if (!localDB.setPreference(key,var)){
-        StaticThreadLogger::error("Loader::setSettingsValue","Failed to store local DB file.");
+        StaticThreadLogger::error("Loader::setSettingsValue","Failed to store local DB file. Reason: " + localDB.getError());
     }
 }
 
@@ -468,24 +468,24 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
 
     switch(selectedStudy){
     case Globals::StudyConfiguration::INDEX_BINDING_UC:
-        filename = Globals::BaseFileNames::BINDING;
+        filename = Globals::BaseFileNames::BINDING_UC;
 
-        if (studyconfig.contains(Globals::StudyConfiguration::ONGOING_STUDY_FILE)){
-            filename = studyconfig.value(Globals::StudyConfiguration::ONGOING_STUDY_FILE).toString();
-            StaticThreadLogger::log("Loader::createSubjectStudyFile","Ongoing study file '" + filename + "'");
-            new_file = false;
-        }
+//        if (studyconfig.contains(Globals::StudyConfiguration::ONGOING_STUDY_FILE)){
+//            filename = studyconfig.value(Globals::StudyConfiguration::ONGOING_STUDY_FILE).toString();
+//            StaticThreadLogger::log("Loader::createSubjectStudyFile","Ongoing study file '" + filename + "'");
+//            new_file = false;
+//        }
 
         break;
     case Globals::StudyConfiguration::INDEX_BINDING_BC:
-        filename = Globals::BaseFileNames::BINDING;
+        filename = Globals::BaseFileNames::BINDING_BC;
 
-        // If there is an ongoing binding Study, then we can remove this
-        if (studyconfig.contains(Globals::StudyConfiguration::ONGOING_STUDY_FILE)){
-            filename = studyconfig.value(Globals::StudyConfiguration::ONGOING_STUDY_FILE).toString();
-            StaticThreadLogger::log("Loader::createSubjectStudyFile","Ongoing study file '" + filename + "'");
-            new_file = false;
-        }
+//        // If there is an ongoing binding Study, then we can remove this
+//        if (studyconfig.contains(Globals::StudyConfiguration::ONGOING_STUDY_FILE)){
+//            filename = studyconfig.value(Globals::StudyConfiguration::ONGOING_STUDY_FILE).toString();
+//            StaticThreadLogger::log("Loader::createSubjectStudyFile","Ongoing study file '" + filename + "'");
+//            new_file = false;
+//        }
 
         break;
     case Globals::StudyConfiguration::INDEX_GONOGO:

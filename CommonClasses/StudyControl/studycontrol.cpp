@@ -51,6 +51,8 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
     // Now we create the configurator.
     StudyConfigurator *configurator = nullptr;
 
+    studyEvaluationExtraIndication = "";
+
     if (studyName == VMDC::Study::NBACK){
         configurator = new NBackConfigurator();
         if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 3){
@@ -95,6 +97,7 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
         else {
             studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_UC_2;
         }
+        studyEvaluationExtraIndication = EVALUATION_BINDING_EXTRA_INSTRUCTION;
     }
     else if (studyName == VMDC::Study::BINDING_BC) {
         configurator = new BindingConfigurator(true,studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt());
@@ -106,6 +109,7 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
         else {
             studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_BC_2;
         }
+        studyEvaluationExtraIndication = EVALUATION_BINDING_EXTRA_INSTRUCTION;
     }
     else if (studyName == VMDC::Study::GONOGO){
         configurator = new GNGConfigurator();
@@ -247,7 +251,10 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
             }
             else if (command == RRS::CommandStudyControl::CMD_STUDY_STATUS_UPDATES){
                 // At the very beginning we can expect this command, asi it sets up the zero values for the whatever is printed below the unity window.
-                emit StudyControl::updateStudyMessages(control.getPayloadField(RRS::PacketStudyControl::STATUS_UPDATE).toMap());
+                QVariantMap updatePackage;
+                updatePackage["stats"] = control.getPayloadField(RRS::PacketStudyControl::STATUS_UPDATE).toMap();
+                updatePackage["extra"] = studyEvaluationExtraIndication;
+                emit StudyControl::updateStudyMessages(updatePackage);
                 return;
             }
             else {
@@ -260,7 +267,11 @@ void StudyControl::receiveRenderServerPacket(const RenderServerPacket &control){
         else if (this->studyState == SS_EVAL) {
             if (command == RRS::CommandStudyControl::CMD_STUDY_STATUS_UPDATES) {
                 //qDebug() << "Got Stats Updates For Evaluation" << control.getPayloadField(RRS::PacketStudyControl::STATUS_UPDATE).toMap();
-                emit StudyControl::updateStudyMessages(control.getPayloadField(RRS::PacketStudyControl::STATUS_UPDATE).toMap());
+                QVariantMap updatePackage;
+                updatePackage["stats"] = control.getPayloadField(RRS::PacketStudyControl::STATUS_UPDATE).toMap();
+                updatePackage["extra"] = studyEvaluationExtraIndication;
+                emit StudyControl::updateStudyMessages(updatePackage);
+                //emit StudyControl::updateStudyMessages(control.getPayloadField(RRS::PacketStudyControl::STATUS_UPDATE).toMap());
                 return;
             }
             else if (command == RRS::CommandStudyControl::CMD_STUDY_END){
@@ -395,7 +406,7 @@ bool StudyControl::processAndStoreStudyData(const QVariantMap &control) {
     }
 
     // We need to figure out if this is file we need to finalize.
-    bool shouldBeFinalized = this->studyFinalizationLogic();
+    // bool shouldBeFinalized = this->studyFinalizationLogic();
 
     // If the trial list field is a list that is NOT empty, this a 2D study file.
     if (trialList.size() > 0){
@@ -419,10 +430,12 @@ bool StudyControl::processAndStoreStudyData(const QVariantMap &control) {
         }
     }
 
-    // Now that we are ready, then we mark the file as finalized if it is.
-    if (shouldBeFinalized){
-        rawdata.markFileAsFinalized();
-    }
+//    // Now that we are ready, then we mark the file as finalized if it is.
+//    if (shouldBeFinalized){
+//        rawdata.markFileAsFinalized();
+//    }
+
+    rawdata.markFileAsFinalized();
 
     // Now we save the data to hard disk.
     if (!saveDataToHardDisk()){
@@ -601,21 +614,21 @@ bool StudyControl::saveDataToHardDisk(){
 
 }
 
-bool StudyControl::studyFinalizationLogic() {
+//bool StudyControl::studyFinalizationLogic() {
 
-    QStringList studyList = rawdata.getStudies();
-    if (studyList.size() == 1){
-        if ( (studyList.first() == VMDC::Study::BINDING_BC) ||
-             (studyList.first() == VMDC::Study::BINDING_UC) ) {
-            // We have only 1 study and it is one fo the Bindings.
-            return false;
-        }
-    }
+//    QStringList studyList = rawdata.getStudies();
+//    if (studyList.size() == 1){
+//        if ( (studyList.first() == VMDC::Study::BINDING_BC) ||
+//             (studyList.first() == VMDC::Study::BINDING_UC) ) {
+//            // We have only 1 study and it is one fo the Bindings.
+//            return false;
+//        }
+//    }
 
-    // In any other case we can return true.
-    return true;
+//    // In any other case we can return true.
+//    return true;
 
-}
+//}
 
 void StudyControl::emitFailState(bool wasAborted){
     this->expectingAbortACK = false;

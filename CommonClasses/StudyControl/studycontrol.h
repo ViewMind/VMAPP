@@ -196,6 +196,7 @@ private:
     qint32 currentStudyExampleScreen;
     QString studyExplanationLanguageKey;
     QString studyExampleLanguageKey;
+    QString studyEvaluationExtraIndication;
 
     /**
      * @brief saveDataToHardDisk - Saves raw data file to disk.
@@ -203,13 +204,13 @@ private:
      */
     bool saveDataToHardDisk();
 
-    /**
-     * @brief studyFinalizationLogic - Figures out if a study can be finalized or not.
-     * @details Finalized studies are the only one that appear ready to be sent for procesing.
-     * Multi part studies (i.e binding) require two complete studies in order to finalize.
-     * @return True if it can be finalized. False otherwise.
-     */
-    bool studyFinalizationLogic();
+//    /**
+//     * @brief studyFinalizationLogic - Figures out if a study can be finalized or not.
+//     * @details Finalized studies are the only one that appear ready to be sent for procesing.
+//     * Multi part studies (i.e binding) require two complete studies in order to finalize.
+//     * @return True if it can be finalized. False otherwise.
+//     */
+//    bool studyFinalizationLogic();
 
     /**
      * @brief emitFailState - Shorcut function to coreccty set variables and emit the study end signal on failure of some kind.
@@ -246,6 +247,9 @@ private:
     static inline const char * STUDY_TEXT_KEY_NBACK_3        = "explanation_phase_list_nback_3";
     static inline const char * STUDY_TEXT_KEY_NBACK_4        = "explanation_phase_list_nback_4";
     static inline const char * STUDY_TEXT_KEY_NBACKVS        = "explanation_phase_list_nbackvs";
+
+    // Extra instructions that need to be shown during the evaluation.
+    static inline const char * EVALUATION_BINDING_EXTRA_INSTRUCTION = "viewevaluation_binding_keys";
 
     // Different text explanation keys based on different studies.
     static inline const char * EXAMPLE_TEXT_KEY_BINDING_UC_2 = "examples_binding_uc_2";

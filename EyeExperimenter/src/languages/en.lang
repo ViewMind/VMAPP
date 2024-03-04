@@ -221,6 +221,7 @@ viewevaluation_gng3D_hand_both = Both;
 viewevaluation_err_at_least_1_study = You must select at least 1 study;
 viewevaluation_binding_uc = New Colors;
 viewevaluation_binding_bc = Color Combinations;
+viewevaluation_binding_keys = Press <b>S</b> if they say <i>"Same"</i> or <b>D</b> if they say <i>"Different"</i>;
 viewevaluation_shortcuts = Shortcuts;
 viewevaluation_evaluation_steps = Calibration|Explanation|Examples|Evaluation;
 viewevaluation_evaluation_steps_with_hand_calib = Calibration|Hand Calibration|Explanation|Examples|Evaluation;

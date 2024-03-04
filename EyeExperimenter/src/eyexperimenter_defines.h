@@ -187,7 +187,8 @@ static bool SetUpRegion(const QString &reg){
 
 namespace BaseFileNames {
 static const QString READING     = "reading";
-static const QString BINDING     = "binding";
+static const QString BINDING_UC  = "binding_uc";
+static const QString BINDING_BC  = "binding_bc";
 static const QString NBACKVS     = "nbackvs";
 static const QString NBACKRT     = "nbackrt";
 static const QString NBACK       = "nback";

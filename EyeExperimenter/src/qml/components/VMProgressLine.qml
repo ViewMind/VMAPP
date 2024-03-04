@@ -38,9 +38,9 @@ Rectangle {
      **/
 
     property bool vmOnlyColorCurrent: false
-
+    property bool vmUseLargerFontSize: false;
     property int vmSuggestedWidth: 0;
-
+    property bool vmHideNumberInMainNodes: false
     signal progressLineUpdated();
 
     // I've only here learned how to do "private stuff". Which is why other QML classes that I did don't have it, but here it's presetn.
@@ -94,8 +94,10 @@ Rectangle {
                 ctx.stroke();
 
                 // Drawing the number
-                ctx.textAlign  = "center"
-                ctx.fillText((i+1),x+r,y+r)
+                if (!vmHideNumberInMainNodes){
+                    ctx.textAlign  = "center"
+                    ctx.fillText((i+1),x+r,y+r)
+                }
 
                 // Drawing the text
                 ctx.textAlign  = "left"
@@ -168,6 +170,11 @@ Rectangle {
             y = y + vmEndsSubSegmentLength
             let x = R - r + vmLineWidth
 
+            let fontSize = VMGlobals.vmFontBaseSize;
+            if (vmUseLargerFontSize){
+                fontSize = VMGlobals.vmFontLarge;
+            }
+
             for (let i = 0; i < N; i++){
 
                 // Drawing the main circle.
@@ -186,10 +193,10 @@ Rectangle {
                 ctx.beginPath();
                 ctx.fillStyle = vmActive
                 if (vmMainSubIndex === i){
-                    ctx.font = '%1px "%2"'.arg(VMGlobals.vmFontBaseSize).arg(mainWindow.vmSegoeHeavy.name);
+                    ctx.font = '%1px "%2"'.arg(fontSize).arg(mainWindow.vmSegoeHeavy.name);
                 }
                 else{
-                    ctx.font = '%1px "%2"'.arg(VMGlobals.vmFontBaseSize).arg(mainWindow.vmSegoeNormal.name);
+                    ctx.font = '%1px "%2"'.arg(fontSize).arg(mainWindow.vmSegoeNormal.name);
                 }
                 ctx.fillText(subIndexTexts[i],x+vmSmallD+vmHAirSubPoint,y+r)
 
@@ -298,7 +305,10 @@ Rectangle {
     TextMetrics {
         id: textMeasure
         font.weight: 600
-        font.pixelSize: VMGlobals.vmFontLarge
+        font.pixelSize: {
+            if (vmUseLargerFontSize) return VMGlobals.vmFontLarger
+            else VMGlobals.vmFontLarge
+        }
     }
 
     Canvas{
@@ -323,7 +333,12 @@ Rectangle {
             ctx.fillStyle = internal.vmActive
             ctx.strokeStyle = internal.vmActive
 
-            ctx.font = '%1px "%2"'.arg(VMGlobals.vmFontLarge).arg(mainWindow.vmSegoeHeavy.name);
+            let fontSize = VMGlobals.vmFontLarge
+            if (vmUseLargerFontSize){
+                fontSize = VMGlobals.vmFontLarger
+            }
+
+            ctx.font = '%1px "%2"'.arg(fontSize).arg(mainWindow.vmSegoeHeavy.name);
 
             ctx.beginPath();
             y = internal.drawMainCircles(ctx,internal.vmLineWidth,0,internal.vmMainIndex)

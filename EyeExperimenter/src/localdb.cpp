@@ -190,19 +190,20 @@ bool LocalDB::setDBFile(const QString &dbfile, const QString &bkp_dir, bool pret
     }
     data = doc.object().toVariantMap();
 
+
     // We now recheck on the hash.
-
-    if (disable_checksum) return true;
-
-    QString checksum = data.value(MAIN_CHECKSUM).toString();
-    QString hash = computeDataHash();
-    if (checksum != hash){
-        // Somehow data got corrupted.
-        error = "Failed checksum verification when loading the database.";
-        return false;
+    if (!disable_checksum) {
+        QString checksum = data.value(MAIN_CHECKSUM).toString();
+        QString hash = computeDataHash();
+        if (checksum != hash){
+            // Somehow data got corrupted.
+            error = "Failed checksum verification when loading the database.";
+            return false;
+        }
     }
 
     this->dbfile = dbfile;
+
     return true;
 
 }
@@ -793,7 +794,7 @@ bool LocalDB::filterMatchSubject(const QVariantMap &subject, const QString &filt
     QString lastname = subject.value(SUBJECT_LASTNAME).toString().toLower();
     QString instid = subject.value(SUBJECT_INSTITUTION_ID).toString().toLower();
 
-    // If any of the identifiers contain the string this is a match.
+    // If any of the identifiers contain the string this is a match
     return (name.contains(filter) || lastname.contains(filter) || instid.contains(filter));
 
 }
@@ -989,7 +990,7 @@ bool LocalDB::setPreference(const QString &preference, const QVariant &variant){
     if (data.contains(MAIN_PREFERENCES)){
         map = data.value(MAIN_PREFERENCES).toMap();
     }
-    //qDebug() << "Setting preference" << preference << "to" << variant;
+    qDebug() << "Setting preference" << preference << "to" << variant;
     map[preference] = variant;
     data[MAIN_PREFERENCES] = map;
     return saveAndBackup();

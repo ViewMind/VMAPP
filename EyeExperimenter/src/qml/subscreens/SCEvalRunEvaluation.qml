@@ -17,7 +17,7 @@ Rectangle {
     readonly property int vmHAND_CALIB_START_V : 1;
     readonly property int vmHAND_CALIB_END     : 2;
 
-    readonly property string vmONGOING_STUDY_FIELD: "ongoing_study_file"
+    //readonly property string vmONGOING_STUDY_FIELD: "ongoing_study_file"
 
     property int vmEvaluationStage : vmSTAGE_CALIBRATION
 
@@ -27,7 +27,7 @@ Rectangle {
     property bool vmIsPreviousCalibrationType3D: false;
     property int  vmCurrentEvaluation: 0
 
-    property bool vmBindingStudyStarted: false;
+    // property bool vmBindingStudyStarted: false;
 
     property bool vmSlowCalibrationSelected: false
 
@@ -113,16 +113,28 @@ Rectangle {
             //console.log(JSON.stringify(string_value_map));
 
             if (vmEvaluationStage == vmSTAGE_EVALUATION){
+
+                console.log("Getting the string value map of: " + JSON.stringify(string_value_map));
+
+                // It has two parts. stats and extra.
+                let stats = string_value_map["stats"];
+                let extra = string_value_map["extra"];
+
                 let list = "<ul>"
-                for (let key in string_value_map){
+                for (let key in stats){
                     let message = loader.getStringForKey(key);
                     //message = message.replace("<<N>>","<b>" + string_value_map[key] + "</b>");
                     //message = message.replace("<<N>>",string_value_map[key]);
-                    message = VMGlobals.stringReplaceAll("<<N>>",string_value_map[key],message)
+                    message = VMGlobals.stringReplaceAll("<<N>>",stats[key],message)
                     list = list + "<li>" + message + "</li>"
                 }
                 list = list + "<ul>"
                 //console.log("DBUG: Setting Study Message: " + list)
+
+                if (extra != ""){
+                    list = list + "<br><br>" + loader.getStringForKey(extra);
+                }
+
                 studyMessages.text = list;
             }
             else if ((vmEvaluationStage == vmSTAGE_EXPLANATION) || (vmEvaluationStage == vmSTAGE_EXAMPLES)){
@@ -199,11 +211,11 @@ Rectangle {
         else return false;
     }
 
-    function setOngoingFileNameForStudyConfiguration(){
-        let study_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
-        study_config[vmONGOING_STUDY_FIELD] = loader.getCurrentSubjectStudyFile();
-        viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation] = study_config;
-    }
+//    function setOngoingFileNameForStudyConfiguration(){
+//        let study_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
+//        study_config[vmONGOING_STUDY_FIELD] = loader.getCurrentSubjectStudyFile();
+//        viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation] = study_config;
+//    }
 
     function prepareNextStudyOrHandCalibration(calibrationSkipped, is_recalibrating_hands){
 
@@ -228,7 +240,10 @@ Rectangle {
 
     function prepareForHandCalibration(is_recalibrating){
         vmEvaluationStage = vmSTAGE_PRE_HAND_CALIB
-        if (!is_recalibrating) viewEvaluations.advanceStudyIndicator();
+        if (!is_recalibrating) {
+            plineEvaluationStages.indicateNext();
+            // viewEvaluations.advanceStudyIndicator();
+        }
         viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_start_hand_calib"),"");
         studyExplanationText.text = loader.getStringForKey("viewevaluation_turn_on_controllers",false);
     }
@@ -257,27 +272,28 @@ Rectangle {
         // We load the text explanation depending on the study. so we get the study unique number id.
         let unique_study_id = parseInt(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmUNIQUE_STUDY_ID]);
 
-        if (vmCurrentEvaluation == 0){
-            vmBindingStudyStarted = false;
-        }
+//        if (vmCurrentEvaluation == 0){
+//            vmBindingStudyStarted = false;
+//        }
 
-        if (unique_study_id === VMGlobals.vmINDEX_BINDING_BC){
-            if (vmBindingStudyStarted){
-                setOngoingFileNameForStudyConfiguration();
-            }
-            else {
-                vmBindingStudyStarted = true;
-            }
-        }
-        else if (unique_study_id === VMGlobals.vmINDEX_BINDING_UC){
-            if (vmBindingStudyStarted){
-                setOngoingFileNameForStudyConfiguration();
-            }
-            else {
-                vmBindingStudyStarted = true;
-            }
-        }
-        else if (unique_study_id === VMGlobals.vmINDEX_NBACKVS){
+//        if (unique_study_id === VMGlobals.vmINDEX_BINDING_BC){
+//            if (vmBindingStudyStarted){
+//                setOngoingFileNameForStudyConfiguration();
+//            }
+//            else {
+//                vmBindingStudyStarted = true;
+//            }
+//        }
+//        else if (unique_study_id === VMGlobals.vmINDEX_BINDING_UC){
+//            if (vmBindingStudyStarted){
+//                setOngoingFileNameForStudyConfiguration();
+//            }
+//            else {
+//                vmBindingStudyStarted = true;
+//            }
+//        }
+        //else
+        if (unique_study_id === VMGlobals.vmINDEX_NBACKVS){
             let ntargets = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmSCP_NUMBER_OF_TARGETS]
         }
 
@@ -292,7 +308,8 @@ Rectangle {
         }
 
         // Advance the left hand side indicator
-        viewEvaluations.advanceStudyIndicator();
+        // viewEvaluations.advanceStudyIndicator();
+        plineEvaluationStages.indicateNext();
 
         // Change the stage text in the title.
         let current_study = evalTitle.text
@@ -320,8 +337,11 @@ Rectangle {
             console.log("Current texts from progress line are not 2 but: " + texts.length);
             return;
         }
-        evalTitle.text = texts[0];
-        evalStage.text = "/ " + texts[1];
+
+        // Text[0] is just evaluations.Text[1] contains the evaluation name.
+        evalTitle.text = texts[1];
+        //evalStage.text = "/ " + plineEvaluationStages.getCurrentText();
+
     }
 
     function onNextButtonPressed(){
@@ -351,12 +371,14 @@ Rectangle {
             arrowUseText.text = "(" + loader.getStringForKey("viewevalution_arrow_use") + ")"
             flowControl.startStudyExamplePhase();
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_starteval"),"");
-            viewEvaluations.advanceStudyIndicator();
+            // viewEvaluations.advanceStudyIndicator();
+            plineEvaluationStages.indicateNext();
         }
         else if (vmEvaluationStage == vmSTAGE_EXAMPLES){
             vmEvaluationStage = vmSTAGE_EVALUATION;
             viewEvaluations.enableNextButton(false);
-            viewEvaluations.advanceStudyIndicator();
+            // viewEvaluations.advanceStudyIndicator();
+            plineEvaluationStages.indicateNext();
             // Necessary to avoid confusing message between the end of an evaluation and the start of the next one.
             studyExplanationText.text = "";
             flowControl.startStudyEvaluationPhase();
@@ -368,9 +390,33 @@ Rectangle {
         }
     }
 
+    function resetEvaluationStages(){
+
+        let eval_steps;
+        if (doesCurrentEvalutionRequiredHandCalibration()){
+            eval_steps = loader.getStringListForKey("viewevaluation_evaluation_steps_with_hand_calib")
+        }
+        else {
+           eval_steps = loader.getStringListForKey("viewevaluation_evaluation_steps")
+        }
+
+//        let plineSetup = {};
+//        for (let i in eval_steps){
+//            plineSetup[eval_steps[i]] = [];
+//        }
+
+//        plineEvaluationStages.setup(plineSetup);
+        plineEvaluationStages.setup(eval_steps);
+        plineEvaluationStages.reset();
+
+    }
+
     function advanceStudy(){
         vmCurrentEvaluation++;
         viewEvaluations.advanceStudyIndicator();
+
+        // We reset the phases.
+        resetEvaluationStages();
 
         if (vmCurrentEvaluation >= viewEvaluations.vmSelectedEvaluationConfigurations.length){
             // We are done.
@@ -403,41 +449,46 @@ Rectangle {
         flowControl.setRenderWindowGeometry(x,y,hmdView.width,hmdView.height);
     }
 
-    Text {
-        id: evalTitle
-        color: VMGlobals.vmBlackText
-        font.pixelSize: VMGlobals.vmFontExtraExtraLarge
-        font.weight: 600
-        height: VMGlobals.adjustHeight(32)
-        verticalAlignment: Text.AlignVCenter
+//    Text {
+//        id: evalTitle
+//        color: VMGlobals.vmBlackText
+//        font.pixelSize: VMGlobals.vmFontExtraExtraLarge
+//        font.weight: 600
+//        height: VMGlobals.adjustHeight(32)
+//        verticalAlignment: Text.AlignVCenter
+//        anchors.top: parent.top
+//        anchors.left: parent.left
+//        anchors.topMargin: VMGlobals.adjustHeight(31)
+//        anchors.leftMargin: VMGlobals.adjustWidth(31)
+//    }
+
+//    Text {
+//        id: evalStage
+//        color: VMGlobals.vmGrayAccented
+//        font.pixelSize: VMGlobals.vmFontExtraExtraLarge
+//        font.weight: 400
+//        height: VMGlobals.adjustHeight(32)
+//        verticalAlignment: Text.AlignVCenter
+//        anchors.top: evalTitle.top
+//        anchors.left: evalTitle.right
+//        anchors.leftMargin: VMGlobals.adjustWidth(10)
+//    }
+
+    Rectangle {
+        id: hmdView
+        width: VMGlobals.adjustWidth(697);
+        height: VMGlobals.adjustHeight(310*697/597);
+        //anchors.top: evalTitle.bottom
+        //anchors.topMargin: VMGlobals.adjustHeight(34);
+        //anchors.left: evalTitle.left
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: VMGlobals.adjustHeight(31)
         anchors.leftMargin: VMGlobals.adjustWidth(31)
-    }
 
-    Text {
-        id: evalStage
-        color: VMGlobals.vmGrayAccented
-        font.pixelSize: VMGlobals.vmFontExtraExtraLarge
-        font.weight: 400
-        height: VMGlobals.adjustHeight(32)
-        verticalAlignment: Text.AlignVCenter
-        anchors.top: evalTitle.top
-        anchors.left: evalTitle.right
-        anchors.leftMargin: VMGlobals.adjustWidth(10)
-    }
-
-    Rectangle {
-        id: hmdView
-        width: VMGlobals.adjustWidth(597);
-        height: VMGlobals.adjustHeight(310);
-        //anchors.top: slideTitle.bottom
-        anchors.top: evalTitle.bottom
-        anchors.topMargin: VMGlobals.adjustHeight(34);
-        anchors.left: evalTitle.left
         border.width: 0
         color: "#ffffff"
+        //color: "#00ffff"
         onWidthChanged: {
             onMove()
         }
@@ -570,113 +621,122 @@ Rectangle {
     }
 
     Rectangle {
+
         id: keysRect
         color: VMGlobals.vmGrayToggleOff
         height: parent.height
-        width: VMGlobals.adjustWidth(311)
+        width: VMGlobals.adjustWidth(211)
         anchors.top: parent.top
         anchors.right: parent.right
 
         Text {
-            id: shorcutTitle
-            text: loader.getStringForKey("viewevaluation_shortcuts")
+            id: evalTitle
+            //text: loader.getStringForKey("viewevaluation_shortcuts")
+            //text: evalTitle.text
             color: VMGlobals.vmBlackText
             font.pixelSize: VMGlobals.vmFontVeryLarge
             font.weight: 600
             height: VMGlobals.adjustHeight(32)
             verticalAlignment: Text.AlignVCenter
-            anchors.top: parent.top
+            y: hmdView.y
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        VMTextProgressLine {
+            id: plineEvaluationStages
+            anchors.top: evalTitle.bottom
+            anchors.topMargin: VMGlobals.adjustHeight(20)
             anchors.left: parent.left
-            anchors.topMargin: VMGlobals.adjustHeight(31)
-            anchors.leftMargin: VMGlobals.adjustWidth(30)
+            width: parent.width
+            height: parent.height*0.5
         }
 
-        ListModel {
-            id: keysModel;
-        }
+//        ListModel {
+//            id: keysModel;
+//        }
 
-        Row {
-            id: rowForKeys
-            anchors.left: shorcutTitle.left
-            anchors.top: shorcutTitle.bottom
-            anchors.topMargin: VMGlobals.adjustHeight(26)
+//        Row {
+//            id: rowForKeys
+//            anchors.left: shorcutTitle.left
+//            anchors.top: shorcutTitle.bottom
+//            anchors.topMargin: VMGlobals.adjustHeight(26)
 
-            Column {
-                id: columnsForKeys
-                width: VMGlobals.adjustWidth(46);
-                spacing: VMGlobals.adjustHeight(24)
+//            Column {
+//                id: columnsForKeys
+//                width: VMGlobals.adjustWidth(46);
+//                spacing: VMGlobals.adjustHeight(24)
 
-                Repeater {
-                    model: keysModel
+//                Repeater {
+//                    model: keysModel
 
-                    Rectangle {
-                        height: VMGlobals.adjustHeight(23)
-                        width:  (keyText.text.length === 3) ? VMGlobals.adjustWidth(36) : VMGlobals.adjustWidth(23)
-                        color: "transparent"
-                        border.width: VMGlobals.adjustHeight(1)
-                        radius: VMGlobals.adjustHeight(4)
-                        border.color: VMGlobals.vmGrayStudyDivisor
+//                    Rectangle {
+//                        height: VMGlobals.adjustHeight(23)
+//                        width:  (keyText.text.length === 3) ? VMGlobals.adjustWidth(36) : VMGlobals.adjustWidth(23)
+//                        color: "transparent"
+//                        border.width: VMGlobals.adjustHeight(1)
+//                        radius: VMGlobals.adjustHeight(4)
+//                        border.color: VMGlobals.vmGrayStudyDivisor
 
-                        Text {
-                            id: keyText
-                            text: keysModel.get(index).key
-                            color: VMGlobals.vmGrayStudyDivisor
-                            font.pixelSize: VMGlobals.vmFontBaseSize
-                            font.weight: 600
-                            height: VMGlobals.adjustHeight(18.62)
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.centerIn: parent
-                        }
+//                        Text {
+//                            id: keyText
+//                            text: keysModel.get(index).key
+//                            color: VMGlobals.vmGrayStudyDivisor
+//                            font.pixelSize: VMGlobals.vmFontBaseSize
+//                            font.weight: 600
+//                            height: VMGlobals.adjustHeight(18.62)
+//                            verticalAlignment: Text.AlignVCenter
+//                            anchors.centerIn: parent
+//                        }
 
-                    }
+//                    }
 
-                }
+//                }
 
-            }
+//            }
 
-            Column {
-                id: columnForExplanations
-                spacing: columnsForKeys.spacing
+//            Column {
+//                id: columnForExplanations
+//                spacing: columnsForKeys.spacing
 
-                Repeater {
-                    model: keysModel
-                    Text {
-                        id: explanationText
-                        text: keysModel.get(index).explanation
-                        color: VMGlobals.vmBlackText
-                        font.pixelSize: VMGlobals.vmFontBaseSize
-                        font.weight: 400
-                        height: VMGlobals.adjustHeight(23)
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                }
-            }
+//                Repeater {
+//                    model: keysModel
+//                    Text {
+//                        id: explanationText
+//                        text: keysModel.get(index).explanation
+//                        color: VMGlobals.vmBlackText
+//                        font.pixelSize: VMGlobals.vmFontBaseSize
+//                        font.weight: 400
+//                        height: VMGlobals.adjustHeight(23)
+//                        verticalAlignment: Text.AlignVCenter
+//                    }
+//                }
+//            }
 
-        }
+//        }
 
     }
 
-    Component.onCompleted: {
+//    Component.onCompleted: {
 
-        var explanations = loader.getStringListForKey("viewevaluation_keyboard_explanations");
-        var keys = ["ESC","G","N","B","D","S"]
-        var to_skip = ["G","N","B"]; // This is added JUST so we don't need to change the language file in order to print out a smaller set of keys.
-        //var keys = ["ESC","G","D","S"]
+//        var explanations = loader.getStringListForKey("viewevaluation_keyboard_explanations");
+//        var keys = ["ESC","G","N","B","D","S"]
+//        var to_skip = ["G","N","B"]; // This is added JUST so we don't need to change the language file in order to print out a smaller set of keys.
+//        //var keys = ["ESC","G","D","S"]
 
-        if (keys.length !== explanations.length){
-            //console.log("Key Array is " + keys.length + " and explanation array is " + explanations.length)
-            return;
-        }
+//        if (keys.length !== explanations.length){
+//            //console.log("Key Array is " + keys.length + " and explanation array is " + explanations.length)
+//            return;
+//        }
 
-        for (var i = 0; i < keys.length; i++){
+//        for (var i = 0; i < keys.length; i++){
 
-            if (to_skip.includes(keys[i])) continue;
+//            if (to_skip.includes(keys[i])) continue;
 
-            let item = { "key" : keys[i], "explanation": explanations[i] };
-            keysModel.append(item);
-        }
+//            let item = { "key" : keys[i], "explanation": explanations[i] };
+//            keysModel.append(item);
+//        }
 
-    }
+//    }
 
 
 }

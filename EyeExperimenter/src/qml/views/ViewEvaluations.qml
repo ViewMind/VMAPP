@@ -106,27 +106,29 @@ ViewBase {
 
     function setUpStudyNames(study_names, uses_h_calib) {
 
-        let eval_steps = loader.getStringListForKey("viewevaluation_evaluation_steps")
-        let eval_steps_with_hcalib = loader.getStringListForKey("viewevaluation_evaluation_steps_with_hand_calib")
+//        let eval_steps = loader.getStringListForKey("viewevaluation_evaluation_steps")
+//        let eval_steps_with_hcalib = loader.getStringListForKey("viewevaluation_evaluation_steps_with_hand_calib")
 
         let plineSetup = {};
 
 
-        for (let i = 0; i < study_names.length; i++){
-            if (uses_h_calib[i]){
-                plineSetup[study_names[i]] = eval_steps_with_hcalib;
-            }
-            else {
-                plineSetup[study_names[i]] = eval_steps;
-            }
-        }
+        plineSetup["Evaluations"] = study_names;
+//        for (let i = 0; i < study_names.length; i++){
+//            plineSetup[study_names[i]] = [];
+////            if (uses_h_calib[i]){
+////                plineSetup[study_names[i]] = eval_steps_with_hcalib;
+////            }
+////            else {
+////                plineSetup[study_names[i]] = eval_steps;
+////            }
+//        }
 
         // Adding the "finish" step. No substeps.
         plineSetup[loader.getStringForKey("viewevaluation_finish")] = []
 
         progressLine.vmOnlyColorCurrent = true;
         progressLine.setup(plineSetup);
-        progressLine.reset();
+        progressLine.reset();        
 
         //console.log("Set up study names");
         //console.log(JSON.stringify());
@@ -138,6 +140,9 @@ ViewBase {
 
         // Making sure the is calibrated flag is set to false.
         evaluationRun.vmIsCalibrated = false;
+
+        // This shoudl render the secondary progress line.
+        evaluationRun.resetEvaluationStages();
 
     }
 
@@ -305,7 +310,6 @@ ViewBase {
 
         }
     }
-
 
     Text {
         id: patientText
@@ -652,7 +656,9 @@ ViewBase {
         anchors.topMargin: VMGlobals.adjustHeight(20)
         anchors.left: parent.left
         anchors.leftMargin: VMGlobals.adjustWidth(15)
-        vmSuggestedWidth: VMGlobals.mainWidth - mainRect.width - mainRect.anchors.rightMargin
+        vmSuggestedWidth: VMGlobals.mainWidth - mainRect.width - mainRect.anchors.rightMargin        
+        vmHideNumberInMainNodes: true;
+        vmUseLargerFontSize: true
         onProgressLineUpdated: {
             if (viewer.currentIndex === vmSC_INDEX_EVALUATION_SCREEN){
                 evaluationRun.setStudyAndStage();

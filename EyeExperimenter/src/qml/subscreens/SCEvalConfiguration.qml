@@ -162,7 +162,7 @@ Rectangle {
 
         //console.log("Studies to hide: " + JSON.stringify(studiesToHide));
 
-        ////////////////////////////////////////////////////////////////// Binding  ////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////// New Colors ////////////////////////////////////////////////////////////////////
         let item = {}
         let options = {}
 
@@ -181,7 +181,33 @@ Rectangle {
 
         item = {
             vmIndex: VMGlobals.vmINDEX_BINDING_UC,
-            vmStudyName : loader.getStringForKey("viewevaluation_eval_binding") ,
+            vmStudyName : loader.getStringForKey("viewevaluation_binding_uc") ,
+            vmIsLastSelected: false,
+            vmOptions: options,
+            vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS + "|" + VMGlobals.vmSCP_NUMBER_OF_TRIALS,
+            vmOptionValueMap: "2|3||-1|32",
+            vmIsSelected: false
+        }
+        if (!studiesToHide.includes(item.vmIndex)) availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
+
+        ////////////////////////////////////////////////////////////////// Color Combination ////////////////////////////////////////////////////////////////////
+
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = {}
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_number_of_targets");
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_VAlUES] = [2,3];
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_SELECTED] = 0;
+        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS][VMGlobals.vmSCO_OPTION_WIDTH] = 40;
+
+        options[VMGlobals.vmSCP_NUMBER_OF_TRIALS] = {}
+        options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_NAME] = loader.getStringForKey("viewevaluation_binding_length");
+        options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_VAlUES] = [loader.getStringForKey("viewevaluation_binding_normal"),
+                                                                                     loader.getStringForKey("viewevaluation_binding_short")];
+        options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_SELECTED] = 1;
+        options[VMGlobals.vmSCP_NUMBER_OF_TRIALS][VMGlobals.vmSCO_OPTION_WIDTH] = 60;
+
+        item = {
+            vmIndex: VMGlobals.vmINDEX_BINDING_BC,
+            vmStudyName : loader.getStringForKey("viewevaluation_binding_bc") ,
             vmIsLastSelected: false,
             vmOptions: options,
             vmOrder: VMGlobals.vmSCP_NUMBER_OF_TARGETS + "|" + VMGlobals.vmSCP_NUMBER_OF_TRIALS,
@@ -409,9 +435,10 @@ Rectangle {
                 case VMGlobals.vmINDEX_BINDING_UC:
 
                     study_names.push(loader.getStringForKey("viewevaluation_binding_uc"));
-                    study_names.push(loader.getStringForKey("viewevaluation_binding_bc"));
+                    //study_names.push(loader.getStringForKey("viewevaluation_binding_bc"));
+
                     requires_hand_calibration.push(false);
-                    requires_hand_calibration.push(false);
+                    //requires_hand_calibration.push(false);
 
                     // Even though the option is no longer selectable, in the backend still exists. It needs to be set anyways
                     configuration[VMGlobals.vmSCP_TARGET_SIZE] = VMGlobals.vmSCV_BINDING_TARGETS_LARGE;
@@ -421,11 +448,26 @@ Rectangle {
                     configuration[VMGlobals.vmSCP_IS_STUDY_3D] = false;
 
                     // This actually represents two studies, so we need to select both, with the same configuration.
-                    let config2 = JSON.parse(JSON.stringify(configuration)) // Deep copying configuration.
-                    config2[VMGlobals.vmUNIQUE_STUDY_ID] = VMGlobals.vmINDEX_BINDING_BC
+                    //let config2 = JSON.parse(JSON.stringify(configuration)) // Deep copying configuration.
+                    //config2[VMGlobals.vmUNIQUE_STUDY_ID] = VMGlobals.vmINDEX_BINDING_BC
 
                     viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration); // UC goes first.
-                    viewEvaluations.vmSelectedEvaluationConfigurations.push(config2) // BC goes second.
+                    //viewEvaluations.vmSelectedEvaluationConfigurations.push(config2) // BC goes second.
+                    break;
+
+
+                case VMGlobals.vmINDEX_BINDING_BC:
+                    study_names.push(loader.getStringForKey("viewevaluation_binding_bc"));
+                    requires_hand_calibration.push(false);
+
+                    // Even though the option is no longer selectable, in the backend still exists. It needs to be set anyways
+                    configuration[VMGlobals.vmSCP_TARGET_SIZE] = VMGlobals.vmSCV_BINDING_TARGETS_LARGE;
+
+                    // Standard 2D study.
+                    configuration[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] = "";
+                    configuration[VMGlobals.vmSCP_IS_STUDY_3D] = false;
+
+                    viewEvaluations.vmSelectedEvaluationConfigurations.push(configuration); // UC goes first.
                     break;
 
                 case VMGlobals.vmINDEX_GONOGO3D:
