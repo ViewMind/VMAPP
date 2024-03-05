@@ -14,6 +14,7 @@
 #include "../StudyControl/gng3D/gngspheresconfigurator.h"
 #include "../StudyControl/binding/bindingconfigurator.h"
 #include "../StudyControl/gng/gngconfigurator.h"
+#include "../StudyControl/dotfollow/dotfollowconfigurator.h"
 
 
 
@@ -247,6 +248,7 @@ private:
     static inline const char * STUDY_TEXT_KEY_NBACK_3        = "explanation_phase_list_nback_3";
     static inline const char * STUDY_TEXT_KEY_NBACK_4        = "explanation_phase_list_nback_4";
     static inline const char * STUDY_TEXT_KEY_NBACKVS        = "explanation_phase_list_nbackvs";
+    static inline const char * STUDY_TEXT_KEY_DOTFOLLOW      = "explanation_phase_list_dotfollow";
 
     // Extra instructions that need to be shown during the evaluation.
     static inline const char * EVALUATION_BINDING_EXTRA_INSTRUCTION = "viewevaluation_binding_keys";
@@ -262,6 +264,7 @@ private:
     static inline const char * EXAMPLE_TEXT_KEY_NBACK_6      = "examples_nback_6";
     static inline const char * EXAMPLE_TEXT_KEY_GNG          = "examples_gonogo";
     static inline const char * EXAMPLE_TEXT_KEY_GNG3D        = "examples_gng_3D";
+    static inline const char * EXAMPLE_TEXT_DOT_FOLLOW       = "examples_dot_follow";
 
     // The normal, slow and variable speed values fo rthe GONOGO are codified in the numbers 0,1 and 2 respectively.
     // We need to detect the 2 specifically to change the explanantion language key.

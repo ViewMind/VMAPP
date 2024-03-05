@@ -45,6 +45,7 @@ SOURCES += main.cpp \
     ../../CommonClasses/RestAPIController/restapicontroller.cpp \
     ../../CommonClasses/ConfigurationManager/configurationmanager.cpp \
     ../../CommonClasses/StudyControl/binding/bindingconfigurator.cpp \
+    ../../CommonClasses/StudyControl/dotfollow/dotfollowconfigurator.cpp \
     ../../CommonClasses/StudyControl/gng/gngconfigurator.cpp \
     ../../CommonClasses/StudyControl/gng3D/gngspheresconfigurator.cpp \
     ../../CommonClasses/StudyControl/nback/nbackconfigurator.cpp \
@@ -85,6 +86,7 @@ HEADERS += \
     ../../CommonClasses/RestAPIController/restapicontroller.h \
     ../../CommonClasses/StudyControl/StudyConfiguration.h \
     ../../CommonClasses/StudyControl/binding/bindingconfigurator.h \
+    ../../CommonClasses/StudyControl/dotfollow/dotfollowconfigurator.h \
     ../../CommonClasses/StudyControl/gng/gngconfigurator.h \
     ../../CommonClasses/StudyControl/gng3D/gngspheresconfigurator.h \
     ../../CommonClasses/StudyControl/nback/nbackconfigurator.h \

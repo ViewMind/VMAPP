@@ -7,5 +7,6 @@
         <file>../../CommonClasses/StudyControl/binding/descriptions/uc.dat</file>
         <file>../../CommonClasses/StudyControl/binding/descriptions/uc_3.dat</file>
         <file>../../CommonClasses/StudyControl/gng/descriptions/go_no_go.dat</file>
+        <file>../../CommonClasses/StudyControl/dotfollow/descriptions/dotfollow.dat</file>
     </qresource>
 </RCC>

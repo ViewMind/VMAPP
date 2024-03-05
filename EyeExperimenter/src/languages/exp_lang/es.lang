@@ -225,6 +225,11 @@ explanation_phase_list_pass_ball = |
 |
 |;
 
+explanation_phase_list_dotfollow =
+Siga el punto rogjo|
+Siga el punto rojo;
+
+
 examples_binding_uc_3 =
 |||El paciente deberá decir <i>Diferente</i> en voz alta.||
 |||El paciente deberá decir <i>Diferente</i> en voz alta.||
@@ -260,3 +265,6 @@ examples_nback_6 = |||||||
 |||||||
 |||||||;
 examples_gng_3D = |||;
+
+examples_dot_follow =
+|;

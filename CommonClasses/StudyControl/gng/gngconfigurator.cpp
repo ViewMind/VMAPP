@@ -13,7 +13,7 @@ bool GNGConfigurator::studySpecificConfiguration(const QVariantMap &studyConfig)
         numberOfTrials = N_TRIALS_IN_SHORT_STUDIES;
     }
 
-    // Now we parse the trial. If it worked the configuration is loaded with the NBack trials.
+    // Now we parse the trial. If it worked the configuration is loaded with the GoNoGo trials.
     if (!parseStudyDescription(numberOfTrials)) return false;
 
     // Now that the description was parsed, we can set all the other configuration constants.

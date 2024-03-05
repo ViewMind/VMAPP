@@ -195,6 +195,7 @@ viewevaluation_eval_nbackms    = N-Back MS;
 viewevaluation_eval_gonogo     = Go NoGo;
 viewevaluation_eval_gonogo3D   = Esferas;
 viewevaluation_eval_passball   = Balón Pase;
+viewevaluation_eval_dotfollow  = Seguir el Punto;
 viewevaluation_error_patient_dir = Falla de Disco|No se pudo crear el directorio del paciente;
 viewevaluation_must_select_doctor = Se debe seleccionar un doctor;
 viewevaluation_start = COMENZAR;
@@ -221,7 +222,7 @@ viewevaluation_gng3D_hand_both = Ambas;
 viewevaluation_err_at_least_1_study = Debe elegir al menos un estudio;
 viewevaluation_binding_uc = Nuevos Colores;
 viewevaluation_binding_bc = Combinación de Colores;
-viewevaluation_binding_keys = <i>Presione</i><b>S</b><i>Si dice "Igual" y </i><b>D</b><i>si dice distinto</i>
+viewevaluation_binding_keys = <i>Presione</i><b>S</b><i>Si dice "Igual" y </i><b>D</b><i>si dice distinto</i>;
 viewevaluation_shortcuts = Teclas;
 viewevaluation_evaluation_steps = Calibración|Explicación|Ejemplos|Evaluación;
 viewevaluation_evaluation_steps_with_hand_calib = Calibración|Calibración de Manos|Explicación|Ejemplos|Evaluación;
@@ -446,6 +447,7 @@ studystatus_gonogo3D_green_hit = Contacto con <<N>> esferas verdes;
 studystatus_gonogo3D_red_hit = Contacto con <<N>> esferas rojas;
 studystatus_passball_completed = Pases Completados: <<N>>;
 studystatus_passball_missed = Pases no completados: <<N>>;
+studystatus_dot_follow_index = Porcentaje de Segumiento de Punto: <<N>>%;
 
 
 #********************************* UPDATE DIALOGS *********************************

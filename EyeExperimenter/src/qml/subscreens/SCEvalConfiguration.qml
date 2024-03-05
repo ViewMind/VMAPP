@@ -266,6 +266,21 @@ Rectangle {
         }
         if (!studiesToHide.includes(item.vmIndex)) availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
 
+
+        //////////////////////////////////////////////////////////////// Dot Follower //////////////////////////////////////////////////////////////////////////
+        item = {}
+        options = {}
+        item = {
+            vmIndex: VMGlobals.vmINDEX_DOT_FOLLOW,
+            vmStudyName : loader.getStringForKey("viewevaluation_eval_dotfollow") ,
+            vmIsLastSelected: false,
+            vmOptions: options,
+            vmOrder: "",
+            vmOptionValueMap: "",
+            vmIsSelected: false
+        }
+        if (!studiesToHide.includes(item.vmIndex)) availableEvaluations.append(configureItemBasedOnPreSelectedSequence(item))
+
 //        /////////////////////////////////////////////////////////// NBack Variable Speed /////////////////////////////////////////////////////////////////
 //        item = {}
 //        options[VMGlobals.vmSCP_NUMBER_OF_TARGETS] = {}

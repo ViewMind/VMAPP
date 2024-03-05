@@ -61,7 +61,8 @@ namespace VMDC {
        static const QString GONOGO           = "Go No-Go";
        static const QString GONOGO_SPHERE    = "Go No-Go Sphere";
        static const QString PASSBALL         = "PassBall";
-       static const QStringList valid {READING,BINDING_BC,BINDING_UC,NBACKMS,NBACKRT,NBACKVS,NBACK,GONOGO,GONOGO_SPHERE,PASSBALL};
+       static const QString DOTFOLLOW        = "Dot Follow";
+       static const QStringList valid {READING,BINDING_BC,BINDING_UC,NBACKMS,NBACKRT,NBACKVS,NBACK,GONOGO,GONOGO_SPHERE,PASSBALL,DOTFOLLOW};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }       
@@ -430,6 +431,8 @@ namespace VMDC {
        static const QString RESOLUTION_WIDTH         = "resolution_width";
        static const QString NBACK_HITBOXES           = "nback_hitboxes";
        static const QString GONOGO_HITBOXES          = "go_no_go_hitboxes";
+       static const QString DOT_FOLLOW_HITBOXES      = "dot_follow_hitboxes";
+       static const QString BINDING_HITBOXES         = "binding_hitboxes";
        static const QString MIN_FIXATION_DURATION    = "minimum_fixation_length";
        static const QString MAX_DISPERSION_WINDOW    = "max_dispersion_window";
        static const QString MAX_DISPERSION_WINDOW_PX = "max_disp_window_in_px";
@@ -444,7 +447,8 @@ namespace VMDC {
        static const QString SPHERE_RADIOUS           = "sphere_radious";
        static const QStringList valid{RESOLUTION_HEIGHT,RESOLUTION_WIDTH,NBACK_HITBOXES,GONOGO_HITBOXES,MIN_FIXATION_DURATION,
                    MAX_DISPERSION_WINDOW,MAX_DISPERSION_WINDOW_PX,SAMPLE_FREQUENCY,LATENCY_ESCAPE_RADIOUS,
-                   GAZE_ON_CENTER_RADIOUS, HAND_CALIB_RESULTS,FOV_3D,MESH_FILES,MESH_STRUCT,ORIGIN_POINTS,SPHERE_RADIOUS};
+                   GAZE_ON_CENTER_RADIOUS, HAND_CALIB_RESULTS,FOV_3D,MESH_FILES,MESH_STRUCT,ORIGIN_POINTS,SPHERE_RADIOUS,
+                   DOT_FOLLOW_HITBOXES,BINDING_HITBOXES};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Processing Parameter"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   

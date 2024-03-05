@@ -509,6 +509,9 @@ bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QStrin
     case Globals::StudyConfiguration::INDEX_PASSBALL:
         filename = Globals::BaseFileNames::PASSBALL;
         break;
+    case Globals::StudyConfiguration::INDEX_DOT_FOLLOW:
+        filename = Globals::BaseFileNames::DOT_FOLLOW;
+        break;
     default:
         StaticThreadLogger::error("Loader::createSubjectStudyFile","Trying to create study file for an unknown study: " + QString::number(selectedStudy));
         break;

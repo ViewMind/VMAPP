@@ -114,7 +114,7 @@ Rectangle {
 
             if (vmEvaluationStage == vmSTAGE_EVALUATION){
 
-                console.log("Getting the string value map of: " + JSON.stringify(string_value_map));
+                // console.log("Getting the string value map of: " + JSON.stringify(string_value_map));
 
                 // It has two parts. stats and extra.
                 let stats = string_value_map["stats"];
@@ -185,7 +185,7 @@ Rectangle {
 
     function doesCurrentEvalutionRequiredHandCalibration(){
         //        console.log("Checkig if we require hand calibration");
-        //        console.log(JSON.stringify(evaluationsView.vmSelectedEvaluationConfigurations));
+        //        console.log(JSON.stringify(evaluationsView.vmSelectedEvaluationConfigurations));        
         var current_config = evaluationsView.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
         if (VMGlobals.vmSCP_STUDY_REQ_H_CALIB in current_config){
             return current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB];
@@ -415,14 +415,15 @@ Rectangle {
         vmCurrentEvaluation++;
         viewEvaluations.advanceStudyIndicator();
 
-        // We reset the phases.
-        resetEvaluationStages();
-
         if (vmCurrentEvaluation >= viewEvaluations.vmSelectedEvaluationConfigurations.length){
             // We are done.
             allEvalsDone()
         }
         else {
+
+            // We reset the phases.
+            resetEvaluationStages();
+
             // Changing the evaluation name and resetting the stage.
             vmEvaluationStage = vmSTAGE_CALIBRATION
 

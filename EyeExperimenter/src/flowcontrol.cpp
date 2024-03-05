@@ -652,6 +652,10 @@ bool FlowControl::startNewExperiment(QVariantMap study_config){
         StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING PASSBALL");
         studyName = VMDC::Study::PASSBALL;
         break;
+    case Globals::StudyConfiguration::INDEX_DOT_FOLLOW:
+        StaticThreadLogger::log("FlowControl::startNewExperiment","DOT FOLLOW");
+        studyName = VMDC::Study::DOTFOLLOW;
+        break;
     default:
         StaticThreadLogger::error("FlowControl::startNewExperiment","Unknown experiment was selected " + study_config.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toString());
         return false;

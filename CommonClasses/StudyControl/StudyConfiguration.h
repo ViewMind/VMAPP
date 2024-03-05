@@ -13,6 +13,7 @@ static const QString STUDY =                      "study";
 static const QString NBACK_TRIALS =               "nback_trials";
 static const QString GNG3D_SPHERES =              "gng3d_spheres";
 static const QString BINDING_TRIALS =             "binding_flags";
+static const QString DOT_FOLLOW =                 "dot_follow";
 static const QString GNG_ARROWS =                 "gng_arrows";
 static const QString MIN_HOLD_TIME =              "min_hold_time";
 static const QString MAX_HOLD_TIME =              "max_hold_time";
@@ -35,6 +36,8 @@ static const QString HAND_L_ENABLED =             "hand_l_enabled";
 static const QString N_OF_TRIALS =                "number_of_trials";
 static const QString HAND_R_ENABLED =             "hand_r_enabled";
 static const QString STUDY_FILENAME =             "study_filename";
+static const QString MOVE_HOLD_TIME =             "move_end_hold_time";
+static const QString MOVE_TIME =                  "move_time";
 }
 
 }

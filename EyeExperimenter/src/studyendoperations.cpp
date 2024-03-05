@@ -235,6 +235,12 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
         timeWithNoDataPerTrial = StudyConstTimes::GoNoGo::TIME_CROSS;
 
     }
+    else if (study == VMDC::Study::DOTFOLLOW){
+        QVariantList trials = vmdc.getStudyTrialList(study);
+        numberOfDataPointsObatained = computeNumberOfDataPointsIn2DStudy(trials);
+        numberOfTrials = trials.size();
+        timeWithNoDataPerTrial = 0;
+    }
     else if ( (study == VMDC::Study::GONOGO_SPHERE) || (study == VMDC::Study::PASSBALL) ){
 
 

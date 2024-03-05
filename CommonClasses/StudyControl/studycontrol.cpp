@@ -117,6 +117,12 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
         studyExampleLanguageKey = EXAMPLE_TEXT_KEY_GNG;
         studyType = ST_2D;
     }
+    else if (studyName == VMDC::Study::DOTFOLLOW){
+        configurator = new DotFollowConfigurator();
+        studyExplanationLanguageKey = STUDY_TEXT_KEY_DOTFOLLOW;
+        studyExampleLanguageKey = EXAMPLE_TEXT_DOT_FOLLOW;
+        studyType = ST_2D;
+    }
     else if (studyName == VMDC::Study::GONOGO_SPHERE){
         configurator = new GNGSpheresConfigurator();
         if (studyConfig.value(VMDC::StudyParameter::SPEED) == 2){
@@ -382,6 +388,15 @@ bool StudyControl::processAndStoreStudyData(const QVariantMap &control) {
     else if (rawdata.getCurrentStudy() == VMDC::Study::GONOGO){
         addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::GONOGO_HITBOXES;
     }
+    else if ((rawdata.getCurrentStudy() == VMDC::Study::BINDING_BC) ||
+             (rawdata.getCurrentStudy() == VMDC::Study::BINDING_UC)){
+        addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::BINDING_HITBOXES;
+
+    }
+    else if (rawdata.getCurrentStudy() == VMDC::Study::DOTFOLLOW){
+        addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::DOT_FOLLOW_HITBOXES;
+    }
+
 
     // To do a bit of control and that is it.
     QString ndata_points = control.value(RRS::PacketStudyData::N_DP_DURING_EVAL).toString();

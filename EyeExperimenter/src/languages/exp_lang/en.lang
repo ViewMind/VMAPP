@@ -223,6 +223,9 @@ Now look at the rectangle where the third circle was shown|
 Then at the rectangle where the second one appeared|
 And finish by looking at the rectangle where the first circle appeared.;
 
+explanation_phase_list_dotfollow =
+Follow the red dot|
+Follow the red dot;
 
 explanation_phase_list_pass_ball = | 
 |
@@ -264,3 +267,6 @@ examples_nback_6 = |||||||
 |||||||
 |||||||;
 examples_gng_3D = |||;
+
+examples_dot_follow =
+|;

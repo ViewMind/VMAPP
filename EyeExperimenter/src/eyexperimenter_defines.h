@@ -119,6 +119,7 @@ static const qint32 INDEX_PASSBALL = 6;
 static const qint32 INDEX_GONOGO = 7;
 static const qint32 INDEX_GNG_SPHERE = 8;
 static const qint32 INDEX_NBACK = 9;
+static const qint32 INDEX_DOT_FOLLOW = 10;
 
 }
 
@@ -148,7 +149,7 @@ static QVariantMap GetNameCodeMap() {
 
 namespace Share {
 static const QString APP_NAME = "ViewMind Atlas";
-static const QString EXPERIMENTER_VERSION_NUMBER = "28.0.0.dev.01";
+static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.24";
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
 static const QString PATIENT_UID = "patient_uid";
@@ -195,6 +196,8 @@ static const QString NBACK       = "nback";
 static const QString GONOGO_3D   = "gonogo_spheres";
 static const QString GONOGO      = "gonogo";
 static const QString PASSBALL    = "passball";
+static const QString DOT_FOLLOW  = "dotfollow";
+
 static QString MakeMetdataFileName(const QString &basename){
     return basename + "_metadata.json";
 }

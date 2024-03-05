@@ -170,7 +170,10 @@ bool LocalDB::setDBFile(const QString &dbfile, const QString &bkp_dir, bool pret
     QFile file(dbfile);
 
     // If the file doesn't exist, it can be because it has not been created yet.
-    if (!file.exists()) return true;
+    if (!file.exists()) {
+        this->dbfile = dbfile;
+        return true;
+    }
 
     if (!file.open(QFile::ReadOnly)){
         error = "Could not open DB file: " + file.fileName() + " for reading even though it exists";

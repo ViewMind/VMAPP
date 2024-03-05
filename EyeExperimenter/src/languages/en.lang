@@ -195,6 +195,7 @@ viewevaluation_eval_nbackms    = N-Back MS;
 viewevaluation_eval_gonogo     = Go NoGo;
 viewevaluation_eval_gonogo3D   = Spheres;
 viewevaluation_eval_passball   = PassBall;
+viewevaluation_eval_dotfollow  = Dot Follow;
 viewevaluation_error_patient_dir = Disk Write Error|Failed creating subject directory;
 viewevaluation_must_select_doctor = A doctor must be selected;
 viewevaluation_start = START;
@@ -444,6 +445,7 @@ studystatus_gonogo3D_green_hit = <<N>> green spheres hit;
 studystatus_gonogo3D_red_hit = <<N>> red spheres hit;
 studystatus_passball_completed = Completed Passes: <<N>>;
 studystatus_passball_missed = MIssed Passes: <<N>>;
+studystatus_dot_follow_index = Dot Follow Percent: <<N>>%;
 
 
 #********************************* UPDATE DIALOGS *********************************
