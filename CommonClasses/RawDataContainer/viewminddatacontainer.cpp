@@ -619,6 +619,9 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
         }
         abbreviation = "vs";
     }
+    else if (study == VMDC::Study::DOTFOLLOW){
+        abbreviation = "df";
+    }
     else if (study == VMDC::Study::GONOGO_SPHERE){
         abbreviation = "gng3D";
     }
