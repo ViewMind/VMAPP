@@ -106,26 +106,18 @@ ViewBase {
 
     function setUpStudyNames(study_names, uses_h_calib) {
 
-//        let eval_steps = loader.getStringListForKey("viewevaluation_evaluation_steps")
-//        let eval_steps_with_hcalib = loader.getStringListForKey("viewevaluation_evaluation_steps_with_hand_calib")
-
         let plineSetup = {};
 
-
-        plineSetup["Evaluations"] = study_names;
-//        for (let i = 0; i < study_names.length; i++){
-//            plineSetup[study_names[i]] = [];
-////            if (uses_h_calib[i]){
-////                plineSetup[study_names[i]] = eval_steps_with_hcalib;
-////            }
-////            else {
-////                plineSetup[study_names[i]] = eval_steps;
-////            }
-//        }
+        for (let i in study_names){
+            plineSetup[study_names[i]] = [];
+        }
 
         // Adding the "finish" step. No substeps.
         plineSetup[loader.getStringForKey("viewevaluation_finish")] = []
 
+        study_names.push(loader.getStringForKey("viewevaluation_finish"))
+
+        progressLine.vmHideNumberInMainNodes = false
         progressLine.vmOnlyColorCurrent = true;
         progressLine.setup(plineSetup);
         progressLine.reset();        

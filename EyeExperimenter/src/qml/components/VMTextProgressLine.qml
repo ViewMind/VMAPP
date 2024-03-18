@@ -87,11 +87,6 @@ Rectangle {
                 height: (index === 0) ? (text.height)  : vmItemHeight
                 width: progressLine.width
 
-//                Rectangle {
-//                    anchors.fill: parent
-//                    color: ((index % 2) == 0) ? "#ff0000" : "#00ff00"
-//                }
-
                 Rectangle {
                     id: line
                     width: vmLineWidth;

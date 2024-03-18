@@ -32,6 +32,10 @@ bool StudyControl::isStudyInDataTransfer() const {
     return this->studyInDataTransfer;
 }
 
+void StudyControl::forceStudyEndStatusToAborted(){
+    this->studyEndStatus = SES_ABORTED;
+}
+
 ////////////////////////////////////////// CONTROL FUNCTIONS //////////////////////////////////////////////////
 
 void StudyControl::startStudy(const QString &workingDir, const QString &studyFile, const QVariantMap &studyConfig, const QString &studyName){
@@ -575,9 +579,6 @@ void StudyControl::sendInStudyCommand(InStudyCommand cmd){
         break;
     case ISC_BINDING_SAME:
         rspacket.setPayloadField(RRS::PacketStudyControl::STUDY_CMD,RRS::CommandInStudy::CMD_BINDING_SAME);
-        break;
-    case ISC_CONTINUE:
-        rspacket.setPayloadField(RRS::PacketStudyControl::STUDY_CMD,RRS::CommandInStudy::CMD_CONTINUE);
         break;
     default:
         StaticThreadLogger::error("StudyControl::sendInStudyCommand","Unknown in study command: " + QString::number(cmd));

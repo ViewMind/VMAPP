@@ -64,5 +64,7 @@
         <file>qml/views/ViewDisabledInstance.qml</file>
         <file>qml/views/ViewFunctionalControl.qml</file>
         <file>qml/components/VMTextProgressLine.qml</file>
+        <file>qml/components/VMCheckMarkCircle.qml</file>
+        <file>qml/components/VMStudyPhaseTracker.qml</file>
     </qresource>
 </RCC>

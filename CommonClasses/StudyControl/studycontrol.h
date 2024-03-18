@@ -31,7 +31,7 @@ public:
     StudyControl();
 
     typedef enum {SES_OK, SES_FAILED, SES_ABORTED} StudyEndStatus;
-    typedef enum {ISC_ABORT, ISC_BINDING_SAME, ISC_BINDING_DIFF, ISC_CONTINUE} InStudyCommand;
+    typedef enum {ISC_ABORT, ISC_BINDING_SAME, ISC_BINDING_DIFF} InStudyCommand;
     typedef enum {ST_3D, ST_2D, ST_NOT_SET} StudyType;
     typedef enum { SS_NONE, SS_EXPLAIN, SS_EXAMPLE, SS_EVAL, SS_WAITING_FOR_STUDY_DATA } StudyState;
 
@@ -63,6 +63,7 @@ public:
 
     /**
      * @brief getStudyPhase
+     * @param asString - If true, it is returned as a printable string
      * @return The current study phase: none, evaluation, examples or explanation.
      */
     StudyState getStudyPhase() const;
@@ -134,6 +135,11 @@ public:
      * @return True if the study has finished and the study data transfer has started. False otherwise. WARNING: it's not reset until the NEXT Study start.
      */
     bool isStudyInDataTransfer() const;
+
+    /**
+     * @brief forceStatusToAborted - What it says. It is necessary to properly abort the system in certain situations.
+     */
+    void forceStudyEndStatusToAborted();
 
     /**
      * @brief FillNumberOfSlidesInExplanations - Fills a dictionary with the number of slides in each key of explanation.

@@ -195,7 +195,7 @@ viewevaluation_eval_nbackms    = N-Back MS;
 viewevaluation_eval_gonogo     = Go NoGo;
 viewevaluation_eval_gonogo3D   = Esferas;
 viewevaluation_eval_passball   = Balón Pase;
-viewevaluation_eval_dotfollow  = Seguir el Punto;
+viewevaluation_eval_dotfollow  = Punto Movedizo;
 viewevaluation_error_patient_dir = Falla de Disco|No se pudo crear el directorio del paciente;
 viewevaluation_must_select_doctor = Se debe seleccionar un doctor;
 viewevaluation_start = COMENZAR;
@@ -447,7 +447,7 @@ studystatus_gonogo3D_green_hit = Contacto con <<N>> esferas verdes;
 studystatus_gonogo3D_red_hit = Contacto con <<N>> esferas rojas;
 studystatus_passball_completed = Pases Completados: <<N>>;
 studystatus_passball_missed = Pases no completados: <<N>>;
-studystatus_dot_follow_index = Porcentaje de Segumiento de Punto: <<N>>%;
+studystatus_dot_follow_index = Porcentaje de tiempo de la vista en el punto: <<N>>%;
 
 
 #********************************* UPDATE DIALOGS *********************************

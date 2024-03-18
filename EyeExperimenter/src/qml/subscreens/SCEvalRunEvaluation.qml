@@ -54,7 +54,7 @@ Rectangle {
                 return;
             }
             else{
-                flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_studyEnd") + "\n" + evalTitle.text);
+                flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_studyEnd") + "\n" + keysRect.getEvalName());
                 // We show the wait screen while we do some background processing.
                 flowControl.hideRenderWindow();
                 mainWindow.openWait(loader.getStringForKey("viewwait_study_end"));
@@ -123,15 +123,13 @@ Rectangle {
                 let list = "<ul>"
                 for (let key in stats){
                     let message = loader.getStringForKey(key);
-                    //message = message.replace("<<N>>","<b>" + string_value_map[key] + "</b>");
-                    //message = message.replace("<<N>>",string_value_map[key]);
                     message = VMGlobals.stringReplaceAll("<<N>>",stats[key],message)
                     list = list + "<li>" + message + "</li>"
                 }
                 list = list + "<ul>"
                 //console.log("DBUG: Setting Study Message: " + list)
 
-                if (extra != ""){
+                if (extra !== ""){
                     list = list + "<br><br>" + loader.getStringForKey(extra);
                 }
 
@@ -211,12 +209,6 @@ Rectangle {
         else return false;
     }
 
-//    function setOngoingFileNameForStudyConfiguration(){
-//        let study_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
-//        study_config[vmONGOING_STUDY_FIELD] = loader.getCurrentSubjectStudyFile();
-//        viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation] = study_config;
-//    }
-
     function prepareNextStudyOrHandCalibration(calibrationSkipped, is_recalibrating_hands){
 
         if (!calibrationSkipped) {
@@ -272,27 +264,6 @@ Rectangle {
         // We load the text explanation depending on the study. so we get the study unique number id.
         let unique_study_id = parseInt(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmUNIQUE_STUDY_ID]);
 
-//        if (vmCurrentEvaluation == 0){
-//            vmBindingStudyStarted = false;
-//        }
-
-//        if (unique_study_id === VMGlobals.vmINDEX_BINDING_BC){
-//            if (vmBindingStudyStarted){
-//                setOngoingFileNameForStudyConfiguration();
-//            }
-//            else {
-//                vmBindingStudyStarted = true;
-//            }
-//        }
-//        else if (unique_study_id === VMGlobals.vmINDEX_BINDING_UC){
-//            if (vmBindingStudyStarted){
-//                setOngoingFileNameForStudyConfiguration();
-//            }
-//            else {
-//                vmBindingStudyStarted = true;
-//            }
-//        }
-        //else
         if (unique_study_id === VMGlobals.vmINDEX_NBACKVS){
             let ntargets = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmSCP_NUMBER_OF_TARGETS]
         }
@@ -312,7 +283,7 @@ Rectangle {
         plineEvaluationStages.indicateNext();
 
         // Change the stage text in the title.
-        let current_study = evalTitle.text
+        let current_study = keysRect.getEvalName()
 
         // Now we need to activate explanation mode. First step is creating the study file.
         if (!loader.createSubjectStudyFile(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation],
@@ -339,8 +310,8 @@ Rectangle {
         }
 
         // Text[0] is just evaluations.Text[1] contains the evaluation name.
-        evalTitle.text = texts[1];
-        //evalStage.text = "/ " + plineEvaluationStages.getCurrentText();
+        let nText = (vmCurrentEvaluation + 1)
+        keysRect.setEvalName(nText,texts[0])
 
     }
 
@@ -400,12 +371,6 @@ Rectangle {
            eval_steps = loader.getStringListForKey("viewevaluation_evaluation_steps")
         }
 
-//        let plineSetup = {};
-//        for (let i in eval_steps){
-//            plineSetup[eval_steps[i]] = [];
-//        }
-
-//        plineEvaluationStages.setup(plineSetup);
         plineEvaluationStages.setup(eval_steps);
         plineEvaluationStages.reset();
 
@@ -450,38 +415,10 @@ Rectangle {
         flowControl.setRenderWindowGeometry(x,y,hmdView.width,hmdView.height);
     }
 
-//    Text {
-//        id: evalTitle
-//        color: VMGlobals.vmBlackText
-//        font.pixelSize: VMGlobals.vmFontExtraExtraLarge
-//        font.weight: 600
-//        height: VMGlobals.adjustHeight(32)
-//        verticalAlignment: Text.AlignVCenter
-//        anchors.top: parent.top
-//        anchors.left: parent.left
-//        anchors.topMargin: VMGlobals.adjustHeight(31)
-//        anchors.leftMargin: VMGlobals.adjustWidth(31)
-//    }
-
-//    Text {
-//        id: evalStage
-//        color: VMGlobals.vmGrayAccented
-//        font.pixelSize: VMGlobals.vmFontExtraExtraLarge
-//        font.weight: 400
-//        height: VMGlobals.adjustHeight(32)
-//        verticalAlignment: Text.AlignVCenter
-//        anchors.top: evalTitle.top
-//        anchors.left: evalTitle.right
-//        anchors.leftMargin: VMGlobals.adjustWidth(10)
-//    }
-
     Rectangle {
         id: hmdView
         width: VMGlobals.adjustWidth(697);
         height: VMGlobals.adjustHeight(310*697/597);
-        //anchors.top: evalTitle.bottom
-        //anchors.topMargin: VMGlobals.adjustHeight(34);
-        //anchors.left: evalTitle.left
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: VMGlobals.adjustHeight(31)
@@ -489,7 +426,6 @@ Rectangle {
 
         border.width: 0
         color: "#ffffff"
-        //color: "#00ffff"
         onWidthChanged: {
             onMove()
         }
@@ -630,114 +566,26 @@ Rectangle {
         anchors.top: parent.top
         anchors.right: parent.right
 
-        Text {
-            id: evalTitle
-            //text: loader.getStringForKey("viewevaluation_shortcuts")
-            //text: evalTitle.text
-            color: VMGlobals.vmBlackText
-            font.pixelSize: VMGlobals.vmFontVeryLarge
-            font.weight: 600
-            height: VMGlobals.adjustHeight(32)
-            verticalAlignment: Text.AlignVCenter
-            y: hmdView.y
-            anchors.horizontalCenter: parent.horizontalCenter
+        function getEvalName() {
+            return plineEvaluationStages.vmEvalTitle;
         }
 
-        VMTextProgressLine {
+        function setEvalName(number, name){
+            plineEvaluationStages.vmEvalNumber = number;
+            plineEvaluationStages.vmEvalTitle = name;
+        }
+
+        VMStudyPhaseTracker {
             id: plineEvaluationStages
-            anchors.top: evalTitle.bottom
-            anchors.topMargin: VMGlobals.adjustHeight(20)
-            anchors.left: parent.left
-            width: parent.width
+            y: hmdView.y
+            vmCheckAllOnProgress: false
+            anchors.horizontalCenter: keysRect.horizontalCenter
+            width: keysRect.width*0.7
             height: parent.height*0.5
         }
 
-//        ListModel {
-//            id: keysModel;
-//        }
-
-//        Row {
-//            id: rowForKeys
-//            anchors.left: shorcutTitle.left
-//            anchors.top: shorcutTitle.bottom
-//            anchors.topMargin: VMGlobals.adjustHeight(26)
-
-//            Column {
-//                id: columnsForKeys
-//                width: VMGlobals.adjustWidth(46);
-//                spacing: VMGlobals.adjustHeight(24)
-
-//                Repeater {
-//                    model: keysModel
-
-//                    Rectangle {
-//                        height: VMGlobals.adjustHeight(23)
-//                        width:  (keyText.text.length === 3) ? VMGlobals.adjustWidth(36) : VMGlobals.adjustWidth(23)
-//                        color: "transparent"
-//                        border.width: VMGlobals.adjustHeight(1)
-//                        radius: VMGlobals.adjustHeight(4)
-//                        border.color: VMGlobals.vmGrayStudyDivisor
-
-//                        Text {
-//                            id: keyText
-//                            text: keysModel.get(index).key
-//                            color: VMGlobals.vmGrayStudyDivisor
-//                            font.pixelSize: VMGlobals.vmFontBaseSize
-//                            font.weight: 600
-//                            height: VMGlobals.adjustHeight(18.62)
-//                            verticalAlignment: Text.AlignVCenter
-//                            anchors.centerIn: parent
-//                        }
-
-//                    }
-
-//                }
-
-//            }
-
-//            Column {
-//                id: columnForExplanations
-//                spacing: columnsForKeys.spacing
-
-//                Repeater {
-//                    model: keysModel
-//                    Text {
-//                        id: explanationText
-//                        text: keysModel.get(index).explanation
-//                        color: VMGlobals.vmBlackText
-//                        font.pixelSize: VMGlobals.vmFontBaseSize
-//                        font.weight: 400
-//                        height: VMGlobals.adjustHeight(23)
-//                        verticalAlignment: Text.AlignVCenter
-//                    }
-//                }
-//            }
-
-//        }
-
     }
 
-//    Component.onCompleted: {
-
-//        var explanations = loader.getStringListForKey("viewevaluation_keyboard_explanations");
-//        var keys = ["ESC","G","N","B","D","S"]
-//        var to_skip = ["G","N","B"]; // This is added JUST so we don't need to change the language file in order to print out a smaller set of keys.
-//        //var keys = ["ESC","G","D","S"]
-
-//        if (keys.length !== explanations.length){
-//            //console.log("Key Array is " + keys.length + " and explanation array is " + explanations.length)
-//            return;
-//        }
-
-//        for (var i = 0; i < keys.length; i++){
-
-//            if (to_skip.includes(keys[i])) continue;
-
-//            let item = { "key" : keys[i], "explanation": explanations[i] };
-//            keysModel.append(item);
-//        }
-
-//    }
 
 
 }

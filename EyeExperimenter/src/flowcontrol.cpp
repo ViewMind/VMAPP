@@ -307,6 +307,8 @@ bool FlowControl::isRenderServerWorking() const{
 ////////////////////////////// AUXILIARY FUNCTIONS ///////////////////////////////////////
 void FlowControl::keyboardKeyPressed(int key){
 
+    qDebug() << "Keyboard Pressed with study phase" << studyControl.getStudyPhase();
+
     if (studyControl.getStudyPhase() == StudyControl::SS_EVAL){
         QString phase = "Eval";
         switch (key){
@@ -318,9 +320,6 @@ void FlowControl::keyboardKeyPressed(int key){
             break;
         case Qt::Key_Escape:
             studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_ABORT);
-            break;
-        case Qt::Key_G:
-            studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_CONTINUE);
             break;
         default:
             StaticThreadLogger::warning("FlowControl::keyboardKeyPressed","The following key was pressed but the in study command was not sent as the key was not recognized: " + QString::number(key) + " in state " + phase);
@@ -357,6 +356,11 @@ void FlowControl::keyboardKeyPressed(int key){
             StaticThreadLogger::warning("FlowControl::keyboardKeyPressed","The following key was pressed but the in study command was not sent as the key was not recognized: " + QString::number(key) + " in state " + phase);
             break;
         }
+    }
+    else if (studyControl.getStudyPhase() == StudyControl::SS_NONE){
+        // In this case all we need to do is to property set the abort study state and emit the proper signal.
+        this->studyControl.forceStudyEndStatusToAborted();
+        emit FlowControl::experimentHasFinished();
     }
     else {
         StaticThreadLogger::warning("FlowControl::keyboardKeyPressed","The following key was pressed but the in study command was not sent as no study is running");

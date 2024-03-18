@@ -147,7 +147,6 @@ namespace CommandInStudy {
 static const QString CMD_ABORT             = "abort";
 static const QString CMD_BINDING_SAME      = "binding_same";
 static const QString CMD_BINDING_DIFFERENT = "binding_different";
-static const QString CMD_CONTINUE          = "continue";
 }
 
 

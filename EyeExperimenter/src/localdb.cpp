@@ -993,7 +993,7 @@ bool LocalDB::setPreference(const QString &preference, const QVariant &variant){
     if (data.contains(MAIN_PREFERENCES)){
         map = data.value(MAIN_PREFERENCES).toMap();
     }
-    qDebug() << "Setting preference" << preference << "to" << variant;
+    //qDebug() << "Setting preference" << preference << "to" << variant;
     map[preference] = variant;
     data[MAIN_PREFERENCES] = map;
     return saveAndBackup();

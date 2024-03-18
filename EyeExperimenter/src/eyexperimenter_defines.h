@@ -19,7 +19,7 @@ const QString REGION  = "DEV";
 
 namespace LOCAL {
 const QString API_URL = "http://192.168.0.8/vmapi";
-//const QString API_URL = "http://192.168.96.24/vmapi";
+//const QString API_URL = "http://10.1.12.73/vmapi";
 const QString REGION  = "DBUG";
 }
 
@@ -149,7 +149,7 @@ static QVariantMap GetNameCodeMap() {
 
 namespace Share {
 static const QString APP_NAME = "ViewMind Atlas";
-static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.experimental.24";
+static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.dev.25.rc.0";
 static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
 static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
 static const QString PATIENT_UID = "patient_uid";
@@ -159,7 +159,7 @@ static const QString CURRENTLY_LOGGED_EVALUATOR = "evaluator_logged";
 static const QString SELECTED_STUDY = "selected_study";
 static const QString HAND_CALIB_RES = "hand_calibration_results";
 static const QString NBACK_WAIT_MSG = "nback_wait_msg";
-static const QString EYEEXPLORER_SYSTEM_VERSION = "27.7.5";
+static const QString EYEEXPLORER_SYSTEM_VERSION = "27.8.5";
 static const QString APP_RELEASE_DATE = "DD-MM-YYYY";
 }
 
