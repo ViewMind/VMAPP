@@ -9,6 +9,7 @@
 #include "../LogInterface/staticthreadlogger.h"
 #include "../RenderServerClient/RenderServerPackets/renderserverpacket.h"
 #include "../RenderServerClient/RenderServerPackets/RenderServerStrings.h"
+#include "../debug.h"
 
 class CalibrationManager : public QObject
 {

@@ -55,6 +55,7 @@ SOURCES += main.cpp \
     fuzzystringcompare.cpp \
     loader.cpp \
     flowcontrol.cpp \
+    loaderflowcomm.cpp \
     localdb.cpp \
     studyendoperations.cpp
 
@@ -78,6 +79,7 @@ HEADERS += \
     ../../CommonClasses/LogInterface/logprep.h \
     ../../CommonClasses/LogInterface/staticthreadlogger.h \
     ../../CommonClasses/RawDataContainer/VMDC.h \
+    ../../CommonClasses/RawDataContainer/default_configurations.h \
     ../../CommonClasses/RawDataContainer/viewminddatacontainer.h \
     ../../CommonClasses/RenderServerClient/RenderServerPackets/RenderServerStrings.h \
     ../../CommonClasses/RenderServerClient/RenderServerPackets/renderserverpacket.h \
@@ -96,11 +98,13 @@ HEADERS += \
     ../../CommonClasses/debug.h \
     ../../CommonClasses/eyetracker_defines.h \
     ../../CommonClasses/ConfigurationManager/configurationmanager.h \
+    ../../CommonClasses/json_file_store.h \
     apiclient.h \
     eyexperimenter_defines.h \
     fuzzystringcompare.h \
     loader.h \
     flowcontrol.h \
+    loaderflowcomm.h \
     localdb.h \
     studyendoperations.h
 

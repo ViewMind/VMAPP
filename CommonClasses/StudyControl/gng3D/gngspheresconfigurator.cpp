@@ -21,9 +21,10 @@ bool GNGSpheresConfigurator::studySpecificConfiguration(const QVariantMap &study
     // Now we parse the trial. If it worked the configuration is loaded with the NBack trials.
     if (!parseStudyDescription(numberOfTrials)) return false;
 
-    qDebug() << "Number of trials for GNG3D" << numberOfTrials << "Speed Setting: "  << min_speed <<  initial_speed << max_speed;
+    //qDebug() << "Number of trials for GNG3D" << numberOfTrials << "Speed Setting: "  << min_speed <<  initial_speed << max_speed;
 
-    configuration[RRS::StudyConfigurationFields::STUDY] = VMDC::Study::GONOGO_SPHERE;
+    if (min_speed == max_speed) configuration[RRS::StudyConfigurationFields::STUDY] = VMDC::Study::SPHERES;
+    else configuration[RRS::StudyConfigurationFields::STUDY] = VMDC::Study::SPHERES_VS;
 
     QString handToUse = studyConfig.value(VMDC::StudyParameter::HAND_TO_USE).toString();
 

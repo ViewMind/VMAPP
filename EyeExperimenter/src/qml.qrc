@@ -32,7 +32,6 @@
         <file>qml/components/VMProgressLine.qml</file>
         <file>qml/views/ViewEvaluations.qml</file>
         <file>qml/subscreens/SCEvalGeneralSettings.qml</file>
-        <file>qml/subscreens/SCEvalConfiguration.qml</file>
         <file>qml/subscreens/SCEvalRunEvaluation.qml</file>
         <file>qml/components/VMCofigurableStudyItem.qml</file>
         <file>qml/components/VMSingleChoiceMultiRadioButton.qml</file>

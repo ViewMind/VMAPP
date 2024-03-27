@@ -107,10 +107,10 @@ QString ViewMindDataContainer::getStudyStatus(const QString &study){
     return data.value(MAIN_FIELD_STUDIES).toMap().value(study).toMap().value(VMDC::StudyField::STATUS).toString();
 }
 
-QString ViewMindDataContainer::getMetadaStatus(){
-    QStringList hierarchy; hierarchy << MAIN_FIELD_METADATA << VMDC::MetadataField::STATUS;
+QString ViewMindDataContainer::getEvaluationID(){
+    QStringList hierarchy; hierarchy << MAIN_FIELD_METADATA << VMDC::MetadataField::EVALUATION_ID;
     if (!checkHiearchyChain(hierarchy)) return "";
-    return data.value(MAIN_FIELD_METADATA).toMap().value(VMDC::MetadataField::STATUS).toString();
+    return data.value(MAIN_FIELD_METADATA).toMap().value(VMDC::MetadataField::EVALUATION_ID).toString();
 }
 
 QVariantMap ViewMindDataContainer::getStudyConfiguration(const QString study){
@@ -270,14 +270,6 @@ bool ViewMindDataContainer::setMetadata(const QVariantMap &metadata){
         current_metada[mandatory.at(i)] = metadata.value(mandatory.at(i));
     }
 
-    //Debug::prettpPrintQVariantMap(current_metada);
-
-    // Checking for valid status.
-    QString check = VMDC::StatusType::validate(current_metada.value(VMDC::MetadataField::STATUS).toString());
-    if (!check.isEmpty()){
-        error = "Error setting metadata. Reason: " + check;
-        return false;
-    }
 
     // Ensuring the proper version.
     current_metada[VMDC::MetadataField::VERSION] = CURRENT_JSON_STRUCT_VERSION;
@@ -544,17 +536,13 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
     QString hour = QDateTime::currentDateTime().toString("HH:mm");
 
     // Set the list of the parameters to check depending on study.
-    if ((study == VMDC::Study::BINDING_BC) || (study == VMDC::Study::BINDING_UC)){
+    if ((study == VMDC::Study::BINDING_BC_2_SHORT) || (study == VMDC::Study::BINDING_UC_2_SHORT) ||
+        (study == VMDC::Study::BINDING_BC_3_SHORT) || (study == VMDC::Study::BINDING_UC_3_SHORT)){
         valid_parameter_values[VMDC::StudyParameter::NUMBER_TARGETS] = VMDC::BindingTargetCount::valid;
-        valid_parameter_values[VMDC::StudyParameter::TARGET_SIZE] = VMDC::BindingTargetSize::valid;
+        valid_parameter_values[VMDC::StudyParameter::TARGET_SIZE]    = VMDC::BindingTargetSize::valid;
     }
-    else if (study == VMDC::Study::READING){
-        valid_parameter_values[ VMDC::StudyParameter::LANGUAGE] = VMDC::ReadingLanguage::valid;
-    }
-    else if (study == VMDC::Study::NBACKVS){
+    else if ((study == VMDC::Study::NBACK_3) || (study == VMDC::Study::NBACK_3)){
         valid_parameter_values[VMDC::StudyParameter::NUMBER_TARGETS] = VMDC::NBackVSTargetCount::valid;
-        QStringList boolean; boolean << "true" << "false";
-        valid_parameter_values[VMDC::StudyParameter::NBACK_LIGHT_ALL] = boolean;
     }
 
     // Now we validate both the that all parameters are there and their values.
@@ -577,54 +565,55 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
     QVariantMap studies = data.value(MAIN_FIELD_STUDIES,QVariantMap()).toMap();
     QVariantMap studyToConfigure;
 
-    QString config_code;
-    QString eye = finalStudyConfiguration.value(VMDC::StudyParameter::VALID_EYE).toString();
-    if (eye == VMDC::Eye::LEFT) config_code = "L";
-    else if (eye == VMDC::Eye::RIGHT) config_code = "R";
-    else config_code = "B";
+//    QString config_code;
+//    QString eye = finalStudyConfiguration.value(VMDC::StudyParameter::VALID_EYE).toString();
+
+//    if (eye == VMDC::Eye::LEFT) config_code = "L";
+//    else if (eye == VMDC::Eye::RIGHT) config_code = "R";
+//    else config_code = "B";
 
     // Specific study configurations.
-    QString abbreviation;
+//    QString abbreviation;
 
-    if (study == VMDC::Study::BINDING_BC){
-        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::NUMBER_TARGETS).toString() +
-                finalStudyConfiguration.value(VMDC::StudyParameter::TARGET_SIZE).toString().mid(0,1).toUpper();
-        abbreviation = "bc";
-    }
-    else if (study == VMDC::Study::BINDING_UC){
-        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::NUMBER_TARGETS).toString() +
-                finalStudyConfiguration.value(VMDC::StudyParameter::TARGET_SIZE).toString().mid(0,1).toUpper();
-        abbreviation = "uc";
-    }
-    else if (study == VMDC::Study::READING){
-        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::LANGUAGE).toString().mid(0,2).toUpper();
-        abbreviation = "rd";
-    }
-    else if (study == VMDC::Study::GONOGO){
-        abbreviation = "gn";
-    }
-    else if (study == VMDC::Study::NBACKMS){
-        abbreviation = "ms";
-    }
-    else if (study == VMDC::Study::NBACKRT){
-        abbreviation = "rt";
-    }
-    else if (study == VMDC::Study::NBACKVS){
-        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::NUMBER_TARGETS).toString();
-        if (finalStudyConfiguration.value(VMDC::StudyParameter::NBACK_LIGHT_ALL).toBool()){
-            config_code = config_code + "A";
-        }
-        else {
-            config_code = config_code + "S";
-        }
-        abbreviation = "vs";
-    }
-    else if (study == VMDC::Study::DOTFOLLOW){
-        abbreviation = "df";
-    }
-    else if (study == VMDC::Study::GONOGO_SPHERE){
-        abbreviation = "gng3D";
-    }
+//    if (study == VMDC::Study::BINDING_BC){
+//        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::NUMBER_TARGETS).toString() +
+//                finalStudyConfiguration.value(VMDC::StudyParameter::TARGET_SIZE).toString().mid(0,1).toUpper();
+//        abbreviation = "bc";
+//    }
+//    else if (study == VMDC::Study::BINDING_UC){
+//        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::NUMBER_TARGETS).toString() +
+//                finalStudyConfiguration.value(VMDC::StudyParameter::TARGET_SIZE).toString().mid(0,1).toUpper();
+//        abbreviation = "uc";
+//    }
+//    else if (study == VMDC::Study::READING){
+//        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::LANGUAGE).toString().mid(0,2).toUpper();
+//        abbreviation = "rd";
+//    }
+//    else if (study == VMDC::Study::GONOGO){
+//        abbreviation = "gn";
+//    }
+//    else if (study == VMDC::Study::NBACKMS){
+//        abbreviation = "ms";
+//    }
+//    else if (study == VMDC::Study::NBACKRT){
+//        abbreviation = "rt";
+//    }
+//    else if (study == VMDC::Study::NBACKVS){
+//        config_code = config_code + finalStudyConfiguration.value(VMDC::StudyParameter::NUMBER_TARGETS).toString();
+//        if (finalStudyConfiguration.value(VMDC::StudyParameter::NBACK_LIGHT_ALL).toBool()){
+//            config_code = config_code + "A";
+//        }
+//        else {
+//            config_code = config_code + "S";
+//        }
+//        abbreviation = "vs";
+//    }
+//    else if (study == VMDC::Study::DOTFOLLOW){
+//        abbreviation = "df";
+//    }
+//    else if (study == VMDC::Study::GONOGO_SPHERE){
+//        abbreviation = "gng3D";
+//    }
 
     //qDebug() << "Setting STUDY CONFIG in Final Json VMDC";
     //Debug::prettpPrintQVariantMap(finalStudyConfiguration);
@@ -636,8 +625,8 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
     studyToConfigure.insert(VMDC::StudyField::HOUR,hour);
     studyToConfigure.insert(VMDC::StudyField::EXPERIMENT_DESCRIPTION,experimentDescription);
     studyToConfigure.insert(VMDC::StudyField::VERSION,version);
-    studyToConfigure.insert(VMDC::StudyField::CONFIG_CODE,config_code);
-    studyToConfigure.insert(VMDC::StudyField::ABBREVIATION,abbreviation);
+    //studyToConfigure.insert(VMDC::StudyField::CONFIG_CODE,config_code);
+    //studyToConfigure.insert(VMDC::StudyField::ABBREVIATION,abbreviation);
     studyToConfigure.insert(VMDC::StudyField::STUDY_CONFIGURATION,finalStudyConfiguration);
     studyToConfigure.insert(VMDC::StudyField::STATUS,VMDC::StatusType::ONGOING);
 
@@ -652,12 +641,6 @@ bool ViewMindDataContainer::addStudy(const QString &study, const QVariantMap &st
 
 }
 
-
-void ViewMindDataContainer::markFileAsFinalized(){
-    QVariantMap metadata = data.value(MAIN_FIELD_METADATA).toMap();
-    metadata[VMDC::MetadataField::STATUS] = VMDC::StatusType::FINALIZED;
-    data[MAIN_FIELD_METADATA] = metadata;
-}
 
 void ViewMindDataContainer::clearFieldsForIndexFileCreation(){
     // This is used to create a "just the header file" for quick loading of information.

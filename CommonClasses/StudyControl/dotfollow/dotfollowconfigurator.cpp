@@ -19,7 +19,7 @@ bool DotFollowConfigurator::studySpecificConfiguration(const QVariantMap &studyC
     if (!parseStudyDescription(numberOfMovements)) return false;
 
     // Now that the description was parsed, we can set all the other configuration constants.
-    configuration[RRS::StudyConfigurationFields::STUDY]          = VMDC::Study::DOTFOLLOW;
+    configuration[RRS::StudyConfigurationFields::STUDY]          = VMDC::Study::MOVING_DOT;
     configuration[RRS::StudyConfigurationFields::IS_STUDY_3D]    = false;
     configuration[RRS::StudyConfigurationFields::MIN_HOLD_TIME]  = DF_MIN_HOLD_TIME;
     configuration[RRS::StudyConfigurationFields::MAX_HOLD_TIME]  = DF_MAX_HOLD_TIME;

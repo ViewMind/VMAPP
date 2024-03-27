@@ -52,11 +52,27 @@ bool BindingConfigurator::studySpecificConfiguration(const QVariantMap &studyCon
 
     // The study name and the number of targets are the only configuration parameters required.
     if (this->isBC){
-        this->configuration[RRS::StudyConfigurationFields::STUDY] = VMDC::Study::BINDING_BC;
+        if (this->number_of_targets == 3){
+            this->configuration[RRS::StudyConfigurationFields::STUDY] = VMDC::Study::BINDING_BC_3_SHORT;
+        }
+        else {
+            this->configuration[RRS::StudyConfigurationFields::STUDY] = VMDC::Study::BINDING_BC_2_SHORT;
+        }
+
     }
     else {
-        this->configuration[RRS::StudyConfigurationFields::STUDY] = VMDC::Study::BINDING_UC;
+        if (this->number_of_targets == 3){
+            this->configuration[RRS::StudyConfigurationFields::STUDY] = VMDC::Study::BINDING_UC_3_SHORT;
+        }
+        else {
+            this->configuration[RRS::StudyConfigurationFields::STUDY] = VMDC::Study::BINDING_UC_2_SHORT;
+        }
     }
+
+
+    // UPDATE: As of version 27 when everything shifted towards evaluations, the study code includes the number of targets and trial length
+    // So as to make sure, in case we need to go back, that all the evaluations are still parametrized, we still use number of targets as a configuration
+    // parameter, even though it's redundant. This minimized the amount of code to change when the update was done.(March 25, 2024).
 
     this->configuration[RRS::StudyConfigurationFields::NUMBER_OF_TARGETS] = this->number_of_targets;
     configuration[RRS::StudyConfigurationFields::IS_STUDY_3D] = false;
@@ -64,7 +80,6 @@ bool BindingConfigurator::studySpecificConfiguration(const QVariantMap &studyCon
     return true;
 
 }
-
 
 bool BindingConfigurator::parseStudyDescription(){
     QStringList lines = this->studyDescriptionContent.split("\n",Qt::SkipEmptyParts);
@@ -152,7 +167,6 @@ bool BindingConfigurator::parseStudyDescription(){
     return true;
 
 }
-
 
 bool BindingConfigurator::createBindingTrialFromTrialStringMatrix(const QList<QStringList> &matrix, QVariantMap *trial){
 

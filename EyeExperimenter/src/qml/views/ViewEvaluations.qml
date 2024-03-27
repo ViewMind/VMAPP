@@ -9,30 +9,16 @@ ViewBase {
 
     id: evaluationsView
 
-    property string vmSelectedPatientID: ""
-    property string vmSelectedProtocol: ""
-    property string vmSelectedEye: ""
-    property string vmSelectedDoctor: ""
     property string vmSelectedPatientName: ""
-    property var vmSelectedEvaluationConfigurations: []
-    property string vmCurrentStudySequence: ""
 
-
-    // Used for debugging ONLY
-    property int vmDebugSubScreen: vmSC_INDEX_GENERAL_SETTINGS
-
-    readonly property int vmSC_INDEX_GENERAL_SETTINGS:     0
-    readonly property int vmSC_INDEX_EVAL_SETTINGS:        1
-    readonly property int vmSC_INDEX_EVALUATION_SCREEN:    2
-    readonly property int vmSC_INDEX_EVALUATION_FINISHED:  3
+    readonly property int vmSC_INDEX_GENERAL_SETTINGS:     0   
+    readonly property int vmSC_INDEX_EVALUATION_SCREEN:    1
+    readonly property int vmSC_INDEX_EVALUATION_FINISHED:  2
 
 
     function setPatientForEvaluation(){
 
         var patientData = loader.getCurrentSubjectInfo();
-
-//        console.log("Loading patient for Evaluation")
-//        console.log(JSON.stringify(patientData))
 
         var date = new Date();
         var year = date.getFullYear()
@@ -45,7 +31,6 @@ ViewBase {
         //console.log("Current month as index is " + month)
         //console.log("Month List " + JSON.stringify(monthlist))
         month = monthlist[month]
-
 
         let patientDisplayID = "";
         let patientFname = patientData["name"];
@@ -75,36 +60,31 @@ ViewBase {
         //console.log(JSON.stringify(patientData));
         personalIDValue.text = patientData["supplied_institution_id"]
 
-        vmSelectedPatientID = patientData["local_id"]
+        let selectedPatient = patientData["local_id"]
 
-        if (!loader.setSelectedSubject(vmSelectedPatientID)){
+        if (!loader.setSelectedSubject(selectedPatient)){
             mainWindow.showErrorMessage("viewevaluation_error_patient_dir")
             mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
         }
 
-        // Setting up the progress line.
-        let plineSetup = {};
-        plineSetup[loader.getStringForKey("viewevaluation_general_settings")] = [];
-        plineSetup[loader.getStringForKey("viewevaluation_eval_settings")] = [];
-        progressLine.vmOnlyColorCurrent = true;
-        progressLine.setup(plineSetup);
-        progressLine.reset();
-
         // Resetting the button state.
-        nextButton.vmIconSource = "next";
-        nextButton.vmText = loader.getStringForKey("viewevaluation_next_button");
+        // nextButton.vmIconSource = "next";
+        nextButton.vmText = loader.getStringForKey("viewevaluation_action_starteval");
         nextButton.vmEnabled = true;
-
-        // Ensuring the proper screen is shown.
-        viewer.currentIndex = vmDebugSubScreen;
-        generalSettings.prepareSettings();
 
         // Ensuring we start with normal calibration speed
         setCalibrationSpeedToSlow(false)
 
+        // We need to make sure that settings are prepared.
+        generalSettings.prepareSettings();
+
     }
 
-    function setUpStudyNames(study_names, uses_h_calib) {
+    function forceSettingsView(){
+        viewer.currentIndex = vmSC_INDEX_GENERAL_SETTINGS;
+    }
+
+    function setUpStudyNames(study_names) {
 
         let plineSetup = {};
 
@@ -112,30 +92,22 @@ ViewBase {
             plineSetup[study_names[i]] = [];
         }
 
-        // Adding the "finish" step. No substeps.
         plineSetup[loader.getStringForKey("viewevaluation_finish")] = []
 
+        // Adding the "finish" step. No substeps.
         study_names.push(loader.getStringForKey("viewevaluation_finish"))
 
-        progressLine.vmHideNumberInMainNodes = false
+        // progressLine.vmHideNumberInMainNodes = false
+        progressLine.vmOnlyColorCurrent = true;
+
+        progressLine.vmHideNumberInMainNodes = false;
         progressLine.vmOnlyColorCurrent = true;
         progressLine.setup(plineSetup);
         progressLine.reset();        
+    }
 
-        //console.log("Set up study names");
-        //console.log(JSON.stringify());
-        let studyAndStage = progressLine.getCurrentTexts();
-        evaluationRun.setStudyAndStage(studyAndStage[0],studyAndStage[1])
-
-        // Index to indicate the current evaluation being performed.
-        evaluationRun.vmCurrentEvaluation = 0;
-
-        // Making sure the is calibrated flag is set to false.
-        evaluationRun.vmIsCalibrated = false;
-
-        // This shoudl render the secondary progress line.
-        evaluationRun.resetEvaluationStages();
-
+    function getTaskAndStage(){
+        return progressLine.getCurrentTexts();
     }
 
     function advanceStudyIndicator(){
@@ -160,11 +132,6 @@ ViewBase {
         evaluationRun.vmSlowCalibrationSelected = slow;
     }
 
-    function setCurrentStudySequence(name){
-        vmCurrentStudySequence = name;
-        sequenceName.clear();
-        loader.setCurrentStudySequence(name);
-    }
 
     function finalizeSequenceAction(goToReports){
 
@@ -234,66 +201,66 @@ ViewBase {
         onClickSignal: {
             //mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
             // First Calibration Explanation
-            if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_CALIBRATION) && (evaluationRun.vmCurrentEvaluation == 0)){
+            if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_CALIBRATION) && (evaluationRun.vmCurrentTask == 0)){
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
                                                      loader.getStringForKey("viewevaluation_comfirm_abort_msg_no_issue"))
 
             }
             // First hand calibration explanation
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_PRE_HAND_CALIB) && (evaluationRun.vmCurrentEvaluation == 0)){
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_PRE_HAND_CALIB) && (evaluationRun.vmCurrentTask == 0)){
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
                                                      loader.getStringForKey("viewevaluation_comfirm_abort_msg_no_issue"))
 
             }
             // First Example/Explanation
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXAMPLES) && (evaluationRun.vmCurrentEvaluation == 0)){
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXAMPLES) && (evaluationRun.vmCurrentTask == 0)){
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
                                                      loader.getStringForKey("viewevaluation_comfirm_abort_msg_first_redo_calibration"))
 
 
             }
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXPLANATION) && (evaluationRun.vmCurrentEvaluation == 0)){
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXPLANATION) && (evaluationRun.vmCurrentTask == 0)){
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
                                                      loader.getStringForKey("viewevaluation_comfirm_abort_msg_first_redo_calibration"))
 
 
             }
             // First hand calibration verification
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_HAND_CALIB_VERIF) && (evaluationRun.vmCurrentEvaluation == 0)){
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_HAND_CALIB_VERIF) && (evaluationRun.vmCurrentTask == 0)){
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
                                                      loader.getStringForKey("viewevaluation_comfirm_abort_msg_first_redo_calibration"))
 
 
             }
             // First Evaluation
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EVALUATION) && (evaluationRun.vmCurrentEvaluation == 0)){
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EVALUATION) && (evaluationRun.vmCurrentTask == 0)){
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
                                                      loader.getStringForKey("viewevaluation_comfirm_abort_msg_first_study"))
 
             }
 
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXAMPLES) && (evaluationRun.vmCurrentEvaluation > 0)){
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXAMPLES) && (evaluationRun.vmCurrentTask > 0)){
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
                                                      loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_calibration"))
 
             }
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXPLANATION) && (evaluationRun.vmCurrentEvaluation > 0)){
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXPLANATION) && (evaluationRun.vmCurrentTask > 0)){
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
                                                      loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_calibration"))
 
             }
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EVALUATION) && (evaluationRun.vmCurrentEvaluation > 0)){
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EVALUATION) && (evaluationRun.vmCurrentTask > 0)){
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
                                                      loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_study"))
 
             }
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_CALIBRATION) && (evaluationRun.vmCurrentEvaluation > 0)){
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_CALIBRATION) && (evaluationRun.vmCurrentTask > 0)){
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
                                                      loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_calibration"))
 
             }
             // Non first hand calibration verification
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_HAND_CALIB_VERIF) && (evaluationRun.vmCurrentEvaluation > 0)){
+            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_HAND_CALIB_VERIF) && (evaluationRun.vmCurrentTask > 0)){
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
                                                      loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_study"))
 
@@ -415,23 +382,6 @@ ViewBase {
                     border.color: mainRect.border.color
                     width: parent.width
                     height: parent.height + radius
-                    onGoToEvalSetup: {
-                        progressLine.indicateNext()
-                        // If an evaluation sequece was selected then we set that sequence at this point.
-                        evaluationSetup.loadEvaluationSequences(vmCurrentStudySequence);
-                        viewer.currentIndex = vmSC_INDEX_EVAL_SETTINGS
-                    }
-                }
-            }
-
-            Item {
-                SCEvalConfiguration {
-                    id: evaluationSetup
-                    radius: mainRect.radius
-                    border.width:  mainRect.border.width
-                    border.color: mainRect.border.color
-                    width: parent.width
-                    height: parent.height + radius
                     onGoToEvalRun: {
                         viewer.currentIndex = vmSC_INDEX_EVALUATION_SCREEN
                     }
@@ -469,29 +419,21 @@ ViewBase {
 
                 switch (currentIndex){
                 case vmSC_INDEX_GENERAL_SETTINGS:
+
                     nextButton.vmIconSource = "next";
                     nextButton.vmText = loader.getStringForKey("viewevaluation_next_button");
                     generalSettings.prepareSettings();
                     break;
-                case vmSC_INDEX_EVAL_SETTINGS:
-                    nextButton.vmIconSource = "";
-                    nextButton.vmText = loader.getStringForKey("viewevaluation_start");
-                    evaluationSetup.resetStudySelection();
-                    break;
+
                 case vmSC_INDEX_EVALUATION_SCREEN:
                     //console.log("Should be setting the calibration button")
 
                     flowControl.setRenderWindowState(false);
                     flowControl.showRenderWindow();
 
-                    nextButton.vmText = loader.getStringForKey("viewevaluation_action_calibrate")
-                    nextButton.vmIconSource = ""
-                    evaluationRun.vmEvaluationStage = evaluationRun.vmSTAGE_CALIBRATION
-                    evaluationRun.setCalibrationExplantion() // Setting the calibration explanation message.
-                    evaluationRun.vmInCalibration = false;
-                    evaluationRun.setStudyAndStage("",evaluationRun.vmSTAGE_CALIBRATION);
-                    // console.log(JSON.stringify(vmSelectedEvaluationConfigurations))
+                    evaluationRun.setupEvaluation();
                     break;
+
                 case vmSC_INDEX_EVALUATION_FINISHED:
                     enableNextButton(true);
                     nextButton.vmText = loader.getStringForKey("view_qc_send_report").toUpperCase();
@@ -525,10 +467,7 @@ ViewBase {
                 switch (viewer.currentIndex){
                 case vmSC_INDEX_GENERAL_SETTINGS:
                     generalSettings.onNext()
-                    break;
-                case vmSC_INDEX_EVAL_SETTINGS:
-                    evaluationSetup.setupEvaluations(sequenceName.vmCurrentText,false);
-                    break;
+                    break;               
                 case vmSC_INDEX_EVALUATION_SCREEN:
                     evaluationRun.onNextButtonPressed();
                     break;
@@ -554,59 +493,6 @@ ViewBase {
 
         }
 
-        Row {
-            id: sequenceNameInputRow
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: VMGlobals.adjustWidth(20)
-            visible: viewer.currentIndex === vmSC_INDEX_EVAL_SETTINGS
-            spacing: VMGlobals.adjustWidth(10)
-
-            Text {
-                id: sequenceNameLabel
-                text: loader.getStringForKey("viewevaluation_seq_name")
-                color: VMGlobals.vmBlackText
-                font.pixelSize: VMGlobals.vmFontLarge
-                font.weight: 600
-                anchors.verticalCenter: sequenceName.verticalCenter
-            }
-
-            VMTextInput {
-                id: sequenceName
-                vmPlaceHolderText: loader.getStringForKey("viewevaluation_seq_name_ph")
-                vmLabel: ""
-                width: VMGlobals.adjustWidth(300)
-                vmMaxLength: 41
-                onVmCurrentTextChanged: {
-                    if (vmCurrentText == ""){
-                        nextButton.vmText = loader.getStringForKey("viewevaluation_start");
-                    }
-                    else {
-                        nextButton.vmText = loader.getStringForKey("viewevaluation_start_and_save");
-                    }
-                }
-            }
-
-        }
-
-
-/////////////// It is unlikely that the button will ever be activated again.
-/////////////// But it took me a long time to figure out the right sequence fo calls in order to start the sequence with no errors. So I'm leaving it here.
-//        VMButton {
-//            id: btnStartStudySequence
-//            vmButtonType: btnStartStudySequence.vmTypeSecondary
-//            vmText: loader.getStringForKey("viewevaluation_start_sequence")
-//            anchors.verticalCenter: parent.verticalCenter
-//            anchors.right: nextButton.left
-//            anchors.rightMargin: VMGlobals.adjustWidth(10)
-//            visible: (viewer.currentIndex === vmSC_INDEX_GENERAL_SETTINGS) && (vmCurrentStudySequence != "")
-//            onClickSignal: {
-//                generalSettings.onNext()
-//                evaluationSetup.loadEvaluationSequences(vmCurrentStudySequence)
-//                evaluationSetup.resetStudySelection()
-//                evaluationSetup.setupEvaluations("",true);
-//            }
-//        }
 
         VMButton {
             id: skipCalibrationButton
@@ -616,7 +502,7 @@ ViewBase {
             anchors.left: parent.left
             anchors.leftMargin: VMGlobals.adjustWidth(29)
             visible: {
-                if (evaluationRun.vmCurrentEvaluation === 0) return false;
+                if (evaluationRun.vmCurrentTask === 0) return false;
                 if (!evaluationRun.vmIsCalibrated) return false; // This takes precedence over the stage.
                 if (evaluationRun.vmEvaluationStage === evaluationRun.vmSTAGE_CALIBRATION)  return true;
                 else return false;

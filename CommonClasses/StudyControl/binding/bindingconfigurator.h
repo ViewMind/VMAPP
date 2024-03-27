@@ -32,6 +32,8 @@ class BindingConfigurator: public StudyConfigurator
 public:
     BindingConfigurator(bool isBC, qint32 ntargets);
 
+    static QVariantMap DefaultConfiguration(const QString &study_code);
+
 private:
 
     QList< QList<QStringList> > tokenMatrix;

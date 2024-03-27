@@ -39,35 +39,24 @@ namespace VMDC {
     }
 
 
-    namespace MultiPartStudyBaseName {
-        static const QString BINDING      = "Binding";
-        static const QStringList valid{BINDING};
-        static QString getMetaStudy(const QString & study){
-            for (qint32 i = 0; i < valid.size(); i++){
-                if (study.contains(valid.at(i))) return valid.at(i);
-            }
-            return study;
-        }
-    }
-
     namespace Study{
-       static const QString READING          = "Reading";
-       static const QString BINDING_BC       = MultiPartStudyBaseName::BINDING + " BC";
-       static const QString BINDING_UC       = MultiPartStudyBaseName::BINDING + " UC";
-       static const QString NBACKMS          = "NBack MS";
-       static const QString NBACKRT          = "NBack RT";
-       static const QString NBACKVS          = "NBack VS";
-       static const QString NBACK            = "NBack";
-       static const QString GONOGO           = "Go No-Go";
-       static const QString GONOGO_SPHERE    = "Go No-Go Sphere";
-       static const QString PASSBALL         = "PassBall";
-       static const QString DOTFOLLOW        = "Dot Follow";
-       static const QStringList valid {READING,BINDING_BC,BINDING_UC,NBACKMS,NBACKRT,NBACKVS,NBACK,GONOGO,GONOGO_SPHERE,PASSBALL,DOTFOLLOW};
+       static const QString BINDING_BC_2_SHORT               = "binding_bc_2_short";
+       static const QString BINDING_UC_2_SHORT               = "binding_uc_2_short";
+       static const QString BINDING_BC_3_SHORT               = "binding_bc_3_short";
+       static const QString BINDING_UC_3_SHORT               = "binding_uc_3_short";
+       static const QString NBACK_3                          = "nback_3";
+       static const QString NBACK_4                          = "nback_4";
+       static const QString GONOGO                           = "gonogo";
+       static const QString SPHERES                          = "spheres";
+       static const QString MOVING_DOT                       = "moving_dot";
+       static const QString SPHERES_VS                       = "spheres_vs";
+       static const QStringList valid {BINDING_BC_2_SHORT,BINDING_UC_2_SHORT,BINDING_BC_3_SHORT,BINDING_UC_3_SHORT,NBACK_3,NBACK_4,GONOGO,SPHERES,SPHERES_VS,MOVING_DOT};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Study"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }       
        static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }
     }
+
 
     namespace StatusType {
        static const QString FINALIZED  = "finalized";
@@ -269,7 +258,6 @@ namespace VMDC {
     namespace MetadataField {
        static const QString DATE = "date";
        static const QString HOUR = "hour";
-       static const QString STATUS = "status";
        static const QString INSTITUTION_ID = "institution_id";
        static const QString INSTITUTION_INSTANCE = "institution_instance";
        static const QString INSTITUTION_NAME = "institution_name";
@@ -279,7 +267,10 @@ namespace VMDC {
        static const QString COMMENTS = "comments";
        static const QString DISCARD_REASON = "discard_reason";
        static const QString APP_VERSION = "app_version";
-       static const QStringList valid{DATE,HOUR,INSTITUTION_ID,INSTITUTION_INSTANCE,INSTITUTION_NAME,VERSION,PROC_PARAMETER_KEY,PROTOCOL,STATUS,COMMENTS,DISCARD_REASON,APP_VERSION};
+       static const QString EVALUATION_ID = "evaluation_id";
+       static const QString EVALUATION_TYPE = "evaluation_type";
+       static const QStringList valid{DATE,HOUR,INSTITUTION_ID,INSTITUTION_INSTANCE,INSTITUTION_NAME,VERSION,PROC_PARAMETER_KEY,
+                   PROTOCOL,COMMENTS,DISCARD_REASON,APP_VERSION,EVALUATION_ID,EVALUATION_TYPE};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Metadata Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }
        static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   

@@ -20,14 +20,14 @@
 #include "studyendoperations.h"
 #include "eyexperimenter_defines.h"
 #include "countries.h"
-#include "localdb.h"
 #include "apiclient.h"
+#include "loaderflowcomm.h"
 
 class Loader : public QObject
 {
     Q_OBJECT
 public:
-    explicit Loader(QObject *parent = nullptr, ConfigurationManager *c = nullptr);
+    explicit Loader(QObject *parent = nullptr, LoaderFlowComm *c = nullptr);
     ~Loader() override;
 
     //////////////////////////// UI Functions ////////////////////////////
@@ -42,11 +42,7 @@ public:
     Q_INVOKABLE QString getInstitutionName() const;
     Q_INVOKABLE bool isVMConfigPresent() const;
     Q_INVOKABLE void changeGetVMConfigScreenLanguage(const QString &var);
-    Q_INVOKABLE void storeNewStudySequence(const QString &name, const QVariantList &sequence);
-    Q_INVOKABLE QVariantList getStudySequence(const QString &name);
-    Q_INVOKABLE QVariantMap getStudySequenceListAndCurrentlySelected() const;
-    Q_INVOKABLE void deleteStudySequence(const QString &name);
-    Q_INVOKABLE void setCurrentStudySequence(const QString &name);
+    Q_INVOKABLE QVariantList getAvailableEvaluations();
     Q_INVOKABLE void logUIMessage(const QString &message, bool isError);
     Q_INVOKABLE void openUserManual();
     Q_INVOKABLE bool processingParametersArePresent() const;
@@ -58,7 +54,7 @@ public:
     Q_INVOKABLE QVariantMap getHWInfo() const;
     Q_INVOKABLE QString getInstanceUID() const;
     Q_INVOKABLE qint32 getLastHTTPCodeReceived() const;
-    Q_INVOKABLE QVariantList getHiddenStudies() const;
+    Q_INVOKABLE QVariantMap getTaskCodeToNameMap() const;
 
     //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QString getNewUpdateVersionAvailable() const;
@@ -80,11 +76,9 @@ public:
 
     //////////////////////////// SUBJECT REALATED FUNCTIONS ////////////////////////////
     Q_INVOKABLE QString addOrModifySubject(QString suid, const QString &name, const QString &lastname, const QString &institution_id, const QString &birthdate,  const QString &gender, qint32 formative_years, const QString &email);
-    Q_INVOKABLE void modifySubjectSelectedMedic(const QString &suid, const QString &selectedMedic);
+    Q_INVOKABLE void modifySubjectSelectedMedic(const QString &selectedMedic);
     Q_INVOKABLE QVariantMap filterSubjectList(const QString &filter);
     Q_INVOKABLE bool setSelectedSubject(const QString &suid);    
-    Q_INVOKABLE void setStudyMarkerFor(const QString &study, const QString &value);
-    Q_INVOKABLE QString getStudyMarkerFor(const QString &study);
     Q_INVOKABLE QVariantMap getCurrentSubjectInfo();
     Q_INVOKABLE void clearSubjectSelection();
     Q_INVOKABLE QString getCurrentlySelectedAssignedDoctor() const;
@@ -99,7 +93,6 @@ public:
     Q_INVOKABLE void setSettingsValue(const QString& key, const QVariant &var);
 
     //////////////////////////// FILE MANAGEMENT FUNCTIONS ////////////////////////////
-    Q_INVOKABLE bool createSubjectStudyFile(const QVariantMap &studyconfig, const QString &medic, const QString &protocol);
     Q_INVOKABLE QString getCurrentSubjectStudyFile() const;
 
     ////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
@@ -141,15 +134,14 @@ private:
 
     bool loadingError;
     bool isLicenceFilePresent;
-    ConfigurationManager *configuration;
     ConfigurationManager language;
     ConfigurationManager explanationStrings;
 
+    // This is required by a few function in the UI hence we load it when we load the language and then we keep it.
+    QVariantMap taskCodeToNameMap;
+
     // Temporarily store instance data while doing functional verification.
     ConfigurationManager tempInstanceData;
-
-    // Module to recognize HW in computer.
-    HWRecognizer hwRecognizer;
 
     // String that stores the new version of the application if one is avaible. For display.
     QString newVersionAvailable;
@@ -173,8 +165,8 @@ private:
     // Flag used to indicate whethre the app.zip file was redownloaded or not.
     bool updateDownloadSkipped;
 
-    // The local database
-    LocalDB localDB;
+    // Access to the local databaese and global configurations.
+    LoaderFlowComm *comm;
 
     // Flag that indicates that it's the first time running this particular version of the application.
     bool firstTimeRun;
@@ -203,20 +195,6 @@ private:
     static const qint32 FAIL_CODE_SERVER_ERROR = 2;
     static const qint32 FAIL_FILE_CREATION = 3;
     static const qint32 FAIL_INSTANCE_DISABLED = 4;
-
-    // List of available studies with no reports ready.
-    static const QStringList NO_REPORT_STUDIES;
-
-    // Number of graphs to be shown during QC.
-    static const qint32 NUMBER_OF_QC_GRAPHS = 3;
-
-    // Minimum number of points to conform a fixation.
-    static const qint32 MINIMUM_NUMBER_OF_DATAPOINTS_IN_FIXATION = 4;
-
-    // When a study needs to run but no report can be generated, the study is treated EXACLTY
-    // like a discarded study, but the discard reason (a string code) is specific to this effect.
-    static const QString NO_REPORT_DISCARD_CODE;
-
 
 };
 

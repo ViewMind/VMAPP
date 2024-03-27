@@ -77,8 +77,8 @@ Rectangle {
 
             for (i = startIndex; i <= endIndex; i++){
 
+                ctx.beginPath()
                 if (vmOnlyColorCurrent){
-                    ctx.beginPath()
                     if (i == internal.vmMainIndex){
                         ctx.fillStyle = internal.vmActive
                         ctx.strokeStyle = internal.vmActive
@@ -87,6 +87,10 @@ Rectangle {
                         ctx.fillStyle = internal.vmInactive
                         ctx.strokeStyle = internal.vmInactive
                     }
+                }
+                else {
+                    ctx.fillStyle = internal.vmInactive
+                    ctx.strokeStyle = internal.vmInactive
                 }
 
                 // Drawing the main circle.

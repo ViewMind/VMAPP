@@ -1,6 +1,6 @@
 #include "loader.h"
 
-Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
+Loader::Loader(QObject *parent, LoaderFlowComm *c) : QObject(parent)
 {
 
     // Connecting the API Client slot.
@@ -15,7 +15,7 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     ConfigurationManager::Command cmd;
 
     loadingError = false;
-    configuration = c;
+    comm = c;
     lastHTTPCodeReceived = 0;
 
     cmd.clear();
@@ -30,10 +30,10 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     cv[Globals::VMConfig::INSTITUTION_NAME] = cmd;
 
     // This cannot have ANY ERRORS
-    configuration->setupVerification(cv);
+    comm->configuration()->setupVerification(cv);
     isLicenceFilePresent = true;
-    if (!configuration->loadConfiguration(Globals::Paths::CONFIGURATION)){
-        StaticThreadLogger::error("Loader::Loader","Errors loading the configuration file: " + configuration->getError());
+    if (!comm->configuration()->loadConfiguration(Globals::Paths::CONFIGURATION)){
+        StaticThreadLogger::error("Loader::Loader","Errors loading the configuration file: " + comm->configuration()->getError());
         // If the license file hast error or ist not present then we neeed to set up for autoconfiguration.
         isLicenceFilePresent = false;
         // loadingError = true;
@@ -43,20 +43,20 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
     institutionStringIdentification = "";
 
     if (isLicenceFilePresent){
-        institutionStringIdentification = configuration->getString(Globals::VMConfig::INSTITUTION_NAME)
-                + " (" + configuration->getString(Globals::VMConfig::INSTITUTION_ID) + "." + configuration->getString(Globals::VMConfig::INSTANCE_NUMBER) + ")";
+        institutionStringIdentification = comm->configuration()->getString(Globals::VMConfig::INSTITUTION_NAME)
+                + " (" + comm->configuration()->getString(Globals::VMConfig::INSTITUTION_ID) + "." + comm->configuration()->getString(Globals::VMConfig::INSTANCE_NUMBER) + ")";
     }
 
-    // Now we load the local DB.
-    if (!localDB.setDBFile(Globals::Paths::LOCALDB,Globals::Paths::DBBKPDIR,DBUGBOOL(Debug::Options::PRETTY_PRINT_DB),DBUGBOOL(Debug::Options::DISABLE_DB_CHECKSUM))){
-        StaticThreadLogger::error("Loader::Loader","Could not set local db file: " + localDB.getError());
+    // Now we load the local DB.    
+    if (!comm->db()->setDBFile(Globals::Paths::LOCALDB,Globals::Paths::DBBKPDIR,DBUGBOOL(Debug::Options::PRETTY_PRINT_DB),DBUGBOOL(Debug::Options::DISABLE_DB_CHECKSUM))){
+        StaticThreadLogger::error("Loader::Loader","Could not set local db file: " + comm->db()->getError());
         loadingError = true;
         return;
     }
 
 
     changeLanguage();
-    //qDebug() << "LOADER CONSTRUCTOR. Teh explanation language is " << configuration->getString(Globals::VMPreferences::EXPLANATION_LANGUAGE);
+    //qDebug() << "LOADER CONSTRUCTOR. Teh explanation language is " << comm->configuration()->getString(Globals::VMPreferences::EXPLANATION_LANGUAGE);
     setExplanationLanguage();
 
     // We now load the number of Slides that each explanation contains. This is independant of language, but we do need the language file loaded.
@@ -72,29 +72,32 @@ Loader::Loader(QObject *parent, ConfigurationManager *c) : QObject(parent)
         }
     }
 
-    if (!localDB.processingParametersPresent()){
+    if (!comm->db()->processingParametersPresent()){
         StaticThreadLogger::warning("Loader::Loader","Processing parameters are not present in local database. Will not be able to do any studies");
     }
 
     // Setting the current version and check if it changed. If it did this is a first time run.
-    firstTimeRun = localDB.setApplicationVersion(Globals::Share::EXPERIMENTER_VERSION_NUMBER);
+    firstTimeRun = comm->db()->setApplicationVersion(Globals::Share::EXPERIMENTER_VERSION_NUMBER);
 
     // Configuring the API Client.
-    apiclient.configure(configuration->getString(Globals::VMConfig::INSTITUTION_ID),
-                        configuration->getString(Globals::VMConfig::INSTANCE_NUMBER),
+    apiclient.configure(comm->configuration()->getString(Globals::VMConfig::INSTITUTION_ID),
+                        comm->configuration()->getString(Globals::VMConfig::INSTANCE_NUMBER),
                         Globals::Share::EXPERIMENTER_VERSION_NUMBER,
                         Globals::REGION, // Region here referst to LOCAL or DEV. During production is always APP or Global.
-                        configuration->getString(Globals::VMConfig::INSTANCE_KEY),
-                        configuration->getString(Globals::VMConfig::INSTANCE_HASH_KEY));
+                        comm->configuration()->getString(Globals::VMConfig::INSTANCE_KEY),
+                        comm->configuration()->getString(Globals::VMConfig::INSTANCE_HASH_KEY));
 
 
-    if (!localDB.isVersionUpToDate()){
-        localDB.replaceMedicKeys();
+    if (!comm->db()->isVersionUpToDate()){
+        comm->db()->replaceMedicKeys();
     }
 
+    // Running the hardware recorgnitions.
+    comm->hw()->runRecognition();
+
     // Getting the HW Data, and printing out for debugging.
-    StaticThreadLogger::log("Loader::Loader", "ViewMind Atlas Instance:  " + configuration->getString(Globals::VMConfig::INSTITUTION_ID) + "." + configuration->getString(Globals::VMConfig::INSTANCE_NUMBER));
-    StaticThreadLogger::log("Loader::Loader","HW SPECS\n" + hwRecognizer.toString(true));
+    StaticThreadLogger::log("Loader::Loader", "ViewMind Atlas Instance:  " + comm->configuration()->getString(Globals::VMConfig::INSTITUTION_ID) + "." + comm->configuration()->getString(Globals::VMConfig::INSTANCE_NUMBER));
+    StaticThreadLogger::log("Loader::Loader","HW SPECS\n" + comm->hw()->toString(true));
 
 }
 
@@ -104,16 +107,16 @@ bool Loader::isVMConfigPresent() const {
 }
 
 bool Loader::instanceDisabled() const {
-    return !this->localDB.isInstanceEnabled();
+    return !this->comm->db()->isInstanceEnabled();
 }
 
 qint32 Loader::checkHMDChangeStatus() const {
 
-    QString expected_hmd_change = this->localDB.getHMDChangeSN();
+    QString expected_hmd_change = this->comm->db()->getHMDChangeSN();
     if (expected_hmd_change == "") return 0; // No change of HMD
 
     // Otherwise we compare the expected with the current.
-    QString connected_hmd_sn = this->hwRecognizer.getHardwareSpecs().value(HWKeys::HMD_SN);
+    QString connected_hmd_sn = this->comm->hw()->getHardwareSpecs().value(HWKeys::HMD_SN);
     if (connected_hmd_sn != expected_hmd_change){
         StaticThreadLogger::error("Loader::requireHMDChange","The HMD Change flag has been set. However the expected SN for HMD is: '" + expected_hmd_change + "', while the current HMD is: '" + connected_hmd_sn + "'");
         return 1;
@@ -128,8 +131,8 @@ qint32 Loader::getLastHTTPCodeReceived() const {
     return this->lastHTTPCodeReceived;
 }
 
-QVariantList Loader::getHiddenStudies() const {
-    return this->localDB.getHiddenStudiesList();
+QVariantMap Loader::getTaskCodeToNameMap()  const {
+    return this->taskCodeToNameMap;
 }
 
 QVariantMap Loader::getInstIDFileInfo() const {
@@ -144,36 +147,45 @@ QVariantMap Loader::getInstIDFileInfo() const {
 }
 
 QVariantMap Loader::getHWInfo() const {
-    return this->hwRecognizer.getHardwareSpecsAsVariantMap();
+    return this->comm->hw()->getHardwareSpecsAsVariantMap();
 }
 
 QString Loader::getInstanceUID() const {
-    return configuration->getString(Globals::VMConfig::INSTITUTION_ID) + "." + configuration->getString(Globals::VMConfig::INSTANCE_NUMBER);
+    return comm->configuration()->getString(Globals::VMConfig::INSTITUTION_ID) + "." + comm->configuration()->getString(Globals::VMConfig::INSTANCE_NUMBER);
 }
 
 QVariantList Loader::findPossibleDupes(QString name, QString lname, QString personalID, QString birthDate){
-    return localDB.possibleNewPatientMatches(name,lname,personalID,birthDate,getStringListForKey("viewpatlist_months"));
+    return comm->db()->possibleNewPatientMatches(name,lname,personalID,birthDate,getStringListForKey("viewpatlist_months"));
 }
 
-void Loader::storeNewStudySequence(const QString &name, const QVariantList &sequence){
-    if (!localDB.storeStudySequence(name,sequence)){
-        StaticThreadLogger::error("Loader::storeNewStudySequence","Failed to write db file to disk on storing new study sequence");
+
+QVariantList Loader::getAvailableEvaluations(){
+
+    QVariantMap evals = comm->db()->getAvailableEvals();
+    QString ui_lang = comm->db()->getPreference(LocalDB::PREF_UI_LANG,Globals::UILanguage::EN).toString();
+
+    QString lang_code = "en";
+    if (ui_lang == Globals::UILanguage::ES){
+        lang_code = "es";
     }
 
-    // Whenever we store a sequence, that sequence becomes the last selected sequence.
-    if (!localDB.setLastSelectedSequence(name)){
-        StaticThreadLogger::error("Loader::storeNewStudySequence","Failed to write db file to disk on storing last selected sequence");
+    QStringList evaluationCodes = evals.keys();
+
+    QVariantList retList;
+
+    for (qint32 i = 0; i < evaluationCodes.size(); i++){
+        QString code = evaluationCodes.at(i);
+        QVariantMap eval = evals.value(code).toMap();
+        QVariantMap retObj;
+        retObj["name"]  = eval.value(Globals::EvalStruct::NAME).toMap().value(lang_code).toString();
+        retObj["id"]    = code;
+        retObj["tasks"] = eval.value(Globals::EvalStruct::LIST).toStringList();
+
+        retList << retObj;
     }
 
-}
+    return retList;
 
-QVariantList Loader::getStudySequence(const QString &name){
-    QVariantList list = localDB.getStudySequence(name);
-    // Whenever a study sequece is selected that is a new study sequence. If it's the empty sequence then that is what it is.
-    if (!localDB.setLastSelectedSequence(name)){
-        StaticThreadLogger::error("Loader::getStudySequence","Failed to write db file to disk on storing last selected sequence");
-    }
-    return list;
 }
 
 void Loader::logUIMessage(const QString &message, bool isError){
@@ -185,32 +197,10 @@ void Loader::logUIMessage(const QString &message, bool isError){
     }
 }
 
-void Loader::setCurrentStudySequence(const QString &name){
-    if (!localDB.setLastSelectedSequence(name)){
-        StaticThreadLogger::error("Loader::setCurrentStudySequence","Failed to write db file to disk on storing last selected sequence");
-    }
-}
-
-QVariantMap Loader::getStudySequenceListAndCurrentlySelected() const{
-
-    QString seqname = localDB.getLastSelectedSequence();
-    QStringList list = localDB.getStudySequenceList();
-    QVariantMap map;
-    map["current"] = seqname;
-    map["list"] = list;
-    return map;
-
-}
-
-void Loader::deleteStudySequence(const QString &name){
-    if (!localDB.deleteStudySequence(name)){
-        StaticThreadLogger::error("Loader::deleteStudySequence","Failed to write db file to disk on deleting sequence");
-    }
-}
 
 void Loader::changeGetVMConfigScreenLanguage(const QString &var){
     // The language selection is stored in the preferences file.
-    localDB.setPreference(LocalDB::PREF_UI_LANG,var);
+    comm->db()->setPreference(LocalDB::PREF_UI_LANG,var);
     // And then it's loaded.
     changeLanguage();
 }
@@ -259,7 +249,7 @@ QStringList Loader::getStringListForKey(const QString &key, bool fromLangFile){
 
 void Loader::setExplanationLanguage(){
 
-    QString lang_code = localDB.getPreference(LocalDB::PREF_EXP_LANG,"en").toString();
+    QString lang_code = comm->db()->getPreference(LocalDB::PREF_EXP_LANG,"en").toString();
 
     //qDebug() << "Switching language explanations to " << lang_code;
 
@@ -279,7 +269,7 @@ void Loader::setExplanationLanguage(){
 
 QVariantMap Loader::getExplanationLangMap() {
     QVariantMap map =  Globals::ExplanationLanguage::GetNameCodeMap();
-    map["--"] = localDB.getPreference(LocalDB::PREF_EXP_LANG,"en").toString();
+    map["--"] = comm->db()->getPreference(LocalDB::PREF_EXP_LANG,"en").toString();
     return map;
 }
 
@@ -330,13 +320,13 @@ QString Loader::getVersionNumber() const {
 }
 
 QString Loader::getInstitutionName() const {
-    return configuration->getString(Globals::VMConfig::INSTITUTION_NAME);
+    return comm->configuration()->getString(Globals::VMConfig::INSTITUTION_NAME);
 }
 
 
 void Loader::openUserManual(){
 
-    QString lang = localDB.getPreference(LocalDB::PREF_UI_LANG,"English").toString();
+    QString lang = comm->db()->getPreference(LocalDB::PREF_UI_LANG,"English").toString();
     QString path = "";
     if (lang == Globals::UILanguage::ES){
         path = Globals::Paths::MANUAL_DIR + "/es.pdf";
@@ -358,7 +348,7 @@ void Loader::openUserManual(){
 }
 
 bool Loader::processingParametersArePresent() const {
-    return localDB.processingParametersPresent();
+    return comm->db()->processingParametersPresent();
 }
 
 void Loader::openURLInBrowser(const QString &url){
@@ -372,11 +362,11 @@ QString Loader::getNewUpdateVersionAvailable() const{
 }
 
 qint32 Loader::getRemainingUpdateDenials() const{
-    return localDB.getRemainingUpdateDelays();
+    return comm->db()->getRemainingUpdateDelays();
 }
 
 void Loader::updateDenied(){
-    localDB.deniedUpdate();
+    comm->db()->deniedUpdate();
 }
 
 void Loader::startUpdate(){
@@ -394,9 +384,9 @@ bool Loader::isFirstTimeRun() const{
 QStringList Loader::getLatestVersionChanges(){
     QString name = Globals::Paths::CHANGELOG_LOCATION + "/" + Globals::Paths::CHANGELOG_BASE;
 
-    QString changeLogLangName = "English";
-    if (localDB.getPreference(LocalDB::PREF_UI_LANG,"en").toString() == Globals::VMUILanguages::ES){
-        changeLogLangName = "Spanish";
+    QString changeLogLangName = Globals::UILanguage::EN;
+    if (comm->db()->getPreference(LocalDB::PREF_UI_LANG,Globals::UILanguage::EN).toString() == Globals::UILanguage::ES){
+        changeLogLangName = Globals::UILanguage::ES;
     }
 
     name = name  + changeLogLangName + ".txt";
@@ -433,7 +423,7 @@ QStringList Loader::getLatestVersionChanges(){
 ////////////////////////////////////////////////////////  CONFIGURATION FUNCTIONS  ////////////////////////////////////////////////////////
 
 QString Loader::getSettingsString(const QString &key, const QString &defvalue){
-    return localDB.getPreference(key,defvalue).toString();
+    return comm->db()->getPreference(key,defvalue).toString();
 }
 
 QVariant Loader::getDebugOption(const QString &debugOption){
@@ -445,286 +435,74 @@ QVariant Loader::getDebugOption(const QString &debugOption){
 }
 
 void Loader::setSettingsValue(const QString &key, const QVariant &var){
-    if (!localDB.setPreference(key,var)){
-        StaticThreadLogger::error("Loader::setSettingsValue","Failed to store local DB file. Reason: " + localDB.getError());
+    if (!comm->db()->setPreference(key,var)){
+        StaticThreadLogger::error("Loader::setSettingsValue","Failed to store local DB file. Reason: " + comm->db()->getError());
     }
 }
 
 //////////////////////////////////////////////////////// FILE MANAGEMENT FUNCTIONS ////////////////////////////////////////////////////////
 
-bool Loader::createSubjectStudyFile(const QVariantMap &studyconfig, const QString &medic, const QString &protocol){
-
-    if (!studyconfig.contains(Globals::StudyConfiguration::UNIQUE_STUDY_ID)){
-        StaticThreadLogger::error("Loader::createSubjectStudyFile","While creating a subject study file, Study Configuration Map does not contain " + Globals::StudyConfiguration::UNIQUE_STUDY_ID + " field. Cannot determine study");
-        StaticThreadLogger::error("Loader::createSubjectStudyFile",Debug::QVariantMapToString(studyconfig));
-        return false;
-    }
-
-    // The first part of the name is base on the study type.
-    qint32 selectedStudy = studyconfig.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toInt();
-
-    QString filename = "";
-    bool new_file = true;
-
-    switch(selectedStudy){
-    case Globals::StudyConfiguration::INDEX_BINDING_UC:
-        filename = Globals::BaseFileNames::BINDING_UC;
-
-//        if (studyconfig.contains(Globals::StudyConfiguration::ONGOING_STUDY_FILE)){
-//            filename = studyconfig.value(Globals::StudyConfiguration::ONGOING_STUDY_FILE).toString();
-//            StaticThreadLogger::log("Loader::createSubjectStudyFile","Ongoing study file '" + filename + "'");
-//            new_file = false;
-//        }
-
-        break;
-    case Globals::StudyConfiguration::INDEX_BINDING_BC:
-        filename = Globals::BaseFileNames::BINDING_BC;
-
-//        // If there is an ongoing binding Study, then we can remove this
-//        if (studyconfig.contains(Globals::StudyConfiguration::ONGOING_STUDY_FILE)){
-//            filename = studyconfig.value(Globals::StudyConfiguration::ONGOING_STUDY_FILE).toString();
-//            StaticThreadLogger::log("Loader::createSubjectStudyFile","Ongoing study file '" + filename + "'");
-//            new_file = false;
-//        }
-
-        break;
-    case Globals::StudyConfiguration::INDEX_GONOGO:
-        filename = Globals::BaseFileNames::GONOGO;
-        break;
-    case Globals::StudyConfiguration::INDEX_NBACKRT:
-        filename = Globals::BaseFileNames::NBACKRT;
-        break;
-    case Globals::StudyConfiguration::INDEX_NBACK:
-        filename = Globals::BaseFileNames::NBACK;
-        break;
-    case Globals::StudyConfiguration::INDEX_NBACKVS:
-        filename = Globals::BaseFileNames::NBACKVS;
-        break;
-    case Globals::StudyConfiguration::INDEX_READING:
-        filename = Globals::BaseFileNames::READING;
-        break;
-    case Globals::StudyConfiguration::INDEX_GNG_SPHERE:
-        filename = Globals::BaseFileNames::GONOGO_3D;
-        break;
-    case Globals::StudyConfiguration::INDEX_PASSBALL:
-        filename = Globals::BaseFileNames::PASSBALL;
-        break;
-    case Globals::StudyConfiguration::INDEX_DOT_FOLLOW:
-        filename = Globals::BaseFileNames::DOT_FOLLOW;
-        break;
-    default:
-        StaticThreadLogger::error("Loader::createSubjectStudyFile","Trying to create study file for an unknown study: " + QString::number(selectedStudy));
-        break;
-    }
-
-
-    QString date = QDateTime::currentDateTime().toString("yyyy-MM-dd");
-    QString hour = QDateTime::currentDateTime().toString("HH:mm:ss");
-
-    if (new_file){
-        // Adding the full path.
-        filename = Globals::Paths::WORK_DIRECTORY + "/" + configuration->getString(Globals::Share::PATIENT_UID) + "/" + filename;
-
-        // Second part of the actuall file name is the time stamp.
-        filename = filename + "_" + QDateTime::currentDateTime().toString("yyyy_MM_dd_HH_mm") + ".json";
-    }
-
-    if (DBUGBOOL(Debug::Options::DBUG_MSG)){
-        StaticThreadLogger::log("Loader::createSubjectStudyFile","DBUG: Using file for study at '" + filename + "'");
-    }
-
-    if (!new_file){
-        // There is nothing more to do. We just return as everything is already set up
-        configuration->addKeyValuePair(Globals::Share::PATIENT_STUDY_FILE,filename); // This is probably redudntant
-        return true;
-    }
-
-    // Creating the metadata.
-    QVariantMap metadata;
-    metadata.insert(VMDC::MetadataField::DATE,date);
-    metadata.insert(VMDC::MetadataField::HOUR,hour);
-    metadata.insert(VMDC::MetadataField::INSTITUTION_ID,configuration->getString(Globals::VMConfig::INSTITUTION_ID));
-    metadata.insert(VMDC::MetadataField::INSTITUTION_INSTANCE,configuration->getString(Globals::VMConfig::INSTANCE_NUMBER));
-    metadata.insert(VMDC::MetadataField::INSTITUTION_NAME,configuration->getString(Globals::VMConfig::INSTITUTION_NAME));
-    metadata.insert(VMDC::MetadataField::PROC_PARAMETER_KEY,apiclient.getEyeTrackerKey());
-    metadata.insert(VMDC::MetadataField::STATUS,VMDC::StatusType::ONGOING);
-    metadata.insert(VMDC::MetadataField::PROTOCOL,protocol);
-    metadata.insert(VMDC::MetadataField::DISCARD_REASON,"");
-    metadata.insert(VMDC::MetadataField::COMMENTS,"");
-    metadata.insert(VMDC::MetadataField::APP_VERSION,this->getVersionNumber());
-
-    // Creating the subject data
-    QVariantMap subject_data;
-    subject_data.insert(VMDC::SubjectField::BIRTH_COUNTRY,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHCOUNTRY));
-    subject_data.insert(VMDC::SubjectField::BIRTH_DATE,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHDATE));
-    subject_data.insert(VMDC::SubjectField::GENDER,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_GENDER));
-    subject_data.insert(VMDC::SubjectField::INSTITUTION_PROVIDED_ID,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_INSTITUTION_ID));
-    subject_data.insert(VMDC::SubjectField::LASTNAME,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_LASTNAME));
-    subject_data.insert(VMDC::SubjectField::LOCAL_ID,configuration->getString(Globals::Share::PATIENT_UID));
-    subject_data.insert(VMDC::SubjectField::NAME,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_NAME));
-    subject_data.insert(VMDC::SubjectField::YEARS_FORMATION,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_YEARS_FORMATION));
-    subject_data.insert(VMDC::SubjectField::EMAIL,localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_EMAIL));
-
-    // Setting the evaluator info. We do it here becuase it is required for the data file comparisons.
-    QVariantMap evaluator;
-    //qDebug() << "Creating study file for evaluator" << configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR);
-    QVariantMap evaluator_local_data = localDB.getEvaluatorData(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
-    //Debug::prettpPrintQVariantMap(evaluator_local_data);
-    evaluator.insert(VMDC::AppUserField::EMAIL,evaluator_local_data.value(LocalDB::APPUSER_EMAIL));
-    evaluator.insert(VMDC::AppUserField::NAME,evaluator_local_data.value(LocalDB::APPUSER_NAME));
-    evaluator.insert(VMDC::AppUserField::LASTNAME,evaluator_local_data.value(LocalDB::APPUSER_LASTNAME));
-    evaluator.insert(VMDC::AppUserField::LOCAL_ID,"");
-    evaluator.insert(VMDC::AppUserField::VIEWMIND_ID,"");
-
-    // Setting the selected doctor info.
-    QVariantMap medic_to_store;
-    QVariantMap medic_local_data = localDB.getMedicData(medic);
-    if (medic_local_data.empty()){
-        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed to retrieve medic local data: " + medic);
-        return false;
-    }
-    medic_to_store.insert(VMDC::AppUserField::EMAIL,medic_local_data.value(LocalDB::APPUSER_EMAIL));
-    medic_to_store.insert(VMDC::AppUserField::NAME,medic_local_data.value(LocalDB::APPUSER_NAME));
-    medic_to_store.insert(VMDC::AppUserField::LASTNAME,medic_local_data.value(LocalDB::APPUSER_LASTNAME));
-    medic_to_store.insert(VMDC::AppUserField::LOCAL_ID,"");
-    medic_to_store.insert(VMDC::AppUserField::VIEWMIND_ID,medic_local_data.value(LocalDB::APPUSER_VIEWMIND_ID));
-
-    // Need to insert them as in in the file.
-    QVariantMap pp = localDB.getProcessingParameters();
-
-    // Check if we need to add the hand calibration data.
-    if (configuration->containsKeyword(Globals::Share::HAND_CALIB_RES)){
-        pp.insert(VMDC::ProcessingParameter::HAND_CALIB_RESULTS,configuration->getVariant(Globals::Share::HAND_CALIB_RES));
-    }
-
-    // Computing the actual maximum dispersion to use.
-    qreal reference_for_md = qMax(pp.value(VMDC::ProcessingParameter::RESOLUTION_WIDTH).toReal(),pp.value(VMDC::ProcessingParameter::RESOLUTION_HEIGHT).toReal());
-    qreal md_percent = pp.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
-    qint32 md_px = qRound(md_percent*reference_for_md/100.0);
-    //qDebug() << "Setting the MD from" << reference_for_md << md_percent << " to " << md_px;
-    pp.insert(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW_PX,md_px);
-
-    // Computing the effective minimum fixation size to use.
-    qreal sample_frequency = pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
-    qreal sample_period = 1/sample_frequency;
-    qreal minimum_fixation_length = qRound(sample_period*1000*MINIMUM_NUMBER_OF_DATAPOINTS_IN_FIXATION);
-    pp.insert(VMDC::ProcessingParameter::MIN_FIXATION_DURATION,minimum_fixation_length);
-    if (DBUGBOOL(Debug::Options::DBUG_MSG)){
-        QString dbug = "DBUG: Effective Minimum Fixation Computed At " + QString::number(minimum_fixation_length);
-        qDebug() << dbug;
-        StaticThreadLogger::warning("Loader::createSubjectStudyFile",dbug);
-    }
-    // These values will be properly set with the end study data.
-    pp[VMDC::ProcessingParameter::RESOLUTION_HEIGHT] = 0;
-    pp[VMDC::ProcessingParameter::RESOLUTION_WIDTH]  = 0;
-
-    // Setting the QC Parameters that will be used.
-    QVariantMap qc = localDB.getQCParameters();
-
-    // We store this information the raw data container and leave it ready for the study to start.
-    ViewMindDataContainer rdc;
-
-    rdc.setQCParameters(qc);
-
-    if (!rdc.setSubjectData(subject_data)){
-        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed setting subject data to new study. Reason: " + rdc.getError());
-        return false;
-    }
-    if (!rdc.setMetadata(metadata)){
-        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed setting study metadata to new study. Reason: " + rdc.getError());
-        return false;
-    }
-
-    if (!rdc.setApplicationUserData(VMDC::AppUserType::EVALUATOR,evaluator)){
-        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed to store evaluator data: " + rdc.getError());
-        return false;
-    }
-
-    if (!rdc.setApplicationUserData(VMDC::AppUserType::MEDIC,medic_to_store)){
-        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed to store medic data: " + rdc.getError());
-        return false;
-    }
-
-    if (!rdc.setProcessingParameters(pp)){
-        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed to store processing parameters: " + rdc.getError());
-        return false;
-    }
-
-    // We add the system specifications to the file.
-    rdc.setSystemSpecs(hwRecognizer.getHardwareSpecsAsVariantMap());
-
-    if (!rdc.saveJSONFile(filename)){
-        StaticThreadLogger::error("Loader::createSubjectStudyFile","Failed on creating new study file: " + filename + ". Reason: " + rdc.getError());
-        return false;
-    }
-
-    // Finally we set this as the current work file
-    configuration->addKeyValuePair(Globals::Share::PATIENT_STUDY_FILE,filename);
-
-    return true;
-
-}
 
 QString Loader::getCurrentSubjectStudyFile() const {
-    return configuration->getString(Globals::Share::PATIENT_STUDY_FILE);
+    return comm->configuration()->getString(Globals::Share::PATIENT_STUDY_FILE);
 }
 
 ////////////////////////////////////////////////////////////////// EVALUATOR FUNCTIONS //////////////////////////////////////////////////////////////////
 void Loader::logOut(){
-    configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,"");
+    comm->configuration()->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,"");
 }
 
 bool Loader::isLoggedIn(){
-    if (!configuration->containsKeyword(Globals::Share::CURRENTLY_LOGGED_EVALUATOR)) return false;
-    return (configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR) != "");
+    if (!comm->configuration()->containsKeyword(Globals::Share::CURRENTLY_LOGGED_EVALUATOR)) return false;
+    return (comm->configuration()->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR) != "");
 }
 
 bool Loader::checkIfEvaluatorEmailExists(const QString &username) const{
-    return localDB.checkEvaluatorExists(username);
+    return comm->db()->checkEvaluatorExists(username);
 }
 
 void Loader::addOrModifyEvaluator(const QString &email, const QString &oldemail ,const QString &password, const QString &name, const QString &lastname){
 
     // If it doesn't exist it will get an empty map. We check it with the current email as it is the the one that will change.
-    QVariantMap map = localDB.getEvaluatorData(oldemail);
+    QVariantMap map = comm->db()->getEvaluatorData(oldemail);
 
     map[LocalDB::APPUSER_LASTNAME] = lastname;
     map[LocalDB::APPUSER_NAME]     = name;
 
     // We store the data.
-    if (!localDB.addOrModifyEvaluator(email,oldemail,map)){
-        StaticThreadLogger::error("Loader::addOrModifyEvaluator","While adding evaluator " + email + " with data " + name + " " + lastname + " (" + email + "): " + localDB.getError() );
+    if (!comm->db()->addOrModifyEvaluator(email,oldemail,map)){
+        StaticThreadLogger::error("Loader::addOrModifyEvaluator","While adding evaluator " + email + " with data " + name + " " + lastname + " (" + email + "): " + comm->db()->getError() );
         return;
     }
 
     if (password != ""){
         // Password is only updated when it's not empty. It's the responsiblity of the calling code to ensure a non empty password on creation.
         // qDebug() << "Setting password for " << email << " as " << password;
-        localDB.setPasswordForEvaluator(email,password);
+        comm->db()->setPasswordForEvaluator(email,password);
     }
 
 
 }
 
 bool Loader::evaluatorLogIn(const QString &username, const QString &password){
-    if ( localDB.passwordCheck(username,password) ){
-        configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,username);
+    if ( comm->db()->passwordCheck(username,password) ){
+        comm->configuration()->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,username);
         return true;
     }
     return false;
 }
 
 void Loader::updateCurrentEvaluator(const QString &username){
-    configuration->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,username);
-    //Debug::prettpPrintQVariantMap(localDB.getEvaluatorData(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR)));
+    comm->configuration()->addKeyValuePair(Globals::Share::CURRENTLY_LOGGED_EVALUATOR,username);
+    //Debug::prettpPrintQVariantMap(comm->db()->getEvaluatorData(comm->configuration()->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR)));
 }
 
 QVariantMap Loader::getCurrentEvaluatorInfo() const{
-    return localDB.getEvaluatorData(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
+    return comm->db()->getEvaluatorData(comm->configuration()->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
 }
 
 QStringList Loader::getLoginEmails(bool with_name) const {
-    return localDB.getUsernameEmails(with_name);
+    return comm->db()->getUsernameEmails(with_name);
 }
 
 ////////////////////////////////////////////////////////////////// SUBJECT FUNCTIONS //////////////////////////////////////////////////////////////////
@@ -737,7 +515,7 @@ QString Loader::addOrModifySubject(QString suid, const QString &name, const QStr
 
     if (suid == ""){
         // We need to generate a new internal id.
-        suid = configuration->getString(Globals::VMConfig::INSTITUTION_ID) + "_" + configuration->getString(Globals::VMConfig::INSTANCE_NUMBER) + "_"
+        suid = comm->configuration()->getString(Globals::VMConfig::INSTITUTION_ID) + "_" + comm->configuration()->getString(Globals::VMConfig::INSTANCE_NUMBER) + "_"
                 + QDateTime::currentDateTime().toString("yyyyMMddHHmmsszzz");
         //qDebug() << "Computed new suid" << suid;
     }
@@ -755,27 +533,28 @@ QString Loader::addOrModifySubject(QString suid, const QString &name, const QStr
     //map[LocalDB::SUBJECT_ASSIGNED_MEDIC] = selectedMedic;
 
     // Adding the data to the local database.
-    if (!localDB.addOrModifySubject(suid,map)){
-        StaticThreadLogger::error("Loader::addOrModifySubject","While adding subject " + suid + " with data " + name + " " + lastname + " (" + institution_id + "): " + localDB.getError() );
+    if (!comm->db()->addOrModifySubject(suid,map)){
+        StaticThreadLogger::error("Loader::addOrModifySubject","While adding subject " + suid + " with data " + name + " " + lastname + " (" + institution_id + "): " + comm->db()->getError() );
         return "";
     }
     return suid;
 }
 
-void Loader::modifySubjectSelectedMedic(const QString &suid, const QString &selectedMedic){
-    if (!localDB.modifyAssignedMedicToSubject(suid,selectedMedic)){
-        StaticThreadLogger::error("Loader::modifySubjectSelectedMedic","While modifiying subject " + suid + " by setting meddig " + selectedMedic + ": " + localDB.getError() );
+void Loader::modifySubjectSelectedMedic(const QString &selectedMedic){
+    QString suid = comm->configuration()->getString(Globals::Share::PATIENT_UID);
+    if (!comm->db()->modifyAssignedMedicToSubject(suid,selectedMedic)){
+        StaticThreadLogger::error("Loader::modifySubjectSelectedMedic","While modifiying subject " + suid + " by setting meddig " + selectedMedic + ": " + comm->db()->getError() );
     }
 }
 
 QVariantMap Loader::filterSubjectList(const QString &filter){
-    return  localDB.getDisplaySubjectList(filter,getStringListForKey("viewpatlist_months"));
+    return  comm->db()->getDisplaySubjectList(filter,getStringListForKey("viewpatlist_months"));
 }
 
 bool Loader::setSelectedSubject(const QString &suid){
 
     // Set the id of the currently selected patient.
-    configuration->addKeyValuePair(Globals::Share::PATIENT_UID,suid);
+    comm->configuration()->addKeyValuePair(Globals::Share::PATIENT_UID,suid);
 
     // Creating the patient id
     QString patdirPath = QString(Globals::Paths::WORK_DIRECTORY) + "/" + suid;
@@ -789,152 +568,144 @@ bool Loader::setSelectedSubject(const QString &suid){
         return false;
     }
 
-    configuration->addKeyValuePair(Globals::Share::PATIENT_DIRECTORY,patdirPath);
+    comm->configuration()->addKeyValuePair(Globals::Share::PATIENT_DIRECTORY,patdirPath);
     return true;
 
 }
 
-void Loader::setStudyMarkerFor(const QString &study, const QString &value){
-    if (!localDB.addStudyMarkerForSubject(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR),study,value)){
-        StaticThreadLogger::error("Loader::setStudyMarkerFor","Failed in setting study marker: " + localDB.getError());
-    }
-}
-
-QString Loader::getStudyMarkerFor(const QString &study){
-    return localDB.getMarkerForStudy(configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR),study).toString();
-}
-
 QVariantMap Loader::getCurrentSubjectInfo(){
-    return localDB.getSubjectData(configuration->getString(Globals::Share::PATIENT_UID));
+    return comm->db()->getSubjectData(comm->configuration()->getString(Globals::Share::PATIENT_UID));
 }
 
 void Loader::clearSubjectSelection(){
-    configuration->addKeyValuePair(Globals::Share::PATIENT_UID,"");
+    comm->configuration()->addKeyValuePair(Globals::Share::PATIENT_UID,"");
 }
 
 QString Loader::getCurrentlySelectedAssignedDoctor() const {
-    return localDB.getSubjectFieldValue(configuration->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_ASSIGNED_MEDIC);
+    return comm->db()->getSubjectFieldValue(comm->configuration()->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_ASSIGNED_MEDIC);
 }
 
 bool Loader::areThereAnySubjects() const {
-    return localDB.getSubjectCount() > 0;
+    return comm->db()->getSubjectCount() > 0;
 }
 
 
 ////////////////////////// MEDIC RELATED FUNCTIONS ////////////////////////////
 QVariantMap Loader::getMedicList() const {
-    return localDB.getMedicDisplayList();
+    return comm->db()->getMedicDisplayList();
 }
 
 ////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
 QVariantMap Loader::getReportsForLoggedEvaluator(){
 
-    QStringList directory_list = QDir(Globals::Paths::WORK_DIRECTORY).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot,QDir::Name);
-    QString current_evaluator = configuration->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR);
+    return QVariantMap();
 
-    // We need the name map in order to display proper, language senstitive names.
-    QStringList name_map_as_list = getStringListForKey("viewQC_StudyNameMap");
-    QMap<QString,QString> name_map;
-    for (qint32 i = 0; i < name_map_as_list.size(); i++){
-        // Name map is list where all names are listed at key,Name,key,Name ... So all even indexes are key for the next odd index.
-        if ((i % 2) == 1){
-            name_map[name_map_as_list.at(i-1)] = name_map_as_list.at(i);
-        }
-    }
+//    QStringList directory_list = QDir(Globals::Paths::WORK_DIRECTORY).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot,QDir::Name);
+//    QString current_evaluator = comm->configuration()->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR);
 
-    QList<QVariantMap> studiesToAnalyze;
+//    // We need the name map in order to display proper, language senstitive names.
+//    QStringList name_map_as_list = getStringListForKey("viewQC_StudyNameMap");
+//    QMap<QString,QString> name_map;
+//    for (qint32 i = 0; i < name_map_as_list.size(); i++){
+//        // Name map is list where all names are listed at key,Name,key,Name ... So all even indexes are key for the next odd index.
+//        if ((i % 2) == 1){
+//            name_map[name_map_as_list.at(i-1)] = name_map_as_list.at(i);
+//        }
+//    }
 
-    QStringList filters;
-    filters << "*.qci";
+//    QList<QVariantMap> studiesToAnalyze;
 
-    // We need to get the map from subject id to name.
+//    QStringList filters;
+//    filters << "*.qci";
 
-    for (qint32 i = 0; i < directory_list.size(); i++){
+//    // We need to get the map from subject id to name.
 
-        //sdc.setup(Globals::Paths::WORK_DIRECTORY + "/" + directory_list.at(i),current_evaluator);
+//    for (qint32 i = 0; i < directory_list.size(); i++){
 
-        QString subject_id = directory_list.at(i);
-        QString subject_dir_path = Globals::Paths::WORK_DIRECTORY + "/" + subject_id;
+//        //sdc.setup(Globals::Paths::WORK_DIRECTORY + "/" + directory_list.at(i),current_evaluator);
 
-        // We need to get the subject data in order to get it's name.
-        QVariantMap subject_data = localDB.getSubjectData(subject_id);
+//        QString subject_id = directory_list.at(i);
+//        QString subject_dir_path = Globals::Paths::WORK_DIRECTORY + "/" + subject_id;
 
-        QString fname = subject_data.value(LocalDB::SUBJECT_NAME).toString();
-        QString lname = subject_data.value(LocalDB::SUBJECT_LASTNAME).toString();
-        QString subject_name = "";
-        if ((fname != "") || (lname != "")){
-            subject_name = fname + " " + lname;
-        }
+//        // We need to get the subject data in order to get it's name.
+//        QVariantMap subject_data = comm->db()->getSubjectData(subject_id);
 
-        QString subject_inst_id = subject_data.value(LocalDB::SUBJECT_INSTITUTION_ID).toString();
+//        QString fname = subject_data.value(LocalDB::SUBJECT_NAME).toString();
+//        QString lname = subject_data.value(LocalDB::SUBJECT_LASTNAME).toString();
+//        QString subject_name = "";
+//        if ((fname != "") || (lname != "")){
+//            subject_name = fname + " " + lname;
+//        }
 
-        // We now scan all qci files in the subject dir.
-        QDir subject_dir(subject_dir_path);
+//        QString subject_inst_id = subject_data.value(LocalDB::SUBJECT_INSTITUTION_ID).toString();
 
-        QStringList qcifiles = subject_dir.entryList(filters,QDir::Files);
-        QString error; // Required for error reporting while loading QCI Files.
+//        // We now scan all qci files in the subject dir.
+//        QDir subject_dir(subject_dir_path);
 
-        for (qint32 j = 0; j < qcifiles.size(); j++){
-            error = "";
+//        QStringList qcifiles = subject_dir.entryList(filters,QDir::Files);
+//        QString error; // Required for error reporting while loading QCI Files.
 
-            QString full_path = subject_dir_path + "/" + qcifiles.at(j);
-            QString study_file = qcifiles.at(j);
-            study_file = study_file.replace(".qci",".zip");
-            study_file = subject_dir_path + "/" + study_file;
+//        for (qint32 j = 0; j < qcifiles.size(); j++){
+//            error = "";
 
-            QVariantMap map = Globals::LoadJSONFileToVariantMap(full_path,&error);
-            if (error != ""){
-                StaticThreadLogger::error("Loader::getReportsForLoggedEvaluator","Error loading QCI File: " + error);
-                continue;
-            }
+//            QString full_path = subject_dir_path + "/" + qcifiles.at(j);
+//            QString study_file = qcifiles.at(j);
+//            study_file = study_file.replace(".qci",".zip");
+//            study_file = subject_dir_path + "/" + study_file;
 
-            //qDebug() << "Checking File" << subject_dir_path + "/" + qcifiles.at(i) << "for current evaluator" << current_evaluator;
+//            QVariantMap map = Globals::LoadJSONFileToVariantMap(full_path,&error);
+//            if (error != ""){
+//                StaticThreadLogger::error("Loader::getReportsForLoggedEvaluator","Error loading QCI File: " + error);
+//                continue;
+//            }
 
-            // First we check that the evaluator matches.
-            if (map.value(Globals::QCIFields::EVALUATOR).toString() != current_evaluator) continue;
+//            //qDebug() << "Checking File" << subject_dir_path + "/" + qcifiles.at(i) << "for current evaluator" << current_evaluator;
 
-            // We translate the study name.
-            QString report_type = map.value(Globals::QCIFields::STUDY_TYPE).toString();
-            if (name_map.contains(report_type)){
-                map[Globals::QCIFields::STUDY_TYPE] = name_map.value(report_type);
-            }
+//            // First we check that the evaluator matches.
+//            if (map.value(Globals::QCIFields::EVALUATOR).toString() != current_evaluator) continue;
 
-            //Debug::prettpPrintQVariantMap(map);
+//            // We translate the study name.
+//            QString report_type = map.value(Globals::QCIFields::STUDY_TYPE).toString();
+//            if (name_map.contains(report_type)){
+//                map[Globals::QCIFields::STUDY_TYPE] = name_map.value(report_type);
+//            }
 
-            // Now we set the subject.
-            map[Globals::QCIFields::SUBJECT]            = subject_name;
+//            //Debug::prettpPrintQVariantMap(map);
 
-            // We need to check if the subject name is empty. If it is, we need to show something, so we show the ID. Either one or the other are not empty.
-            if (subject_name == ""){
-                map[Globals::QCIFields::SUBJECT]            = subject_inst_id;
-            }
+//            // Now we set the subject.
+//            map[Globals::QCIFields::SUBJECT]            = subject_name;
 
-            map[Globals::QCIFields::SUBJECT_INST_ID]    = subject_inst_id;
-            map[Globals::QCIFields::SUBJECT_VM_ID]      = subject_id;
+//            // We need to check if the subject name is empty. If it is, we need to show something, so we show the ID. Either one or the other are not empty.
+//            if (subject_name == ""){
+//                map[Globals::QCIFields::SUBJECT]            = subject_inst_id;
+//            }
 
-            // And we need to set the study file.
-            map[Globals::QCIFields::STUDY_FILE]         = study_file;
+//            map[Globals::QCIFields::SUBJECT_INST_ID]    = subject_inst_id;
+//            map[Globals::QCIFields::SUBJECT_VM_ID]      = subject_id;
 
-            studiesToAnalyze << map;
+//            // And we need to set the study file.
+//            map[Globals::QCIFields::STUDY_FILE]         = study_file;
 
-        }
+//            studiesToAnalyze << map;
 
-    }
+//        }
 
-    // Sort the generated list by the order code before returning it (chronologically).
+//    }
 
-    QVariantMap returnmap = Globals::SortMapListByStringValue(studiesToAnalyze,Globals::QCIFields::DATE_ORDERCODE);
+//    // Sort the generated list by the order code before returning it (chronologically).
 
-    //Debug::prettpPrintQVariantMap(returnmap);
+//    QVariantMap returnmap = Globals::SortMapListByStringValue(studiesToAnalyze,Globals::QCIFields::DATE_ORDERCODE);
 
-    return returnmap;
+//    //Debug::prettpPrintQVariantMap(returnmap);
+
+//    return returnmap;
 
 }
 
 
 void Loader::setCurrentStudyFileToSendOrDiscard(const QString &file){
-    configuration->addKeyValuePair(Globals::Share::SELECTED_STUDY,file);
-    //qc.setVMContainterFile(file,localDB.getQCParameters()); // This will start processing in a separate thread.
+    comm->configuration()->addKeyValuePair(Globals::Share::SELECTED_STUDY,file);
+    //qc.setVMContainterFile(file,comm->db()->getQCParameters()); // This will start processing in a separate thread.
 }
 
 ////////////////////////////////////////////////////////////////// API FUNCTIONS //////////////////////////////////////////////////////////////////
@@ -947,29 +718,20 @@ void Loader::requestOperatingInfo(){
     // We reset the startup sequence flag. In order to avoid unncessary processing we set the flag to one and disable the qcChecker at the start.
     startUpSequenceFlag = 1;
 
-    // Now we set the work directory for generate any missing QCI files.
-    // qcChecker.setFilesToProcessFromViewMindDataDirectory();
-
-    // We start the qcChecker in the background.
-    //qcChecker.start();
-
-    // And now we request the operating info
-    //qDebug() << "Requesting Operating Info";
-
-    bool sendLog = localDB.checkForLogUpload();
+    bool sendLog = comm->db()->checkForLogUpload();
 
     if (!sendLog){
         // We still, AT LEAST copy the RRS files.
-        QString inst_id = configuration->getString(Globals::VMConfig::INSTITUTION_ID);
-        QString inst_number = configuration->getString(Globals::VMConfig::INSTANCE_NUMBER);
+        QString inst_id = comm->configuration()->getString(Globals::VMConfig::INSTITUTION_ID);
+        QString inst_number = comm->configuration()->getString(Globals::VMConfig::INSTANCE_NUMBER);
         LogPrep lp(Globals::Paths::LOGFILE,inst_id,inst_number);
         lp.findAndCopyRRSLogs();
     }
 
     // We get the list of the subject updates.
-    QVariantMap updated_subject_info = localDB.getSubjectDataToUpdate();
+    QVariantMap updated_subject_info = comm->db()->getSubjectDataToUpdate();
 
-    if (!apiclient.requestOperatingInfo(hwRecognizer.toString(false),sendLog,updated_subject_info)){
+    if (!apiclient.requestOperatingInfo(comm->hw()->toString(false),sendLog,updated_subject_info)){
         StaticThreadLogger::error("Loader::requestOperatingInfo","Request operating info error: "  + apiclient.getError());
         emit Loader::finishedRequest();
     }
@@ -991,10 +753,10 @@ void Loader::sendSupportEmail(const QString &subject, const QString &body, const
     // Now we replace the placeholders with the actual values.
     QString issue_description = body;
     issue_description = issue_description.replace("\n","<br>\n"); // HTML P requrires <br> and not new lines.
-    QString hardware = hwRecognizer.toString(true).replace("\n","<br>\n"); // HTML P requrires <br> and not new lines.
+    QString hardware = comm->hw()->toString(true).replace("\n","<br>\n"); // HTML P requrires <br> and not new lines.
 
-    QString instance = configuration->getString(Globals::VMConfig::INSTANCE_NUMBER);
-    QString inst_id  = configuration->getString(Globals::VMConfig::INSTITUTION_ID);
+    QString instance = comm->configuration()->getString(Globals::VMConfig::INSTANCE_NUMBER);
+    QString inst_id  = comm->configuration()->getString(Globals::VMConfig::INSTITUTION_ID);
 
 
     QVariantMap replacement_map;
@@ -1004,7 +766,7 @@ void Loader::sendSupportEmail(const QString &subject, const QString &body, const
     replacement_map[Globals::SupportEmailPlaceHolders::HWSPECS]     = hardware;
     replacement_map[Globals::SupportEmailPlaceHolders::INSTANCE]    = instance;
     replacement_map[Globals::SupportEmailPlaceHolders::INST_ID]     = inst_id;
-    replacement_map[Globals::SupportEmailPlaceHolders::INST_NAME]   = configuration->getString(Globals::VMConfig::INSTITUTION_NAME);
+    replacement_map[Globals::SupportEmailPlaceHolders::INST_NAME]   = comm->configuration()->getString(Globals::VMConfig::INSTITUTION_NAME);
     replacement_map[Globals::SupportEmailPlaceHolders::ISSUE]       = issue_description;
 
     QStringList keys = replacement_map.keys();
@@ -1041,7 +803,7 @@ void Loader::sendFunctionalControlData(const QString &instituion, const QString 
     tempInstanceData.clear();
     tempInstanceData.addKeyValuePair(Globals::VMConfig::INSTITUTION_ID,instituion);
     tempInstanceData.addKeyValuePair(Globals::VMConfig::INSTANCE_NUMBER,instance);
-    if (!apiclient.requestFunctionalControl(this->hwRecognizer.getHardwareSpecsAsVariantMap(),email,password,fname,lname,uid)){
+    if (!apiclient.requestFunctionalControl(this->comm->hw()->getHardwareSpecsAsVariantMap(),email,password,fname,lname,uid)){
         StaticThreadLogger::error("Loader::requestActivation","Seding functional control data: "  + apiclient.getError());
         emit Loader::finishedRequest();
     }
@@ -1049,7 +811,7 @@ void Loader::sendFunctionalControlData(const QString &instituion, const QString 
 
 void Loader::requestActivation(int institution, int instance, const QString &key){
     processingUploadError = FAIL_CODE_NONE;
-    if (!apiclient.requestActivation(institution,instance,key,hwRecognizer.toString(true),hwRecognizer.getHardwareSpecsAsVariantMap())){
+    if (!apiclient.requestActivation(institution,instance,key,comm->hw()->toString(true),comm->hw()->getHardwareSpecsAsVariantMap())){
         StaticThreadLogger::error("Loader::requestActivation","Request activation error: "  + apiclient.getError());
         emit Loader::finishedRequest();
     }
@@ -1058,7 +820,7 @@ void Loader::requestActivation(int institution, int instance, const QString &key
 void Loader::sendStudy(QString discard_reason, const QString &comment){
     processingUploadError = FAIL_FILE_CREATION;
 
-    QString studyFileToSend = configuration->getString(Globals::Share::SELECTED_STUDY);
+    QString studyFileToSend = comm->configuration()->getString(Globals::Share::SELECTED_STUDY);
 
     // Since the file has allready been compresed. We need to create a second file and then tarball both of those files toghter in the final file.
     // So we take advantange of the QCI file and load that.
@@ -1145,6 +907,10 @@ void Loader::onNotificationFromFlowControl(QVariantMap notification){
         }
 
         apiclient.setEyeTrackerKey(key);
+
+        // We also store it in the share configuraiton.
+        comm->configuration()->addKeyValuePair(Globals::Share::API_PARAMETER_KEY,key);
+
         emit Loader::titleBarUpdate();
     }
     else if (notification.contains(Globals::FCL::UPDATE_AVG_FREQ)){
@@ -1172,10 +938,10 @@ void Loader::receivedAPIResponse(){
         if (this->lastHTTPCodeReceived == HTTPCodes::INSTANCE_DISABLED){
             StaticThreadLogger::error("Loader::receivedAPIResponse","Received instance disabled code");
             processingUploadError = FAIL_INSTANCE_DISABLED;
-            this->localDB.setInstanceEnableTo(false);
+            this->comm->db()->setInstanceEnableTo(false);
         }
         else {
-            this->localDB.setInstanceEnableTo(true);
+            this->comm->db()->setInstanceEnableTo(true);
             processingUploadError = FAIL_CODE_SERVER_ERROR;
             StaticThreadLogger::error("Loader::receivedAPIResponse","Error Receiving Request :"  + apiclient.getError());
             if (apiclient.getLastRequestType() == APIClient::API_SENT_SUPPORT_EMAIL){
@@ -1189,7 +955,7 @@ void Loader::receivedAPIResponse(){
         // Disabled instance will ONLY come as an API error. Just a specific one. So if there was no error the instance is NOT disabled.
         // Unless comming from a support request. In that case we can't set it to true because the support request can be sent
         // with a disabled insance.
-        if (apiclient.getLastRequestType() != APIClient::API_SENT_SUPPORT_EMAIL) this->localDB.setInstanceEnableTo(true);
+        if (apiclient.getLastRequestType() != APIClient::API_SENT_SUPPORT_EMAIL) this->comm->db()->setInstanceEnableTo(true);
 
         if (apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO || apiclient.getLastRequestType() == APIClient::API_OPERATING_INFO_AND_LOG){
 
@@ -1201,13 +967,13 @@ void Loader::receivedAPIResponse(){
                 //QFile::remove(apiclient.getLastGeneratedLogFileName()); // This will fail if no file exists. So we don't check for errors.
 
                 // This ensures that we ONLY clean this when there is no error.
-                QString instance_number = configuration->getString(Globals::VMConfig::INSTANCE_NUMBER);
-                QString inst_id = configuration->getString(Globals::VMConfig::INSTITUTION_ID);
+                QString instance_number = comm->configuration()->getString(Globals::VMConfig::INSTANCE_NUMBER);
+                QString inst_id = comm->configuration()->getString(Globals::VMConfig::INSTITUTION_ID);
                 LogPrep lp(Globals::Paths::LOGFILE,inst_id,instance_number);
                 lp.cleanLogDir();
 
                 // We mark now as the last log upload.
-                localDB.setLogUploadMark();
+                comm->db()->setLogUploadMark();
             }
             else {
                 StaticThreadLogger::log("Loader::receivedAPIResponse","Got Operating Information. No Log Upload");
@@ -1236,7 +1002,7 @@ void Loader::receivedAPIResponse(){
 
             if (expecting_subject_ids){
                 if (mainData.contains(LocalDB::SUBJECT_UPDATED_IDS)){
-                    localDB.markSubjectsAsUpdated(mainData.value(LocalDB::SUBJECT_UPDATED_IDS).toList());
+                    comm->db()->markSubjectsAsUpdated(mainData.value(LocalDB::SUBJECT_UPDATED_IDS).toList());
                 }
                 else{
                     StaticThreadLogger::warning("Loader::receivedAPIResponse","There was an existent subject update file, however not updated ids");
@@ -1248,13 +1014,13 @@ void Loader::receivedAPIResponse(){
                 StaticThreadLogger::warning("Loader::receivedAPIResponse",toprint);
             }
 
-            if (!localDB.setMedicInformationFromRemote(mainData)){
-                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set medical professionals info from server: " + localDB.getError());
+            if (!comm->db()->setMedicInformationFromRemote(mainData)){
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set medical professionals info from server: " + comm->db()->getError());
             }
 
-            qint32 patients_added = localDB.mergePatientDBFromRemote(mainData);
+            qint32 patients_added = comm->db()->mergePatientDBFromRemote(mainData);
             if (patients_added < 0){
-                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to merge the patient database. Reason: " + localDB.getError());
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to merge the patient database. Reason: " + comm->db()->getError());
             }
             else {
                 StaticThreadLogger::log("Loader::receiveRequest", "Added " + QString::number(patients_added) + " new subjects");
@@ -1268,24 +1034,14 @@ void Loader::receivedAPIResponse(){
                 StaticThreadLogger::warning("Loader::receivedAPIResponse",ppstr);
             }
 
-            if (!localDB.setProcessingParametersFromServerResponse(mainData)){
-                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set processing parameters from server: " + localDB.getError());
+            if (!comm->db()->setProcessingParametersFromServerResponse(mainData)){
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set processing parameters from server: " + comm->db()->getError());
             }
 
-            if (mainData.contains(APINames::ReturnDataFields::INST_COUNTRY)){
-                QString inst_country = mainData.value(APINames::ReturnDataFields::INST_COUNTRY).toString();
-                if (!localDB.setInstitutionCountryCode(inst_country)){
-                    StaticThreadLogger::error("Loader::receivedAPIResponse","Failed storing changes to country code. Reason: " + localDB.getError());
-                }
-                else {
-                    StaticThreadLogger::log("Loader::receivedAPIResponse","Setting the institution country to: " + inst_country);
-                }
-            }
-
-            if (mainData.contains(APINames::ReturnDataFields::HIDDEN_STUDIES)){
-                QVariant studies_to_hide = mainData.value(APINames::ReturnDataFields::HIDDEN_STUDIES);
-                localDB.setHiddenStudiesList(studies_to_hide.toList());
-                StaticThreadLogger::log("Loader::receivedAPIResponse","The follwing study codes have been hidden " + studies_to_hide.toStringList().join(","));
+            if (mainData.contains(APINames::ReturnDataFields::AVAILABLE_EVALS)){
+                QVariantMap available_evals = mainData.value(APINames::ReturnDataFields::AVAILABLE_EVALS).toMap();
+                comm->db()->setAvailableEvaluations(available_evals);
+                //StaticThreadLogger::log("Loader::receivedAPIResponse","The Available Evals Structure is As Follows:\n" + Debug::QVariantMapToString(available_evals));
             }
 
             if (DBUGBOOL(Debug::Options::PRINT_QC)){
@@ -1297,19 +1053,19 @@ void Loader::receivedAPIResponse(){
 
             }
 
-            if (!localDB.setQCParametersFromServerResponse(mainData)){
-                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set QC parameters from server: " + localDB.getError());
+            if (!comm->db()->setQCParametersFromServerResponse(mainData)){
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set QC parameters from server: " + comm->db()->getError());
             }
 
-            if (!localDB.setRecoveryPasswordFromServerResponse(mainData)){
-                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set recovery password from server: " + localDB.getError());
+            if (!comm->db()->setRecoveryPasswordFromServerResponse(mainData)){
+                StaticThreadLogger::error("Loader::receivedAPIResponse","Failed to set recovery password from server: " + comm->db()->getError());
             }
 
             if (mainData.contains(APINames::ReturnDataFields::HMD_CHANGE_SN)){
                 QString sn = mainData.value(APINames::ReturnDataFields::HMD_CHANGE_SN).toString();
                 if (sn != ""){
                     StaticThreadLogger::log("Loader::receivedAPIResponse","API response contained new HMD Change S/N: '" + sn + "'");
-                    localDB.setHMDChangeSN(sn);
+                    comm->db()->setHMDChangeSN(sn);
                 }
             }
 
@@ -1361,7 +1117,7 @@ void Loader::receivedAPIResponse(){
             }
 
             // Before we actually download anything we need to check if the last download app coincides with the desired app.
-            QString lastDownlodedApp = localDB.getLastDownloadedApp();
+            QString lastDownlodedApp = comm->db()->getLastDownloadedApp();
             updateDownloadSkipped = (lastDownlodedApp == newVersionAvailable);
             if (updateDownloadSkipped){
                 updateDownloadSkipped = updateDownloadSkipped && QFile(Globals::Paths::VMTOOLEXE).exists();
@@ -1454,8 +1210,8 @@ void Loader::receivedAPIResponse(){
             apiclient.clearFileToSendHandles();
 
             // This ensures that we ONLY clean this when there is no error.
-            QString instance_number = configuration->getString(Globals::VMConfig::INSTANCE_NUMBER);
-            QString inst_id = configuration->getString(Globals::VMConfig::INSTITUTION_ID);
+            QString instance_number = comm->configuration()->getString(Globals::VMConfig::INSTANCE_NUMBER);
+            QString inst_id = comm->configuration()->getString(Globals::VMConfig::INSTITUTION_ID);
             LogPrep lp(Globals::Paths::LOGFILE,inst_id,instance_number);
             lp.cleanLogDir();
 
@@ -1466,7 +1222,7 @@ void Loader::receivedAPIResponse(){
         else if (apiclient.getLastRequestType() == APIClient::API_FUNC_CTL_HMD_CHANGE){
             // The HMD Change flag (the new HMD S/N) needs to be cleared.
             StaticThreadLogger::log("Loader::receivedAPIResponse","Clearing HMD Change S/N");
-            localDB.setHMDChangeSN("");
+            comm->db()->setHMDChangeSN("");
         }
         else if (apiclient.getLastRequestType() == APIClient::API_FUNC_CTL_NEW){
             // We need to create the VM ID file.
@@ -1513,7 +1269,7 @@ void Loader::updateDownloadFinished(bool allOk){
             }
 
             // If the process finished correctly then the VMMaintenanceTool Directory should be present. And we have susccessfully downloaded the courrent version
-            localDB.setLastDownloadedApp(newVersionAvailable); // This will prevent redownload incase that the application was already downloaded and the update process failed.
+            comm->db()->setLastDownloadedApp(newVersionAvailable); // This will prevent redownload incase that the application was already downloaded and the update process failed.
             StaticThreadLogger::error("Loader::updateDownloadFinished","We should now continue the update process");
 
             if (!QFile(Globals::Paths::VMTOOLEXE).exists()){
@@ -1586,7 +1342,7 @@ void Loader::cleanCalibrationDirectory() {
 
 void Loader::moveProcessedFiletToProcessedDirectory(){
 
-    QString sentFile = configuration->getString(Globals::Share::SELECTED_STUDY);
+    QString sentFile = comm->configuration()->getString(Globals::Share::SELECTED_STUDY);
 
     // Getting the patient directory.
     QFileInfo info(sentFile);
@@ -1630,30 +1386,30 @@ void Loader::moveProcessedFiletToProcessedDirectory(){
 ////////////////////////////////////////////////////////////////// PROTOCOL FUNCTIONS //////////////////////////////////////////////////////////////////
 
 bool Loader::addProtocol(const QString &name, const QString &id) {
-    return localDB.addProtocol(name,id,false);
+    return comm->db()->addProtocol(name,id,false);
 }
 
 void Loader::editProtocol(const QString &id, const QString &newName){
-    if (!localDB.addProtocol(newName,id,true)){
-        StaticThreadLogger::error("Loader::editProtocol","Error while modifying protocol: " + id + " to new name: " + newName + ". Error was: " + localDB.getError());
+    if (!comm->db()->addProtocol(newName,id,true)){
+        StaticThreadLogger::error("Loader::editProtocol","Error while modifying protocol: " + id + " to new name: " + newName + ". Error was: " + comm->db()->getError());
     }
 }
 
 void Loader::deleteProtocol(const QString &id) {
-    if (!localDB.removeProtocol(id)){
-        StaticThreadLogger::error("Loader::deleteProtocol","Error while deleting protocol: " + localDB.getError());
+    if (!comm->db()->removeProtocol(id)){
+        StaticThreadLogger::error("Loader::deleteProtocol","Error while deleting protocol: " + comm->db()->getError());
     }
 }
 
 QVariantMap Loader::getProtocolList() {
-    return localDB.getProtocolList();
+    return comm->db()->getProtocolList();
 }
 
 
 ////////////////////////////////////////////////////////////////// PRIVATE FUNCTIONS //////////////////////////////////////////////////////////////////
 
 void Loader::changeLanguage(){
-    QString lang = localDB.getPreference(LocalDB::PREF_UI_LANG,"English").toString();
+    QString lang = comm->db()->getPreference(LocalDB::PREF_UI_LANG,"English").toString();
     if (lang == Globals::UILanguage::ES){
         if (!language.loadConfiguration(":/languages/es.lang")){
             // In a stable program this should NEVER happen.
@@ -1670,8 +1426,25 @@ void Loader::changeLanguage(){
         }
     }
 
-    // We now set the wait message for the studies.
-    configuration->addKeyValuePair(Globals::Share::NBACK_WAIT_MSG,language.getString("viewevaluation_nback_wait_msg"));
+    // We load the task name to code map.
+    this->taskCodeToNameMap.clear();
+    QStringList list = language.getStringList("viewevalution_task_name_map");
+
+    // Even strings are code and odd words are the display names.
+    QString lastKey;
+    for (qint32 i = 0; i < list.size(); i++){
+        if ((i % 2) == 0){
+            lastKey = list.at(i);
+            this->taskCodeToNameMap[lastKey] = lastKey; // If something goes wrong this guartees that at leas we get the code name.
+        }
+        else {
+            this->taskCodeToNameMap[lastKey] = list.at(i);
+        }
+    }
+
+
+//    // We now set the wait message for the studies.
+//    comm->configuration()->addKeyValuePair(Globals::Share::NBACK_WAIT_MSG,language.getString("viewevaluation_nback_wait_msg"));
 
 }
 

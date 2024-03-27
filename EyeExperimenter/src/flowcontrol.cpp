@@ -1,10 +1,10 @@
 #include "flowcontrol.h"
 
-FlowControl::FlowControl(QObject *parent, ConfigurationManager *c) : QObject(parent)
+FlowControl::FlowControl(QObject *parent, LoaderFlowComm *c) : QObject(parent)
 {
 
-    // Intializing the eyetracker pointer
-    configuration = c;
+    // Intializing the communication pointer.
+    comm = c;
 
     // Making all the connections to the render server.
     connect(&renderServerClient,&RenderServerClient::newPacketArrived,this,&FlowControl::onNewPacketArrived);
@@ -162,7 +162,7 @@ void FlowControl::onNewPacketArrived(){
         qreal vres = packet.getPayloadField(RRS::PacketHandCalibrationControl::V_CALIB_RESULT).toReal();
         StaticThreadLogger::log("FlowControl::onNewPacketArrived","Received hand calibration results. H: " + QString::number(hres) + ". V: " + QString::number(vres));
         result << hres << vres;
-        configuration->addKeyValuePair(Globals::Share::HAND_CALIB_RES,result);
+        comm->configuration()->addKeyValuePair(Globals::Share::HAND_CALIB_RES,result);
 
         // If we go the hand calibration packet, we can effectively move on.
         emit FlowControl::handCalibrationDone();
@@ -307,7 +307,7 @@ bool FlowControl::isRenderServerWorking() const{
 ////////////////////////////// AUXILIARY FUNCTIONS ///////////////////////////////////////
 void FlowControl::keyboardKeyPressed(int key){
 
-    qDebug() << "Keyboard Pressed with study phase" << studyControl.getStudyPhase();
+    // qDebug() << "Keyboard Pressed with study phase" << studyControl.getStudyPhase();
 
     if (studyControl.getStudyPhase() == StudyControl::SS_EVAL){
         QString phase = "Eval";
@@ -372,8 +372,38 @@ bool FlowControl::isExperimentEndOk() const{
     return (studyControl.getStudyEndStatus() == StudyControl::SES_OK);
 }
 
+/**
+ * NOTE: For now the asking if a task requires hand calibration and asking if it's 3D is the same question.
+ * It might not be in the future so that is why the functions are separate.
+ */
+
+bool FlowControl::doesTaskRequireHandCalibration(const QString &task_code) const {
+    if (task_code == VMDC::Study::SPHERES) return true;
+    else if (task_code == VMDC::Study::SPHERES_VS) return true;
+    return false;
+}
+
+bool FlowControl::isTask3D(const QString &task_code) const {
+    if (task_code == VMDC::Study::SPHERES) return true;
+    else if (task_code == VMDC::Study::SPHERES_VS) return true;
+    return false;
+}
+
+
 ////////////////////////////// FLOW CONTROL FUNCTIONS ///////////////////////////////////////
 void FlowControl::onStudyEndProcessFinished(){
+
+    // We need to update the DB. The information for updating is present in the last QCI File that was created.
+    QVariantMap qciData = this->studyEndProcessor.getLastQCIData();
+    QString evalID = qciData.value(Globals::QCIFields::EVALUATION_ID).toString();
+    QString taskFileName = qciData.value(Globals::QCIFields::TARBALL_FILE).toString();
+    qreal qci = qciData.value(Globals::QCIFields::QCI).toReal();
+    bool qci_ok = qciData.value(Globals::QCIFields::QCI).toBool();
+
+    if (!this->comm->db()->updateEvaluation(evalID,taskFileName,qci,qci_ok,false)){
+        StaticThreadLogger::error("FlowControl::onStudyEndProcessFinished","Failed to update evaluation. Reason: " + this->comm->db()->getError());
+    }
+
     // We are done processing we notify the front end.
     emit FlowControl::studyEndProcessingDone();
 }
@@ -384,6 +414,34 @@ void FlowControl::requestStudyData() {
 
 void FlowControl::onNewControlPacketAvailableFromStudy(){
     renderServerClient.sendPacket(studyControl.getControlPacket());
+}
+
+void FlowControl::newEvaluation(const QString &evaluationID, const QString &clinician, const QString &selectedProtocol){
+
+    // The subject should be loaded in the shared preferences.
+    QString subject    = comm->configuration()->getString(Globals::Share::PATIENT_UID);
+    QString evaluator  = comm->configuration()->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR);
+    QString instance_prefix = comm->configuration()->getString(Globals::VMConfig::INSTITUTION_ID)
+            + "_" + comm->configuration()->getString(Globals::VMConfig::INSTANCE_NUMBER);
+
+
+    QString newEvaluationID = comm->db()->createNewEvaluation(subject,clinician,evaluator,selectedProtocol,instance_prefix,evaluationID);
+
+    // The system is now ready to start with this evaluation.
+    comm->configuration()->addKeyValuePair(Globals::Share::SELECTED_EVALUATION,newEvaluationID);
+
+}
+
+QVariantList FlowControl::setupCurrentTaskList() {
+
+    // First we must get the current evaluation ID
+    QString evaluationID = comm->configuration()->getString(Globals::Share::SELECTED_EVALUATION);
+    this->currentEvaluationTaskList.clear();
+
+    // Each of the objects in this list contains a task type and file.
+    this->currentEvaluationTaskList = comm->db()->getRemainingTasksForEvaluation(evaluationID);
+    return this->currentEvaluationTaskList;
+
 }
 
 void FlowControl::handCalibrationControl(qint32 command, const QString &which_hand){
@@ -612,68 +670,182 @@ void FlowControl::onUpdatedExperimentMessages(const QVariantMap &string_value_ma
     emit FlowControl::newExperimentMessages(string_value_map);
 }
 
-bool FlowControl::startNewExperiment(QVariantMap study_config){
+bool FlowControl::startTask(qint32 taskIndexInCurrentList){
 
-    // So to start a new experiment we need:
-    // 1) Know the patient directory.
-    // 2) Know the study configuration
-    // 3) If Binding we need to figure out if new file or load an existing one.
+    // So we need to get task type and final output file.
+    QString task_code      = this->currentEvaluationTaskList.at(taskIndexInCurrentList).toMap().value("type").toString();
+    QString task_filename  = this->currentEvaluationTaskList.at(taskIndexInCurrentList).toMap().value("file").toString();
 
-    // Forcing the valid eye to the calibration selected eye.
-    study_config[VMDC::StudyParameter::VALID_EYE] = calibrationManager.getRecommendedEye();
-    QString studyName;
-
-    // We now set the study
-    switch (study_config.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toInt()){
-
-    case Globals::StudyConfiguration::INDEX_BINDING_BC:
-        StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING BINDING BC EXPERIMENT");
-        studyName = VMDC::Study::BINDING_BC;
-        break;
-    case Globals::StudyConfiguration::INDEX_BINDING_UC:
-        StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING BINDING UC EXPERIMENT");
-        studyName = VMDC::Study::BINDING_UC;
-        break;
-    case Globals::StudyConfiguration::INDEX_NBACK:
-        StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING NBACK SLOW DEFAULT VERSION");
-        study_config[VMDC::StudyParameter::WAIT_MESSAGE] = configuration->getString(Globals::Share::NBACK_WAIT_MSG);
-        studyName = VMDC::Study::NBACK;
-        break;
-    case Globals::StudyConfiguration::INDEX_GONOGO:
-        StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING GO - NO GO");
-        studyName = VMDC::Study::GONOGO;
-        break;
-    case Globals::StudyConfiguration::INDEX_NBACKVS:
-        StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING N BACK VS");
-        study_config[VMDC::StudyParameter::WAIT_MESSAGE] = configuration->getString(Globals::Share::NBACK_WAIT_MSG);
-        studyName = VMDC::Study::NBACKVS;
-        break;
-    case Globals::StudyConfiguration::INDEX_GNG_SPHERE:
-        StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING GO - NO GO SPHERES");
-        studyName = VMDC::Study::GONOGO_SPHERE;
-        break;
-    case Globals::StudyConfiguration::INDEX_PASSBALL:
-        StaticThreadLogger::log("FlowControl::startNewExperiment","STARTING PASSBALL");
-        studyName = VMDC::Study::PASSBALL;
-        break;
-    case Globals::StudyConfiguration::INDEX_DOT_FOLLOW:
-        StaticThreadLogger::log("FlowControl::startNewExperiment","DOT FOLLOW");
-        studyName = VMDC::Study::DOTFOLLOW;
-        break;
-    default:
-        StaticThreadLogger::error("FlowControl::startNewExperiment","Unknown experiment was selected " + study_config.value(Globals::StudyConfiguration::UNIQUE_STUDY_ID).toString());
+    // Now we need to get the evaluation
+    QString evalID             = this->comm->configuration()->getString(Globals::Share::SELECTED_EVALUATION);
+    QVariantMap evalDefinition = this->comm->db()->getEvaluation(evalID);
+    if (evalDefinition.empty()){
+        StaticThreadLogger::error("FlowControl::startTask", "The evaluation with id '" + evalID + " for task of type '" + task_code + "' could not be found");
         return false;
     }
 
-    studyControl.startStudy(configuration->getString(Globals::Share::PATIENT_DIRECTORY),
-                            configuration->getString(Globals::Share::PATIENT_STUDY_FILE),
-                            study_config,studyName);
+    // We put togethere the FULL filename.
+    QString task_directory = this->comm->configuration()->getString(Globals::Share::PATIENT_DIRECTORY);
+    task_filename = QDir(task_directory).absolutePath() + "/" + task_filename;
+
+    // Now we load the default configuration depending on the task type.
+    QVariantMap study_config = DefaultConfiguration(task_code);
+
+    if (study_config.empty()){
+        StaticThreadLogger::error("FlowControl::startTask", "The evaluation with id '" + evalID + " has a task of unknown origin '" + task_code + "'");
+        return false;
+    }
+
+    // Forcing the valid eye to the calibration selected eye.
+    study_config[VMDC::StudyParameter::VALID_EYE] = calibrationManager.getRecommendedEye();
+
+    StaticThreadLogger::log("FlowControl::startTask","STARTING TASK '" + task_code + "'");
+
+    QVariantMap processingParameters = comm->db()->getProcessingParameters();
+
+    ViewMindDataContainer vmdc;
+    if (!initDataContainerForNewTask(evalDefinition,&vmdc)){
+        StaticThreadLogger::error("FlowControl::startTask", "Failed initializaing VMDC for eval '" + evalID + " and task '" + task_code + "'");
+        return false;
+    }
+
+    studyControl.startTask(task_directory,
+                           task_filename,
+                           study_config,
+                           processingParameters,
+                           task_code,vmdc);
 
     // We add the calibration history as this function is called once the calibration is approved.
     studyControl.setCalibrationValidationData(calibrationHistory.getHistory());
 
 
     return true;
+}
+
+
+bool FlowControl::initDataContainerForNewTask(const QVariantMap &evaluationDefintion, ViewMindDataContainer *rdc){
+
+    QString date = QDateTime::currentDateTime().toString("yyyy-MM-dd");
+    QString hour = QDateTime::currentDateTime().toString("HH:mm:ss");
+
+    QString medic = evaluationDefintion.value(LocalDB::EVAL_CLINICIAN).toString();
+
+    // Creating the metadata.
+    QVariantMap metadata;
+    metadata.insert(VMDC::MetadataField::DATE,date);
+    metadata.insert(VMDC::MetadataField::HOUR,hour);
+    metadata.insert(VMDC::MetadataField::INSTITUTION_ID,comm->configuration()->getString(Globals::VMConfig::INSTITUTION_ID));
+    metadata.insert(VMDC::MetadataField::INSTITUTION_INSTANCE,comm->configuration()->getString(Globals::VMConfig::INSTANCE_NUMBER));
+    metadata.insert(VMDC::MetadataField::INSTITUTION_NAME,comm->configuration()->getString(Globals::VMConfig::INSTITUTION_NAME));
+    metadata.insert(VMDC::MetadataField::PROC_PARAMETER_KEY,comm->configuration()->getString(Globals::Share::API_PARAMETER_KEY));
+    metadata.insert(VMDC::MetadataField::PROTOCOL,evaluationDefintion.value(LocalDB::EVAL_PROTOCOL).toString());
+    metadata.insert(VMDC::MetadataField::DISCARD_REASON,"");
+    metadata.insert(VMDC::MetadataField::COMMENTS,"");
+    metadata.insert(VMDC::MetadataField::APP_VERSION,Globals::Share::EXPERIMENTER_VERSION_NUMBER);
+    metadata.insert(VMDC::MetadataField::EVALUATION_ID,evaluationDefintion.value(LocalDB::EVAL_ID).toString());
+    metadata.insert(VMDC::MetadataField::EVALUATION_TYPE,evaluationDefintion.value(LocalDB::EVAL_TYPE).toString());
+
+    // Creating the subject data
+    QVariantMap subject_data;
+    subject_data.insert(VMDC::SubjectField::BIRTH_COUNTRY,comm->db()->getSubjectFieldValue(comm->configuration()->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHCOUNTRY));
+    subject_data.insert(VMDC::SubjectField::BIRTH_DATE,comm->db()->getSubjectFieldValue(comm->configuration()->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_BIRTHDATE));
+    subject_data.insert(VMDC::SubjectField::GENDER,comm->db()->getSubjectFieldValue(comm->configuration()->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_GENDER));
+    subject_data.insert(VMDC::SubjectField::INSTITUTION_PROVIDED_ID,comm->db()->getSubjectFieldValue(comm->configuration()->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_INSTITUTION_ID));
+    subject_data.insert(VMDC::SubjectField::LASTNAME,comm->db()->getSubjectFieldValue(comm->configuration()->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_LASTNAME));
+    subject_data.insert(VMDC::SubjectField::LOCAL_ID,comm->configuration()->getString(Globals::Share::PATIENT_UID));
+    subject_data.insert(VMDC::SubjectField::NAME,comm->db()->getSubjectFieldValue(comm->configuration()->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_NAME));
+    subject_data.insert(VMDC::SubjectField::YEARS_FORMATION,comm->db()->getSubjectFieldValue(comm->configuration()->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_YEARS_FORMATION));
+    subject_data.insert(VMDC::SubjectField::EMAIL,comm->db()->getSubjectFieldValue(comm->configuration()->getString(Globals::Share::PATIENT_UID),LocalDB::SUBJECT_EMAIL));
+
+    // Setting the evaluator info. We do it here becuase it is required for the data file comparisons.
+    QVariantMap evaluator;
+    //qDebug() << "Creating study file for evaluator" << comm->configuration()->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR);
+    QVariantMap evaluator_local_data = comm->db()->getEvaluatorData(comm->configuration()->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR));
+    //Debug::prettpPrintQVariantMap(evaluator_local_data);
+    evaluator.insert(VMDC::AppUserField::EMAIL,evaluator_local_data.value(LocalDB::APPUSER_EMAIL));
+    evaluator.insert(VMDC::AppUserField::NAME,evaluator_local_data.value(LocalDB::APPUSER_NAME));
+    evaluator.insert(VMDC::AppUserField::LASTNAME,evaluator_local_data.value(LocalDB::APPUSER_LASTNAME));
+    evaluator.insert(VMDC::AppUserField::LOCAL_ID,"");
+    evaluator.insert(VMDC::AppUserField::VIEWMIND_ID,"");
+
+    // Setting the selected doctor info.
+    QVariantMap medic_to_store;
+    QVariantMap medic_local_data = comm->db()->getMedicData(medic);
+    if (medic_local_data.empty()){
+        StaticThreadLogger::error("FlowControl::initDataContainerForNewTask","Failed to retrieve medic local data: " + medic);
+        return false;
+    }
+    medic_to_store.insert(VMDC::AppUserField::EMAIL,medic_local_data.value(LocalDB::APPUSER_EMAIL));
+    medic_to_store.insert(VMDC::AppUserField::NAME,medic_local_data.value(LocalDB::APPUSER_NAME));
+    medic_to_store.insert(VMDC::AppUserField::LASTNAME,medic_local_data.value(LocalDB::APPUSER_LASTNAME));
+    medic_to_store.insert(VMDC::AppUserField::LOCAL_ID,"");
+    medic_to_store.insert(VMDC::AppUserField::VIEWMIND_ID,medic_local_data.value(LocalDB::APPUSER_VIEWMIND_ID));
+
+    // Need to insert them as in in the file.
+    QVariantMap pp = comm->db()->getProcessingParameters();
+
+    // Check if we need to add the hand calibration data.
+    if (comm->configuration()->containsKeyword(Globals::Share::HAND_CALIB_RES)){
+        pp.insert(VMDC::ProcessingParameter::HAND_CALIB_RESULTS,comm->configuration()->getVariant(Globals::Share::HAND_CALIB_RES));
+    }
+
+    // Computing the actual maximum dispersion to use.
+    qreal reference_for_md = qMax(pp.value(VMDC::ProcessingParameter::RESOLUTION_WIDTH).toReal(),pp.value(VMDC::ProcessingParameter::RESOLUTION_HEIGHT).toReal());
+    qreal md_percent = pp.value(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW).toReal();
+    qint32 md_px = qRound(md_percent*reference_for_md/100.0);
+    //qDebug() << "Setting the MD from" << reference_for_md << md_percent << " to " << md_px;
+    pp.insert(VMDC::ProcessingParameter::MAX_DISPERSION_WINDOW_PX,md_px);
+
+    // Computing the effective minimum fixation size to use.
+    qreal sample_frequency = pp.value(VMDC::ProcessingParameter::SAMPLE_FREQUENCY).toReal();
+    qreal sample_period = 1/sample_frequency;
+    qreal minimum_fixation_length = qRound(sample_period*1000*MINIMUM_NUMBER_OF_DATAPOINTS_IN_FIXATION);
+    pp.insert(VMDC::ProcessingParameter::MIN_FIXATION_DURATION,minimum_fixation_length);
+    if (DBUGBOOL(Debug::Options::DBUG_MSG)){
+        QString dbug = "DBUG: Effective Minimum Fixation Computed At " + QString::number(minimum_fixation_length);
+        qDebug() << dbug;
+        StaticThreadLogger::warning("FlowControl::initDataContainerForNewTask",dbug);
+    }
+    // These values will be properly set with the end study data.
+    pp[VMDC::ProcessingParameter::RESOLUTION_HEIGHT] = 0;
+    pp[VMDC::ProcessingParameter::RESOLUTION_WIDTH]  = 0;
+
+    // Setting the QC Parameters that will be used.
+    QVariantMap qc = comm->db()->getQCParameters();
+
+    // We store this information the raw data container and leave it ready for the study to start.
+
+    rdc->setQCParameters(qc);
+
+    if (!rdc->setSubjectData(subject_data)){
+        StaticThreadLogger::error("FlowControl::initDataContainerForNewTask","Failed setting subject data to new study. Reason: " + rdc->getError());
+        return false;
+    }
+    if (!rdc->setMetadata(metadata)){
+        StaticThreadLogger::error("FlowControl::initDataContainerForNewTask","Failed setting study metadata to new study. Reason: " + rdc->getError());
+        return false;
+    }
+
+    if (!rdc->setApplicationUserData(VMDC::AppUserType::EVALUATOR,evaluator)){
+        StaticThreadLogger::error("FlowControl::initDataContainerForNewTask","Failed to store evaluator data: " + rdc->getError());
+        return false;
+    }
+
+    if (!rdc->setApplicationUserData(VMDC::AppUserType::MEDIC,medic_to_store)){
+        StaticThreadLogger::error("FlowControl::initDataContainerForNewTask","Failed to store medic data: " + rdc->getError());
+        return false;
+    }
+
+    if (!rdc->setProcessingParameters(pp)){
+        StaticThreadLogger::error("FlowControl::initDataContainerForNewTask","Failed to store processing parameters: " + rdc->getError());
+        return false;
+    }
+
+    // We add the system specifications to the file.
+    rdc->setSystemSpecs(comm->hw()->getHardwareSpecsAsVariantMap());
+
+    return true;
+
 }
 
 void FlowControl::startStudyEvaluationPhase(){
@@ -687,7 +859,7 @@ void FlowControl::startStudyExamplePhase(){
 void FlowControl::onStudyEnd(){
 
     // If there was a hand calibration result, we need to remove it.
-    configuration->removeKey(Globals::Share::HAND_CALIB_RES);
+    comm->configuration()->removeKey(Globals::Share::HAND_CALIB_RES);
 
     StudyControl::StudyEndStatus ses = studyControl.getStudyEndStatus();
 

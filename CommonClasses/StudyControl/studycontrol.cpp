@@ -38,13 +38,19 @@ void StudyControl::forceStudyEndStatusToAborted(){
 
 ////////////////////////////////////////// CONTROL FUNCTIONS //////////////////////////////////////////////////
 
-void StudyControl::startStudy(const QString &workingDir, const QString &studyFile, const QVariantMap &studyConfig, const QString &studyName){
+void StudyControl::startTask(const QString &workingDir,
+                              const QString &studyFile,
+                              const QVariantMap &studyConfig,
+                              const QVariantMap &processingParameters,
+                              const QString &studyName,
+                              const ViewMindDataContainer &vmdc){
 
     // Storing the variables.
     workingDirectory = workingDir;
     fullPathCurrentStudyFile = studyFile;
     expectingAbortACK = false;
     studyInDataTransfer = false;
+    this->rawdata = vmdc;
 
     bool shortStudies = false;
     if (DBUGBOOL(Debug::Options::SHORT_STUDIES)){
@@ -57,62 +63,43 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
 
     studyEvaluationExtraIndication = "";
 
-    if (studyName == VMDC::Study::NBACK){
+    if (studyName == VMDC::Study::NBACK_3){
         configurator = new NBackConfigurator();
-        if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 3){
-            studyExplanationLanguageKey = STUDY_TEXT_KEY_NBACK_3;
-            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_3;
-        }
-        else {
-            studyExplanationLanguageKey = STUDY_TEXT_KEY_NBACK_4;
-            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_4;
-        }
+        studyExplanationLanguageKey = STUDY_TEXT_KEY_NBACK_3;
+        studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_3;
         studyType = ST_2D;
     }
-    else if (studyName == VMDC::Study::NBACKVS){
-        configurator = new NBackConfigurator();
-        studyExplanationLanguageKey = STUDY_TEXT_KEY_NBACKVS;
-
-        if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 3){
-            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_3;
-        }
-        else if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 4){
-            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_4;
-        }
-        else if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 5){
-            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_5;
-        }
-        else if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 6){
-            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_6;
-        }
-        else {
-            studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_6;
-        }
-
+    else if (studyName == VMDC::Study::NBACK_4){
+        studyExplanationLanguageKey = STUDY_TEXT_KEY_NBACK_4;
+        studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_4;
         studyType = ST_2D;
     }
-    else if (studyName == VMDC::Study::BINDING_UC) {
-        configurator = new BindingConfigurator(false,studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt());
+    else if (studyName == VMDC::Study::BINDING_UC_2_SHORT) {
+        configurator = new BindingConfigurator(false,2);
         studyExplanationLanguageKey = STUDY_TEXT_KEY_BINDING_UC;
         studyType = ST_2D;
-        if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 3){
-            studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_UC_3;
-        }
-        else {
-            studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_UC_2;
-        }
+        studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_UC_2;
         studyEvaluationExtraIndication = EVALUATION_BINDING_EXTRA_INSTRUCTION;
     }
-    else if (studyName == VMDC::Study::BINDING_BC) {
-        configurator = new BindingConfigurator(true,studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt());
+    else if (studyName == VMDC::Study::BINDING_UC_3_SHORT) {
+        configurator = new BindingConfigurator(false,3);
+        studyType = ST_2D;
+        studyExplanationLanguageKey = STUDY_TEXT_KEY_BINDING_UC;
+        studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_UC_3;
+        studyEvaluationExtraIndication = EVALUATION_BINDING_EXTRA_INSTRUCTION;
+    }
+    else if (studyName == VMDC::Study::BINDING_BC_2_SHORT) {
+        configurator = new BindingConfigurator(true,2);
         studyExplanationLanguageKey = STUDY_TEXT_KEY_BINDING_BC;
         studyType = ST_2D;
-        if (studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt() == 3){
-            studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_BC_3;
-        }
-        else {
-            studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_BC_2;
-        }
+        studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_BC_2;
+        studyEvaluationExtraIndication = EVALUATION_BINDING_EXTRA_INSTRUCTION;
+    }
+    else if (studyName == VMDC::Study::BINDING_BC_3_SHORT) {
+        configurator = new BindingConfigurator(true,3);
+        studyType = ST_2D;
+        studyExplanationLanguageKey = STUDY_TEXT_KEY_BINDING_BC;
+        studyExampleLanguageKey = EXAMPLE_TEXT_KEY_BINDING_BC_3;
         studyEvaluationExtraIndication = EVALUATION_BINDING_EXTRA_INSTRUCTION;
     }
     else if (studyName == VMDC::Study::GONOGO){
@@ -121,20 +108,15 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
         studyExampleLanguageKey = EXAMPLE_TEXT_KEY_GNG;
         studyType = ST_2D;
     }
-    else if (studyName == VMDC::Study::DOTFOLLOW){
+    else if (studyName == VMDC::Study::MOVING_DOT){
         configurator = new DotFollowConfigurator();
         studyExplanationLanguageKey = STUDY_TEXT_KEY_DOTFOLLOW;
         studyExampleLanguageKey = EXAMPLE_TEXT_DOT_FOLLOW;
         studyType = ST_2D;
     }
-    else if (studyName == VMDC::Study::GONOGO_SPHERE){
+    else if ( (studyName == VMDC::Study::SPHERES) || (studyName == VMDC::Study::SPHERES_VS) ){
         configurator = new GNGSpheresConfigurator();
-        if (studyConfig.value(VMDC::StudyParameter::SPEED) == 2){
-            studyExplanationLanguageKey = STUDY_TEXT_KEY_GONOGO_3D_VS;
-        }
-        else {
-            studyExplanationLanguageKey = STUDY_TEXT_KEY_GONOGO_3D;
-        }
+        studyExplanationLanguageKey = STUDY_TEXT_KEY_GONOGO_3D;
         studyType = ST_3D;
         studyExampleLanguageKey = EXAMPLE_TEXT_KEY_GNG3D;
     }
@@ -144,40 +126,16 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
         return;
     }
 
-    // We need to load the experiment file as it will contain the subject dat, the meta data already set and the processing parameters.
-    if (QFile(fullPathCurrentStudyFile).exists()){
-
-        if (DBUGBOOL(Debug::Options::DBUG_MSG)){
-            StaticThreadLogger::log("StudyControl::startStudy","DBUG: Rawdata is being loaded from file: " + QFileInfo(fullPathCurrentStudyFile).absoluteFilePath());
-        }
-
-        if (!rawdata.loadFromJSONFile(fullPathCurrentStudyFile)){
-            StaticThreadLogger::error("StudyControl::startStudy","Failed loading existing experiment file: "
-                                      + fullPathCurrentStudyFile + "even tough it exists: " + rawdata.getError());
-            delete configurator;
-            emitFailState();
-            return;
-        }
-    }
-    else{
-        StaticThreadLogger::error("StudyControl::startStudy","Set study file does not exist: " + fullPathCurrentStudyFile);
-        delete configurator;
-        emitFailState();
-        return;
-    }
-
-    // We get the processing parameters.
-    QVariantMap processingParameters = rawdata.getProcessingParameters();
 
     // Adding the default eye for the study to the study configuration.
-    QVariantMap enhancedStudyConfig = studyConfig; // This is done so I don't have to change the function interface everywhere.
-    enhancedStudyConfig[VMDC::StudyParameter::DEFAULT_EYE] = configurator->getDefaultStudyEye();
+    this->studyConfiguration = studyConfig; // This is done so I don't have to change the function interface everywhere.
+    this->studyConfiguration[VMDC::StudyParameter::DEFAULT_EYE] = configurator->getDefaultStudyEye();
 
     // Last thing to do is to actually set the current study to the study type
     if (DBUGBOOL(Debug::Options::DBUG_MSG)){
         QString dbug = "DBUG: Setting study on starting experiment of type '" + studyName + "'";
         qDebug() << dbug;
-        StaticThreadLogger::warning("StudyControl::startStudy",dbug);
+        StaticThreadLogger::warning("StudyControl::startTask",dbug);
     }
 
     // Setting up the fixation computer.
@@ -186,7 +144,7 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
 
     // We need to create the configuration for the study.
     if (!configurator->createStudyConfiguration(studyConfig,sampleFrequency,md_percent,studyName,shortStudies,fullPathCurrentStudyFile)){
-        StaticThreadLogger::error("StudyControl::startStudy","Failed in creating a configuration for study of type " + studyName + ". Reason: " + configurator->getError());
+        StaticThreadLogger::error("StudyControl::startTask","Failed in creating a configuration for study of type " + studyName + ". Reason: " + configurator->getError());
         delete configurator;
         emitFailState();
         return;
@@ -194,15 +152,15 @@ void StudyControl::startStudy(const QString &workingDir, const QString &studyFil
 
     // After the configuration is created, we can now add the study to the raw data container.
     // This is because until the configuration is not created the study description contents are empty.
-    if (!rawdata.addStudy(studyName,enhancedStudyConfig,configurator->getStudyDescriptionContents(),configurator->getVersionString())){
-        StaticThreadLogger::error("StudyControl::startStudy","Adding the study type: " + rawdata.getError());
+    if (!rawdata.addStudy(studyName,this->studyConfiguration,configurator->getStudyDescriptionContents(),configurator->getVersionString())){
+        StaticThreadLogger::error("StudyControl::startTask","Adding the study type: " + rawdata.getError());
         delete configurator;
         emitFailState();
         return;
     }
 
     if (!rawdata.setCurrentStudy(studyName)){
-        StaticThreadLogger::error("StudyControl::startStudy","Failed setting current study of " + studyName + ". Reason: " + rawdata.getError());
+        StaticThreadLogger::error("StudyControl::startTask","Failed setting current study of " + studyName + ". Reason: " + rawdata.getError());
         delete configurator;
         emitFailState();
         return;
@@ -384,23 +342,23 @@ bool StudyControl::processAndStoreStudyData(const QVariantMap &control) {
     addToPP[RRS::PacketStudyData::RES_H]        = VMDC::ProcessingParameter::RESOLUTION_HEIGHT;
 
     // The hitboxes can be go no go hitboxes or NBAck. depending on the study.
-    if ( (rawdata.getCurrentStudy() == VMDC::Study::NBACK) ||
-         (rawdata.getCurrentStudy() == VMDC::Study::NBACKVS) ||
-         (rawdata.getCurrentStudy() == VMDC::Study::NBACKRT) ){
+    if ( (rawdata.getCurrentStudy() == VMDC::Study::NBACK_3) ||
+         (rawdata.getCurrentStudy() == VMDC::Study::NBACK_4) ){
         addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::NBACK_HITBOXES;
     }
     else if (rawdata.getCurrentStudy() == VMDC::Study::GONOGO){
         addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::GONOGO_HITBOXES;
     }
-    else if ((rawdata.getCurrentStudy() == VMDC::Study::BINDING_BC) ||
-             (rawdata.getCurrentStudy() == VMDC::Study::BINDING_UC)){
+    else if ((rawdata.getCurrentStudy() == VMDC::Study::BINDING_BC_2_SHORT) ||
+             (rawdata.getCurrentStudy() == VMDC::Study::BINDING_UC_2_SHORT) ||
+             (rawdata.getCurrentStudy() == VMDC::Study::BINDING_BC_3_SHORT) ||
+             (rawdata.getCurrentStudy() == VMDC::Study::BINDING_UC_3_SHORT) ){
         addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::BINDING_HITBOXES;
 
     }
-    else if (rawdata.getCurrentStudy() == VMDC::Study::DOTFOLLOW){
+    else if (rawdata.getCurrentStudy() == VMDC::Study::MOVING_DOT){
         addToPP[RRS::PacketStudyData::HITBOXES] = VMDC::ProcessingParameter::DOT_FOLLOW_HITBOXES;
     }
-
 
     // To do a bit of control and that is it.
     QString ndata_points = control.value(RRS::PacketStudyData::N_DP_DURING_EVAL).toString();
@@ -424,9 +382,6 @@ bool StudyControl::processAndStoreStudyData(const QVariantMap &control) {
         return false;
     }
 
-    // We need to figure out if this is file we need to finalize.
-    // bool shouldBeFinalized = this->studyFinalizationLogic();
-
     // If the trial list field is a list that is NOT empty, this a 2D study file.
     if (trialList.size() > 0){
         // We have a 2D file.
@@ -448,13 +403,6 @@ bool StudyControl::processAndStoreStudyData(const QVariantMap &control) {
             return false;
         }
     }
-
-//    // Now that we are ready, then we mark the file as finalized if it is.
-//    if (shouldBeFinalized){
-//        rawdata.markFileAsFinalized();
-//    }
-
-    rawdata.markFileAsFinalized();
 
     // Now we save the data to hard disk.
     if (!saveDataToHardDisk()){
@@ -600,6 +548,7 @@ void StudyControl::requestStudyData() {
     emit StudyControl::newPacketAvailable();
 }
 
+
 ///////////////////////////////////////////// AUX FUNCTIONS ///////////////////////////////////////////////////////
 
 void StudyControl::setCalibrationValidationData(const QVariantMap &calib_data){
@@ -630,22 +579,6 @@ bool StudyControl::saveDataToHardDisk(){
 
 }
 
-//bool StudyControl::studyFinalizationLogic() {
-
-//    QStringList studyList = rawdata.getStudies();
-//    if (studyList.size() == 1){
-//        if ( (studyList.first() == VMDC::Study::BINDING_BC) ||
-//             (studyList.first() == VMDC::Study::BINDING_UC) ) {
-//            // We have only 1 study and it is one fo the Bindings.
-//            return false;
-//        }
-//    }
-
-//    // In any other case we can return true.
-//    return true;
-
-//}
-
 void StudyControl::emitFailState(bool wasAborted){
     this->expectingAbortACK = false;
     if (wasAborted) this->studyEndStatus = SES_ABORTED;
@@ -666,7 +599,6 @@ void StudyControl::emitNewExampleMessage(){
     stringToDisplay[studyExampleLanguageKey] = currentStudyExampleScreen;
     emit StudyControl::updateStudyMessages(stringToDisplay);
 }
-
 
 void StudyControl::FillNumberOfSlidesInExplanations(ConfigurationManager *language){
     NumberOfExplanationSlides.clear();

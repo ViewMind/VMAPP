@@ -48,6 +48,8 @@ public:
 
     bool wasOperationSuccssful() const;
 
+    QVariantMap getLastQCIData() const;
+
     /**
      * @brief setFilesToProcessFromViewMindDataDirectory
      * @details The function will scan the viewmind_etdata directory for directories.
@@ -76,11 +78,13 @@ private:
     // The sampling period according to the processing parameters for the eyetracker. As provided by the server.
     qreal sampling_period;
 
-    // The file name of the compressed tar file.
-    QString compressedFileName;
+    // The file name of the compressed tar file, both jsut the fill name and the full path.
+    QString fullPathCompressedZip;
+    QString compressedZipFile;
 
     // This file contains the data necessary for indexing.
     QString qciFile;
+    QVariantMap qciData;
 
     // The data required for the indexed entry in the local database.
     qreal fileQCIndex;
@@ -98,7 +102,7 @@ private:
 
 
     // Gets all the data necessary from the study medata to create a proper index in the local db.
-    bool createQCIStudyFile();
+    bool createQCIStudyFile(const QString &evalID);
 
     // Creates the tar ball file for both the JSON and IDX file and then deletes them.
     bool createTarFileAndCleanup();

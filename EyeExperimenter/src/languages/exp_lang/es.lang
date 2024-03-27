@@ -94,7 +94,7 @@ Ha entendido?
 Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_gonogo_3D =
-Este es las Evaluación de Pelotas de Go/No-Go.
+Este es las Evaluación de Esféras.
 Durante esta evaluación pelotas rojas y verdes serán enviadas de los puntos que
 se encuentran frente suyo. Si la pelota es verde debe intentar tocarla. Si es 
 roja, debe evitar tocarla. Si toca una pelota sentirá a su control vibrar.
@@ -110,7 +110,7 @@ Ha entendido?
 Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_gonogo_3D_vs =
-Este es las Evaluación de Pelotas de Go/No-Go con Velocidad Variable.
+Este es las Evaluación de Esféras con Velocidad Variable.
 Durante esta evaluación pelotas rojas y verdes serán enviadas de los puntos que
 se encuentran frente suyo. Si la pelota es verde debe intentar tocarla. Si es 
 roja, debe evitar tocarla. Si toca una pelota sentirá a su control vibrar.

@@ -103,6 +103,17 @@ QtObject {
     readonly property int vmFAIL_CODE_NONE: 0
     readonly property int vmFAIL_CODE_SERVER: 2
 
+    // References to the task codes.
+    readonly property string vmTASK_BINDING_BC_2_SHORT               : "binding_bc_2_short";
+    readonly property string vmTASK_BINDING_UC_2_SHORT               : "binding_uc_2_short";
+    readonly property string vmTASK_BINDING_BC_3_SHORT               : "binding_bc_3_short";
+    readonly property string vmTASK_BINDING_UC_3_SHORT               : "binding_uc_3_short";
+    readonly property string vmTASK_NBACK_3                          : "nback_3";
+    readonly property string vmTASK_NBACK_4                          : "nback_4";
+    readonly property string vmTASK_GONOGO                           : "gonogo";
+    readonly property string vmTASK_SPHERES                          : "spheres";
+    readonly property string vmTASK_MOVING_DOT                       : "moving_dot";
+    readonly property string vmTASK_SPHERES_VS                       : "spheres_vs";
 
     // Screens
     readonly property int vmSwipeIndexHome:             0
@@ -122,77 +133,5 @@ QtObject {
     readonly property color vmNotificationGreen:      "#2DB117"
     readonly property color vmNotificationRed:        "#FD3D60"
     readonly property color vmNotificationBlack:      vmBlackText
-
-    // Study Number Identification
-    readonly property int vmINDEX_READING:                    0
-    readonly property int vmINDEX_BINDING_BC:                 1
-    readonly property int vmINDEX_BINDING_UC:                 2
-    readonly property int vmINDEX_NBACKRT:                    4
-    readonly property int vmINDEX_NBACKVS:                    5
-    readonly property int vmINDEX_PASSBALL:                   6
-    readonly property int vmINDEX_GONOGO:                     7
-    readonly property int vmINDEX_GONOGO3D:                   8
-    readonly property int vmINDEX_NBACK:                      9
-    readonly property int vmINDEX_DOT_FOLLOW:                 10
-
-    ///TODO: Check if we can delete all constants below.
-    readonly property string vmSTUDY_BINDING:                "Binding";
-    readonly property string vmSTUDY_GONOGO :                "Go No-Go";
-    readonly property string vmSTUDY_NBACKMS :               "NBack MS";
-    readonly property string vmSTUDY_NBACKRT:                "NBack RT";
-    readonly property string vmSTUDY_NBACK:                  "NBack";
-    readonly property string vmSTUDY_NBACKVS:                "NBack VS";
-    readonly property string vmSTUDY_PASSBALL:               "PassBall";
-    readonly property string vmSTUDY_READING:                "Reading";
-    readonly property string vmSTUDY_GONOGO3D:               "Go No-Go 3D Spheres";
-
-    // Study configuration parameter names.
-    readonly property string vmSCP_EYES:                     "valid_eye";
-    readonly property string vmSCP_LANGUAGE:                 "language";
-    readonly property string vmSCP_NUMBER_OF_TARGETS:        "number_targets";
-    readonly property string vmSCP_NUMBER_OF_TRIALS:         "number_of_trials";
-    readonly property string vmSCP_TARGET_SIZE:              "target_size";
-    readonly property string vmSCP_BINDING_TYPE:             "binding_type";
-    readonly property string vmSCP_NBACK_LIGHTUP:            "nback_light_all"
-    readonly property string vmSCP_IS_STUDY_3D:              "is_3d_study";
-    readonly property string vmSCP_STUDY_REQ_H_CALIB:        "study_reqs_hand_calib";
-    readonly property string vmSCP_HAND_TO_USE:              "hand_to_use";
-    readonly property string vmSCP_MAX_SPEED:                "max_speed";
-    readonly property string vmSCP_MIN_SPEED:                "min_speed";
-    readonly property string vmSCP_INITIAL_SPEED:            "initial_speed";
-    readonly property string vmSCP_GNG3DSPEED:               "speed"
-    readonly property string vmSCP_NBACKRT_HOLD_TIME:        "nback_rt_hold_time";
-    readonly property string vmSCP_NBACKRT_TIMEOUT:          "nback_timeout";
-    readonly property string vmSCP_NBACKRT_TRANSITION:       "nback_transition";
-
-    // Study configuration parameter values
-    readonly property string vmSCV_BINDING_TARGETS_2:        "2";
-    readonly property string vmSCV_BINDING_TARGETS_3:        "3";
-    readonly property string vmSCV_BINDING_TARGETS_LARGE:    "large";
-    readonly property string vmSCV_BINDING_TARGETS_SMALL:    "small";
-    readonly property string vmSCV_EYE_BOTH:                 "both";
-    readonly property string vmSCV_EYE_LEFT:                 "left";
-    readonly property string vmSCV_EYE_RIGHT:                "right";
-    readonly property string vmSCV_LANG_DE:                  "German";
-    readonly property string vmSCV_LANG_ES:                  "Spanish";
-    readonly property string vmSCV_LANG_FR:                  "French";
-    readonly property string vmSCV_LANG_EN:                  "English";
-    readonly property string vmSCV_LANG_IS:                  "Iselandic";
-    readonly property string vmSCV_BINDING_TYPE_BOUND:       "bound";
-    readonly property string vmSCV_BINDING_TYPE_UNBOUND:     "unbound";
-    readonly property string vmSCV_NBACKVS_TARGETS_3:        "3";
-    readonly property string vmSCV_NBACKVS_TARGETS_4:        "4";
-    readonly property string vmSCV_NBACKVS_TARGETS_5:        "5";
-    readonly property string vmSCV_NBACKVS_TARGETS_6:        "6";
-
-    // Option Key Names for The Study Configuration options
-    readonly property string vmSCO_OPTION_NAME:              "option_name"
-    readonly property string vmSCO_OPTION_VAlUES:            "option_values"
-    readonly property string vmSCO_OPTION_SELECTED:          "option_selected"
-    readonly property string vmSCO_OPTION_WIDTH:             "option_width"
-
-    // This is only for UI unique identification
-    readonly property string vmUNIQUE_STUDY_ID :             "unique_study_id";
-
 
 }

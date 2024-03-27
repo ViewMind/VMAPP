@@ -23,13 +23,13 @@ namespace APINames {
    static const char * MAIN_MESSAGE   = "message";
 
    namespace ReturnDataFields {
-      static const char * PROC_PARAMS    = "proc_params";
-      static const char * INST_COUNTRY   = "institution_country";
-      static const char * REC_PASSWD     = "recovery_password";
-      static const char * FREQ_PARAMS    = "freq_params";
-      static const char * UPDATE_DL_URL  = "url";
-      static const char * HMD_CHANGE_SN  = "hmd_change_sn";
-      static const char * HIDDEN_STUDIES = "hidden_studies";
+      static const char * PROC_PARAMS     = "proc_params";
+      static const char * INST_COUNTRY    = "institution_country";
+      static const char * REC_PASSWD      = "recovery_password";
+      static const char * FREQ_PARAMS     = "freq_params";
+      static const char * UPDATE_DL_URL   = "url";
+      static const char * HMD_CHANGE_SN   = "hmd_change_sn";
+      static const char * AVAILABLE_EVALS = "available_evaluations";
    }
 
    namespace UpdateParams{
@@ -45,6 +45,14 @@ namespace APINames {
       static const char * KEYID    = "keyid";
       static const char * EMAIL    = "email";
    }
+
+}
+
+namespace EvaluationStatus {
+
+   static const char * ONGOING      = "ongoing";
+   static const char * BAD_QCI      = "badqci";
+   static const char * READY_UPLOAD = "ready_upload";
 
 }
 
@@ -66,14 +74,12 @@ public:
     static const char * MAIN_LAST_APP_DOWNLOADED;
     static const char * MAIN_DB_VERSION;
     static const char * MAIN_RECOVERY_PASSWORD;
-    static const char * MAIN_QC_STUDY_INDEX;
     static const char * MAIN_LAST_LOG_UPLOAD;
-    static const char * MAIN_STORED_SEQUENCES;
     static const char * MAIN_PREFERENCES;
-    static const char * MAIN_INSTITUTION_COUNTRY_CODE;
     static const char * MAIN_INSTANCE_ENABLED;
     static const char * MAIN_HMD_CHANGE;
-    static const char * MAIN_HIDDEN_STUDIES;
+    static const char * MAIN_AVAILABLE_EVALS;
+    static const char * MAIN_ONGOING_EVALUATIONS;
 
     // Evaluator fields
     static const char * APPUSER_NAME;
@@ -102,14 +108,6 @@ public:
     static const char * SUBJECT_MODIFIED_FLAG;
     static const char * SUBJECT_UPDATED_IDS;
 
-    // Stored sequences field.
-    static const char * STORED_SEQ_LAST_SELECTED;
-    static const char * STORED_SEQ_SEQUENCES;
-
-    // Marker for each subject
-    static const char * MARKER_VALUE;
-    static const char * MARKER_TIME;
-
     // Protocol Fiedls
     static const char * PROTOCOL_NAME;
     static const char * PROTOCOL_CREATION_DATE;
@@ -120,8 +118,30 @@ public:
     static const char * PREF_EXP_LANG;
     static const char * PREF_LAST_SEL_PROTOCOL;
 
-    static const qint32 LOCALDB_VERSION = 3;
+    // On Going Evaluations Field
+    static const char * EVAL_ID;
+    static const char * EVAL_STATUS;
+    static const char * EVAL_CLINICIAN;
+    static const char * EVAL_EVALUATOR;
+    static const char * EVAL_ISO_DATE;
+    static const char * EVAL_TIME;
+    static const char * EVAL_TYPE;
+    static const char * EVAL_TIMESTAMP;
+    static const char * EVAL_TASKS;
+    static const char * EVAL_SUBJECT;
+    static const char * EVAL_PROTOCOL;
 
+    // Tasks subfields for ongoing evaluations
+    static const char * TASK_TYPE;
+    static const char * TASK_FILE;
+    static const char * TASK_QCI;
+    static const char * TASK_QCI_OK;
+    static const char * TASK_UPLOADED;
+    static const char * TASK_DISCARDED;
+
+
+    // This is left for Legacy reasons. It's not really used.
+    static const qint32 LOCALDB_VERSION = 3;
 
     // Constructor
     LocalDB();
@@ -194,15 +214,6 @@ public:
     // Get the QC Parameters as they came in from the server
     QVariantMap getQCParameters() const;
 
-    // Adds a "bookmark" for multi part studies. The bookmark has two parts a value and a time stamp. If the bookmark exists it is simply overwritten and the time stamp updated.
-    bool addStudyMarkerForSubject(const QString &suid, const QString &study, const QString &value);
-
-    // Retrieves the marker for a study in two parte the value and the ISO timestamp in forma YYYY-MM-dd HH:mm
-    QVariant getMarkerForStudy(const QString &suid, const QString &study) const;
-
-    // Deletes the study bookmark.
-    bool removeMarkerForSubject(const QString &suid, const QString &study);
-
     // Adds a protocol to the protocol list. Returs true if successfull or false if it exists.
     bool addProtocol(const QString &protocol_name, const QString &protocol_id, bool edit);
 
@@ -252,24 +263,6 @@ public:
     // Returns tht number of patients on the DB.
     qint32 getSubjectCount() const;
 
-    // Stores a created study sequence. Returns false only on failed db writing to disk.
-    bool storeStudySequence(const QString &name, const QVariantList &sequence);
-
-    // Stores the last selected sequence. Should be a key to the sequence map. Returs false only on disk failed.
-    bool setLastSelectedSequence(const QString &name);
-
-    // Retrieves a study sequence by name.
-    QVariantList getStudySequence(const QString &name);
-
-    // Retrieves the last selected sequence.
-    QString getLastSelectedSequence() const;
-
-    // The names of all the stored sequences.
-    QStringList getStudySequenceList() const;
-
-    // Removes a study sequence.
-    bool deleteStudySequence(const QString &name);
-
     // Sets a preferences in the DB.
     bool setPreference(const QString &preference, const QVariant &variant);
 
@@ -284,20 +277,40 @@ public:
     // The second parameter can be used to return a store and return a value if the required one doesn't exist
     QVariant getPreference(const QString &preference, const QString &retAndStoreIfDoenstExist = "");
 
-    // Stores and retrieves the institution country. The backup is created only if the value changes.
-    bool setInstitutionCountryCode(const QString &country_code);
-    QString getInstitutionCountryCode() const;
-
     // Does a fuzzy search for the name lastname and year of birth and returns possible matches.
     QVariantList possibleNewPatientMatches(QString name, QString lastname, QString personalID, QString iso_birthdate, const QStringList &months) const;
 
-    // Set and get the hidden studies list.
-    void setHiddenStudiesList(const QVariantList &hiddenStudies);
-    QVariantList getHiddenStudiesList() const;
+    // Set and get the available evaluations.
+    void setAvailableEvaluations(const QVariantMap &available);
+    QVariantMap getAvailableEvals() const;
 
     // Set and get the instance enabled status.
     void setInstanceEnableTo(bool enabled);
     bool isInstanceEnabled() const;
+
+
+    ///////////////////////////// OnGoing Evaluation Functions //////////////////////////////
+
+    // Creates a new evaluations for the specified subject of the specified type.
+    // The instance prefix is formed using the isntance and institution number using an underscore to separate them.
+    // The resulting unique identifier is returned.
+    QString createNewEvaluation(const QString &subjectID,
+                                const QString &clinician,
+                                const QString &evaluator,
+                                const QString &protocol,
+                                const QString &instance_prefix,
+                                const QString &evalType);
+
+    // This will return a list of object with two fields type and file comprised of all tasks with a -1 qci for the evaluation.
+    QVariantList getRemainingTasksForEvaluation(const QString &evaluationID);
+
+    // Returns the full evaluation struct.
+    QVariantMap getEvaluation(const QString &evaluationID) const;
+
+    // This will update the task inside the selected evaluation. If the qci_ok is false the evaluation status will change
+    // Also this will automatically generate a new file for the missing task.
+    // If request Redo is true then a new task is created regardless of the qci ok flag and the qci and qci_ok are NOT updated.
+    bool updateEvaluation(const QString &evaluationID, const QString &taskFileName, qreal qci, bool qci_ok, bool requestRedo);
 
 private:
 
@@ -332,6 +345,9 @@ private:
 
     // Transforms an ISO date to Day 3LetterMonth Year. It's univeral for display.
     QString buildDisplayBirthDate(const QString &iso_bdate, const QStringList &months) const;
+
+    // Creating a new task object for evaluation's task list. Basically just inits the map. The indexing file name is returned in the second paratemer.
+    QVariantMap createNewTaskObjectForEvaluationTaskList(const QString &evaluationID, const QString &task, QString *tarTaskFileName);
 
 
 };

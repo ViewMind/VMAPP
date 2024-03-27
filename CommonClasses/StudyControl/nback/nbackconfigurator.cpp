@@ -1,7 +1,7 @@
 #include "nbackconfigurator.h"
 
 NBackConfigurator::NBackConfigurator(): StudyConfigurator() {
-    this->studyDescriptionFile = ":/CommonClasses/StudyControl/nback/descriptions/nback.dat";    
+    this->studyDescriptionFile = ":/CommonClasses/StudyControl/nback/descriptions/nback.dat";
 }
 
 bool NBackConfigurator::studySpecificConfiguration(const QVariantMap &studyConfig){
@@ -11,51 +11,34 @@ bool NBackConfigurator::studySpecificConfiguration(const QVariantMap &studyConfi
         numberOfTrials = N_TRIALS_IN_SHORT_STUDIES;
     }
     else {
-        if (this->studyType == VMDC::Study::NBACK){
-            numberOfTrials = REDUCED_TRIAL_SET;
-        }
+        // We always use the reduce trial set.
+        numberOfTrials = REDUCED_TRIAL_SET;
     }
 
     // Now we parse the trial. If it worked the configuration is loaded with the NBack trials.
     if (!parseStudyDescription(numberOfTrials)) return false;
 
+    qint32 ntargets = studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt();
+    QString study_code;
+    if (ntargets == 3) study_code = VMDC::Study::NBACK_3;
+    else study_code = VMDC::Study::NBACK_4;
+
     // Now that the description was parsed, we can set all the other configuration constants.
     configuration[RRS::StudyConfigurationFields::PAUSE_MESSAGE] = studyConfig[VMDC::StudyParameter::WAIT_MESSAGE];
     configuration[RRS::StudyConfigurationFields::IS_STUDY_3D] = false;
 
-    if (this->studyType == VMDC::Study::NBACKVS){
+    qint32 hold_time = studyConfig.value(VMDC::StudyParameter::NBACK_HOLD_TIME).toInt();
+    configuration[RRS::StudyConfigurationFields::STUDY]                = study_code;
+    configuration[RRS::StudyConfigurationFields::MIN_HOLD_TIME]        = hold_time;
+    configuration[RRS::StudyConfigurationFields::MAX_HOLD_TIME]        = hold_time;
+    configuration[RRS::StudyConfigurationFields::STEP_HOLD_TIME]       = 0;
+    configuration[RRS::StudyConfigurationFields::START_HOLD_TIME]      = hold_time;
+    configuration[RRS::StudyConfigurationFields::NUMBER_OF_TARGETS]    = ntargets;
+    configuration[RRS::StudyConfigurationFields::N_TRIALS_STEP_CHANGE] = 0;
+    configuration[RRS::StudyConfigurationFields::TIMEOUT_TRAN]         = studyConfig.value(VMDC::StudyParameter::NBACK_TRANSITION).toInt();
+    configuration[RRS::StudyConfigurationFields::TIMEOUT]              = studyConfig.value(VMDC::StudyParameter::NBACK_TIMEOUT).toInt();
+    configuration[RRS::StudyConfigurationFields::NBACK_LIGHTUP]        = RRS::NBack::NBackLightUp::NONE;
 
-        if (!studyConfig.value(VMDC::StudyParameter::NBACK_LIGHT_ALL).toBool()){
-            configuration[RRS::StudyConfigurationFields::NBACK_LIGHTUP] = RRS::NBack::NBackLightUp::CORRECT;
-        }
-        else {
-            configuration[RRS::StudyConfigurationFields::NBACK_LIGHTUP] = RRS::NBack::NBackLightUp::ALL;
-        }
-
-        configuration[RRS::StudyConfigurationFields::STUDY]                = VMDC::Study::NBACKVS;
-        configuration[RRS::StudyConfigurationFields::MIN_HOLD_TIME]        = NBACKVS_MIN_HOLD_TIME;
-        configuration[RRS::StudyConfigurationFields::MAX_HOLD_TIME]        = NBACKVS_MAX_HOLD_TIME;
-        configuration[RRS::StudyConfigurationFields::STEP_HOLD_TIME]       = NBACKVS_STEP_HOLD_TIME;
-        configuration[RRS::StudyConfigurationFields::START_HOLD_TIME]      = NBACKVS_START_HOLD_TIME;
-        configuration[RRS::StudyConfigurationFields::NUMBER_OF_TARGETS]    = studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt();
-        configuration[RRS::StudyConfigurationFields::N_TRIALS_STEP_CHANGE] = NBACKVS_NTRIAL_FOR_STEP_CHANGE;
-        configuration[RRS::StudyConfigurationFields::TIMEOUT_TRAN]         = NBACKVS_TRANSITION_TIME;
-        configuration[RRS::StudyConfigurationFields::TIMEOUT]              = NBACKVS_RETRIEVAL_TIMEOUT;        
-
-    }
-    else {
-        qint32 hold_time = studyConfig.value(VMDC::StudyParameter::NBACK_HOLD_TIME).toInt();
-        configuration[RRS::StudyConfigurationFields::STUDY]                = VMDC::Study::NBACK;
-        configuration[RRS::StudyConfigurationFields::MIN_HOLD_TIME]        = hold_time;
-        configuration[RRS::StudyConfigurationFields::MAX_HOLD_TIME]        = hold_time;
-        configuration[RRS::StudyConfigurationFields::STEP_HOLD_TIME]       = 0;
-        configuration[RRS::StudyConfigurationFields::START_HOLD_TIME]      = hold_time;
-        configuration[RRS::StudyConfigurationFields::NUMBER_OF_TARGETS]    = studyConfig.value(VMDC::StudyParameter::NUMBER_TARGETS).toInt();
-        configuration[RRS::StudyConfigurationFields::N_TRIALS_STEP_CHANGE] = 0;
-        configuration[RRS::StudyConfigurationFields::TIMEOUT_TRAN]         = studyConfig.value(VMDC::StudyParameter::NBACK_TRANSITION).toInt();
-        configuration[RRS::StudyConfigurationFields::TIMEOUT]              = studyConfig.value(VMDC::StudyParameter::NBACK_TIMEOUT).toInt();
-        configuration[RRS::StudyConfigurationFields::NBACK_LIGHTUP]        = RRS::NBack::NBackLightUp::NONE;
-    }
 
     return true;
 }

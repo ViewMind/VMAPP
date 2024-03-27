@@ -17,21 +17,19 @@ Rectangle {
     readonly property int vmHAND_CALIB_START_V : 1;
     readonly property int vmHAND_CALIB_END     : 2;
 
-    //readonly property string vmONGOING_STUDY_FIELD: "ongoing_study_file"
-
     property int vmEvaluationStage : vmSTAGE_CALIBRATION
 
     // The flag is required to indetify the moment between entering the strign and calibration actually staring.
     property bool vmInCalibration: false
     property bool vmIsCalibrated: false;
     property bool vmIsPreviousCalibrationType3D: false;
-    property int  vmCurrentEvaluation: 0
-
-    // property bool vmBindingStudyStarted: false;
+    property int  vmCurrentTask: 0
 
     property bool vmSlowCalibrationSelected: false
 
     property string vmWhichHandToCalibrate: "";
+
+    property var vmTaskList: []
 
     property int renderWindowOffsetX: 0;
     property int renderWindowOffsetY: 0;
@@ -105,7 +103,6 @@ Rectangle {
         function onHandCalibrationDone(){
             // When the hand calibration is done, we move on to verification and we give the possibility of starting the hand calibration again.
             showHandCalibrationVerification();
-            // prepareStudyStart();
         }
 
         function onNewExperimentMessages(string_value_map){
@@ -147,7 +144,7 @@ Rectangle {
 
                     //console.log("Setting display message to: |" + message_to_display + "|");
 
-                    let current_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
+                    let current_task = vmTaskList[vmCurrentTask].type;
 
                     // The arrow use instruction changes on the last explanation slide.
                     if (index === (message_list.length -1)){
@@ -162,9 +159,21 @@ Rectangle {
                         arrowUseText.text = "(" + loader.getStringForKey("viewevalution_arrow_use") + ")"
                     }
 
-                    if (VMGlobals.vmSCP_NUMBER_OF_TARGETS in current_config){
-                        let ntargets = current_config[VMGlobals.vmSCP_NUMBER_OF_TARGETS]
-                        //message_to_display = message_to_display.replace("<<N>>",ntargets);
+                    let ntargets;
+
+                    if ((current_task === VMGlobals.vmTASK_BINDING_BC_2_SHORT) || (current_task === VMGlobals.vmTASK_BINDING_BC_2_SHORT)){
+                        ntargets = 2;
+                    }
+                    else if ((current_task === VMGlobals.vmTASK_BINDING_BC_3_SHORT) ||
+                             (current_task === VMGlobals.vmTASK_BINDING_BC_3_SHORT) ||
+                             (current_task === VMGlobals.vmTASK_NBACK_3) ){
+                        ntargets = 3;
+                    }
+                    else if (current_task === VMGlobals.vmTASK_NBACK_4){
+                        ntargets = 4;
+                    }
+
+                    if (ntargets > 0){
                         message_to_display = VMGlobals.stringReplaceAll("<<N>>",ntargets,message_to_display)
                     }
 
@@ -182,31 +191,13 @@ Rectangle {
     }
 
     function doesCurrentEvalutionRequiredHandCalibration(){
-        //        console.log("Checkig if we require hand calibration");
-        //        console.log(JSON.stringify(evaluationsView.vmSelectedEvaluationConfigurations));        
-        var current_config = evaluationsView.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
-        if (VMGlobals.vmSCP_STUDY_REQ_H_CALIB in current_config){
-            return current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB];
-        }
-        else return false;
+        var task_code = vmTaskList[vmCurrentTask].type;
+        return flowControl.doesTaskRequireHandCalibration(task_code);
     }
 
     function isCurrentEvaluationA3DStudy() {
-
-        //console.log("Checking if current evaluation is 3D study. Current evaluation index is " + vmCurrentEvaluation)
-
-        var current_config = evaluationsView.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
-
-        //console.log(JSON.stringify(current_config));
-
-        if (VMGlobals.vmSCP_IS_STUDY_3D in current_config){
-
-            //console.log(VMGlobals.vmSCP_IS_STUDY_3D + "  was detected in the current configuration. Its value is")
-            //console.log(current_config[VMGlobals.vmSCP_IS_STUDY_3D]);
-
-            return current_config[VMGlobals.vmSCP_IS_STUDY_3D];
-        }
-        else return false;
+        var task_code = vmTaskList[vmCurrentTask].type;
+        return flowControl.isTask3D(task_code);
     }
 
     function prepareNextStudyOrHandCalibration(calibrationSkipped, is_recalibrating_hands){
@@ -217,15 +208,12 @@ Rectangle {
         }
 
         // The next state depends on whether the hand calibration is necessary or not.
-        let current_config = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation];
-        if (current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB] !== ""){
-            //console.log("Preparing for Hand Calibration");
-            vmWhichHandToCalibrate = current_config[VMGlobals.vmSCP_STUDY_REQ_H_CALIB];
-            //startHorizontalHandCalibration()
+        if (doesCurrentEvalutionRequiredHandCalibration()){
+            vmWhichHandToCalibrate = "both"
             prepareForHandCalibration(is_recalibrating_hands)
         }
         else {
-            prepareStudyStart();
+            prepareTaskStart();
         }
 
     }
@@ -234,7 +222,6 @@ Rectangle {
         vmEvaluationStage = vmSTAGE_PRE_HAND_CALIB
         if (!is_recalibrating) {
             plineEvaluationStages.indicateNext();
-            // viewEvaluations.advanceStudyIndicator();
         }
         viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_start_hand_calib"),"");
         studyExplanationText.text = loader.getStringForKey("viewevaluation_turn_on_controllers",false);
@@ -253,20 +240,58 @@ Rectangle {
         studyExplanationText.text = loader.getStringForKey("viewevaluation_hand_verif",false);
     }
 
-    function prepareStudyStart(){
+    function setupEvaluation(){
+
+        // When the system calls this fucntion a subject, and evaluation must be set. This defines everthing else.
+
+        // So first we make sure that the proper patient is loaded.
+        viewEvaluations.setPatientForEvaluation();
+
+        // This internally sets the current task list and it's returned.
+        vmTaskList = flowControl.setupCurrentTaskList();
+
+        //console.log("Current Task List: " + JSON.stringify(vmTaskList));
+
+        let taskNameMap = loader.getTaskCodeToNameMap();
+        let task_names  = [];
+
+        for (let i = 0; i < vmTaskList.length; i++){
+            let code = vmTaskList[i].type;
+            task_names.push(taskNameMap[code]);
+        }
+
+
+        // The we get the list of tasks that we need to do.
+        viewEvaluations.setUpStudyNames(task_names);
+
+        // Index to indicate the current evaluation being performed.
+        vmCurrentTask = 0;
+
+        // Making sure the is calibrated flag is set to false.
+        vmIsCalibrated = false;
+
+        // This shoudl render the secondary progress line.
+        resetEvaluationStages();
+
+        vmEvaluationStage = evaluationRun.vmSTAGE_CALIBRATION
+        setCalibrationExplantion() // Setting the calibration explanation message.
+        vmInCalibration = false;
+
+        // Finally we make sure that the proper title is shown at the right hand side.
+        setStudyAndStage();
+
+        // Set patient changes the button text. So we make sure it shows the proper text.
+        viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_calibrate"),"")
+
+    }
+
+    function prepareTaskStart(){
 
         // Next state in the state machine.
         vmEvaluationStage = vmSTAGE_EXPLANATION;
 
-        //        console.log("SCEvalRunEvaluation.prepareStudyStart: Printing study configuration for the current evaluation: " + vmCurrentEvaluation + " out of " + viewEvaluations.vmSelectedEvaluationConfigurations.length);
-        //        console.log(JSON.stringify(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation],null,2));
-
         // We load the text explanation depending on the study. so we get the study unique number id.
-        let unique_study_id = parseInt(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmUNIQUE_STUDY_ID]);
-
-        if (unique_study_id === VMGlobals.vmINDEX_NBACKVS){
-            let ntargets = viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation][VMGlobals.vmSCP_NUMBER_OF_TARGETS]
-        }
+        let task_code = vmTaskList[vmCurrentTask].type;
 
         // Button text must change to the next action, which is to start the examples.
         viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_action_examples"),"")
@@ -283,18 +308,10 @@ Rectangle {
         plineEvaluationStages.indicateNext();
 
         // Change the stage text in the title.
-        let current_study = keysRect.getEvalName()
+        setStudyAndStage();
 
-        // Now we need to activate explanation mode. First step is creating the study file.
-        if (!loader.createSubjectStudyFile(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation],
-                                           viewEvaluations.vmSelectedDoctor,viewEvaluations.vmSelectedProtocol)){
-            let title = loader.getStringForKey("viewevaluation_err_programming");
-            mainWindow.popUpNotify(VMGlobals.vmNotificationRed,title);
-            return;
-        }
-
-        // Actually starting the experiment.
-        if (!flowControl.startNewExperiment(viewEvaluations.vmSelectedEvaluationConfigurations[vmCurrentEvaluation])){
+        // Start the new task. The only thing that is required is the index.
+        if (!flowControl.startTask(vmCurrentTask)){
             let title = loader.getStringForKey("viewevaluation_err_programming");
             mainWindow.popUpNotify(VMGlobals.vmNotificationRed,title);
             return;
@@ -310,7 +327,7 @@ Rectangle {
         }
 
         // Text[0] is just evaluations.Text[1] contains the evaluation name.
-        let nText = (vmCurrentEvaluation + 1)
+        let nText = (vmCurrentTask + 1)
         keysRect.setEvalName(nText,texts[0])
 
     }
@@ -334,7 +351,7 @@ Rectangle {
             // When onHandCalibrationDone is called the next stage will be called.
         }
         else if (vmEvaluationStage == vmSTAGE_HAND_CALIB_VERIF){
-            prepareStudyStart();
+            prepareTaskStart();
         }
         else if (vmEvaluationStage == vmSTAGE_EXPLANATION){
             vmEvaluationStage = vmSTAGE_EXAMPLES;
@@ -377,10 +394,10 @@ Rectangle {
     }
 
     function advanceStudy(){
-        vmCurrentEvaluation++;
+        vmCurrentTask++;
         viewEvaluations.advanceStudyIndicator();
 
-        if (vmCurrentEvaluation >= viewEvaluations.vmSelectedEvaluationConfigurations.length){
+        if (vmCurrentTask >= vmTaskList.length){
             // We are done.
             allEvalsDone()
         }

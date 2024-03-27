@@ -13,6 +13,7 @@
 #include <iostream>
 
 #include "../../CommonClasses/debug.h"
+#include "../../CommonClasses/RawDataContainer/default_configurations.h"
 #include "../../CommonClasses/ConfigurationManager/configurationmanager.h"
 #include "../../CommonClasses/RawDataContainer/viewminddatacontainer.h"
 #include "../../CommonClasses/RenderServerClient/RenderServerPackets/RenderServerPacketNames.h"
@@ -22,6 +23,7 @@
 #include "../../CommonClasses/Calibration/calibrationhistory.h"
 #include "../../CommonClasses/HWRecog/processrecognizer.h"
 #include "studyendoperations.h"
+#include "loaderflowcomm.h"
 #include "eyexperimenter_defines.h"
 
 class FlowControl : public QObject
@@ -29,19 +31,24 @@ class FlowControl : public QObject
     Q_OBJECT
 
 public:
-    explicit FlowControl(QObject *parent = Q_NULLPTR, ConfigurationManager *c = nullptr);
+    explicit FlowControl(QObject *parent = Q_NULLPTR, LoaderFlowComm *c = nullptr);
     ~FlowControl() override;
     Q_INVOKABLE void calibrateEyeTracker(bool useSlowCalibration, bool mode3D);
-    Q_INVOKABLE bool startNewExperiment(QVariantMap study_config);
+    Q_INVOKABLE bool startTask(qint32 taskIndexInCurrentList);
     Q_INVOKABLE void startStudyEvaluationPhase();
     Q_INVOKABLE void startStudyExamplePhase();
-    Q_INVOKABLE void requestStudyData();
+    Q_INVOKABLE void requestStudyData();    
+    Q_INVOKABLE void newEvaluation(const QString &evaluationID, const QString &clinician, const QString &selectedProtocol);
+    Q_INVOKABLE QVariantList setupCurrentTaskList();
 
     Q_INVOKABLE bool isExperimentEndOk() const;
     Q_INVOKABLE void keyboardKeyPressed(int key);
     Q_INVOKABLE bool isRenderServerWorking() const;
     Q_INVOKABLE QVariantMap getCalibrationValidationData() const;
     Q_INVOKABLE void storeCalibrationHistoryAsFailedCalibration();
+
+    Q_INVOKABLE bool doesTaskRequireHandCalibration(const QString &task_code) const;
+    Q_INVOKABLE bool isTask3D(const QString &task_code) const;
 
     Q_INVOKABLE void handCalibrationControl(qint32 command, const QString &which_hand);
 
@@ -154,10 +161,13 @@ private:
     static HWND renderWindowHandle;
 
     // The configuration structure
-    ConfigurationManager *configuration;
+    LoaderFlowComm *comm;
 
     // The Study End Processor.
     StudyEndOperations studyEndProcessor;
+
+    // The current task list.
+    QVariantList currentEvaluationTaskList;
 
     // Only valid vlues are 5 or 9 anything else will assume 9
     static const qint32 NUMBER_OF_CALIBRATION_POINTS = 9;
@@ -170,6 +180,11 @@ private:
     static const qint32 HAND_CALIB_START_H           = 0;
     static const qint32 HAND_CALIB_START_V           = 1;
     static const qint32 HAND_CALIB_END               = 2;
+
+    // Minimum number of points to conform a fixation.
+    static const qint32 MINIMUM_NUMBER_OF_DATAPOINTS_IN_FIXATION = 4;
+
+    bool initDataContainerForNewTask(const QVariantMap &evaluationDefintion, ViewMindDataContainer *rdc);
 
 };
 

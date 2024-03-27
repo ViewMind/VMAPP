@@ -12,51 +12,39 @@ const char * LocalDB::MAIN_APP_VERSION                       = "app_version";
 const char * LocalDB::MAIN_APP_UPDATE_DELAY_COUNTER          = "update_delay_counter";
 const char * LocalDB::MAIN_DB_VERSION                        = "local_db_version";
 const char * LocalDB::MAIN_RECOVERY_PASSWORD                 = "recovery_password";
-const char * LocalDB::MAIN_QC_STUDY_INDEX                    = "qc_study_index";
 const char * LocalDB::MAIN_LAST_LOG_UPLOAD                   = "last_log_upload";
-const char * LocalDB::MAIN_STORED_SEQUENCES                  = "stored_sequences";
 const char * LocalDB::MAIN_PREFERENCES                       = "preferences";
 const char * LocalDB::MAIN_LAST_APP_DOWNLOADED               = "last_downloaded_app";
-const char * LocalDB::MAIN_INSTITUTION_COUNTRY_CODE          = "institution_country_code";
 const char * LocalDB::MAIN_INSTANCE_ENABLED                  = "instance_enabled";
 const char * LocalDB::MAIN_HMD_CHANGE                        = "hmd_change_sn";
-const char * LocalDB::MAIN_HIDDEN_STUDIES                    = "hidden_studies";
+const char * LocalDB::MAIN_AVAILABLE_EVALS                   = "available_evals";
+const char * LocalDB::MAIN_ONGOING_EVALUATIONS               = "ongoing_evaluations";
 
 // Evaluator fields
-const char * LocalDB::APPUSER_NAME          = "name";
-const char * LocalDB::APPUSER_LASTNAME      = "lastname";
-const char * LocalDB::APPUSER_PASSWORD      = "password";
-const char * LocalDB::APPUSER_EMAIL         = "email";
-const char * LocalDB::APPUSER_VIEWMIND_ID   = "viewmind_id";
+const char * LocalDB::APPUSER_NAME                           = "name";
+const char * LocalDB::APPUSER_LASTNAME                       = "lastname";
+const char * LocalDB::APPUSER_PASSWORD                       = "password";
+const char * LocalDB::APPUSER_EMAIL                          = "email";
+const char * LocalDB::APPUSER_VIEWMIND_ID                    = "viewmind_id";
 
 // Subject Fields
-const char * LocalDB::SUBJECT_NAME                     = "name";
-const char * LocalDB::SUBJECT_LASTNAME                 = "lastname";
-const char * LocalDB::SUBJECT_INSTITUTION_ID           = "supplied_institution_id";
-const char * LocalDB::SUBJECT_BIRTHDATE                = "birthdate";
-const char * LocalDB::SUBJECT_BIRTHCOUNTRY             = "birthcountry";
-const char * LocalDB::SUBJECT_YEARS_FORMATION          = "years_formation";
-const char * LocalDB::SUBJECT_CREATION_DATE            = "creation_date";
-const char * LocalDB::SUBJECT_CREATION_DATE_INDEX      = "creation_date_index";
-const char * LocalDB::SUBJECT_BDATE_DISPLAY            = "bdate_display";
-const char * LocalDB::SUBJECT_SORTABLE_NAME            = "sortable_name";
-const char * LocalDB::SUBJECT_GENDER                   = "gender";
-const char * LocalDB::SUBJECT_STUDY_MARKERS            = "subject_study_markers";
-const char * LocalDB::SUBJECT_LOCAL_ID                 = "local_id";
-const char * LocalDB::SUBJECT_ASSIGNED_MEDIC           = "assigned_medic";
-const char * LocalDB::SUBJECT_EMAIL                    = "email";
-const char * LocalDB::SUBJECT_FIELD_IN_SERVER_RESPONSE = "subjects";
-const char * LocalDB::SUBJECT_MODIFIED_FLAG            = "modified_but_not_sent";
-const char * LocalDB::SUBJECT_UPDATED_IDS              = "updated_subjects_ids";
-
-
-const char * LocalDB::STORED_SEQ_LAST_SELECTED      = "last_selected";
-const char * LocalDB::STORED_SEQ_SEQUENCES          = "stored_sequences";
-
-
-// "Bookmark" fields
-const char * LocalDB::MARKER_VALUE            = "marker_value";
-const char * LocalDB::MARKER_TIME             = "marker_time";
+const char * LocalDB::SUBJECT_NAME                           = "name";
+const char * LocalDB::SUBJECT_LASTNAME                       = "lastname";
+const char * LocalDB::SUBJECT_INSTITUTION_ID                 = "supplied_institution_id";
+const char * LocalDB::SUBJECT_BIRTHDATE                      = "birthdate";
+const char * LocalDB::SUBJECT_BIRTHCOUNTRY                   = "birthcountry";
+const char * LocalDB::SUBJECT_YEARS_FORMATION                = "years_formation";
+const char * LocalDB::SUBJECT_CREATION_DATE                  = "creation_date";
+const char * LocalDB::SUBJECT_CREATION_DATE_INDEX            = "creation_date_index";
+const char * LocalDB::SUBJECT_BDATE_DISPLAY                  = "bdate_display";
+const char * LocalDB::SUBJECT_SORTABLE_NAME                  = "sortable_name";
+const char * LocalDB::SUBJECT_GENDER                         = "gender";
+const char * LocalDB::SUBJECT_LOCAL_ID                       = "local_id";
+const char * LocalDB::SUBJECT_ASSIGNED_MEDIC                 = "assigned_medic";
+const char * LocalDB::SUBJECT_EMAIL                          = "email";
+const char * LocalDB::SUBJECT_FIELD_IN_SERVER_RESPONSE       = "subjects";
+const char * LocalDB::SUBJECT_MODIFIED_FLAG                  = "modified_but_not_sent";
+const char * LocalDB::SUBJECT_UPDATED_IDS                    = "updated_subjects_ids";
 
 // Protocol Fields
 const char * LocalDB::PROTOCOL_NAME           = "protocol_name";
@@ -67,6 +55,28 @@ const char * LocalDB::PROTOCOL_ID             = "protocol_id";
 const char * LocalDB::PREF_UI_LANG            = "ui_language";
 const char * LocalDB::PREF_EXP_LANG           = "explanation_language";
 const char * LocalDB::PREF_LAST_SEL_PROTOCOL  = "last_selected_protocol";
+
+// On Going Evaluations Field
+const char * LocalDB::EVAL_ID                      = "id";
+const char * LocalDB::EVAL_STATUS                  = "status";
+const char * LocalDB::EVAL_CLINICIAN               = "clinician";
+const char * LocalDB::EVAL_EVALUATOR               = "evaluator";
+const char * LocalDB::EVAL_ISO_DATE                = "date";
+const char * LocalDB::EVAL_TIME                    = "time";
+const char * LocalDB::EVAL_TYPE                    = "eval_type";
+const char * LocalDB::EVAL_TIMESTAMP               = "timestamp";
+const char * LocalDB::EVAL_TASKS                   = "tasks";
+const char * LocalDB::EVAL_SUBJECT                 = "subject";
+const char * LocalDB::EVAL_PROTOCOL                = "protocol";
+
+// Tasks subfields for ongoing evaluations
+const char * LocalDB::TASK_TYPE                    = "task_code";
+const char * LocalDB::TASK_FILE                    = "file";
+const char * LocalDB::TASK_QCI                     = "qci";
+const char * LocalDB::TASK_QCI_OK                  = "qci_ok";
+const char * LocalDB::TASK_UPLOADED                = "uploaded";
+const char * LocalDB::TASK_DISCARDED               = "discarded";
+
 
 
 LocalDB::LocalDB()
@@ -152,7 +162,7 @@ bool LocalDB::isVersionUpToDate() const{
 
 bool LocalDB::setDBFile(const QString &dbfile, const QString &bkp_dir, bool pretty_print_db, bool disable_checksum){
 
-    dbBKPdir = bkp_dir;   
+    dbBKPdir = bkp_dir;
     this->dbfile = ""; // This way if something goes wrong the db file won't be set
 
     // Checking the backup directory exists or that it can be created.
@@ -209,60 +219,6 @@ bool LocalDB::setDBFile(const QString &dbfile, const QString &bkp_dir, bool pret
 
     return true;
 
-}
-
-bool LocalDB::addStudyMarkerForSubject(const QString &suid, const QString &study, const QString &value){
-
-    if (!data.value(MAIN_SUBJECT_DATA).toMap().contains(suid)){
-        error = "Trying to add a marker for subject " + suid + " but it doesn't exist";
-        return false;
-    }
-
-    // Getting the marker or bookmark, empty if it doesn't exist.
-    QVariantMap all_subject_data = data.value(MAIN_SUBJECT_DATA).toMap();
-    QVariantMap suid_subject_data = all_subject_data.value(suid).toMap();
-    QVariantMap study_markers = suid_subject_data.value(SUBJECT_STUDY_MARKERS).toMap();
-    QVariantMap marker = study_markers.value(study).toMap();
-
-    // Setting the values
-    marker[MARKER_TIME]  = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm");
-    marker[MARKER_VALUE] = value;
-
-    // Setting it into the structure.
-    study_markers[study] = marker;
-    suid_subject_data[SUBJECT_STUDY_MARKERS] = study_markers;
-    all_subject_data[suid] = suid_subject_data;
-    data[MAIN_SUBJECT_DATA] = all_subject_data;
-
-    return saveAndBackup();
-
-}
-
-QVariant LocalDB::getMarkerForStudy(const QString &suid, const QString &study) const{
-    return data.value(MAIN_SUBJECT_DATA).toMap().value(suid).toMap().value(SUBJECT_STUDY_MARKERS).toMap().value(study);
-}
-
-
-bool LocalDB::removeMarkerForSubject(const QString &suid, const QString &study){
-    if (!data.value(MAIN_SUBJECT_DATA).toMap().contains(suid)){
-        error = "Trying to delete marker for subject " + suid + " but it doesn't exist";
-        return false;
-    }
-
-    // Getting the marker or bookmark, empty if it doesn't exist.
-    QVariantMap all_subject_data = data.value(MAIN_SUBJECT_DATA).toMap();
-    QVariantMap suid_subject_data = all_subject_data.value(suid).toMap();
-    QVariantMap study_markers = suid_subject_data.value(SUBJECT_STUDY_MARKERS).toMap();
-    if (study_markers.contains(study)){
-        study_markers.remove(study);
-    }
-
-    // Storing everything in the structure.
-    suid_subject_data[SUBJECT_STUDY_MARKERS] = study_markers;
-    all_subject_data[suid] = suid_subject_data;
-    data[MAIN_SUBJECT_DATA] = all_subject_data;
-
-    return saveAndBackup();
 }
 
 bool LocalDB::checkForLogUpload(){
@@ -887,50 +843,6 @@ void LocalDB::updatesToPreviousDBVersions(){
 
 }
 
-bool LocalDB::storeStudySequence(const QString &name, const QVariantList &sequence){
-
-    QVariantMap main_map = data.value(MAIN_STORED_SEQUENCES).toMap();
-    QVariantMap seq_map  = main_map.value(STORED_SEQ_SEQUENCES).toMap();
-    seq_map[name] = sequence;
-    main_map[STORED_SEQ_SEQUENCES] = seq_map;
-    data[MAIN_STORED_SEQUENCES] = main_map;
-    return saveAndBackup();
-
-}
-
-bool LocalDB::setLastSelectedSequence(const QString &name){
-
-    QVariantMap main_map = data.value(MAIN_STORED_SEQUENCES).toMap();
-    main_map[STORED_SEQ_LAST_SELECTED] = name;
-    data[MAIN_STORED_SEQUENCES] = main_map;
-    return saveAndBackup();
-
-}
-
-QVariantList LocalDB::getStudySequence(const QString &name){
-
-    QVariantMap main_map = data.value(MAIN_STORED_SEQUENCES).toMap();
-    return main_map.value(STORED_SEQ_SEQUENCES).toMap().value(name).toList();
-
-}
-
-QString LocalDB::getLastSelectedSequence() const{
-    return data.value(MAIN_STORED_SEQUENCES).toMap().value(STORED_SEQ_LAST_SELECTED).toString();
-}
-
-QStringList LocalDB::getStudySequenceList() const {
-    return data.value(MAIN_STORED_SEQUENCES).toMap().value(STORED_SEQ_SEQUENCES).toMap().keys();
-}
-
-bool LocalDB::deleteStudySequence(const QString &name){
-    QVariantMap main_map = data.value(MAIN_STORED_SEQUENCES).toMap();
-    QVariantMap seq_map  = main_map.value(STORED_SEQ_SEQUENCES).toMap();
-    seq_map.remove(name);
-    main_map[STORED_SEQ_SEQUENCES] = seq_map;
-    data[MAIN_STORED_SEQUENCES] = main_map;
-    return saveAndBackup();
-}
-
 ////////////////////////////// Update Help Check ///////////////////////////////
 
 QString LocalDB::getLastDownloadedApp() const{
@@ -955,13 +867,13 @@ bool LocalDB::setHMDChangeSN(const QString &sn){
 }
 
 ////////////////////////////// Studies to Hide ///////////////////////////////
-QVariantList LocalDB::getHiddenStudiesList() const {
-    if (data.contains(MAIN_HIDDEN_STUDIES)) return data.value(MAIN_HIDDEN_STUDIES).toList();
-    else return QVariantList();
+QVariantMap LocalDB::getAvailableEvals() const {
+    if (data.contains(MAIN_AVAILABLE_EVALS)) return data.value(MAIN_AVAILABLE_EVALS).toMap();
+    else return QVariantMap();
 }
 
-void LocalDB::setHiddenStudiesList(const QVariantList &hiddenStudies) {
-    data[MAIN_HIDDEN_STUDIES] = hiddenStudies;
+void LocalDB::setAvailableEvaluations(const QVariantMap &available) {
+    data[MAIN_AVAILABLE_EVALS] = available;
     saveAndBackup();
 }
 
@@ -975,16 +887,6 @@ bool LocalDB::isInstanceEnabled() const {
     if (data.contains(MAIN_INSTANCE_ENABLED)) return data.value(MAIN_INSTANCE_ENABLED).toBool();
     // The default here is true. Playing it safe.
     else return true;
-}
-
-////////////////////////////// Institution Country Code ///////////////////////////////
-QString LocalDB::getInstitutionCountryCode() const {
-    return data.value(MAIN_INSTITUTION_COUNTRY_CODE).toString();
-}
-
-bool LocalDB::setInstitutionCountryCode(const QString &country_code){
-    data[MAIN_INSTITUTION_COUNTRY_CODE] = country_code;
-    return saveAndBackup();
 }
 
 ////////////////////////////// PREFERENCES ///////////////////////////////
@@ -1017,6 +919,192 @@ QVariant LocalDB::getPreference(const QString &preference, const QString &retAnd
     return map.value(preference).toString();
 }
 
+
+////////////////////////////// ONGOING EVALUATIONS ///////////////////////////////
+
+QString LocalDB::createNewEvaluation(const QString &subjectID,
+                                     const QString &clinician,
+                                     const QString &evaluator,
+                                     const QString &protocol,
+                                     const QString &instance_prefix,
+                                     const QString &evalType){
+
+    QDateTime now = QDateTime::currentDateTime();
+    QString evaluationID = instance_prefix + "_" + now.toString("yyyyMMdd_hhmmss");
+
+
+    QVariantMap newEvaluation;
+
+    // We initialize the new evaluation object.
+    newEvaluation[EVAL_CLINICIAN] = clinician;
+    newEvaluation[EVAL_EVALUATOR] = evaluator;
+    newEvaluation[EVAL_STATUS]    = EvaluationStatus::ONGOING;
+    newEvaluation[EVAL_TIMESTAMP] = QDateTime::currentSecsSinceEpoch();
+    newEvaluation[EVAL_ID]        = evaluationID;
+    newEvaluation[EVAL_SUBJECT]   = subjectID;
+    newEvaluation[EVAL_TIME]      = now.toString("hh:mm");
+    newEvaluation[EVAL_ISO_DATE]  = now.toString("yyyy-MM-dd");
+    newEvaluation[EVAL_PROTOCOL]  = protocol;
+    newEvaluation[EVAL_TYPE]      = evalType;
+
+    // We can use the evaluation type to get a list of the tasks.
+    QVariantMap availableEvaluations = this->data.value(MAIN_AVAILABLE_EVALS).toMap();
+
+    //Debug::prettyPrintQVariantMap(availableEvaluations);
+
+    //qDebug() << "Printing evaluation of Type" << evalType;
+
+    QVariantMap evaluationStruct = availableEvaluations.value(evalType).toMap();
+
+    //Debug::prettyPrintQVariantMap(evaluationStruct);
+
+    QStringList tasks_list = evaluationStruct.value("list").toStringList();
+
+    //qDebug() << "Resulting TASK LIST" << tasks_list;
+
+    // We initialize each of the tasks object.
+    QVariantMap tasks;
+    for (qint32 i = 0; i < tasks_list.size(); i++){
+
+        QString task = tasks_list.at(i);
+        QString tarTaskFileName = "";
+        QVariantMap taskMap = createNewTaskObjectForEvaluationTaskList(evaluationID,task,&tarTaskFileName);
+        // Store the configuration in the task object key-d by the file name.
+        tasks[tarTaskFileName] = taskMap;
+
+    }
+
+    // Storing the task list.
+    newEvaluation[EVAL_TASKS] = tasks;
+
+    // Now we store in the DB.
+    QVariantMap ongoing_evals = this->data.value(MAIN_ONGOING_EVALUATIONS).toMap();
+    ongoing_evals[evaluationID] = newEvaluation;
+    this->data[MAIN_ONGOING_EVALUATIONS] = ongoing_evals;
+
+    saveAndBackup();
+
+    return evaluationID;
+
+}
+
+QVariantList LocalDB::getRemainingTasksForEvaluation(const QString &evaluationID){
+
+    QVariantMap ongoing_evals = this->data.value(MAIN_ONGOING_EVALUATIONS).toMap();
+    if (!ongoing_evals.contains(evaluationID)) return QVariantList();
+    QVariantMap tasks = ongoing_evals.value(evaluationID).toMap().value(EVAL_TASKS).toMap();
+
+    QStringList filenames = tasks.keys();
+
+    QVariantList remTasks;
+    for (qint32 i = 0; i < filenames.size(); i++){
+        QString filename = filenames.at(i);
+        QVariantMap taskObj = tasks.value(filename).toMap();
+
+        if (taskObj.value(TASK_QCI).toReal() < 0){
+            QVariantMap obj;
+            obj["type"] = taskObj.value(TASK_TYPE).toString();
+            obj["file"] = taskObj.value(TASK_FILE).toString();
+            remTasks << obj;
+        }
+
+
+    }
+
+    return remTasks;
+
+}
+
+QVariantMap LocalDB::getEvaluation(const QString &evaluationID) const {
+    QVariantMap ongoing_evals = this->data.value(MAIN_ONGOING_EVALUATIONS).toMap();
+    return ongoing_evals.value(evaluationID).toMap();
+}
+
+bool LocalDB::updateEvaluation(const QString &evaluationID, const QString &taskFileName, qreal qci, bool qci_ok, bool requestRedo){
+
+    QVariantMap ongoing_evals = this->data.value(MAIN_ONGOING_EVALUATIONS).toMap();
+    QVariantMap evaluation = ongoing_evals.value(evaluationID).toMap();
+
+    // Now we search for the task.
+    QVariantMap tasks = evaluation.value(EVAL_TASKS).toMap();
+    if (!tasks.contains(taskFileName)){
+        this->error = "Updating evaluation '" + evaluationID + "', unable to file task file  '" + taskFileName + "'. Structure looks like\n" + Debug::QVariantMapToString(evaluation);
+        return false;
+    }
+
+    // Updating the QCI values for the task.
+    QVariantMap task = tasks.value(taskFileName).toMap();
+    if (!requestRedo){
+        task[TASK_QCI] = qci;
+        task[TASK_QCI_OK] = qci_ok;
+        if (!qci_ok) task[TASK_DISCARDED]  = true;
+    }
+    else {
+        // If a redo is requested, this one is discarded.
+        task[TASK_DISCARDED]  = true;
+    }
+
+    tasks[taskFileName] = task;
+
+    // If the QCI values are bad we need to create a new file slot in the task list for the this task.
+    if ((!qci_ok) || (requestRedo)){
+        QString newFileName = "";
+        QVariantMap newTask = createNewTaskObjectForEvaluationTaskList(evaluationID,task.value(TASK_TYPE).toString(),&newFileName);
+        tasks[newFileName] = newTask;
+
+        // We already know we have bad QCI situation. So we can set the status.
+        evaluation[EVAL_STATUS] = EvaluationStatus::BAD_QCI;
+    }
+    else {
+
+        // We need to determine if we are done or not. IN order to be done we need for all files in the task list to have a non zero QCI.
+        QStringList allFiles = tasks.keys();
+        bool done = true;
+        for (qint32 i = 0; i < allFiles.size(); i++){
+            QString key = allFiles.at(i);
+            task = tasks.value(key).toMap();
+            if (task.value(TASK_QCI).toReal() < 0){
+                done = false;
+                break;
+            }
+        }
+
+        if (done) {
+            // If we are done, we are ready to upload.
+            evaluation[EVAL_STATUS] = EvaluationStatus::READY_UPLOAD;
+        }
+
+    }
+
+    // We store everything back.
+    evaluation[EVAL_TASKS] = tasks;
+    ongoing_evals[evaluationID] = evaluation;
+    this->data[MAIN_ONGOING_EVALUATIONS] = ongoing_evals;
+    if (!saveAndBackup()) return false;
+    return true;
+
+}
+
+QVariantMap LocalDB::createNewTaskObjectForEvaluationTaskList(const QString &evaluationID, const QString &task , QString *tarTaskFileName){
+
+    // So for each task we generate a file name.
+    QDateTime now = QDateTime::currentDateTime();
+    QString baseTaskFileName = evaluationID + "_" + task + "_" + now.toString("yyyyMMddhhmmss");
+    *tarTaskFileName  = baseTaskFileName + ".zip";
+    QString jsonTaskFileName = baseTaskFileName + ".json";
+
+    // And we initialize it's configuration.
+    QVariantMap taskMap;
+    taskMap[TASK_FILE]      = jsonTaskFileName;
+    taskMap[TASK_TYPE]      = task;
+    taskMap[TASK_QCI]       = -1;
+    taskMap[TASK_QCI_OK]    = false;
+    taskMap[TASK_UPLOADED]  = false;
+    taskMap[TASK_DISCARDED] = false;
+
+    return taskMap;
+}
+
 ////////////////////////////// FUZZY String Compare ///////////////////////////////
 QVariantList LocalDB::possibleNewPatientMatches(QString name, QString lastname, QString personalID ,QString iso_birthdate, const QStringList &months) const {
 
@@ -1035,7 +1123,7 @@ QVariantList LocalDB::possibleNewPatientMatches(QString name, QString lastname, 
 
         // The very first filter is the year of birth.
         if (bdate == iso_birthdate){
-        //if (iso_birthdate != ""){ // For testing purposes, so that the date always matches.
+            //if (iso_birthdate != ""){ // For testing purposes, so that the date always matches.
 
             // Now we do the fuzzy search.
             QString fname = patient.value(SUBJECT_NAME).toString();
@@ -1062,8 +1150,8 @@ QVariantList LocalDB::possibleNewPatientMatches(QString name, QString lastname, 
 
             if (possible_match) {
 
-//                Debug::prettpPrintQVariantMap(patient);
-//                qDebug() << "==============================";
+                //                Debug::prettpPrintQVariantMap(patient);
+                //                qDebug() << "==============================";
 
                 // We have a fuzzy match. We add the record to the list.
 

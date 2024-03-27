@@ -1,7 +1,10 @@
 #include "hwrecognizer.h"
 
-HWRecognizer::HWRecognizer()
-{
+HWRecognizer::HWRecognizer(){
+
+}
+
+void HWRecognizer::runRecognition() {
 
     // Initialize the specs to all empty.
     specs[HWKeys::CPU_MODEL] = "";

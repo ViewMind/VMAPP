@@ -111,8 +111,6 @@ public:
     bool finalizeStudy();
     bool finalizeStudy(const QVariantMap &data, qint64 overwrite_study_duration = -1, bool onlyStoreData = false);
 
-    void markFileAsFinalized();
-
     ////////////////////////// DEBUGGING FUNCTIONS
     void printRawDataCSV(const QString &filename, const QString &study, const QStringList whichRawDataValues);
     void DebugPrintContentToConsole() const;
@@ -153,7 +151,9 @@ public:
 
     QString getStudyStatus(const QString &study);
 
-    QString getMetadaStatus() ;
+    QString getMetadaStatus();
+
+    QString getEvaluationID();
 
     QVariantMap getStudyConfiguration(const QString study_type) ;
 

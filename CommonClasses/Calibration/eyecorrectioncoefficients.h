@@ -9,7 +9,8 @@
 #include "../EyeTrackingInterface/eyetrackerdata.h"
 #include "../LinearLeastSquares/linearleastsquaresfit.h"
 #include "../LinearLeastSquares/ordinaryleastsquares.h"
-#include "../eyetracker_defines.h"
+#include "../json_file_store.h"
+//#include "../eyetracker_defines.h"
 
 class EyeCorrectionCoefficients
 {

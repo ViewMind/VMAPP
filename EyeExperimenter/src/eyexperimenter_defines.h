@@ -39,6 +39,7 @@ static const QString Region = "region";
 namespace Paths {
 static const QString WORK_DIRECTORY          = "viewmind_etdata";
 static const QString LOCALDB                 = "viewmind_etdata/localdb.dat";
+static const QString EVALDB                  = "viewmind_etdata/evaldb.dat";
 static const QString DBBKPDIR                = "dbbkp";
 static const QString CONFIGURATION           = "vmconfiguration";
 static const QString APPSPEC                 = "vmappspec";
@@ -59,6 +60,7 @@ static const QString LOGDIR                  = "logs";
 static const QString TASKKILL                = "taskkill";
 static const QString SUBJECT_DIR_ABORTED     = "exp_aborted";
 static const QString SUBJECT_DIR_SENT        = "sent";
+static const QString EVAL_DB                 = "evals.json";
 }
 
 namespace SupportEmailPlaceHolders {
@@ -73,20 +75,13 @@ static const QString ISSUE      = "||ISSUE||";
 }
 
 namespace QCIFields {
-
 // Quality Control Index Fields
-static const QString DATE                = "date";
-static const QString INDEX               = "qci";
-static const QString MEDIC               = "medic_name";
-static const QString STUDY_TYPE          = "type";
-static const QString SUBJECT             = "subject_name";
-static const QString SUBJECT_INST_ID     = "subject_insitution_id";
-static const QString STUDY_FILE          = "file";
-static const QString PASS                = "qci_pass";
-static const QString DATE_ORDERCODE      = "order_code";
-static const QString EVALUATOR           = "evaluator";
-static const QString SUBJECT_VM_ID       = "subject_vm_id";
-
+static const QString QCI                 = "qci";
+static const QString QCI_PASS            = "qci_pass";
+static const QString COMMENT             = "comment";
+static const QString DISCARD_REASON      = "discard_reason";
+static const QString EVALUATION_ID       = "evaluation_id";
+static const QString TARBALL_FILE        = "tarballfile";
 }
 
 namespace VMConfig {
@@ -97,31 +92,6 @@ static const QString INSTANCE_HASH_KEY = "instance_hash_key";
 static const QString INSTITUTION_NAME = "institution_name";
 }
 
-namespace VMUILanguages {
-static const QString ES = "Español";
-static const QString EN = "English";
-}
-
-namespace StudyConfiguration {
-// These values NEED to match the ViewStudyStart definitions.
-static const QString UNIQUE_STUDY_ID = "unique_study_id";
-
-// Will be used when multiple studies need to be in the same file.
-static const QString ONGOING_STUDY_FILE = "ongoing_study_file";
-
-// Unique value index for each experiment, as selectable by the evaluator
-static const qint32 INDEX_READING = 0;
-static const qint32 INDEX_BINDING_BC = 1;
-static const qint32 INDEX_BINDING_UC = 2;
-static const qint32 INDEX_NBACKRT = 4;
-static const qint32 INDEX_NBACKVS = 5;
-static const qint32 INDEX_PASSBALL = 6;
-static const qint32 INDEX_GONOGO = 7;
-static const qint32 INDEX_GNG_SPHERE = 8;
-static const qint32 INDEX_NBACK = 9;
-static const qint32 INDEX_DOT_FOLLOW = 10;
-
-}
 
 namespace RemoteRenderServerParameters {
 static const QString DIR = "render_server";
@@ -149,18 +119,19 @@ static QVariantMap GetNameCodeMap() {
 
 namespace Share {
 static const QString APP_NAME = "ViewMind Atlas";
-static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.dev.25.rc.0";
-static const QString SEMAPHORE_NAME = "viewind_eyeexperimenter_semaphore";
-static const QString SHAREDMEMORY_NAME = "viewind_eyeexperimenter_shared_memory";
-static const QString PATIENT_UID = "patient_uid";
-static const QString PATIENT_DIRECTORY = "patient_directory";
-static const QString PATIENT_STUDY_FILE = "patient_study_file";
+static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.dev.26";
+static const QString SEMAPHORE_NAME              = "viewind_eyeexperimenter_semaphore";
+static const QString SHAREDMEMORY_NAME          = "viewind_eyeexperimenter_shared_memory";
+static const QString PATIENT_UID                = "patient_uid";
+static const QString PATIENT_DIRECTORY          = "patient_directory";
+static const QString PATIENT_STUDY_FILE         = "patient_study_file";
 static const QString CURRENTLY_LOGGED_EVALUATOR = "evaluator_logged";
-static const QString SELECTED_STUDY = "selected_study";
-static const QString HAND_CALIB_RES = "hand_calibration_results";
-static const QString NBACK_WAIT_MSG = "nback_wait_msg";
+static const QString SELECTED_STUDY             = "selected_study";
+static const QString HAND_CALIB_RES             = "hand_calibration_results";
+static const QString SELECTED_EVALUATION        = "selected_evaluation";
+static const QString API_PARAMETER_KEY          = "api_parameter_key";
 static const QString EYEEXPLORER_SYSTEM_VERSION = "27.8.5";
-static const QString APP_RELEASE_DATE = "DD-MM-YYYY";
+static const QString APP_RELEASE_DATE           = "DD-MM-YYYY";
 }
 
 static bool SetUpRegion(const QString &reg){
@@ -187,16 +158,6 @@ static bool SetUpRegion(const QString &reg){
 }
 
 namespace BaseFileNames {
-static const QString READING     = "reading";
-static const QString BINDING_UC  = "binding_uc";
-static const QString BINDING_BC  = "binding_bc";
-static const QString NBACKVS     = "nbackvs";
-static const QString NBACKRT     = "nbackrt";
-static const QString NBACK       = "nback";
-static const QString GONOGO_3D   = "gonogo_spheres";
-static const QString GONOGO      = "gonogo";
-static const QString PASSBALL    = "passball";
-static const QString DOT_FOLLOW  = "dotfollow";
 
 static QString MakeMetdataFileName(const QString &basename){
     return basename + "_metadata.json";
@@ -204,6 +165,13 @@ static QString MakeMetdataFileName(const QString &basename){
 static bool IsMetadataFileName(const QString &filename){
     return filename.endsWith("_metadata.json");
 }
+
+}
+
+namespace EvalStruct {
+
+   static const QString NAME = "name";
+   static const QString LIST = "list";
 
 }
 
@@ -215,6 +183,32 @@ namespace FCL {
    static const QString UPDATE_SAMP_FREQ = "update_sampling_frequecy";
    static const QString UPDATE_AVG_FREQ  = "update_avg_frequecy";
    static const QString UPDATE_MAX_FREQ  = "update_max_frequecy";
+}
+
+static QVariantMap SortMapListByStringValue(QList<QVariantMap> list, const QString &index){
+
+    // First we sort by order code.
+    bool swapDone = true;
+    while (swapDone){
+        swapDone = false;
+        for (qint32 i = 0; i < list.size()-1; i++){
+            if (list.at(i).value(index).toString() > list.at(i+1).value(index).toString()){
+                QVariantMap map = list.at(i);
+                list.replace(i,list.at(i+1));
+                list.replace(i+1,map);
+                swapDone = true;
+            }
+        }
+    }
+
+    // Then we form a map. When iteratin through the map, it should do it in order code, since it's alphebetical.
+    QVariantMap ans;
+    //qDebug() << "After sorting list size" << list.size();
+    for (qint32 i = 0; i < list.size(); i++){
+        ans.insert(list.at(i).value(index).toString(),list.at(i));
+    }
+    //qDebug() << "Returning a map of size" << ans.size();
+    return ans;
 }
 
 }

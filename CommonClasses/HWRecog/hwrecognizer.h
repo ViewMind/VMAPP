@@ -44,6 +44,9 @@ public:
     // Hardware Map For Convenience.
     typedef QMap<QString,QString> HardwareMap;
 
+    // Run the recorgintion.
+    void runRecognition();
+
     // Get all the information as a string map.
     HardwareMap getHardwareSpecs() const;
 

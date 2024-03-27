@@ -12,7 +12,7 @@ Rectangle {
     property int vmSelectedDoctorIndex: -1
     property var vmExpLangCodeList: [];
 
-    signal goToEvalSetup();
+    signal goToEvalRun();
 
     function prepareSettings(){
 
@@ -73,6 +73,9 @@ Rectangle {
     }
 
     function onNext(){
+
+        // The code in this section is only run when creating a NEW Evaluation.
+
         if (doctorSelection.vmCurrentIndex === -1){
             doctorSelection.vmErrorMsg = loader.getStringForKey("viewevaluation_must_select_doctor");
             return;
@@ -81,44 +84,67 @@ Rectangle {
         // Storing the last selected protocol
         let selectedProtocol = protocol.getCurrentlySelectedMetaDataField();        
         loader.setSettingsValue("last_selected_protocol",selectedProtocol);
-        viewEvaluations.vmSelectedProtocol = selectedProtocol;
 
         // Checking if the selected doctor for the patient changed. If it did, then it means that we must updated in the DB.
         if (doctorSelection.vmCurrentIndex !== vmSelectedDoctorIndex){
             // There was a changed and it must be saved.
             let newDoctor = doctorSelection.getCurrentlySelectedMetaDataField()
-            loader.modifySubjectSelectedMedic(viewEvaluations.vmSelectedPatientID,newDoctor);
+            loader.modifySubjectSelectedMedic(newDoctor);
         }
 
-        viewEvaluations.vmSelectedEye = VMGlobals.vmSCV_EYE_BOTH;
-        viewEvaluations.vmSelectedDoctor = doctorSelection.getCurrentlySelectedMetaDataField();
+        let doctorID = doctorSelection.getCurrentlySelectedMetaDataField();
 
-        goToEvalSetup();
-    }
+        // Create an evaluation and setup the sequence.
+        let avalialbleEvaluations = loader.getAvailableEvaluations();
+        let selectedEvaluationIndex = avalialbleEvaluations[evaluationSelection.vmCurrentIndex].id;
 
-    function clearSequenceSelection(){
-        autoStudySetup.setSelection = 0;
+        // Once the evaluations are setup we KNOW that this is the start of an evaluation run. This is when the calibration history needs to be reset.
+        flowControl.resetCalibrationHistory();
+
+        // Since this is the start of a new evaluation we need to create a new entry in the subject database.
+        flowControl.newEvaluation(selectedEvaluationIndex,doctorID,selectedProtocol);
+
+        goToEvalRun();
+
     }
 
     function reloadEvalSequenceList(){
+
+        let avalialbleEvaluations = loader.getAvailableEvaluations();
         var list = [];
-        list.push(loader.getStringForKey("viewevaluation_eval_setup_list"))
+        for (let i = 0; i < avalialbleEvaluations.length; i++){
+            list.push(avalialbleEvaluations[i].name);
+        }
+        evaluationSelection.setModelList(list);
+        evaluationSelection.setSelection(0);
 
-        var map = loader.getStudySequenceListAndCurrentlySelected();
-        var options = map.list;
-        var selected = map.current;
-        let selectedIndex = 0;
+    }
 
-        for (let i = 0; i < options.length; i++){
-            if (options[i] === selected){
-                selectedIndex = i+1 // 0 is selecting nothing.
+    function updateTaskList(){
+
+        let available_evaluations = loader.getAvailableEvaluations();
+
+        // This line is mostly here to avoid pointless warning in code.
+        if ((evaluationSelection.vmCurrentIndex < 0) || (evaluationSelection.vmCurrentIndex >= available_evaluations.length)) return;
+
+        let task_list_codes = available_evaluations[evaluationSelection.vmCurrentIndex].tasks;
+        let taskNameMap     = loader.getTaskCodeToNameMap();
+
+        // So now we use the name map to transform code to names.
+        let names = [];
+        for (let i = 0; i < task_list_codes.length; i++){
+            let code = task_list_codes[i];
+            if (code in taskNameMap){
+                names.push(taskNameMap[code]);
             }
-            list.push(options[i]);
+            else {
+                names.push(code)
+            }
         }
 
-        autoStudySetup.setModelList(list);
-        autoStudySetup.setSelection(selectedIndex);
-    }
+
+        bkgTaskList.setTaskList(names)
+   }
 
     Text {
         id: title
@@ -142,29 +168,14 @@ Rectangle {
         z: parent.z + 1
 
         VMComboBox {
-            id: autoStudySetup
+            id: evaluationSelection
             width: parent.width
             vmLabel: loader.getStringForKey("viewevaluation_eval_setup")
-            vmShowRemoveButton: true
-            vmIfShowRemoveButtonHideInFirst: true
             z: doctorSelection.z + 1
-            Component.onCompleted: {
-                reloadEvalSequenceList()
-            }
 
-            onRemoveClicked: function (index, text) {
-                loader.deleteStudySequence(text);
-                reloadEvalSequenceList();
-            }
             onVmCurrentIndexChanged: {
-                // console.log("Auto study setup with vmIndex of " + vmCurrentIndex)
-                if (vmCurrentIndex == -1) return;
-                if (vmCurrentIndex == 0){
-                    viewEvaluations.setCurrentStudySequence("");
-                }
-                else {
-                    viewEvaluations.setCurrentStudySequence(vmCurrentText);
-                }
+                //console.log("Changed selection now points to object: " + JSON.stringify(vmEvaluationTaskComposition[vmCurrentIndex]))
+                updateTaskList();
             }
         }
 
@@ -221,5 +232,61 @@ Rectangle {
 
     }
 
+    Rectangle {
+
+        id: bkgTaskList
+        width:   parent.width*0.5;
+        height:  formColumn.height
+        radius: VMGlobals.adjustWidth(20)
+        border.color: VMGlobals.vmGrayUnselectedBorder
+        anchors.top: formColumn.top
+        x: {
+            let widthToCenter = parent.width - formColumn.width - formColumn.anchors.leftMargin
+            let offset = (widthToCenter - width)/2;
+            return (formColumn.width + formColumn.anchors.leftMargin) + offset;
+        }
+
+        function setTaskList(texts) {
+            let availableHeight = bkgTaskList.height - taskListTitle.height - divider.height - divider.anchors.topMargin - taskListTitle.anchors.topMargin - 2*taskList.anchors.topMargin
+            // We divide the available height by the maximum number of evaluations possible (for now we consider 10).
+            taskList.height = availableHeight*texts.length/6
+            taskList.setup(texts)
+        }
+
+        Text {
+            id: taskListTitle
+            text: loader.getStringForKey("viewevaluation_task_list")
+            font.pixelSize: VMGlobals.vmFontLarger
+            font.weight: 600
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: VMGlobals.adjustHeight(20)
+        }
+
+        Rectangle {
+
+            id: divider
+            width: parent.width*0.8
+            height: parent.height*0.005
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: taskListTitle.bottom
+            anchors.topMargin: VMGlobals.adjustHeight(10)
+            color: bkgTaskList.border.color
+            radius: width/2;
+
+        }
+
+        VMTextProgressLine {
+
+            id: taskList
+            width: parent.width
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: divider.bottom
+            anchors.topMargin: VMGlobals.adjustHeight(10)
+
+        }
+
+
+    }
 
 }

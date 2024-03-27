@@ -26,13 +26,11 @@ QString StudyConfigurator::getStudyDescriptionContents() const {
 
 bool StudyConfigurator::createStudyConfiguration(const QVariantMap &studyConfig, qreal sample_f, qreal md_percent, const QString &study_type, const bool short_studies, const QString &study_file_path){
 
-    QFileInfo info(study_file_path);
-
     error = "";
     configuration[RRS::StudyConfigurationFields::VALID_EYE]  = studyConfig.value(VMDC::StudyParameter::VALID_EYE).toString();
     configuration[RRS::StudyConfigurationFields::MD_PERCENT] = md_percent;
     configuration[RRS::StudyConfigurationFields::SAMPLE_F]   = sample_f;
-    configuration[RRS::StudyConfigurationFields::STUDY_FILENAME] = info.absoluteFilePath(); // Making sure the server gets the FULL path.
+    configuration[RRS::StudyConfigurationFields::STUDY_FILENAME] = study_file_path;
     shortStudies = short_studies;
     studyType = study_type;    
     if (!openStudyDescriptionFile(this->studyDescriptionFile)){

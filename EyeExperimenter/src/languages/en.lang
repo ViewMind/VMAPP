@@ -54,7 +54,7 @@ You must open it back up for the changes to take effect;
 #********************************* WAIT SCREEN *********************************
 viewwait_synching = Retrieving portal information.
 Please wait ... ;
-viewwait_study_end = Finalizing study.
+viewwait_study_end = Finalizing task.
 Please wait ...;
 viewait_get_license = Retrieving information from our servers.
 Please wait ...;
@@ -103,10 +103,10 @@ viewpatlist_sex = Sex;
 viewpatlist_id = Patient ID;
 viewpatlist_action = Action;
 viewpatlist_edit = Edit;
-viewpatlist_study = START STUDY;
+viewpatlist_study = NEW EVALUATION;
 viewpatlist_account = Account;
 viewpatlist_logout = Logout;
-viewpatlist_qc = Upload Studies;
+viewpatlist_qc = Ongoing Evaluations;
 viewpatlist_protocol = Protocol;
 viewpatlist_nopats = No patients found;
 viewpatlist_months = Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;
@@ -176,14 +176,14 @@ viewevaluation_date = Date;
 viewevaluation_patient = Patient;
 viewevaluation_general_settings = General Settings;
 viewevaluation_eval_settings = Evaluation Settings;
-viewevaluation_eval_setup    = Study sequences;
+viewevaluation_eval_setup    = Available Evaluations;
 viewevaluation_eval_setup_list = Custom Sequence;
-viewevaluation_doctor        = Doctor that requested the study;
-viewevaluation_doctor_ph     = Select doctor;
+viewevaluation_doctor        = Clinician that requested the evaluation;
+viewevaluation_doctor_ph     = Select Clinician;
 viewevaluation_protocol_ph   = Select protocol;
 viewevaluation_no_protocol   = No protocol;
 viewevaluation_eye_selection = Select eye;
-viewevaluation_exp_lang      = Evaluation Explanation Language;
+viewevaluation_exp_lang      = Task Explanation Language;
 viewevaluation_next_button = NEXT;
 viewevaluation_eye_text = Select which eye to use;
 viewevaluation_eye_selection_list = Left|Right|Both (Default);
@@ -197,9 +197,7 @@ viewevaluation_eval_gonogo3D   = Spheres;
 viewevaluation_eval_passball   = PassBall;
 viewevaluation_eval_dotfollow  = Moving Dot;
 viewevaluation_error_patient_dir = Disk Write Error|Failed creating subject directory;
-viewevaluation_must_select_doctor = A doctor must be selected;
-viewevaluation_start = START;
-viewevaluation_start_and_save = SAVE SEQUENCE & START;
+viewevaluation_must_select_doctor = A clinician must be selected;
 viewevaluation_choose = Choose evaluations;
 viewevaluation_number_of_targets = Number of Targets;
 viewevaluation_binding_length = Study Duration;
@@ -266,12 +264,28 @@ viewevaluation_failed = Failed;
 viewevaluation_calib_restart = RESTART CALIBRATION;
 viewevaluation_continue = CONTINUE;
 viewevaluation_slow_calib = SLOW CALIBRATION;
-viewevaluation_comfirm_abort_title = Cancel Study;
-viewevaluation_comfirm_abort_msg_no_issue = Do you wish to stop the current study?;
-viewevaluation_comfirm_abort_msg_first_redo_calibration = Do you wish to stop the current study?<br>You will have to redo the calibration.;
-viewevaluation_comfirm_abort_msg_first_study = Do you wish to stop the current study?<br>You will have to redo the calibration, and all of the progress will be lost;
-viewevaluation_comfirm_abort_msg_nonfirst_calibration = Do you wish to stop the current study?<br>Previously finished study are ready for processing under <b>Upload Studies</b>;
-viewevaluation_comfirm_abort_msg_nonfirst_study = Do you wish to stop the current study?<br>Previously finished study are ready for processing under <b>Upload Studies</b><br>However progress on the current study will be lost;
+
+viewevaluation_comfirm_abort_title = Cancel Task;
+
+viewevaluation_comfirm_abort_msg_no_issue = Do you wish to stop the current task?
+<br> To continue evaluation review it from the <b>Ongoing Evaluations</> table;
+
+viewevaluation_comfirm_abort_msg_first_redo_calibration = Do you wish to stop the current task?
+<br>You will have to redo the calibration.
+<br>To continue evaluation, review it from the <b>Ongoing Evaluations</b> table;
+
+viewevaluation_comfirm_abort_msg_first_study = Do you wish to stop the current task?
+<br>You will have to redo the calibration, and the task progress will be lost
+<br>To continue evaluation, review it from the <b>Ongoing Evaluations</b> table;
+
+
+viewevaluation_comfirm_abort_msg_nonfirst_calibration = Do you wish to stop the current task?
+<br>To continue evaluation, review it from the <b>Ongoing Evaluations</b> table;
+
+viewevaluation_comfirm_abort_msg_nonfirst_study = Do you wish to stop the current task?
+<br>Progress on the current task will be lost
+<br>To continue evaluation, review it from the <b>Ongoing Evaluations</b> table;
+
 viewevaluation_comfirm_abort_yes = YES;
 viewevaluation_comfirm_abort_no  = NO;
 viewevaluation_seq_name_ph    = Input a name for the selected sequence;
@@ -282,6 +296,19 @@ viewevaluation_goback = PATIENT LIST;
 viewevalution_arrow_use = Click on the arrow to continue;
 viewevalution_arrow_use_examples = Click on Examples to continue;
 viewevalution_arrow_use_eval = Click on Start Evaluation to continue;
+
+viewevaluation_task_list = Task List For Selected Evaluation;
+viewevalution_task_name_map = 
+binding_bc_2_short|Color Combinations (2 Targets)| 
+binding_uc_2_short|New Colors (2 Targets)|
+binding_bc_3_short|Color Combinations (3 Targets)| 
+binding_uc_3_short|New Colors (3 Targets)|
+nback_3|N-Back (3 Targets)|
+nback_4|N-Back (4 Targets)|
+gonogo|Go-NoGo|
+spheres|Spheres|
+spheres_vs|Spheres (Variable Speed)|
+moving_dot|Moving Dot;
 
 viewevaluation_hand_calib_h = 
 Place your hands horizontally. 
@@ -381,21 +408,10 @@ If the index is Green, the study can be processed.
 If it's RED, it must be Archived and the test should be performed again.;
 viewqc_wait_msg = Please wait while study quality is checked;
 viewqc_qc_failed = <b>Quality Control Failed</b><br>Please contact ViewMind for support;
-viewQC_StudyNameMap = 
-Reading|Reading|
-Binding BC|Color Combinations| 
-Binding UC|New Colors|
-Binding|Color Tasks|
-NBack|N-Back|
-NBack RT|N-Back RT|
-NBack VS|N-Back For Training|
-Go No-Go|Go NoGo|
-Go No-Go Sphere|Spheres|
-PassBall|Pass Ball;
 viewqc_previous = PREVIOUS;
 viewqc_archive = ARCHIVE;
 viewqc_send = SEND;
-view_qc_send_report = Send Study;
+view_qc_send_report = Upload Evaluation;
 viewqc_confirm_archive = Yes, Archive It;
 viewqc_comment = Comments;
 viewqc_archive_explanation = If you archive the study it will not be processed but

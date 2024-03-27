@@ -94,7 +94,7 @@ We will do some practice examples before starting;
 
 
 explanation_phase_list_gonogo_3D =
-This is Go/No-Go Balls Test. During this evaluation green and 
+This is Spheres Test. During this evaluation green and
 red balls will be sent from the points in front of you. If the ball is 
 green you must touch it and if it's red, you must avoid it. If you make 
 contact with a ball you will feel your controller vibrate. Let's do 
@@ -110,7 +110,7 @@ Do you understand the instructions?
 We will do some practice examples before starting;
 
 explanation_phase_list_gonogo_3D_vs =
-This is Go/No-Go Balls Test with Variable Speed. During this evaluation 
+This is Spheres Test with Variable Speed. During this evaluation
 green and red balls will be sent from the points in front of you. If 
 the ball is green you must touch it and if it's red, you must avoid it. 
 If you make contact with a ball you will feel your controller vibrate. 

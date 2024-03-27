@@ -20,6 +20,7 @@ Item {
     ////////////////////////// CONVERSION FUNCTIONS: 2D HMD Data to Plot Data ////////////////////////
 
     function askForConfirmation(title, message){
+        console.log("Asking for confirmation with message '" + message + "'")
         vmTitle = title;
         vmMessage = message
         open()

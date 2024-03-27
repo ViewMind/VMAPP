@@ -8,6 +8,7 @@
 #include "../RawDataContainer/VMDC.h"
 #include "../RawDataContainer/viewminddatacontainer.h"
 #include "../debug.h"
+#include "../json_file_store.h"
 #include "eyexperimenter_defines.h"
 
 #include "../StudyControl/nback/nbackconfigurator.h"
@@ -36,18 +37,21 @@ public:
     typedef enum { SS_NONE, SS_EXPLAIN, SS_EXAMPLE, SS_EVAL, SS_WAITING_FOR_STUDY_DATA } StudyState;
 
     /**
-     * @brief startStudy
+     * @brief startTask
      * @details Intializes the VMDC structure required for the file. Then calls the study specific configuration function and
      * creates the packet to study initialization. This will start the study in the first evaluation screen.
      * @param workingDir - The path to the subject study directory
      * @param studyFile - The full absolute path to the file where where the study information will be stored.
      * @param studyConfig - A map of configuration variables used to determine everthing that is not set about the study.
      * @param studyName - The study name which we are trying to start.
+     * @param processingParameters - The map of the processing parameters as is stored in the local DB.
      */
-    void startStudy(const QString &workingDir,
+    void startTask(const QString &workingDir,
                     const QString &studyFile,
                     const QVariantMap &studyConfig,
-                    const QString &studyName);
+                    const QVariantMap &processingParameters,
+                    const QString &studyName,
+                    const ViewMindDataContainer &vmdc);
 
     /**
      * @brief getControlPacket
@@ -179,6 +183,8 @@ private:
     QString fullPathCurrentStudyFile;
     QString fullPathCurrentIDXFile;
     QString evaluationStartTime;
+    QString evaluationType;
+    QString evaluationID;
 
     // Flag used to determine when then next ACK is an abort request.
     bool expectingAbortACK;
@@ -210,14 +216,6 @@ private:
      * @return true if successfull, false otherwise.
      */
     bool saveDataToHardDisk();
-
-//    /**
-//     * @brief studyFinalizationLogic - Figures out if a study can be finalized or not.
-//     * @details Finalized studies are the only one that appear ready to be sent for procesing.
-//     * Multi part studies (i.e binding) require two complete studies in order to finalize.
-//     * @return True if it can be finalized. False otherwise.
-//     */
-//    bool studyFinalizationLogic();
 
     /**
      * @brief emitFailState - Shorcut function to coreccty set variables and emit the study end signal on failure of some kind.

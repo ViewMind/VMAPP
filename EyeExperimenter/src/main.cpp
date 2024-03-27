@@ -10,6 +10,7 @@
 #include "../../CommonClasses/LogInterface/staticthreadlogger.h"
 #include "loader.h"
 #include "flowcontrol.h"
+#include "loaderflowcomm.h"
 
 // This is used as a global variable to get a handle on the running instance of the application with the sole purpse of maximizing it if found.
 HWND HandleToRunningInstance;
@@ -38,7 +39,7 @@ BOOL CALLBACK SearchForViewMindAtlasWindow(HWND hwnd, LPARAM substring){
 
 
 // Global Configuration
-static ConfigurationManager configuration;
+static LoaderFlowComm mainComm;
 
 // Defining externs. When an extern is defined, it is declared in a SINGLE cpp file. The functions below will setup the values according to the actual conf file and they
 // will remaing constant and globally accessible for the rest fo the application's lifetime.
@@ -160,13 +161,13 @@ int main(int argc, char *argv[])
     // The icon
     app.setWindowIcon(QIcon(":/images/icon.png"));
 
-    Loader loader(nullptr,&configuration);
+    Loader loader(nullptr,&mainComm);
 
     // The QML Engine
     QQmlApplicationEngine engine;
 
     // Laods all language related data
-    FlowControl flowControl(nullptr,&configuration);
+    FlowControl flowControl(nullptr,&mainComm);
 
     // Now that the flow control and loader are created we need to connect them.
     QObject::connect(&flowControl,&FlowControl::notifyLoader,&loader,&Loader::onNotificationFromFlowControl);

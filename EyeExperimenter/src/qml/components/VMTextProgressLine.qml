@@ -12,7 +12,7 @@ Rectangle {
       Simplified version fo the progress line. This one the Idea is to start out with a text and then connect each of the lines of
       text to the one above, except the first one.
       The line should be in the center of the text and the current item should be highlighted.
-      For this to work the with and the height MUST be set.
+      For this to work the width and the height MUST be set.
      **/
 
     property int vmCurrentIndex: 0
@@ -100,8 +100,12 @@ Rectangle {
 
                 Text {
                     id: text
-                    text: items.get(index).text
-                    color: (index === vmCurrentIndex) ? VMGlobals.vmBlueSelected : VMGlobals.vmGrayPlaceholderText
+                    text: {
+                        if (items.get(index) !== undefined) return items.get(index).text
+                        else return "";
+                    }
+                    //color: (index === vmCurrentIndex) ? VMGlobals.vmBlueSelected : VMGlobals.vmGrayPlaceholderText
+                    color: VMGlobals.vmGrayPlaceholderText
                     font: textMeasure.font
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter

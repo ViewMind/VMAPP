@@ -10,6 +10,7 @@
 #include <QMessageAuthenticationCode>
 #include "../../CommonClasses/RestAPIController/restapicontroller.h"
 #include "../../CommonClasses/LogInterface/logprep.h"
+#include "../../CommonClasses/json_file_store.h"
 #include "eyexperimenter_defines.h"
 
 namespace HTTPCodes {
