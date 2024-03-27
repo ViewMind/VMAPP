@@ -488,3 +488,17 @@ QString ConfigurationManager::toCSVFile(const QString &filename){
     return "";
 
 }
+
+void ConfigurationManager::toKeyListFile(const QString &filename){
+
+    QStringList list = this->data.keys();
+
+    QFile file(filename);
+    if (!file.open(QFile::WriteOnly)){
+        return;
+    }
+    QTextStream writer(&file);
+    writer << list.join("\n");
+    file.close();
+
+}

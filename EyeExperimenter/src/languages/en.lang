@@ -6,18 +6,10 @@ viewstart_instruction = Login to your profile or add a new evaluator;
 viewstart_login = LOGIN;
 viewstart_addneweval = ADD A NEW EVALUATOR;
 viewstart_settings = Settings;
-viewstart_configuration_failed = Unable to Load Configuration|The application is unable to start
 viewstart_on_RRS_check_failed  = Error Detected|A software malfunction was detected that might affect 
 ViewMind Atlas.
 Please restart the computer to fix this error.;
-Please contatct ViewMind for help;
 viewstart_vr_disconnect = <b>Connection to headset lost</b><br>Please restart the application;
-
-viewstart_disabled_instance = Instance Disabled|As long as this instance is disabled, 
-you will not be able to update, send evaluations or send support emails. 
-
-You will still be able to administer evaluations. 
-To fix this issue, you must contact ViewMind.;
 
 #********************************* VIEW INSTANCE DISABLED *********************************
 
@@ -31,8 +23,6 @@ viewdisabled_recheck_failed = <b>Instance disabled</b><br>This instance has been
 viewsettings_advanced = Advanced;
 viewsettings_about = About;
 viewsettings_tech_support = Support;
-viewsettings_default_country = Default country;
-viewsettings_def_country_placeholder = Select the default country;
 viewsettings_language = Select the application language;
 viewsettings_run_et_check = RUN EYE TRACKING CHECK;
 viewsettings_langs = English|Español;
@@ -136,13 +126,10 @@ viewpatform_day_ph = Day;
 viewpatform_month_ph = Month;
 viewpatform_year_ph = Year;
 viewpatform_months = January|February|March|April|May|June|July|August|September|October|November|Decemeber;
-viewpatform_country = Country;
-viewpatform_country_ph = Select country;
 viewpatform_personal_id_ph = Enter Patient ID;
 viewpatform_years_of_education = Years of Education;
 viewpatform_years_of_education_ph = Enter number of years;
 viewpatform_optional = Optional;
-viewpatform_incorrect = Incorrect;
 viewpatform_cannotbeempty = Cannot be empty;
 viewpatform_last_or_id = Either Patient ID or Last Name must be filled;
 viewpatform_isnotanumber = Not a number;
@@ -177,60 +164,16 @@ viewevaluation_patient = Patient;
 viewevaluation_general_settings = General Settings;
 viewevaluation_eval_settings = Evaluation Settings;
 viewevaluation_eval_setup    = Available Evaluations;
-viewevaluation_eval_setup_list = Custom Sequence;
 viewevaluation_doctor        = Clinician that requested the evaluation;
 viewevaluation_doctor_ph     = Select Clinician;
 viewevaluation_protocol_ph   = Select protocol;
 viewevaluation_no_protocol   = No protocol;
-viewevaluation_eye_selection = Select eye;
 viewevaluation_exp_lang      = Task Explanation Language;
-viewevaluation_next_button = NEXT;
-viewevaluation_eye_text = Select which eye to use;
-viewevaluation_eye_selection_list = Left|Right|Both (Default);
-viewevaluation_eval_binding    = Color Tasks;
-viewevaluation_eval_nbackrt    = N-Back RT;
-viewevaluation_eval_nbackslow  = N-Back;
-viewevaluation_eval_nbackvs    = N-Back RT Training;
-viewevaluation_eval_nbackms    = N-Back MS;
-viewevaluation_eval_gonogo     = Go NoGo;
-viewevaluation_eval_gonogo3D   = Spheres;
-viewevaluation_eval_passball   = PassBall;
-viewevaluation_eval_dotfollow  = Moving Dot;
+viewevaluation_next_button   = NEXT;
 viewevaluation_error_patient_dir = Disk Write Error|Failed creating subject directory;
 viewevaluation_must_select_doctor = A clinician must be selected;
-viewevaluation_choose = Choose evaluations;
-viewevaluation_number_of_targets = Number of Targets;
-viewevaluation_binding_length = Study Duration;
-viewevaluation_binding_normal = Normal;
-viewevaluation_binding_short  = Short;
-viewevaluation_gng3d_fast = Normal;
-viewevaluation_gng3d_slow = Slow;
-viewevaluation_gng3d_variable = Variable;
-viewevaluation_gng3d_speed = Speed;
-viewevaluation_nback_light_up_title = Light Up Targets;
-viewevaluation_nback_light_up_all = All;
-viewevaluation_nback_light_up_correct = Correct Sequence;
-viewevaluation_nbackrt_hold_time = Study speed;
-viewevaluation_nbackrt_hold_time_default = Default Speed;
-viewevaluation_nbackrt_hold_time_slow = Slow Speed;
-viewevaluation_gng3D_hand_sel = Select which hand to use;
-viewevaluation_gng3D_hand_left = Left;
-viewevaluation_gng3D_hand_right = Right;
-viewevaluation_gng3D_hand_both = Both;
-viewevaluation_err_at_least_1_study = You must select at least 1 study;
-viewevaluation_binding_uc = New Colors;
-viewevaluation_binding_bc = Color Combinations;
-viewevaluation_binding_keys = Press <b>S</b> if they say <i>"Same"</i> or <b>D</b> if they say <i>"Different"</i>;
-viewevaluation_shortcuts = Shortcuts;
 viewevaluation_evaluation_steps = Calibration|Explanation|Examples|Evaluation;
 viewevaluation_evaluation_steps_with_hand_calib = Calibration|Hand Calibration|Explanation|Examples|Evaluation;
-viewevaluation_keyboard_explanations = 
-Stop study|
-Resume study after pause|
-Advace study step in explanation|
-Back a study step in explanation|
-Indicate targets are different|
-Indicate that targets are the same;
 viewevaluation_action_calibrate = CALIBRATE;
 viewevaluation_action_start_hand_calib = START HAND CALIBRATION;
 viewevaluation_action_hcalib_v  = END HORIZONTAL HAND CALIBRATION;
@@ -238,17 +181,9 @@ viewevaluation_action_hcalib_end = END VERTICAL HAND CALIBRATION;
 viewevaluation_action_examples = EXAMPLES;
 viewevaluation_action_starteval = START EVALUATION;
 viewevaluation_restart_hand_calib = RESTART HAND CALIBRATION;
-viewevaluation_err_noconnect = <b>Failed Connection to eye tracker</b><br>Please contact ViewMind Support for help;
 viewevaluation_err_badend_study = <b>Study ended abruptly</b><br>If the study was not aborted, please try again;
 viewevaluation_err_data_transfer = <b>Data Transfer Error</b><br>You must redo the last study; 
-viewevaluation_err_calib_title = Calibration Error!;
-viewevaluation_err_calib_exp   = The calibration for the requested eyes could not be completed.<br>
-Please see the detail below and retry:<br><br>
-Left Eye: llee<br>
-Right Eye: rree;
 viewevaluation_err_no_pp = <b>Error with retrieved server data</b><br>Please contact viewmind for support<br>Unable to continue with studies;
-viewevaluation_err_calib_ok = <b>Success</b>;
-viewevaluation_err_calib_fail = <font color='#FD3D60'><b>Failed</b></font>;
 viewevaluation_err_programming = <b>Internal Application Error</b><br>Please contact ViewMind for Support;
 viewevalcalibration_success = <b>Calibration Successfull</b><br>Please proceed with evaluation explanation;
 viewevaluation_finish = Finish;
@@ -288,10 +223,7 @@ viewevaluation_comfirm_abort_msg_nonfirst_study = Do you wish to stop the curren
 
 viewevaluation_comfirm_abort_yes = YES;
 viewevaluation_comfirm_abort_no  = NO;
-viewevaluation_seq_name_ph    = Input a name for the selected sequence;
-viewevaluation_save_sequence = SAVE SEQUENCE;
-viewevaluation_seq_name = Save sequence as;
-viewevaluation_popup_save = Sequence<br><b></b><br> has been successfully saved;
+
 viewevaluation_goback = PATIENT LIST;
 viewevalution_arrow_use = Click on the arrow to continue;
 viewevalution_arrow_use_examples = Click on Examples to continue;
@@ -323,11 +255,6 @@ The system did not receive enough data to complete the calibration.
 Please try again. 
 If the problem subsists, please restart your computer;
 
-viewevaluation_calib_suggest_adjust = 
-Calibration could not be completed|
-Please readjust the headset on the patient's head and try again.;
-
-
 viewevaluation_calib_abnormal_calibration_condition = 
 Unexpected Calibration Situation
 The calibration data is not properly formatted. 
@@ -335,18 +262,6 @@ Please send a support email as soon as possible.
 After this, please retry the calibration. 
 If the problem persists, restart the computer. 
 
-viewevaluation_calib_suggest_too_low = 
-Calibration could not be completed|
-The headset seems to be located too low on the patient's head.
-Please adjust the height as necessary and retry the calibration;
-
-viewevaluation_calib_suggest_too_high = 
-Calibration could not be completed| 
-The headset seems to be located too high on the patient's head.
-Please adjust the height as necessary and retry the calibration.;
-
-viewevaluation_nback_wait_msg = Press "G" to
-continue with study;
 
 viewevaluation_checket_title = Checking eye tracker ...;
 viewevaluation_checket_title_pass = Eye tracking is working;
@@ -367,7 +282,6 @@ waitscreenmsg_calibrationEnd = Calibration has ended;
 waitscreenmsg_studyEnd = Evaluation has ended;
 
 #********************************* VM GET CONFIG SCREEN *********************************
-viewgetconfig_welcome = Welcome To ViewMind Atlas;
 viewgetconfig_instructions = Please provide the following information in order to start using the app;
 viewgetconfig_institution = Institution Number;
 viewgetconfig_instance = Instance Number;
@@ -401,14 +315,10 @@ viewfuncctl_title = Functional Verificación;
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = No reports available for processing;
 viewqc_study = Study;
-viewqc_dr    = Doctor;
 viewqc_data_quality = Data Captured;
 viewqc_data_quality_tooltip = Reflects if the data collected by the headset is robust enough to be analyzed. 
 If the index is Green, the study can be processed. 
 If it's RED, it must be Archived and the test should be performed again.;
-viewqc_wait_msg = Please wait while study quality is checked;
-viewqc_qc_failed = <b>Quality Control Failed</b><br>Please contact ViewMind for support;
-viewqc_previous = PREVIOUS;
 viewqc_archive = ARCHIVE;
 viewqc_send = SEND;
 view_qc_send_report = Upload Evaluation;
@@ -439,7 +349,6 @@ protocol_edit = Edit Protocol;
 protocol_id = Protocol ID;
 protocol_creation_date = Creation Date;
 protocol_delete = Delete;
-protocol_edit_protocol = Edit Protocol;
 protocol_successful_edit = <b></b><br>has been successfully edited;
 protocol_successful_created = <b></b><br>has been successfully created;
 protocol_err_exists = ID already exists. Protocol IDs must be unique;
@@ -450,7 +359,6 @@ protocol_name_too_long = Protocol cannot exceed 30 caracters;
 #********************************* STUDY STATUS MESSAGES *********************************
 studystatus_binding_correct = Correct Responses: <<N>>;
 studystatus_binding_incorrect = Incorrect Responses: <<N>>;
-studystatus_reading = Average sentence time: <<N>> ms;
 studystatus_nback_sequence_hit = Completed Sequences: <<N>>;
 studystatus_nback_sequence_timeout = Timed Out Sequences: <<N>>;
 studystatus_nback_target_speed = Targets shown for <<N>> ms;
@@ -459,8 +367,6 @@ studystatus_gonogo_timeout = Timeouts: <<N>>;
 studystatus_gonogo_avg = Average trial time: <<N>> ms;
 studystatus_gonogo3D_green_hit = <<N>> green spheres hit;
 studystatus_gonogo3D_red_hit = <<N>> red spheres hit;
-studystatus_passball_completed = Completed Passes: <<N>>;
-studystatus_passball_missed = MIssed Passes: <<N>>;
 studystatus_dot_follow_index = Percent of time with sight on the dot: <<N>>%;
 
 
@@ -474,10 +380,6 @@ update_version = Version;
 update_close = CLOSE;
 update_download_wait = Please wait while we download the update;
 update_failed_message = <b>Update process failed</b><br>Please contanct viewmind team for support;
-
-#********************************* Explanation Phase Text *********************************
-explanation_key_to_continue = Press N on keyboard to advance;
-explanation_key_to_goback   = Press B on keyboard to move one slide back;
 
 #********************************* LABELING *********************************
 labeling_label_select = Select label;

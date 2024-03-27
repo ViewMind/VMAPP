@@ -1426,6 +1426,8 @@ void Loader::changeLanguage(){
         }
     }
 
+    //language.toKeyListFile("language_keys.txt");
+
     // We load the task name to code map.
     this->taskCodeToNameMap.clear();
     QStringList list = language.getStringList("viewevalution_task_name_map");
@@ -1441,10 +1443,6 @@ void Loader::changeLanguage(){
             this->taskCodeToNameMap[lastKey] = list.at(i);
         }
     }
-
-
-//    // We now set the wait message for the studies.
-//    comm->configuration()->addKeyValuePair(Globals::Share::NBACK_WAIT_MSG,language.getString("viewevaluation_nback_wait_msg"));
 
 }
 

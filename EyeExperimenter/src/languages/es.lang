@@ -6,18 +6,10 @@ viewstart_instruction = Ingrese a su perfil o agregue un nuevo evaluador;
 viewstart_login = INGRESAR;
 viewstart_addneweval = NUEVO EVALUADOR;
 viewstart_settings   = Configuración;
-viewstart_configuration_failed = No es posible cargar la configuracion|La aplicación no puede empezar.
-Por favor contáctese con ViewMind;
 viewstart_on_RRS_check_failed  = Se Detectó un Error|Un software está funcionando incorrectamente y esto puede 
 afectar a ViewMind Atlas.
 Por favor reinicie su computadora para arreglar este error;
 viewstart_vr_disconnect = <b>Pérdida de conexión al casco</b><br>Por favor reinicie la aplicación;
-
-viewstart_disabled_instance = Instancia Deshabilitada|Mientras la instancia esté desahbilitada, 
-no se podrá actualizar, procesar evaluaciones o eviar emails de soporte. 
-
-Podrá administrar evaluaciones. 
-Para solucionar este problema, por favor contacte a ViewMind.;
 
 #********************************* VIEW INSTANCE DISABLED *********************************
 
@@ -31,8 +23,6 @@ viewdisabled_recheck_failed = <b>Instancia deshabilitada</b><br>Esta instacia fu
 viewsettings_advanced = Avanzado;
 viewsettings_about = Acerca de;
 viewsettings_tech_support = Soporte;
-viewsettings_default_country = País por defecto;
-viewsettings_def_country_placeholder = Seleccione el pais por defecto;
 viewsettings_language = Seleccionar el idioma de la aplicación;
 viewsettings_run_et_check = VERIFICAR SEGUIMIENTO OCULAR;
 viewsettings_langs = English|Español;
@@ -136,13 +126,10 @@ viewpatform_day_ph = Dia;
 viewpatform_month_ph = Mes;
 viewpatform_year_ph = Año;
 viewpatform_months = Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre;
-viewpatform_country = País;
-viewpatform_country_ph = Seleccione la nacionalida;
 viewpatform_personal_id_ph = Ingrese ID de Paciente;
 viewpatform_years_of_education = Años de educación;
 viewpatform_years_of_education_ph = Ingrese el número de años;
 viewpatform_optional = Opcional;
-viewpatform_incorrect = Incorrecto;
 viewpatform_cannotbeempty = No puede estar vacío;
 viewpatform_last_or_id = Debe completar Apellido o ID de Paciente;
 viewpatform_isnotanumber = No es un número;
@@ -177,60 +164,16 @@ viewevaluation_patient = Paciente;
 viewevaluation_general_settings = Configuación General;
 viewevaluation_eval_settings = Configuración de Evaluaciones;
 viewevaluation_eval_setup    = Evalauciones Disponibles;
-viewevaluation_eval_setup_list = Secuencia a medida;
 viewevaluation_doctor        = Clínico que ha pedido el estudio;
 viewevaluation_doctor_ph     = Seleccione un clínico;
 viewevaluation_protocol_ph   = Seleccione un protocolo;
 viewevaluation_no_protocol   = Sin protocolo;
-viewevaluation_eye_selection = Seleccione el ojo;
 viewevaluation_exp_lang      = Idioma de Explicación de Tareas;
-viewevaluation_next_button = NEXT;
-viewevaluation_eye_text = Seleccione que ojo utilizar;
-viewevaluation_eye_selection_list = Izquierdo|Derecho|Ambos (Defecto);
-viewevaluation_eval_binding    = Tareas de Colores;
-viewevaluation_eval_nbackrt    = N-Back RT;
-viewevaluation_eval_nbackslow  = N-Back;
-viewevaluation_eval_nbackvs    = N-Back RT Entrenamiento;
-viewevaluation_eval_nbackms    = N-Back MS;
-viewevaluation_eval_gonogo     = Go NoGo;
-viewevaluation_eval_gonogo3D   = Esferas;
-viewevaluation_eval_passball   = Balón Pase;
-viewevaluation_eval_dotfollow  = Punto Movedizo;
+viewevaluation_next_button   = SIGUIENTE;
 viewevaluation_error_patient_dir = Falla de Disco|No se pudo crear el directorio del paciente;
 viewevaluation_must_select_doctor = Se debe seleccionar un clínico;
-viewevaluation_choose = Seleccionar evaluaciones;
-viewevaluation_number_of_targets = Número de objectivos;
-viewevaluation_binding_length = Duración de estudio;
-viewevaluation_binding_normal = Normal;
-viewevaluation_binding_short  = Corto;
-viewevaluation_gng3d_fast = Normal;
-viewevaluation_gng3d_slow = Lento;
-viewevaluation_gng3d_variable = Variable;
-viewevaluation_gng3d_speed = Velocidad;
-viewevaluation_nback_light_up_title = Iluminar Objectivos;
-viewevaluation_nback_light_up_all = Todos;
-viewevaluation_nback_light_up_correct = Secuencia Correcta;
-viewevaluation_nbackrt_hold_time = Velocidad del estudio; 
-viewevaluation_nbackrt_hold_time_default = Velocidad Nominal;
-viewevaluation_nbackrt_hold_time_slow = Baja Velocidad;
-viewevaluation_gng3D_hand_sel = Seleccione que mano utilizar;
-viewevaluation_gng3D_hand_left = Izquierda;
-viewevaluation_gng3D_hand_right = Derecha;
-viewevaluation_gng3D_hand_both = Ambas;
-viewevaluation_err_at_least_1_study = Debe elegir al menos un estudio;
-viewevaluation_binding_uc = Nuevos Colores;
-viewevaluation_binding_bc = Combinación de Colores;
-viewevaluation_binding_keys = <i>Presione</i><b>S</b><i>Si dice "Igual" y </i><b>D</b><i>si dice distinto</i>;
-viewevaluation_shortcuts = Teclas;
 viewevaluation_evaluation_steps = Calibración|Explicación|Ejemplos|Evaluación;
 viewevaluation_evaluation_steps_with_hand_calib = Calibración|Calibración de Manos|Explicación|Ejemplos|Evaluación;
-viewevaluation_keyboard_explanations = 
-Frenar estudios|
-Resumir estudio luego de pausa|
-Avanzar un paso en una explicación|
-Retroceder un paso en una explicación|
-Indicar objectivos distintos|
-Indicar objetivos iguales;
 viewevaluation_action_calibrate = CALIBRAR;
 viewevaluation_action_start_hand_calib = COMENZAR CALIBRACIÓN DE MANOS;
 viewevaluation_action_hcalib_v  = FIN CALIBRACION MANOS HORIZONTAL;
@@ -238,17 +181,9 @@ viewevaluation_action_hcalib_end = FIN CALIBRACIÓN MANOS VERTICAL;
 viewevaluation_action_examples  = EJEMPLOS;
 viewevaluation_action_starteval = COMENZAR EVALUACIÓN;
 viewevaluation_restart_hand_calib = CALIBRAR MANOS NUEVAMENTE;
-viewevaluation_err_noconnect = <b>Falla al conectarse al eye tracker</b><br>Por favor, contacte a ViewMind Support para más ayuda;
 viewevaluation_err_badend_study = <b>Estudio no terminó correctamente</b><br>Si el estudio no fue abortado, intente nuevamente;
 viewevaluation_err_data_transfer = <b>Falla en la transferencia de datos</b><br>Deberá realizar nuevamente el ultimo estudio; 
-viewevaluation_err_calib_title = ¡Error de Calibración!;
-viewevaluation_err_calib_exp   = La calibración para los ojos seleccionados falló<br>
-Por favor vea el detalle aqui abajo y reintente: <br><br>
-Ojo Izquierdo: llee<br>
-Ojo Derecho: rree;
 viewevaluation_err_no_pp = <b>Error al obtener datos del servidor</b><br>Por favor contáctse con ViewMind por soporte<br>No es posible continuar con estudios;
-viewevaluation_err_calib_ok = <b>Éxito</b>;
-viewevaluation_err_calib_fail = <font color='#FD3D60'><b>Falla</b></font>;
 viewevaluation_err_programming = <b>Error Interno en la App</b><br>Por favor contáctse con ViewMind por soporte;
 viewevalcalibration_success = <b>Calibración Exitosa</b><br>Por favor proceda con la explicación;
 viewevaluation_finish = Finalizar;
@@ -288,10 +223,7 @@ viewevaluation_comfirm_abort_msg_nonfirst_study = ¿Desea frenar la tarea actual
 
 viewevaluation_comfirm_abort_yes = SI;
 viewevaluation_comfirm_abort_no  = NO;
-viewevaluation_seq_name_ph    = Ingrese el nombre de la secuencia elegida;
-viewevaluation_save_sequence = GUARDAR SECUENCIA;
-viewevaluation_seq_name = Guardar secuencia como;
-viewevaluation_popup_save = La secuencia<br><b></b><br> ha sido guardada exitosamente;
+
 viewevaluation_goback = LISTA DE PACIENTES;
 viewevalution_arrow_use = Haga click sobre la flecha para continuar;
 viewevalution_arrow_use_examples = Haga click en Ejemplos para continuar;
@@ -323,10 +255,6 @@ El sistema no ha recibido suficientes datos como para calibrar.
 Por favor, inténtelo nuevamente.
 Si el problema persiste. por favor reinicie su computadora;
 
-viewevaluation_calib_suggest_adjust = 
-La calibración no pudo ser completada|
-Por favor, acomode nuevamente el casco sobre el paciente e inténtelo nuevamente.;
-
 viewevaluation_calib_abnormal_calibration_condition = 
 Situación Inesperada de Calibración|
 Los datos de calibración son anómalos. 
@@ -334,19 +262,6 @@ Por favor envié un mail de soporte cuanto antes.
 Luego de hacer eso, por favor reintente calibrar.
 Si el problema persiste. por favor reinicie su computadora;
 
-viewevaluation_calib_suggest_too_low = 
-La calibración no pudo ser completada|
-El casco parece estar ubicado demasiado bajo en la cabeza del paciente.
-Por favor ajuste la altura apropiadamente e intente calibrar nuevamente.;
-
-viewevaluation_calib_suggest_too_high = 
-La calibración no pudo ser completada|
-El casco parece estar ubicado demasiado alto en la cabeza del paciente.
-Por favor ajuste la altura apropiadamente e intente calibrar nuevamente.;
-
-viewevaluation_nback_wait_msg = Presione "G"
-para
-continuar el estudio;
 
 viewevaluation_checket_title = Verificando el eye tracker ...;
 viewevaluation_checket_title_pass = Eye tracking funciona correctamente;
@@ -367,7 +282,6 @@ waitscreenmsg_calibrationEnd = La calibración ha concluido;
 waitscreenmsg_studyEnd = El estudio ha finalizado;
 
 #********************************* VM GET CONFIG SCREEN *********************************
-viewgetconfig_welcome = Bienvenido a ViewMind Atlas;
 viewgetconfig_instructions = Por favor complete los siguientes datos para comenzar a utilizar la aplicación; 
 viewgetconfig_institution = Número de Institución;
 viewgetconfig_instance = Número de Instancia;
@@ -403,14 +317,10 @@ viewfuncctl_title = Verificación Funcional;
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = No hay reportes disponibles para procesar;
 viewqc_study = Estudio;
-viewqc_dr    = Doctor;
 viewqc_data_quality = Datos Obtenidos;
 viewqc_data_quality_tooltip = Refleja si los datos obtenidos por el casco son lo suficientemente robusto para análisis.
 Si el índice es verde, este puede ser procesado. 
 Si es ROJO, debe ser archivado y el estudio realizado nuevamente;
-viewqc_wait_msg = Por favor espere mientras la calidad del estudio es verificada;
-viewqc_qc_failed = <b>Control de Calidad Ha Fallado</b><br>Por favor contacte a ViewMind para soporte;
-viewqc_previous = ANTERIOR;
 viewqc_archive = ARCHIVAR;
 viewqc_send = ENVIAR;
 view_qc_send_report = Enviar Estudio;
@@ -441,7 +351,6 @@ protocol_edit = Editar Protocolo;
 protocol_id = ID de Protocolo;
 protocol_creation_date = Fecha de Creación;
 protocol_delete = Eliminar;
-protocol_edit_protocol = Editar Protocolo;
 protocol_successful_edit = <b></b><br>ha sido editado exitósamente;
 protocol_successful_created = <b></b><br>ha sido creado exitósamente;
 protocol_err_exists = El ID ya existe. Los IDs de Protocolo deben ser únicos;
@@ -452,7 +361,6 @@ protocol_name_too_long = El nombre no debe tener mas de 30 caracteres;
 #********************************* STUDY STATUS MESSAGES *********************************
 studystatus_binding_correct = Respuestas Correctas: <<N>>;
 studystatus_binding_incorrect = Respuestas Incorrectas: <<N>>;
-studystatus_reading = Tiempo de lectura promedio: <<N>> ms;
 studystatus_nback_sequence_hit = Secuencias Completadas: <<N>>;
 studystatus_nback_sequence_timeout = Secuencias No Completadas: <<N>>;
 studystatus_nback_target_speed = Objetivos en pantalla por <<N>> ms;
@@ -461,8 +369,6 @@ studystatus_gonogo_timeout = Veces que el tiempo expiró: <<N>>;
 studystatus_gonogo_avg = Tiempo promedio de ensayo: <<N>> ms;
 studystatus_gonogo3D_green_hit = Contacto con <<N>> esferas verdes;
 studystatus_gonogo3D_red_hit = Contacto con <<N>> esferas rojas;
-studystatus_passball_completed = Pases Completados: <<N>>;
-studystatus_passball_missed = Pases no completados: <<N>>;
 studystatus_dot_follow_index = Porcentaje de tiempo de la vista en el punto: <<N>>%;
 
 
@@ -476,10 +382,6 @@ update_version = Versión;
 update_close = CERRAR;
 update_download_wait = Por favor espere mientras se descarga la actualización;
 update_failed_message = <b>La actualización falló</b><br>Por favor contacte a ViewMind para soporte;
-
-#********************************* Explanation Phase Text *********************************
-explanation_key_to_continue = Presione N en el Teclado para avanzar;
-explanation_key_to_goback   = Presione B en el Teclado para retroceder;
 
 #********************************* LABELING *********************************
 labeling_label_select = Seleccione la etiqueta;

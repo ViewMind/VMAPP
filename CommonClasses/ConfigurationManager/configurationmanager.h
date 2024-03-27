@@ -104,6 +104,9 @@ public:
     // Helper function to export when configuration is jsut a list of strings.
     QString toCSVFile(const QString &filename);
 
+    // Literally just a list of keys. One per line. In a text file.
+    void toKeyListFile(const QString &filename);
+
 
 private:
 
