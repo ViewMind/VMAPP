@@ -115,9 +115,20 @@ ApplicationWindow {
         }
     }
 
+    ViewRequestUpdate{
+        id: requestUpdateDialog
+    }
+
     // The wait screen
     ViewWait {
         id: waitScreen
+    }
+
+    VMEvaluationTaskDialog {
+        id: evaluationTaskDialog
+        onRequestReopen: function (evalID){
+            openEvaluationTaskDialog(evalID)
+        }
     }
 
     SwipeView {
@@ -281,6 +292,11 @@ ApplicationWindow {
 
     function requestApplicationActiveFocus(){
         requestActivate()
+    }
+
+    function openEvaluationTaskDialog(task){
+        let eval_data = loader.getDisplayInfoForEvaluation(task)
+        evaluationTaskDialog.open(eval_data)
     }
 
     function showCalibrationValidation(){

@@ -312,6 +312,16 @@ public:
     // If request Redo is true then a new task is created regardless of the qci ok flag and the qci and qci_ok are NOT updated.
     bool updateEvaluation(const QString &evaluationID, const QString &taskFileName, qreal qci, bool qci_ok, bool requestRedo);
 
+    // The evaluation display map is a structure especially created to fill the fields of task break down dialog, when
+    // reviewing an evaluation in the front end.
+    QVariantMap   getEvaluationDisplayMap(const QString &evaluationID, const QStringList &months, const QString &ui_lang_code);
+
+    // Returns a list of objects. Each object belongs to an ongoing evaluation with each field
+    // representing an evaluation that meets the following criteria:
+    // 1) It belongs to the specified evaluator
+    // 2) It's a finished evaluation or  It's an ongoing evaluation less than 24 hrs old.
+    QList<QVariantMap> getEvaluationTableInformation(const QString &evaluator, qlonglong override_timeout, const QStringList &months, const QString &ui_lang_code);
+
 private:
 
     QVariantMap data;
@@ -339,6 +349,8 @@ private:
     const qreal FNAME_FUZZY_MATCH_THRESHOLD = -0.1; // So that a zero will match withouth having to add the equal to the comparison
     const qreal LNAME_FUZZY_MATCH_THRESHOLD = 0.3;
 
+    const qint64 EVALUATION_DISCARD_TIME = 24*60*60; // 1 Day in seconds.
+
     // The contents of this function will change every time the DB changes versions as it might require modification of existing data.
     // It needs to be called upon successfull loading of DB;
     void updatesToPreviousDBVersions();
@@ -348,6 +360,12 @@ private:
 
     // Creating a new task object for evaluation's task list. Basically just inits the map. The indexing file name is returned in the second paratemer.
     QVariantMap createNewTaskObjectForEvaluationTaskList(const QString &evaluationID, const QString &task, QString *tarTaskFileName);
+
+    // Algorithm to put together a text that represents a subject taking into accout if any or all of it's id values are empty.
+    QString createSubjectTableDisplayText(const QString &subject_id);
+
+    // Used by the evaluation display table information function. Orders the items inserted on the list via tiemstamp.
+    QVariantList insertEvaluationInListForNewestToOldestOrder(const QVariantMap &item, QVariantList list);
 
 
 };

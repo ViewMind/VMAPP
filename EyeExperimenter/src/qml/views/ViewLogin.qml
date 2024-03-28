@@ -151,8 +151,9 @@ ViewBase {
                     mainWindow.swipeTo(VMGlobals.vmSwipeIndexQCView);
                 }
             }
-            else {
+            else {                
                 mainWindow.swipeTo(currentSwiperIndexToLoad);
+                viewMainSetup.goBackToPatientList()
             }
         }
         else{

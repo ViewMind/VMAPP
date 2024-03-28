@@ -16,6 +16,7 @@ Rectangle {
     readonly property double vmRowHeight: VMGlobals.adjustHeight(66);
     readonly property double vmLeftMargin: VMGlobals.adjustWidth(29);
     readonly property double vmPercentWheelRowHeightRatio: 0.84
+    readonly property double vmPercentColorDotRowHeightRatio: 0.5
     property double vmActionOffset: 0
 
     property var vmColWidths: [];
@@ -29,6 +30,7 @@ Rectangle {
     property bool vmDeleteActionEnabled: true;
     property bool vmArchiveActionEnabled: true;
     property var vmShowNumericWheel: []
+    property var vmShowColorCircle : []
 
     signal sortChanged(int col, string order)
     signal editClicked(int rowIndex)
@@ -299,6 +301,7 @@ Rectangle {
                     x: computeXBasedOnIndex(index)
                     visible: {
                         if (vmShowNumericWheel.includes(index)) return false;
+                        if (vmShowColorCircle.includes(index)) return false;
                         return true;
                     }
                 }
@@ -325,6 +328,7 @@ Rectangle {
 
                         // In order to specify both the value and if it passes or not, the string used cotains the number | the boolean.
                         if (value === null) return 0;
+                        if (typeof value != "string") return 0;
                         let value_parts = value.split("|");
 
                         if (value_parts.length !== 2){
@@ -356,6 +360,38 @@ Rectangle {
                     }
                 }
             }
+
+            Repeater {
+
+                // A repeater to show a colored circle in a given column.
+
+                model: vmColWidths.length-1
+                Rectangle {
+                    //x: computeXBasedOnIndex(index) + table.width*vmColWidths[index]/2 - vmRowHeight*vmPercentWheelRowHeightRatio/2
+                    x: computeXBasedOnIndex(index)
+                    y: vmRowHeight*(1-vmPercentColorDotRowHeightRatio)/2
+                    height: vmRowHeight*vmPercentColorDotRowHeightRatio
+                    width: height
+                    radius: height/2
+                    color: {
+                        // PATCH: Avoids a warning that does not affect behaviour. Because at some point the data is found and shown.
+                        let row = vmDataMatrix[vmIndex];
+                        if ((row === null) || (row === undefined)){
+                            return "#000000"
+                        }
+                        let color = row[index];
+                        if (color === undefined || color === null){
+                            return "#000000"
+                        }
+                        return color;
+                    }
+                    visible: {
+                        if (vmShowColorCircle.includes(index)) return true;
+                        return false;
+                    }
+                }
+            }
+
 
             Row {
 

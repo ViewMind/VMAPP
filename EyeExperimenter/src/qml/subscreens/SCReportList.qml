@@ -7,47 +7,13 @@ Rectangle {
 
     id: subScreenReportList
 
-    readonly property string vmSORT_INDEX_PATIENT: "subject_name"
-    readonly property string vmSORT_INDEX_DATE: "order_code"
-
-    readonly property var vmSORT_COLUMNS: [ vmSORT_INDEX_PATIENT, vmSORT_INDEX_DATE, "", "" ];
-
-    readonly property int vmCOL_NAME_INDEX:  0
-    readonly property int vmCOL_DATE_INDEX:  1
-
-    property string vmCurrentSortOrder: vmSORT_INDEX_PATIENT
-    property string vmCurrentOrderDirection: OLS.ORDER_ASCENDING
-
     property int vmNumberOfReports : 0
-
-    function convertDateToDisplayDate(dbdate){
-        var dateAndTime = dbdate.split(" ");
-        if (dateAndTime.length !== 2) return dbdate;
-        var time = dateAndTime[1]
-        var dateParts = dateAndTime[0].split("/");
-        if (dateParts.length !== 3) return dbdate
-        var day = dateParts[0]
-        var year = dateParts[2]
-        var mm = parseInt(dateParts[1]) - 1
-
-        var months = loader.getStringListForKey("viewpatlist_months");
-
-        var month = "";
-
-        if ((mm >= 0) && (mm <= months.length)){
-            month = months[mm]
-        }
-        else return dbdate;
-
-        return day + " " + month + " " + year + " " + time;
-
-    }
 
     function loadReports(){
 
         //console.log("Loading evaluation studies");
         OLS.setModelList(loader.getReportsForLoggedEvaluator())
-        OLS.sortByIndex(vmCurrentSortOrder,vmCurrentOrderDirection)
+        OLS.sortByIndex("timestamp",OLS.ORDER_DESCENDING)
         vmNumberOfReports = OLS.getCount()
 
         if (vmNumberOfReports === 0){
@@ -59,35 +25,36 @@ Rectangle {
         OLS.setupIteration();
         while (OLS.hasNext()){
             var data = OLS.next();
-            var showDate = data["date"];
 
-            // Transforming the date for showing.
+            let color = VMGlobals.vmRedError
+            if (data["status"] === "ongoing"){
+                color = VMGlobals.vmGrayAccented;
+            }
+            else if (data["status"] === "ready_upload"){
+                color = VMGlobals.vmGreenSolidQCIndicator
+            }
 
-            var row = [data["subject_name"],
-                       convertDateToDisplayDate(data["date"]),
-                       data["type"],
-                       //data["medic_name"],
-                       Math.round(data["qci"]) + "|" + data["qci_pass"]
+            var row = [
+                        data["subject"],
+                        data["eval_type"],
+                        data["clinician"],
+                        data["time"],
+                        color
                     ];
+
             tableTexts.push(row);
 
         }
 
+        //console.log("Setting Up Reports Table with:\n" + JSON.stringify(tableTexts,null,2));
+
         reportListTable.setList(tableTexts)
-        reportListTable.setSortIndicator(vmSORT_COLUMNS.indexOf(vmCurrentSortOrder),vmCurrentOrderDirection)
 
         // We now check if this is an enabled instance to know if we need to disabled the buttons.
-        reportListTable.vmArchiveActionEnabled = true;
+        reportListTable.vmArchiveActionEnabled = false;
         reportListTable.vmCustomActionsEnabled = true;
 
 
-    }
-
-    function changeSortColumn(newColumn,newDirection){
-        // newColumn is an index and hence it needs to be transformed to the actual key name
-        vmCurrentOrderDirection = newDirection
-        vmCurrentSortOrder = vmSORT_COLUMNS[newColumn]
-        loadReports();
     }
 
     Text {
@@ -127,7 +94,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         x: subScreenReportList.border.width
         visible: vmNumberOfReports !== 0
-        vmShowNumericWheel: [3]
+        vmShowColorCircle: [4]
 
         Component.onCompleted: {
 
@@ -137,60 +104,58 @@ Rectangle {
             let element = {};
 
             element = {}
-            element["width"]    = 230/949;
-            element["sortable"] = true;
+            element["width"]    = 0.3;
+            element["sortable"] = false;
             nameWidthMap[loader.getStringForKey("viewevaluation_patient")] = element;
 
             element = {}
-            element["width"] = 173/949;
-            element["sortable"] = true;
-            nameWidthMap[loader.getStringForKey("viewevaluation_date")] = element;
+            element["width"] = 0.15;
+            element["sortable"] = false;
+            nameWidthMap[loader.getStringForKey("viewongoing_eval")] = element;
 
             element = {}
-            element["width"] = 172/949;
+            element["width"] = 0.15;
             element["sortable"] = false;
-            nameWidthMap[loader.getStringForKey("viewqc_study")] = element
+            nameWidthMap[loader.getStringForKey("viewongoing_clinician")] = element
 
             element = {}
-            element["width"] = 120/949;
+            element["width"] = 0.17;
             element["sortable"] = false;
-            nameWidthMap[loader.getStringForKey("viewqc_data_quality")] = element
+            nameWidthMap[loader.getStringForKey("viewevaluation_date")] = element
+
+            element = {}
+            element["width"] = 0.08;
+            element["sortable"] = false;
+            nameWidthMap[loader.getStringForKey("viewongoing_status")] = element
+
 
             // console.log("Settign up sortable table with: " + JSON.stringify(nameWidthMap));
 
             var tooltips = {};
-            tooltips[loader.getStringForKey("viewqc_data_quality")] = loader.getStringForKey("viewqc_data_quality_tooltip")
+            tooltips[loader.getStringForKey("viewongoing_status")] = loader.getStringForKey("viewqc_data_quality_tooltip")
 
-            reportListTable.configureTable(nameWidthMap,loader.getStringForKey("viewpatlist_action"),tooltips);
+            reportListTable.configureTable(nameWidthMap,"",tooltips);
 
             // Defining the enabled actions (A custom button and the Edit action) by simply setting the language texts.
             var actions = ["","","",""];
 
-            actions[reportListTable.vmActionButton] = loader.getStringForKey("viewqc_send")
-            actions[reportListTable.vmActionArchive] = loader.getStringForKey("viewqc_archive");
+            actions[reportListTable.vmActionButton] = loader.getStringForKey("viewongoing_review")
             reportListTable.vmActionEnabledTexts = actions;
 
         }
 
-        onSortChanged: function(col,order) {
-            //console.log("Changeing order to column " + col + " and order " + order)
-            changeSortColumn(col,order)
-        }
-
         onCustomButtonClicked: function(vmIndex) {
-            callSendOrDiscard(vmIndex,true)
+            let data = OLS.getDataAtIndex(vmIndex);
+            mainWindow.openEvaluationTaskDialog(data.id)
         }
 
-        onArchiveClicked: function (vmIndex) {
-            callSendOrDiscard(vmIndex,false)
-        }
 
         function callSendOrDiscard(vmIndex,isSend){
 
             let data = OLS.getDataAtIndex(vmIndex);
 
-//            console.log("Getting the data at vmIndex: " + vmIndex)
-//            console.log(JSON.stringify(data));
+            //            console.log("Getting the data at vmIndex: " + vmIndex)
+            //            console.log(JSON.stringify(data));
 
             // Getting the configuration data for the QC View.
             viewQC.configurePatientInformation(data.subject_name,

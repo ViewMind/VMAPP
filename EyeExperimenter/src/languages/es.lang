@@ -188,7 +188,7 @@ viewevaluation_err_programming = <b>Error Interno en la App</b><br>Por favor con
 viewevalcalibration_success = <b>Calibración Exitosa</b><br>Por favor proceda con la explicación;
 viewevaluation_finish = Finalizar;
 viewevaluation_congrats = ¡Felicitaciones!;
-viewevaluation_congrats_sub = Ha finalizado exitósamente todas las evaluaciones;
+viewevaluation_congrats_sub = Ha finalizado exitósamente todas las tareas;
 viewevaluation_skip_calibration = SALTEAR CALIBRACIÓN;
 viewevaluation_finish_message = <b></b><br> tiene un nuevo estudio listo para procesar;
 viewevaluation_calib_res = RESULTADOS DE CALIBRACIÓN;
@@ -203,23 +203,23 @@ viewevaluation_slow_calib = CALIBRACIÓN LENTA;
 viewevaluation_comfirm_abort_title = Cancelar tarea;
 
 viewevaluation_comfirm_abort_msg_no_issue = ¿Desea frenar la tarea actual?
-<br>Para continuar la evaluación deberá revisarla en <b>Evaluaciones Sin Finalizar</b>;
+<br>Para continuar la evaluación deberá revisarla en <b>Evaluaciones Comenzadas</b>;
 
 viewevaluation_comfirm_abort_msg_first_redo_calibration = ¿Desea frenar el tarea actual?
 <br>Deberá volver a hacer la calibración.
-<br>Para continuar la evaluación deberá revisarla en <b>Evaluaciones Sin Finalizar</b>;
+<br>Para continuar la evaluación deberá revisarla en <b>Evaluaciones Comenzadas</b>;
 
 viewevaluation_comfirm_abort_msg_first_study = ¿Desea frenar la tarea actual?
 <br>Deberá volver a hacer la calibración y todo el progreso en el estudio
 <br>corriente se perderá.
-<br>Para continuar la evaluación deberá revisarla en <b>Evaluaciones Sin Finalizar</b>;
+<br>Para continuar la evaluación deberá revisarla en <b>Evaluaciones Comenzadas</b>;
 
 viewevaluation_comfirm_abort_msg_nonfirst_calibration = ¿Desea frenar la tarea actual?
-<br>Para continuar la evaluación deberá revisarla en <b>Evaluaciones Sin Finalizar</b>;
+<br>Para continuar la evaluación deberá revisarla en <b>Evaluaciones Comenzadas</b>;
 
 viewevaluation_comfirm_abort_msg_nonfirst_study = ¿Desea frenar la tarea actual?
 <br>El progreso en la tarea corriente se perderá.
-<br>Para continuar la evaluación deberá revisarla en <b>Evaluaciones Sin Finalizar</b>;
+<br>Para continuar la evaluación deberá revisarla en <b>Evaluaciones Comenzadas</b>;
 
 viewevaluation_comfirm_abort_yes = SI;
 viewevaluation_comfirm_abort_no  = NO;
@@ -312,29 +312,26 @@ viewfuncctl_error_generic  = <b>No se pudieron mandar los datos</b><br>Por favor
 viewfuncctl_success = <b>Éxito</b><br>Los datos de verficación funcional fueron mandados<br>con éxito;
 viewfuncctl_title = Verificación Funcional;
 
-
-
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = No hay reportes disponibles para procesar;
 viewqc_study = Estudio;
 viewqc_data_quality = Datos Obtenidos;
-viewqc_data_quality_tooltip = Refleja si los datos obtenidos por el casco son lo suficientemente robusto para análisis.
-Si el índice es verde, este puede ser procesado. 
-Si es ROJO, debe ser archivado y el estudio realizado nuevamente;
-viewqc_archive = ARCHIVAR;
+viewqc_data_quality_tooltip = Refleja el estado de la evaluación.
+Verde, significa que la evaluación ya puede ser procesada.
+Rojo significa que al menos una tarea tiene problemas de calidad y debe rehacerse. 
+Gris significa que la evaluación aún tiene tareas pendientes;
 viewqc_send = ENVIAR;
 view_qc_send_report = Enviar Estudio;
 viewqc_confirm_archive = Si, Archivar el Estudio;
 viewqc_comment = Comentarios;
 viewqc_archive_explanation = Si archiva el estudio este no será procesado, pero 
 se eliminará de la lista de estudios;
-viewqc_archive_reason = low_dqi-Índice de Calidad de Datos es bajo|
-study_instructions_misunderstood-El sujeto con comprendió las instrucciones del estudio|
-bad_subjet_state-El estado del sujeto no era óptimo para el estudio|
-other-Otro; 
-viewqc_reason = Motivo por la cual se archiva;
-viewqc_archive_reason_ph = Seleccione el motivo ...;
-viewqc_comment_ph = Ingrese su comentario;
+viewqc_archive_reason = study_instructions_misunderstood|El sujeto con comprendió las instrucciones del estudio|
+bad_subjet_state|El estado del sujeto no era óptimo para el estudio|
+other|Otro; 
+viewqc_reason = Seleccione el motivo por el cual se retoma la tarea <b><<T>></b>;
+viewqc_archive_reason_ph = Ingrese un motivo diferente ...;
+viewqc_comment_ph = Ingrese su comentario para la evaluación;
 viewqc_send_wait = Por favor espere mientras la información es enviada a nuestros servidores;
 viewqc_evaluator_comments = Los comentarios del evaluador serán incluidos en el reporte final;
 viewqc_archive_studies = Archivar Estudio;
@@ -371,6 +368,18 @@ studystatus_gonogo3D_green_hit = Contacto con <<N>> esferas verdes;
 studystatus_gonogo3D_red_hit = Contacto con <<N>> esferas rojas;
 studystatus_dot_follow_index = Porcentaje de tiempo de la vista en el punto: <<N>>%;
 
+#********************************* ONGOING EVALS *********************************
+viewongoing_redo = REHACER;
+viewongoing_redo_task = REHACER TAREA;
+viewongoing_upload = ENVIAR EVALUACIÓN;
+viewongoing_continue = CONTINUAR EVALUACIÓN;
+viewongoing_review = REVISAR;
+viewongoing_eval = Evaluación;
+viewongoing_clinician = Clínico;
+viewongoing_status = Estado;
+viewongoing_revevals = REVISAR EVALUACIÓN;
+viewongoing_discarded = DESCARTADO;
+viewongoing_pending   = PENDIENTE;
 
 #********************************* UPDATE DIALOGS *********************************
 update_title = Actualización Disponible;

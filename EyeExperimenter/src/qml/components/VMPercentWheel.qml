@@ -11,6 +11,7 @@ Rectangle {
     property color vmInnerColor: "#999999"
     property int vmPercent: 75
     property int vmAnimationDuration: 0 // 0 milliseconds of animation duration disaables it.
+    property bool vmHideNumber: false
 
     Item {
         id: own
@@ -140,7 +141,8 @@ Rectangle {
             //ctx.closePath();
             ctx.stroke();
 
-            // Drawing the actual percent
+            // Drawing the actual percent, if enabled
+            if (vmHideNumber) return;
             ctx.beginPath()
             //mainWindow.vmSegoeBold.name
             let fontString = '700 %1px "%2"'.arg(VMGlobals.vmFontLarger).arg(mainWindow.vmSegoeBold.name);

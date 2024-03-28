@@ -188,7 +188,7 @@ viewevaluation_err_programming = <b>Internal Application Error</b><br>Please con
 viewevalcalibration_success = <b>Calibration Successfull</b><br>Please proceed with evaluation explanation;
 viewevaluation_finish = Finish;
 viewevaluation_congrats = Congratulations!;
-viewevaluation_congrats_sub = You have successfully completed all evaluations;
+viewevaluation_congrats_sub = You have successfully completed all tasks;
 viewevaluation_skip_calibration = SKIP CALIBRATION;
 viewevaluation_finish_message = <b></b><br> has a new study that can be processed;
 viewevaluation_calib_res = CALIBRATION RESULTS;
@@ -316,23 +316,22 @@ viewfuncctl_title = Functional Verificación;
 viewqc_no_reports_to_evaluate = No reports available for processing;
 viewqc_study = Study;
 viewqc_data_quality = Data Captured;
-viewqc_data_quality_tooltip = Reflects if the data collected by the headset is robust enough to be analyzed. 
-If the index is Green, the study can be processed. 
-If it's RED, it must be Archived and the test should be performed again.;
-viewqc_archive = ARCHIVE;
+viewqc_data_quality_tooltip = Reflects the status of the evaluation
+Green means that the evaluation can be uploaded.
+Red means that at least one task has data quality issues and should be redone. 
+Gray means that tasks still need to be done for the evaluation to be done.;
 viewqc_send = SEND;
 view_qc_send_report = Upload Evaluation;
 viewqc_confirm_archive = Yes, Archive It;
 viewqc_comment = Comments;
 viewqc_archive_explanation = If you archive the study it will not be processed but
 it will be removed from the study list;
-viewqc_archive_reason = low_dqi-Data Quality Index is too low|
-study_instructions_misunderstood-The subject did not understand instructions for the study.|
-bad_subjet_state-The subject's state was not optimal for the study|
-other-Other; 
-viewqc_reason = Reason for archiving;
-viewqc_archive_reason_ph = Select reason ...;
-viewqc_comment_ph = Enter your comment;
+viewqc_archive_reason = study_instructions_misunderstood|The subject did not understand instructions for the study.|
+bad_subjet_state|The subject's state was not optimal for the study|
+other|Other; 
+viewqc_reason = Select reason for redoing task <b><<T>></b>;
+viewqc_archive_reason_ph = Enter a different reason ...;
+viewqc_comment_ph = Enter your comment for this evaluation;
 viewqc_send_wait = Please wait while information is being sent to our servers;
 viewqc_evaluator_comments = Evaluator comments will be included in the final report;
 viewqc_archive_studies = Archive Study;
@@ -369,6 +368,18 @@ studystatus_gonogo3D_green_hit = <<N>> green spheres hit;
 studystatus_gonogo3D_red_hit = <<N>> red spheres hit;
 studystatus_dot_follow_index = Percent of time with sight on the dot: <<N>>%;
 
+#********************************* ONGOING EVALS *********************************
+viewongoing_redo = REDO;
+viewongoing_redo_task = REDO TASK;
+viewongoing_upload = UPLOAD EVALUATION;
+viewongoing_continue = CONTINUE EVALUATION;
+viewongoing_review = REVIEW;
+viewongoing_eval = Evaluation;
+viewongoing_clinician = Clinician;
+viewongoing_status = Status;
+viewongoing_revevals = REVIEW EVALUATION;
+viewongoing_discarded = DISCARDED;
+viewongoing_pending   = PENDING;
 
 #********************************* UPDATE DIALOGS *********************************
 update_title = Update Available;

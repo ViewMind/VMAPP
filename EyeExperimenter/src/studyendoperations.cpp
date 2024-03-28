@@ -345,10 +345,10 @@ bool StudyEndOperations::createQCIStudyFile(const QString &evalID) {
     }
     dbEvaluationEntry[Globals::QCIFields::QCI_PASS]  = fileQCPass;
     dbEvaluationEntry[Globals::QCIFields::QCI] = fileQCIndex;
-    dbEvaluationEntry[Globals::QCIFields::DISCARD_REASON] = reason;
+    dbEvaluationEntry[VMDC::MetadataField::DISCARD_REASON] = reason;
     dbEvaluationEntry[Globals::QCIFields::EVALUATION_ID] = evalID;
     dbEvaluationEntry[Globals::QCIFields::TARBALL_FILE] = compressedZipFile;
-    dbEvaluationEntry[Globals::QCIFields::COMMENT] = "";
+    dbEvaluationEntry[VMDC::MetadataField::COMMENTS] = "";
 
     QFile file (qciFile);
     if (!file.open(QFile::WriteOnly)){

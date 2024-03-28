@@ -61,6 +61,7 @@ namespace Debug {
        const QString SKIP_ET_CHECK              = "skip_et_check";
        const QString CALIB_PACKET_OVERRIDE      = "calibration_packet_override";
        const QString MISSING_STR_ERROR          = "missing_string_errors";
+       const QString OVERRIDE_EVAL_TIMEOUT      = "override_eval_timeout";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

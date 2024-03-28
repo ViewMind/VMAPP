@@ -83,9 +83,6 @@ ViewBase {
         id: changelogDialog
     }
 
-    ViewRequestUpdate{
-        id: requestUpdateDialog
-    }
 
     Component.onCompleted: {
         // Checking that the everything was loaded correctly.
@@ -193,21 +190,10 @@ ViewBase {
         }
     }
 
-//        // LEFT HERE as an exmaple of where to try out new graphical elements. The comment, I mean.
-//        VMStudyPhaseTracker {
-//            id: testComboBox
-//            anchors.left: btnAddNew.right
-//            anchors.top: btnAddNew.top
-//            anchors.leftMargin: 20;
-//            width: 200;
-//            height: 400
-//            vmEvalTitle: "1. Example"
-//            vmCheckAllOnProgress: false
-//            Component.onCompleted: {
-//                let list = ["Calibration", "Phase 2", "Phase 2", "Phase 2"];
-//                setup(list)
-//            }
-//        }
+    VMEvaluationTaskDialog {
+        id: evaluationTaskDialog
+    }
+
 
     // The ViewMind Logo.
     Image {
@@ -284,19 +270,20 @@ ViewBase {
     }
 
 
-//    //     We add test stuff to main when developing components as we can test it as sson as the app starts.
-//    //     I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
-//        VMButton {
-//            id: testBox
-//            vmText: "Test Stuff";
-//            width: VMGlobals.adjustWidth(100)
-//            anchors.left: btnAddNew.right
-//            anchors.top: btnAddNew.top
-//            anchors.leftMargin: 10
-//            onClickSignal: {
-//                testComboBox.indicateNext();
-//            }
-//        }
+    //     We add test stuff to main when developing components as we can test it as sson as the app starts.
+    //     I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
+        VMButton {
+            id: testBox
+            vmText: "Test Stuff";
+            width: VMGlobals.adjustWidth(100)
+            anchors.left: btnAddNew.right
+            anchors.top: btnAddNew.top
+            anchors.leftMargin: 10
+            onClickSignal: {
+                mainWindow.openEvaluationTaskDialog("1_9_20240327_042000")
+                //mainWindow.openEvaluationTaskDialog("1_9_20240327_042110")
+            }
+        }
 
 
 }

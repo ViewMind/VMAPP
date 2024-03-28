@@ -244,7 +244,10 @@ Item {
 
                 Text {
                     id: textItem
-                    text: vmText
+                    text: {
+                        if (vmText === undefined) return ""
+                        return vmText
+                    }
                     font.pixelSize: VMGlobals.vmFontLarge
                     font.weight: 600
                     color: hasMouse? VMGlobals.vmBlueTextHighlight : VMGlobals.vmBlackText

@@ -135,6 +135,64 @@ QVariantMap Loader::getTaskCodeToNameMap()  const {
     return this->taskCodeToNameMap;
 }
 
+QVariantMap Loader::getDisplayInfoForEvaluation(const QString &evalID) {
+
+    QString ui_lang_mode = "en";
+    if (comm->db()->getPreference(LocalDB::PREF_UI_LANG,Globals::UILanguage::EN).toString() == Globals::UILanguage::ES) ui_lang_mode = "es";
+    return this->comm->db()->getEvaluationDisplayMap(evalID,getStringListForKey("viewpatlist_months"),ui_lang_mode);
+
+}
+
+void Loader::setEvaluationID(const QString &evalID){
+
+    QVariantMap evaluation = comm->db()->getEvaluation(evalID);
+    QString subject = evaluation.value(LocalDB::EVAL_SUBJECT).toString();
+
+    comm->configuration()->addKeyValuePair(Globals::Share::PATIENT_UID,subject);
+    comm->configuration()->addKeyValuePair(Globals::Share::SELECTED_EVALUATION,evalID);
+}
+
+void Loader::redoTask(const QString &evalID, const QString &task, const QString &reasonForRedoing, const QString &comment){
+
+    QVariantMap evaluation = comm->db()->getEvaluation(evalID);
+    QVariantMap tasks = evaluation.value(LocalDB::EVAL_TASKS).toMap();
+    QString subject = evaluation.value(LocalDB::EVAL_SUBJECT).toString();
+
+    QString qcifilename = task;
+    qcifilename = qcifilename.replace(".zip",".qci");
+
+    if (!tasks.contains(task)){
+        StaticThreadLogger::error("Loader::redoTask","Requesting to redo non existing task: '" + task + "' for evalaution '" + evalID + "'. Avaliable tasks are: " + tasks.keys().join(", "));
+        return;
+    }
+
+    // We can now stich together the path of the QCI File.
+    QString qci_file = QDir(Globals::Paths::WORK_DIRECTORY).absolutePath();
+    qci_file = qci_file + "/" + subject + "/" + qcifilename;
+
+    QString loaderr = "";
+    QVariantMap qciData = Globals::LoadJSONFileToVariantMap(qci_file,&loaderr);
+
+    if (loaderr != ""){
+        StaticThreadLogger::error("Loader::redoTask","Unable to find QCI File '" + qci_file + "' for task '" + task + "' of evaluation '" + evalID + "'. Reason " + loaderr);
+        return;
+    }
+
+    qciData[VMDC::MetadataField::COMMENTS] = comment;
+    qciData[VMDC::MetadataField::DISCARD_REASON] = reasonForRedoing;
+
+    // Now we store the file again.
+    if (!Globals::SaveVariantMapToJSONFile(qci_file,qciData,true)){
+        StaticThreadLogger::error("Loader::redoTask","Unable to save QCI File '" + qci_file + "' for task '" + task + "' of evaluation '" + evalID + "'");
+        return;
+    }
+
+    // And now we update the task state in the DB.
+    // QCI and QCI OK Value sare ignored in a redo request.
+    comm->db()->updateEvaluation(evalID,task,0,false,true);
+
+}
+
 QVariantMap Loader::getInstIDFileInfo() const {
 
     // The inst ID file info is simply a file that identifies the intances (instance and institution number) when the license file is not present
@@ -530,7 +588,6 @@ QString Loader::addOrModifySubject(QString suid, const QString &name, const QStr
     map[LocalDB::SUBJECT_YEARS_FORMATION] = formative_years;
     map[LocalDB::SUBJECT_GENDER] = gender;
     map[LocalDB::SUBJECT_EMAIL] = email;
-    //map[LocalDB::SUBJECT_ASSIGNED_MEDIC] = selectedMedic;
 
     // Adding the data to the local database.
     if (!comm->db()->addOrModifySubject(suid,map)){
@@ -598,107 +655,23 @@ QVariantMap Loader::getMedicList() const {
 ////////////////////////// REPORT GENERATING FUNCTIONS ////////////////////////////
 QVariantMap Loader::getReportsForLoggedEvaluator(){
 
-    return QVariantMap();
+    QString current_evaluator = comm->configuration()->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR);
 
-//    QStringList directory_list = QDir(Globals::Paths::WORK_DIRECTORY).entryList(QStringList(),QDir::Dirs|QDir::NoDotAndDotDot,QDir::Name);
-//    QString current_evaluator = comm->configuration()->getString(Globals::Share::CURRENTLY_LOGGED_EVALUATOR);
+    // The language code is required to know the name of the evaluation.
+    QString ui_lang_mode = "en";
+    if (comm->db()->getPreference(LocalDB::PREF_UI_LANG,Globals::UILanguage::EN).toString() == Globals::UILanguage::ES) ui_lang_mode = "es";
 
-//    // We need the name map in order to display proper, language senstitive names.
-//    QStringList name_map_as_list = getStringListForKey("viewQC_StudyNameMap");
-//    QMap<QString,QString> name_map;
-//    for (qint32 i = 0; i < name_map_as_list.size(); i++){
-//        // Name map is list where all names are listed at key,Name,key,Name ... So all even indexes are key for the next odd index.
-//        if ((i % 2) == 1){
-//            name_map[name_map_as_list.at(i-1)] = name_map_as_list.at(i);
-//        }
-//    }
+    qlonglong timeout = 0;
+    if (DBUGEXIST(Debug::Options::OVERRIDE_EVAL_TIMEOUT)){
+        timeout = DBUGINT(Debug::Options::OVERRIDE_EVAL_TIMEOUT);
+        StaticThreadLogger::warning("Loader::getReportsForLoggedEvaluator","Override evaluation timeout value with " + QString::number(timeout));
+    }
 
-//    QList<QVariantMap> studiesToAnalyze;
+    QList<QVariantMap> list =  this->comm->db()->getEvaluationTableInformation(current_evaluator,timeout,getStringListForKey("viewpatlist_months"),ui_lang_mode);
 
-//    QStringList filters;
-//    filters << "*.qci";
+    QVariantMap returnmap = Globals::SortMapListByStringValue(list,LocalDB::EVAL_TIMESTAMP);
 
-//    // We need to get the map from subject id to name.
-
-//    for (qint32 i = 0; i < directory_list.size(); i++){
-
-//        //sdc.setup(Globals::Paths::WORK_DIRECTORY + "/" + directory_list.at(i),current_evaluator);
-
-//        QString subject_id = directory_list.at(i);
-//        QString subject_dir_path = Globals::Paths::WORK_DIRECTORY + "/" + subject_id;
-
-//        // We need to get the subject data in order to get it's name.
-//        QVariantMap subject_data = comm->db()->getSubjectData(subject_id);
-
-//        QString fname = subject_data.value(LocalDB::SUBJECT_NAME).toString();
-//        QString lname = subject_data.value(LocalDB::SUBJECT_LASTNAME).toString();
-//        QString subject_name = "";
-//        if ((fname != "") || (lname != "")){
-//            subject_name = fname + " " + lname;
-//        }
-
-//        QString subject_inst_id = subject_data.value(LocalDB::SUBJECT_INSTITUTION_ID).toString();
-
-//        // We now scan all qci files in the subject dir.
-//        QDir subject_dir(subject_dir_path);
-
-//        QStringList qcifiles = subject_dir.entryList(filters,QDir::Files);
-//        QString error; // Required for error reporting while loading QCI Files.
-
-//        for (qint32 j = 0; j < qcifiles.size(); j++){
-//            error = "";
-
-//            QString full_path = subject_dir_path + "/" + qcifiles.at(j);
-//            QString study_file = qcifiles.at(j);
-//            study_file = study_file.replace(".qci",".zip");
-//            study_file = subject_dir_path + "/" + study_file;
-
-//            QVariantMap map = Globals::LoadJSONFileToVariantMap(full_path,&error);
-//            if (error != ""){
-//                StaticThreadLogger::error("Loader::getReportsForLoggedEvaluator","Error loading QCI File: " + error);
-//                continue;
-//            }
-
-//            //qDebug() << "Checking File" << subject_dir_path + "/" + qcifiles.at(i) << "for current evaluator" << current_evaluator;
-
-//            // First we check that the evaluator matches.
-//            if (map.value(Globals::QCIFields::EVALUATOR).toString() != current_evaluator) continue;
-
-//            // We translate the study name.
-//            QString report_type = map.value(Globals::QCIFields::STUDY_TYPE).toString();
-//            if (name_map.contains(report_type)){
-//                map[Globals::QCIFields::STUDY_TYPE] = name_map.value(report_type);
-//            }
-
-//            //Debug::prettpPrintQVariantMap(map);
-
-//            // Now we set the subject.
-//            map[Globals::QCIFields::SUBJECT]            = subject_name;
-
-//            // We need to check if the subject name is empty. If it is, we need to show something, so we show the ID. Either one or the other are not empty.
-//            if (subject_name == ""){
-//                map[Globals::QCIFields::SUBJECT]            = subject_inst_id;
-//            }
-
-//            map[Globals::QCIFields::SUBJECT_INST_ID]    = subject_inst_id;
-//            map[Globals::QCIFields::SUBJECT_VM_ID]      = subject_id;
-
-//            // And we need to set the study file.
-//            map[Globals::QCIFields::STUDY_FILE]         = study_file;
-
-//            studiesToAnalyze << map;
-
-//        }
-
-//    }
-
-//    // Sort the generated list by the order code before returning it (chronologically).
-
-//    QVariantMap returnmap = Globals::SortMapListByStringValue(studiesToAnalyze,Globals::QCIFields::DATE_ORDERCODE);
-
-//    //Debug::prettpPrintQVariantMap(returnmap);
-
-//    return returnmap;
+    return returnmap;
 
 }
 

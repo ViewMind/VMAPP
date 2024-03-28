@@ -398,7 +398,7 @@ void FlowControl::onStudyEndProcessFinished(){
     QString evalID = qciData.value(Globals::QCIFields::EVALUATION_ID).toString();
     QString taskFileName = qciData.value(Globals::QCIFields::TARBALL_FILE).toString();
     qreal qci = qciData.value(Globals::QCIFields::QCI).toReal();
-    bool qci_ok = qciData.value(Globals::QCIFields::QCI).toBool();
+    bool qci_ok = qciData.value(Globals::QCIFields::QCI_PASS).toBool();
 
     if (!this->comm->db()->updateEvaluation(evalID,taskFileName,qci,qci_ok,false)){
         StaticThreadLogger::error("FlowControl::onStudyEndProcessFinished","Failed to update evaluation. Reason: " + this->comm->db()->getError());
@@ -443,6 +443,7 @@ QVariantList FlowControl::setupCurrentTaskList() {
     return this->currentEvaluationTaskList;
 
 }
+
 
 void FlowControl::handCalibrationControl(qint32 command, const QString &which_hand){
 

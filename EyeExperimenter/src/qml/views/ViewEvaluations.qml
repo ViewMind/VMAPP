@@ -84,6 +84,13 @@ ViewBase {
         viewer.currentIndex = vmSC_INDEX_GENERAL_SETTINGS;
     }
 
+    function continueEvaluation(evaluationID){
+        loader.setEvaluationID(evaluationID);
+        mainWindow.swipeTo(VMGlobals.vmSwipeIndexEvalView)
+        viewer.currentIndex = vmSC_INDEX_EVALUATION_SCREEN;
+        evaluationRun.setupEvaluation();
+    }
+
     function setUpStudyNames(study_names) {
 
         let plineSetup = {};
@@ -436,7 +443,7 @@ ViewBase {
 
                 case vmSC_INDEX_EVALUATION_FINISHED:
                     enableNextButton(true);
-                    nextButton.vmText = loader.getStringForKey("view_qc_send_report").toUpperCase();
+                    nextButton.vmText = loader.getStringForKey("viewongoing_revevals");
                     nextButton.vmIconSource = "";
                     break;
                 }

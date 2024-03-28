@@ -942,7 +942,7 @@ QString LocalDB::createNewEvaluation(const QString &subjectID,
     newEvaluation[EVAL_TIMESTAMP] = QDateTime::currentSecsSinceEpoch();
     newEvaluation[EVAL_ID]        = evaluationID;
     newEvaluation[EVAL_SUBJECT]   = subjectID;
-    newEvaluation[EVAL_TIME]      = now.toString("hh:mm");
+    newEvaluation[EVAL_TIME]      = now.toString("h:mm");
     newEvaluation[EVAL_ISO_DATE]  = now.toString("yyyy-MM-dd");
     newEvaluation[EVAL_PROTOCOL]  = protocol;
     newEvaluation[EVAL_TYPE]      = evalType;
@@ -1020,6 +1020,127 @@ QVariantMap LocalDB::getEvaluation(const QString &evaluationID) const {
     return ongoing_evals.value(evaluationID).toMap();
 }
 
+
+QVariantMap LocalDB::getEvaluationDisplayMap(const QString &evaluationID, const QStringList &months, const QString &ui_lang_code){
+
+    QVariantMap ongoing_evals = this->data.value(MAIN_ONGOING_EVALUATIONS).toMap();
+    if (!ongoing_evals.contains(evaluationID)) return QVariantMap();
+    QVariantMap evaluation = ongoing_evals.value(evaluationID).toMap();
+
+    // So in the display, the title is composed of the Patient name, the evaluation name and the date and time.
+    QString date = evaluation.value(EVAL_ISO_DATE).toString();
+    date = buildDisplayBirthDate(date,months);
+
+    QString evalType = evaluation.value(EVAL_TYPE).toString();
+    QString evalName = this->data.value(MAIN_AVAILABLE_EVALS).toMap().value(evalType).toMap().value("name").toMap().value(ui_lang_code).toString();
+
+    QString subject_id = evaluation.value(EVAL_SUBJECT).toString();
+    QString subject  = createSubjectTableDisplayText(subject_id);
+
+    QVariantMap ret;
+    ret["name"]       = subject;
+    ret["subject_id"] = subject_id;
+    ret["eval"]       = evalName;
+    ret["date"]       = date + " " + evaluation.value(EVAL_TIME).toString();
+    ret["eval_id"]    = evaluationID;
+
+    // Now for each task, we return the type, the qci, if the qci has passed
+    QVariantMap tasks = evaluation.value(EVAL_TASKS).toMap();
+    QVariantList retTasks;
+
+    QStringList taskKeys = tasks.keys();
+    for (qint32 i = 0; i < taskKeys.size(); i++){
+        QString key = taskKeys.at(i);
+        QVariantMap task = tasks.value(key).toMap();
+        QVariantMap temp;
+        temp["id"] = key;
+        temp["qci"] = qRound(task.value(TASK_QCI).toReal());
+        temp["qci_ok"] = task.value(TASK_QCI_OK).toBool();
+        temp["name"] = task.value(TASK_TYPE).toString();
+        temp["discarded"] = task.value(TASK_DISCARDED).toBool();
+        retTasks << temp;
+    }
+
+    ret["tasks"] = retTasks;
+    return ret;
+
+}
+
+QList<QVariantMap> LocalDB::getEvaluationTableInformation(const QString &evaluator,
+                                                    qlonglong override_timeout,
+                                                    const QStringList &months,
+                                                    const QString &ui_lang_code){
+
+    QList<QVariantMap> list;
+
+    QVariantMap ongoing_evals = this->data.value(MAIN_ONGOING_EVALUATIONS).toMap();
+    QStringList evalKeys = ongoing_evals.keys();
+
+    QVariantMap medics = this->data.value(MAIN_MEDICS).toMap();
+
+    qlonglong timeout_compare = EVALUATION_DISCARD_TIME; // A day in seconds.
+
+    // This should only be non zero for debugging/testing.
+    bool enable_debug = false;
+    if (override_timeout > 0){
+        enable_debug = true;
+        timeout_compare = override_timeout;
+    }
+
+    qlonglong current_timestamp = QDateTime::currentSecsSinceEpoch();
+
+
+    for (qint32 i = 0; i < evalKeys.size(); i++){
+
+        QString evalID = evalKeys.at(i);
+
+        QVariantMap evaluation = ongoing_evals.value(evalID).toMap();
+
+        // We are only interested in the evaluation of this evaluator.
+        if (evaluator != evaluation.value(EVAL_EVALUATOR).toString()) continue;
+
+        qlonglong timestamp = evaluation.value(EVAL_TIMESTAMP).toLongLong();
+        QString status = evaluation.value(EVAL_STATUS).toString();
+        qlonglong diff = (current_timestamp - timestamp);
+
+        if (enable_debug) {
+            StaticThreadLogger::log("LocalDB::getEvaluationTableInformation","[DBUG] Evaluation '"
+                                + evalID + "' has a time stamp difference of "
+                                + QString::number(diff) + " compared against " + QString::number(timeout_compare) );
+        }
+
+        if (diff > timeout_compare){
+
+            // The evaluation is too old. However if it's done is all ok.
+            if (status != EvaluationStatus::READY_UPLOAD) continue; // Too late. All it's tasks will be discarded.
+        }
+
+        QString evalType = evaluation.value(EVAL_TYPE).toString();
+        QString evalName = this->data.value(MAIN_AVAILABLE_EVALS).toMap().value(evalType).toMap().value("name").toMap().value(ui_lang_code).toString();
+
+        QVariantMap clinician = medics.value(evaluation.value(EVAL_CLINICIAN).toString()).toMap();
+
+        QString date = evaluation.value(EVAL_ISO_DATE).toString();
+        date = buildDisplayBirthDate(date,months);
+
+        QVariantMap obj;
+        obj[EVAL_TIMESTAMP] = timestamp;
+        obj[EVAL_SUBJECT]   = createSubjectTableDisplayText(evaluation.value(EVAL_SUBJECT).toString());
+        obj[EVAL_TYPE]      = evalName;
+        obj[EVAL_CLINICIAN] = clinician.value(APPUSER_LASTNAME).toString() + ", " + clinician.value(APPUSER_NAME).toString();
+        obj[EVAL_TIME]      = date + " " + evaluation.value(EVAL_TIME).toString();
+        obj[EVAL_STATUS]    = status;
+        obj[EVAL_ID]        = evalID;
+
+        //list = insertEvaluationInListForNewestToOldestOrder(obj,list);
+        list << obj;
+
+    }
+
+    return list;
+
+}
+
 bool LocalDB::updateEvaluation(const QString &evaluationID, const QString &taskFileName, qreal qci, bool qci_ok, bool requestRedo){
 
     QVariantMap ongoing_evals = this->data.value(MAIN_ONGOING_EVALUATIONS).toMap();
@@ -1052,8 +1173,10 @@ bool LocalDB::updateEvaluation(const QString &evaluationID, const QString &taskF
         QVariantMap newTask = createNewTaskObjectForEvaluationTaskList(evaluationID,task.value(TASK_TYPE).toString(),&newFileName);
         tasks[newFileName] = newTask;
 
-        // We already know we have bad QCI situation. So we can set the status.
-        evaluation[EVAL_STATUS] = EvaluationStatus::BAD_QCI;
+        // If we entered here due to a bad QCI the the status should reflect that.
+        // However if a redo was requested the status WAS ready to upload and should go back to ongoing
+        if (!requestRedo) evaluation[EVAL_STATUS] = EvaluationStatus::BAD_QCI;
+        else evaluation[EVAL_STATUS] = EvaluationStatus::ONGOING;
     }
     else {
 
@@ -1104,6 +1227,59 @@ QVariantMap LocalDB::createNewTaskObjectForEvaluationTaskList(const QString &eva
 
     return taskMap;
 }
+
+QString LocalDB::createSubjectTableDisplayText(const QString &subject_id){
+
+    QVariantMap subjectData =  this->data.value(MAIN_SUBJECT_DATA).toMap().value(subject_id).toMap();
+    QString lastName = subjectData.value(SUBJECT_LASTNAME).toString();
+    QString firstName = subjectData.value(SUBJECT_NAME).toString();
+    QString id = subjectData.value(SUBJECT_INSTITUTION_ID).toString();
+
+    QString subject = subject_id;
+
+    if (firstName == "") {
+        if (lastName == "") subject = id;
+        else {
+            if (id != ""){
+                subject = lastName + " (" + id + ")";
+            }
+            else {
+                subject = lastName;
+            }
+        }
+    }
+    else {
+        if (id != "") subject = lastName + "," + firstName + " (" + id + ")";
+        else subject = lastName + "," + firstName;
+    }
+
+    return subject;
+
+}
+
+QVariantList LocalDB::insertEvaluationInListForNewestToOldestOrder(const QVariantMap &item, QVariantList list){
+
+    if (list.empty()) {
+        list << item;
+    }
+    return list;
+
+    bool inserted = false;
+    qlonglong timestamp = item.value(EVAL_TIMESTAMP).toInt();
+
+    for (qint32 i = 0; i < list.size(); i++){
+        if (list.at(i).toMap().value(EVAL_TIMESTAMP).toLongLong() < timestamp){
+            list.insert(i,item);
+            inserted = true;
+            break;
+        }
+    }
+
+    if (!inserted) list << item;
+
+    return list;
+}
+
 
 ////////////////////////////// FUZZY String Compare ///////////////////////////////
 QVariantList LocalDB::possibleNewPatientMatches(QString name, QString lastname, QString personalID ,QString iso_birthdate, const QStringList &months) const {

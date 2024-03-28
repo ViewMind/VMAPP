@@ -65,5 +65,6 @@
         <file>qml/components/VMTextProgressLine.qml</file>
         <file>qml/components/VMCheckMarkCircle.qml</file>
         <file>qml/components/VMStudyPhaseTracker.qml</file>
+        <file>qml/components/VMEvaluationTaskDialog.qml</file>
     </qresource>
 </RCC>

@@ -78,8 +78,6 @@ namespace QCIFields {
 // Quality Control Index Fields
 static const QString QCI                 = "qci";
 static const QString QCI_PASS            = "qci_pass";
-static const QString COMMENT             = "comment";
-static const QString DISCARD_REASON      = "discard_reason";
 static const QString EVALUATION_ID       = "evaluation_id";
 static const QString TARBALL_FILE        = "tarballfile";
 }

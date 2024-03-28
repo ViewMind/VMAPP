@@ -240,6 +240,7 @@ Rectangle {
         studyExplanationText.text = loader.getStringForKey("viewevaluation_hand_verif",false);
     }
 
+
     function setupEvaluation(){
 
         // When the system calls this fucntion a subject, and evaluation must be set. This defines everthing else.

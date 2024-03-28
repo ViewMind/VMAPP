@@ -9,9 +9,6 @@ ViewBase {
 
     id: qcView
 
-    readonly property int vmMAX_L_COMMMENT_LINES: 19
-    readonly property int vmMAX_C_COMMENT_CHARS: 92
-
     readonly property int vmSC_INDEX_SEND_REPORT:    0
     readonly property int vmSC_INDEX_ARCHIVE:        1
 
