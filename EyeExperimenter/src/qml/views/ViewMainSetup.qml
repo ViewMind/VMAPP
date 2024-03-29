@@ -52,6 +52,10 @@ ViewBase {
         }
     }
 
+    function isMainSetupOnOngoingEvaluations(){
+        return (viewer.currentIndex === indexReportList);
+    }
+
     function goBackToPatientList(){
         sideNavigationBar.vmCurrentIndex = 0
         sideNavigationBarAccountOnly.vmCurrentIndex = -1;

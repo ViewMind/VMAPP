@@ -9,6 +9,38 @@ Rectangle {
 
     property int vmNumberOfReports : 0
 
+
+    Connections {
+        target: loader
+        function onFinishedRequest () {
+
+            // This is speaking to us when the following conditions are met.
+
+            // First, we are in the main screen.
+            if (mainWindow.getCurrentSwipeIndex() !== VMGlobals.vmSwipeIndexMainScreen) return;
+
+            // Second, we need to be in ongoing evaluation.
+            if (!viewMainSetup.isMainSetupOnOngoingEvaluations()) return;
+
+            // Ok, it's this code.
+            mainWindow.closeWait()
+
+            var failCode = loader.wasThereAnProcessingUploadError();
+
+            // This check needs to be done ONLY when on this screen.
+            if ( failCode !== VMGlobals.vmFAIL_CODE_NONE ){
+                popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewqc_err_server_error"));
+                return;
+
+            }
+
+            if (loader.getLastAPIRequest() === VMGlobals.vmAPI_REQUEST_REPORT){
+                popUpNotify(VMGlobals.vmNotificationGreen,loader.getStringForKey("viewqc_success_on_send"));
+                loadReports();
+            }
+        }
+    }
+
     function loadReports(){
 
         //console.log("Loading evaluation studies");

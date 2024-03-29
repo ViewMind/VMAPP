@@ -47,7 +47,7 @@ Loader::Loader(QObject *parent, LoaderFlowComm *c) : QObject(parent)
                 + " (" + comm->configuration()->getString(Globals::VMConfig::INSTITUTION_ID) + "." + comm->configuration()->getString(Globals::VMConfig::INSTANCE_NUMBER) + ")";
     }
 
-    // Now we load the local DB.    
+    // Now we load the local DB.
     if (!comm->db()->setDBFile(Globals::Paths::LOCALDB,Globals::Paths::DBBKPDIR,DBUGBOOL(Debug::Options::PRETTY_PRINT_DB),DBUGBOOL(Debug::Options::DISABLE_DB_CHECKSUM))){
         StaticThreadLogger::error("Loader::Loader","Could not set local db file: " + comm->db()->getError());
         loadingError = true;
@@ -790,10 +790,67 @@ void Loader::requestActivation(int institution, int instance, const QString &key
     }
 }
 
-void Loader::sendStudy(QString discard_reason, const QString &comment){
+void Loader::uploadEvaluation(const QString &evalID, const QString &comment){
+
+    // First we ensure that the evaluation comment is set  in the database.
+    this->comm->db()->setEvaluationComment(evalID, comment);
+
+    taskFilesToBeUploaded.clear();
+    totalTasksSetup = addTasksToTasksToBeUploaded(evalID);
+    discardingBecauseExpired = false;
+    sendNextTask();
+
+}
+
+void Loader::sendNextTask(){
     processingUploadError = FAIL_FILE_CREATION;
 
-    QString studyFileToSend = comm->configuration()->getString(Globals::Share::SELECTED_STUDY);
+    if (taskFilesToBeUploaded.empty()){
+        StaticThreadLogger::error("Loader::sendNextTask","Requested to send next task but the task file to upload map is empty");
+        emit Loader::finishedRequest();
+    }
+
+    // We get the first evaluation available and the first task to upload from that evaluation.
+    qint32 remainingTasks = 0;
+    QStringList allRemainingEvals = taskFilesToBeUploaded.keys();
+    QString currentEval = "";
+    QString zipFileName = "";
+
+    for (qint32 i = 0; i < allRemainingEvals.size(); i++){
+        QString eval = allRemainingEvals.at(i);
+        if (i == 0){
+            // The first task of the first evlauation is always the one we upload.
+            currentEval = eval;
+        }
+
+        QStringList allRemainingTasks = taskFilesToBeUploaded.value(eval);
+
+        remainingTasks = remainingTasks + allRemainingTasks.size();
+
+        if (i == 0){
+            if (allRemainingTasks.size() > 0){
+                zipFileName = allRemainingTasks.first();
+            }
+            else {
+                StaticThreadLogger::error("Loader::sendNextTask","Requested to send next task, however evaluation '" + eval + "' has an empty task list");
+                emit Loader::finishedRequest();
+            }
+        }
+
+    }
+
+    // We update the front end.
+    QString title;
+    if (discardingBecauseExpired) title = getStringForKey("viewongoing_upload_expired");
+    else title = getStringForKey("viewongoing_upload_eval");
+    emit Loader::uploadProgress(remainingTasks,totalTasksSetup,getStringForKey("viewongoing_remaining"),title);
+
+    QVariantMap evaluation = this->comm->db()->getEvaluation(currentEval);
+    QString subject = evaluation.value(LocalDB::EVAL_SUBJECT).toString();
+    QString comment = evaluation.value(LocalDB::EVAL_COMMENT).toString();
+
+    // We can now stich together the path of the main file to send
+    QString studyFileToSend = QDir(Globals::Paths::WORK_DIRECTORY).absolutePath() + "/" + subject + "/" + zipFileName;
 
     // Since the file has allready been compresed. We need to create a second file and then tarball both of those files toghter in the final file.
     // So we take advantange of the QCI file and load that.
@@ -809,12 +866,22 @@ void Loader::sendStudy(QString discard_reason, const QString &comment){
     QString loadError = "";
     QVariantMap map = Globals::LoadJSONFileToVariantMap(qcifile, &loadError);
     map[VMDC::MetadataField::COMMENTS] = comment;
-    map[VMDC::MetadataField::DISCARD_REASON] = discard_reason;
+    if (discardingBecauseExpired){
+        map[VMDC::MetadataField::DISCARD_REASON] = "expired";
+    }
 
-    // Now we create the JSON file.
-    if (!Globals::SaveVariantMapToJSONFile(qcifile,map)){
-        StaticThreadLogger::error("Loader::sendStudy","Failed in resaving the qci file as '" + qcifile + "'");
-        emit Loader::finishedRequest();
+    if (loadError != ""){
+        StaticThreadLogger::error("Loader::sendNextTask","Failed in loading qci file as '" + qcifile + "'");
+        if (!discardingBecauseExpired) {
+            emit Loader::finishedRequest();
+        }
+    }
+    else {
+        // Now we restore the file.
+        if (!Globals::SaveVariantMapToJSONFile(qcifile,map)){
+            StaticThreadLogger::error("Loader::sendNextTask","Failed in resaving the qci file as '" + qcifile + "'");
+            emit Loader::finishedRequest();
+        }
     }
 
     // Now we create the tar output.
@@ -834,16 +901,40 @@ void Loader::sendStudy(QString discard_reason, const QString &comment){
     qint32 exit_code = tar.exitCode();
 
     if (!QFile(tarOutputFile).exists()){
-        StaticThreadLogger::error("Loader::sendStudy","Could not tar the .json and the .zip files for '" + basename + "'. Exit code for TAR.exe is: " + QString::number(exit_code));
+        StaticThreadLogger::error("Loader::sendNextTask","Could not tar the .json and the .zip files for '" + basename + "'. Exit code for TAR.exe is: " + QString::number(exit_code));
         emit Loader::finishedRequest();
     }
 
     processingUploadError = FAIL_CODE_NONE;
 
     if (!apiclient.requestReportProcessing(tarOutputFile)){
-        StaticThreadLogger::error("Loader::sendStudy","Requesting study report generation: " + apiclient.getError());
+        StaticThreadLogger::error("Loader::sendNextTask","Requesting study report generation: " + apiclient.getError());
         emit Loader::finishedRequest();
     }
+
+}
+
+qint32 Loader::addTasksToTasksToBeUploaded(const QString &evalID){
+
+    QVariantMap evaluation = this->comm->db()->getEvaluation(evalID);
+    QVariantMap tasks = evaluation.value(LocalDB::EVAL_TASKS).toMap();
+    QStringList allTaskFiles = tasks.keys();
+
+    // We search for the next task that needs to be sent.
+    QStringList tasksToUpload;
+    for (qint32 i = 0; i < allTaskFiles.size(); i++){
+
+        QString zipFileName = allTaskFiles.at(i);
+        QVariantMap task = tasks.value(zipFileName).toMap();
+
+        if (!task.value(LocalDB::TASK_UPLOADED).toBool()){
+            tasksToUpload << zipFileName;
+        }
+
+    }
+
+    taskFilesToBeUploaded[evalID] = tasksToUpload;
+    return tasksToUpload.size();
 
 }
 
@@ -855,8 +946,33 @@ void Loader::startUpSequenceCheck() {
     startUpSequenceFlag++;
     if (startUpSequenceFlag >= 2){
         startUpSequenceFlag = 0;
+
         StaticThreadLogger::log("Loader::startUpSequenceCheck","Finished start up sequence (Operating Info and QCI Regen Check)");
-        emit Loader::finishedRequest();
+
+        // After the startup sequence is finished. We need to check if there are any expired tasks in the system and upload them.
+        qlonglong override_time = 0;
+        if (DBUGEXIST(Debug::Options::OVERRIDE_EVAL_TIMEOUT)){
+            override_time = DBUGINT(Debug::Options::OVERRIDE_EVAL_TIMEOUT);
+        }
+        QStringList expiredEvals = this->comm->db()->getExpiredEvaluationID(override_time,QDir(Globals::Paths::WORK_DIRECTORY).absolutePath());
+
+        if (expiredEvals.size() > 0){
+
+            StaticThreadLogger::log("Loader::startUpSequenceCheck","Detected " + QString::number(expiredEvals.size()) + " expired evaluations");
+
+            taskFilesToBeUploaded.clear();
+
+            totalTasksSetup = 0;
+            for (qint32 i = 0; i < expiredEvals.size(); i++){
+                totalTasksSetup = totalTasksSetup + addTasksToTasksToBeUploaded(expiredEvals.at(i));
+            }
+
+            discardingBecauseExpired = true;
+            sendNextTask();
+        }
+        else {
+            emit Loader::finishedRequest();
+        }
     }
 }
 
@@ -1067,18 +1183,53 @@ void Loader::receivedAPIResponse(){
 
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_REPORT){
-            StaticThreadLogger::log("Loader::receivedAPIResponse","Study file was successfully sent");
+            StaticThreadLogger::log("Loader::receivedAPIResponse","Task file was successfully sent");
 
             apiclient.clearFileToSendHandles();
 
-            if (!DBUGBOOL(Debug::Options::NO_RM_STUDIES)) {
-                moveProcessedFiletToProcessedDirectory();
+            // First thing we need to do is clear the first of the first.
+            QStringList evalToSendRemaining = taskFilesToBeUploaded.keys();
+
+            if (evalToSendRemaining.empty()){
+                processingUploadError = FAIL_INTERNAL_PROGRAMMING;
+                StaticThreadLogger::log("Loader::receivedAPIResponse","Finalized an upload request but the task file struct is EMPTY");
+                emit Loader::finishedRequest();
+                return;
+            }
+
+            QString eval = evalToSendRemaining.first();
+            QStringList tasks = taskFilesToBeUploaded.value(eval);
+            // We remove the first.
+            if (tasks.empty()){
+                processingUploadError = FAIL_INTERNAL_PROGRAMMING;
+                StaticThreadLogger::log("Loader::receivedAPIResponse","Finalized an upload request but eval '" + eval + "' has an empty task list");
+                emit Loader::finishedRequest();
+                return;
+            }
+            QString task = tasks.first();
+            tasks.removeFirst();
+
+            // There is a need for now to mark this task as uploaded. This will also remove the evaluation if necessary.
+            if (!this->comm->db()->updateTaskInEvaluationAsUploaded(eval,task)){
+                processingUploadError = FAIL_INTERNAL_PROGRAMMING;
+                StaticThreadLogger::log("Loader::receivedAPIResponse","Was unable to mark task '" + task + "' in evaluation " + eval + " as uploaded");
+                emit Loader::finishedRequest();
+                return;
+            }
+
+            // If there are no more tasks for this evaluation. Then we move on.
+            if (tasks.empty()){
+                taskFilesToBeUploaded.remove(eval);
             }
             else{
-                QString dbug = "DBUG: Studies are not moved to sent directory";
-                qDebug() << dbug;
-                StaticThreadLogger::error("Loader::receivedAPIResponse",dbug);
+                taskFilesToBeUploaded[eval] = tasks;
             }
+
+            if (!taskFilesToBeUploaded.empty()){
+                this->sendNextTask();
+                return;
+            }
+
         }
         else if (apiclient.getLastRequestType() == APIClient::API_REQUEST_UPDATE){
 
@@ -1310,49 +1461,6 @@ void Loader::cleanCalibrationDirectory() {
         }
 
     }
-
-}
-
-void Loader::moveProcessedFiletToProcessedDirectory(){
-
-    QString sentFile = comm->configuration()->getString(Globals::Share::SELECTED_STUDY);
-
-    // Getting the patient directory.
-    QFileInfo info(sentFile);
-    QString patientWorkingDirectory = info.path();
-    QString baseFileName = info.baseName();
-
-    // Creating the processed directory.
-    QDir(patientWorkingDirectory).mkdir(Globals::Paths::SUBJECT_DIR_SENT);
-    QString processedDir = patientWorkingDirectory + "/" + Globals::Paths::SUBJECT_DIR_SENT;
-    if (!QDir(processedDir).exists()){
-        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to create patient sent directory at: " + processedDir);
-        return;
-    }
-
-    QString tarGzFile = patientWorkingDirectory + "/" + baseFileName + ".tar.gz";
-    QString qciFile = patientWorkingDirectory   + "/"   + baseFileName + ".qci";
-
-    if (!QFile::exists(tarGzFile)){
-        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Unable to locate the TAR.GZ file '" + tarGzFile + "'. Not Deleting Anything");
-    }
-    else {
-        if (!QFile::remove(tarGzFile)){
-            StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Unable to delete the TAR.GZ file '" + tarGzFile + "'");
-        }
-    }
-
-    // Moving the qci file
-    if (!QFile::copy(qciFile,processedDir + "/" + baseFileName + ".qci")){
-        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to copy " + qciFile + " file from " + patientWorkingDirectory + " to " + processedDir);
-        return;
-    }
-
-    // Deleting the qci file.
-    if (!QFile::remove(qciFile)){
-        StaticThreadLogger::error("Loader::moveProcessedFiletToProcessedDirectory","Failed to delete " + qciFile + " qci file from " + patientWorkingDirectory);
-    }
-
 
 }
 

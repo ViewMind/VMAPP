@@ -155,7 +155,7 @@ DisabledInstance-Disabled instance|
 Other-Other;
 viewsendsupport_email_error   = Cannot leave empty;
 viewsendsupport_email_fail = <b>Email Error</b><br>The support email could not be sent;
-viewsendsupport_email_succes = <b>Email Succesfull</b><br>The support email has been successfully sent;
+viewsendsupport_email_succes = <b>Email Succesful</b><br>The support email has been successfully sent;
 viewsendsupport_email_send = SEND;
 
 #********************************* STUDY SETUP *********************************
@@ -185,7 +185,7 @@ viewevaluation_err_badend_study = <b>Study ended abruptly</b><br>If the study wa
 viewevaluation_err_data_transfer = <b>Data Transfer Error</b><br>You must redo the last study; 
 viewevaluation_err_no_pp = <b>Error with retrieved server data</b><br>Please contact viewmind for support<br>Unable to continue with studies;
 viewevaluation_err_programming = <b>Internal Application Error</b><br>Please contact ViewMind for Support;
-viewevalcalibration_success = <b>Calibration Successfull</b><br>Please proceed with evaluation explanation;
+viewevalcalibration_success = <b>Calibration Successful</b><br>Please proceed with evaluation explanation;
 viewevaluation_finish = Finish;
 viewevaluation_congrats = Congratulations!;
 viewevaluation_congrats_sub = You have successfully completed all tasks;
@@ -313,7 +313,7 @@ viewfuncctl_success = <b>Success</b><br>Functional control data was successfully
 viewfuncctl_title = Functional Verificación;
 
 #********************************* Quality Control *********************************
-viewqc_no_reports_to_evaluate = No reports available for processing;
+viewqc_no_reports_to_evaluate = There are no ongoing evaluations;
 viewqc_study = Study;
 viewqc_data_quality = Data Captured;
 viewqc_data_quality_tooltip = Reflects the status of the evaluation
@@ -380,6 +380,9 @@ viewongoing_status = Status;
 viewongoing_revevals = REVIEW EVALUATION;
 viewongoing_discarded = DISCARDED;
 viewongoing_pending   = PENDING;
+viewongoing_remaining = Sending task: <<N>> out of <<M>>;
+viewongoing_upload_eval = Uploading Evaluation;
+viewongoing_upload_expired = Uploading Incomplete Evaluations;
 
 #********************************* UPDATE DIALOGS *********************************
 update_title = Update Available;

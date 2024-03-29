@@ -28,6 +28,21 @@ ApplicationWindow {
             text = text.replace("<MBT>",MBT);
             waitScreen.updateProgress(Math.ceil(progress),text);
         }
+
+        function onUploadProgress(remaining, total, progress_text, title_text){
+
+            console.log("Upload progress called");
+
+            let sent = total - remaining;
+            let p = 100*sent/total;
+            sent++; // We need to add one so it starts from zero.
+            progress_text = progress_text.replace("<<N>>",sent)
+            progress_text = progress_text.replace("<<M>>",total)
+            waitScreen.showWithProgress() // To ensure the screen switches modes.
+            waitScreen.vmText = title_text
+            waitScreen.updateProgress(p,progress_text)
+        }
+
     }
 
     readonly property alias vmSegoeNormal: segoeui_normal
@@ -175,12 +190,6 @@ ApplicationWindow {
         }
 
         Item {
-            ViewQC {
-                id: viewQC
-            }
-        }
-
-        Item {
             ViewEditProtocol {
                 id: viewEditProtocol
             }
@@ -245,9 +254,6 @@ ApplicationWindow {
             case VMGlobals.vmSwipeIndexEvalView:
                 viewEvaluations.setPatientForEvaluation()
                 viewEvaluations.forceSettingsView();
-                break;
-            case VMGlobals.vmSwipeIndexQCView:
-                viewQC.clear();
                 break;
             case VMGlobals.vmSwipeIndexGetVMConfig:
                 viewGetVMConfig.checkOnVMID();

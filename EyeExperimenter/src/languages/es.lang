@@ -313,7 +313,7 @@ viewfuncctl_success = <b>Éxito</b><br>Los datos de verficación funcional fuero
 viewfuncctl_title = Verificación Funcional;
 
 #********************************* Quality Control *********************************
-viewqc_no_reports_to_evaluate = No hay reportes disponibles para procesar;
+viewqc_no_reports_to_evaluate = No hay evaluaciones comenzadas;
 viewqc_study = Estudio;
 viewqc_data_quality = Datos Obtenidos;
 viewqc_data_quality_tooltip = Refleja el estado de la evaluación.
@@ -380,6 +380,9 @@ viewongoing_status = Estado;
 viewongoing_revevals = REVISAR EVALUACIÓN;
 viewongoing_discarded = DESCARTADO;
 viewongoing_pending   = PENDIENTE;
+viewongoing_remaining = Enviando tarea: <<N>> de <<M>>;
+viewongoing_upload_eval = Enviando Evaluación;
+viewongoing_upload_expired = Enviando Evaluaciones Incompletas;
 
 #********************************* UPDATE DIALOGS *********************************
 update_title = Actualización Disponible;

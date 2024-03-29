@@ -105,7 +105,7 @@ public:
 
     ////////////////////////// API REQUESTS ////////////////////////////
     Q_INVOKABLE void requestOperatingInfo();
-    Q_INVOKABLE void sendStudy(QString discard_reason, const QString &comment);
+    Q_INVOKABLE void uploadEvaluation(const QString &evalID, const QString &comment);
     Q_INVOKABLE qint32 getLastAPIRequest();
     Q_INVOKABLE void requestActivation(int institution, int instance, const QString &key);
     Q_INVOKABLE void sendSupportEmail(const QString &subject,const QString &body, const QString &evaluator_name, const QString &evaluator_email);
@@ -122,7 +122,8 @@ signals:
     void finishedRequest();
     void sendSupportEmailDone(bool allOK);
     void titleBarUpdate();
-    void downloadProgressUpdate(qreal progress, qreal hours, qreal minutes, qreal seconds, qint64 bytesDowloaded, qint64 bytesTotal);
+    void downloadProgressUpdate(qreal progress, qreal hours, qreal minutes, qreal seconds, qint64 bytesDowloaded, qint64 bytesTotal);                             
+    void uploadProgress(qreal remaining, qreal total, QString progress_text, QString title);
 
 public slots:
     void onNotificationFromFlowControl(QVariantMap notification);
@@ -177,6 +178,11 @@ private:
     // Flag for checking uplaod error
     qint32 processingUploadError;
 
+    // The ID is the evaluation and the string list is task that needs to be uploaded.
+    QMap<QString,QStringList> taskFilesToBeUploaded;
+    qreal totalTasksSetup = 0;
+    bool  discardingBecauseExpired;
+
     // Used mainly for updating the title bar.
     QString institutionStringIdentification;
 
@@ -192,12 +198,20 @@ private:
     // Clean the failed calibrations directory.
     void cleanCalibrationDirectory();
 
+    // Sends the next task of the currently configured evaluation. The evaluation ID must be set in the global configuration.
+    void sendNextTask();
+
+    // Adds tasks to the task to be uploaded eval.
+    qint32 addTasksToTasksToBeUploaded(const QString &evalID);
+
+
     // Processing errors.
     static const qint32 FAIL_CODE_NONE = 0;
     static const qint32 FAIL_BAD_ACTIVATION_RETURN = 1;
     static const qint32 FAIL_CODE_SERVER_ERROR = 2;
     static const qint32 FAIL_FILE_CREATION = 3;
     static const qint32 FAIL_INSTANCE_DISABLED = 4;
+    static const qint32 FAIL_INTERNAL_PROGRAMMING = 5;
 
 };
 

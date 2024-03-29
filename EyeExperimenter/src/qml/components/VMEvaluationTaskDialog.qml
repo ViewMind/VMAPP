@@ -40,6 +40,7 @@ Item {
         property string vmTaskToRedoName: ""
         property int vmComputedHeight: 0;
         property var vmRedoReasonsCodes: []
+        property string vmComment: "";
 
         onVmStateChanged: {
 
@@ -53,6 +54,9 @@ Item {
             if (vmState == vmSTATE_REDO){
                 text = loader.getStringForKey("viewqc_reason");
                 text = text.replace("<<T>>",vmTaskToRedoName)
+            }
+            else if (vmState == vmSTATE_UPLOAD){
+                comment.setText(vmComment)
             }
             instructionText.text = text;
 
@@ -71,6 +75,7 @@ Item {
         let name     = dbtask_data.name;
         let evalName = dbtask_data.eval;
         let dateTime = dbtask_data.date;
+        own.vmComment  = dbtask_data.comment;
 
         let taskNameMap  = loader.getTaskCodeToNameMap();
 
@@ -119,8 +124,8 @@ Item {
         }
 
         // We need to store the subject and evlauation id.
-        own.vmEvaluationID = dbtask_data.eval_id;
-        comment.setText("")
+        own.vmEvaluationID = dbtask_data.eval_id;               
+        comment.setText()
         comment.vmErrorMsg = ""; // Ensuring there is no persisting error message
 
         // Now we setup the reason codes and strings.
@@ -551,6 +556,9 @@ Item {
                 }
                 else {
                     // START UPLOADING THE EVALUATIONS.
+                    console.log("Requesting upload of evaluation " + own.vmEvaluationID);
+                    mainWindow.openWaitAsProgress("");
+                    loader.uploadEvaluation(own.vmEvaluationID, formatted_text);
                     close()
                 }
 

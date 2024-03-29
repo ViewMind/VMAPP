@@ -129,6 +129,7 @@ public:
     static const char * EVAL_TIMESTAMP;
     static const char * EVAL_TASKS;
     static const char * EVAL_SUBJECT;
+    static const char * EVAL_COMMENT;
     static const char * EVAL_PROTOCOL;
 
     // Tasks subfields for ongoing evaluations
@@ -322,6 +323,16 @@ public:
     // 2) It's a finished evaluation or  It's an ongoing evaluation less than 24 hrs old.
     QList<QVariantMap> getEvaluationTableInformation(const QString &evaluator, qlonglong override_timeout, const QStringList &months, const QString &ui_lang_code);
 
+    // Changes the field uploded of an evaluation to true. When all evaluations have been changed to true, the the task is removed from the DB.
+    bool updateTaskInEvaluationAsUploaded(const QString &evalID, const QString &taskID);
+
+    // Sets the comment field for the evaluation.
+    void setEvaluationComment(const QString &evalID, const QString &comment);
+
+    // Gets the expired evaluation's IDs. Will clean up any tasks from expired evals so as to prevent trying to upload non existant tasks.
+    // The base work dir is the absolute path for viewmind etdata directory.
+    QStringList getExpiredEvaluationID(qlonglong override_timeout, const QString &baseWorkDir);
+
 private:
 
     QVariantMap data;
@@ -364,8 +375,8 @@ private:
     // Algorithm to put together a text that represents a subject taking into accout if any or all of it's id values are empty.
     QString createSubjectTableDisplayText(const QString &subject_id);
 
-    // Used by the evaluation display table information function. Orders the items inserted on the list via tiemstamp.
-    QVariantList insertEvaluationInListForNewestToOldestOrder(const QVariantMap &item, QVariantList list);
+    // Clean up tasks for non existent files. Should only be used in task lists of expired evaluations.
+    QVariantMap cleanUpTasksForEval(QVariantMap tasks, const QString &baseDir);
 
 
 };

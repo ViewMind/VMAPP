@@ -38,10 +38,7 @@
         <file>qml/components/VMPercentWheel.qml</file>
         <file>qml/subscreens/SCEValsFinished.qml</file>
         <file>qml/subscreens/SCReportList.qml</file>
-        <file>qml/views/ViewQC.qml</file>
-        <file>qml/subscreens/SCArchive.qml</file>
         <file>qml/components/VMScaler.qml</file>
-        <file>qml/subscreens/SCSendReport.qml</file>
         <file>qml/components/VMTextAreaInput.qml</file>
         <file>qml/subscreens/SCProtocolList.qml</file>
         <file>qml/views/ViewEditProtocol.qml</file>

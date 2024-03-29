@@ -68,6 +68,7 @@ const char * LocalDB::EVAL_TIMESTAMP               = "timestamp";
 const char * LocalDB::EVAL_TASKS                   = "tasks";
 const char * LocalDB::EVAL_SUBJECT                 = "subject";
 const char * LocalDB::EVAL_PROTOCOL                = "protocol";
+const char * LocalDB::EVAL_COMMENT                 = "comment";
 
 // Tasks subfields for ongoing evaluations
 const char * LocalDB::TASK_TYPE                    = "task_code";
@@ -946,6 +947,7 @@ QString LocalDB::createNewEvaluation(const QString &subjectID,
     newEvaluation[EVAL_ISO_DATE]  = now.toString("yyyy-MM-dd");
     newEvaluation[EVAL_PROTOCOL]  = protocol;
     newEvaluation[EVAL_TYPE]      = evalType;
+    newEvaluation[EVAL_COMMENT]   = "";
 
     // We can use the evaluation type to get a list of the tasks.
     QVariantMap availableEvaluations = this->data.value(MAIN_AVAILABLE_EVALS).toMap();
@@ -1043,6 +1045,7 @@ QVariantMap LocalDB::getEvaluationDisplayMap(const QString &evaluationID, const 
     ret["eval"]       = evalName;
     ret["date"]       = date + " " + evaluation.value(EVAL_TIME).toString();
     ret["eval_id"]    = evaluationID;
+    ret["comment"]    = evaluation.value(EVAL_COMMENT,"").toString();
 
     // Now for each task, we return the type, the qci, if the qci has passed
     QVariantMap tasks = evaluation.value(EVAL_TASKS).toMap();
@@ -1132,7 +1135,6 @@ QList<QVariantMap> LocalDB::getEvaluationTableInformation(const QString &evaluat
         obj[EVAL_STATUS]    = status;
         obj[EVAL_ID]        = evalID;
 
-        //list = insertEvaluationInListForNewestToOldestOrder(obj,list);
         list << obj;
 
     }
@@ -1208,6 +1210,131 @@ bool LocalDB::updateEvaluation(const QString &evaluationID, const QString &taskF
 
 }
 
+void LocalDB::setEvaluationComment(const QString &evalID, const QString &comment){
+    QVariantMap ongoing_evals = this->data.value(MAIN_ONGOING_EVALUATIONS).toMap();
+    QVariantMap evaluation = ongoing_evals.value(evalID).toMap();
+
+    evaluation[EVAL_COMMENT] = comment;
+
+    ongoing_evals[evalID] = evaluation;
+    this->data[MAIN_ONGOING_EVALUATIONS] = ongoing_evals;
+    saveAndBackup();
+
+}
+
+QStringList LocalDB::getExpiredEvaluationID(qlonglong override_timeout, const QString &baseWorkDir){
+
+    QVariantMap ongoing_evals = this->data.value(MAIN_ONGOING_EVALUATIONS).toMap();
+    QStringList allEvalIDs = ongoing_evals.keys();
+
+    qlonglong timeout_compare = EVALUATION_DISCARD_TIME; // A day in seconds.
+
+    // This should only be non zero for debugging/testing.
+    bool enable_debug = false;
+    if (override_timeout > 0){
+        enable_debug = true;
+        timeout_compare = override_timeout;
+    }
+
+    qlonglong current_timestamp = QDateTime::currentSecsSinceEpoch();
+
+    QStringList expired;
+
+    for (qint32 i = 0; i < allEvalIDs.size(); i++){
+
+        QString evalID = allEvalIDs.at(i);
+
+        QVariantMap evaluation = ongoing_evals.value(evalID).toMap();
+
+        QString baseDir = baseWorkDir + "/" + evaluation.value(EVAL_SUBJECT).toString();
+
+        qlonglong timestamp = evaluation.value(EVAL_TIMESTAMP).toLongLong();
+        QString status = evaluation.value(EVAL_STATUS).toString();
+        qlonglong diff = (current_timestamp - timestamp);
+
+        if (enable_debug) {
+            StaticThreadLogger::log("LocalDB::getEvaluationTableInformation","[DBUG] Evaluation '"
+                                + evalID + "' has a time stamp difference of "
+                                + QString::number(diff) + " compared against " + QString::number(timeout_compare) );
+        }
+
+        if ( (diff > timeout_compare) && (status != EvaluationStatus::READY_UPLOAD) ){
+
+            // Unfinished evaluation that has expired.
+
+            // So we check if the files exist
+            QVariantMap tasks = evaluation.value(EVAL_TASKS).toMap();
+            tasks = cleanUpTasksForEval(tasks,baseDir);
+            if (tasks.empty()){
+                ongoing_evals.remove(evalID);
+            }
+            else {
+                evaluation[EVAL_TASKS] = tasks;
+                ongoing_evals[evalID] = evaluation;
+                expired << evalID;
+            }
+
+        }
+    }
+
+    this->data[MAIN_ONGOING_EVALUATIONS] = ongoing_evals;
+    saveAndBackup();
+
+    return expired;
+
+}
+
+bool LocalDB::updateTaskInEvaluationAsUploaded(const QString &evalID, const QString &taskID){
+
+//    qDebug() << "WARNING SKIPPING MARKING AS UPLOADED";
+//    return true;
+
+    QVariantMap ongoing_evals = this->data.value(MAIN_ONGOING_EVALUATIONS).toMap();
+    QVariantMap evaluation = ongoing_evals.value(evalID).toMap();
+
+    // Now we search for the task.
+    QVariantMap tasks = evaluation.value(EVAL_TASKS).toMap();
+    if (!tasks.contains(taskID)){
+        this->error = "Updating task to uploaded in '" + evalID + "', unable to file task file  '" + taskID + "'. Structure looks like\n" + Debug::QVariantMapToString(evaluation);
+        return false;
+    }
+
+    // Change the value to uploaded.
+    QVariantMap task = tasks.value(taskID).toMap();
+    task[TASK_UPLOADED] = true;
+    tasks[taskID] = task;
+
+    // Now we need to check if any task is NOT uploaded.
+    QStringList taskFileList = tasks.keys();
+    bool allDone = true;
+    for (qint32 i = 0; i < taskFileList.size(); i++){
+        QString taskKey = taskFileList.value(i);
+        task = tasks.value(taskKey).toMap();
+        if (!task.value(TASK_UPLOADED).toBool()){
+            allDone = false;
+            break;
+        }
+    }
+
+    if (!allDone){
+        // We store everything as is.
+        evaluation[EVAL_TASKS] = tasks;
+        ongoing_evals[evalID] = evaluation;
+    }
+    else {
+        // WE remove the entry from the db.
+        // dontRemove can be true for debugging.
+        ongoing_evals.remove(evalID);
+    }
+
+    this->data[MAIN_ONGOING_EVALUATIONS] = ongoing_evals;
+
+    if (!saveAndBackup()) return false;
+    return true;
+
+
+}
+
 QVariantMap LocalDB::createNewTaskObjectForEvaluationTaskList(const QString &evaluationID, const QString &task , QString *tarTaskFileName){
 
     // So for each task we generate a file name.
@@ -1257,29 +1384,28 @@ QString LocalDB::createSubjectTableDisplayText(const QString &subject_id){
 
 }
 
-QVariantList LocalDB::insertEvaluationInListForNewestToOldestOrder(const QVariantMap &item, QVariantList list){
+QVariantMap LocalDB::cleanUpTasksForEval(QVariantMap tasks, const QString &baseDir){
 
-    if (list.empty()) {
-        list << item;
+    QStringList zipFileNames = tasks.keys();
+
+    QVariantMap filteredTasks;
+
+    for (qint32 i = 0; i < zipFileNames.size(); i++){
+
+        QString zipFile = zipFileNames.at(i);
+        QString qci     = zipFile.replace(".zip",".qci");
+        QVariantMap task = tasks.value(zipFile).toMap();
+
+        if (!QFile(baseDir + "/" + zipFile).exists()) continue;
+        if (!QFile(baseDir + "/" + qci).exists()) continue;
+
+        filteredTasks[zipFile] = task;
+
     }
-    return list;
 
-    bool inserted = false;
-    qlonglong timestamp = item.value(EVAL_TIMESTAMP).toInt();
+    return filteredTasks;
 
-    for (qint32 i = 0; i < list.size(); i++){
-        if (list.at(i).toMap().value(EVAL_TIMESTAMP).toLongLong() < timestamp){
-            list.insert(i,item);
-            inserted = true;
-            break;
-        }
-    }
-
-    if (!inserted) list << item;
-
-    return list;
 }
-
 
 ////////////////////////////// FUZZY String Compare ///////////////////////////////
 QVariantList LocalDB::possibleNewPatientMatches(QString name, QString lastname, QString personalID ,QString iso_birthdate, const QStringList &months) const {
