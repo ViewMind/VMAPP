@@ -269,24 +269,9 @@ ViewBase {
         anchors.leftMargin: VMGlobals.adjustWidth(10)
     }
 
-//    VMEvaluationTaskDisplayCard {
-//        id: testCard
-//        width: VMGlobals.adjustWidth(300);
-//        anchors.left: btnAddNew.right
-//        anchors.top: btnAddNew.top
-//        anchors.leftMargin: 10
-//        Component.onCompleted: {
-//            let list = []
-//            for (let i = 0; i < 6; i++){
-//                list.push("Items " + i);
-//            }
-//            configure("Some text to test out",list);
-//        }
-//    }
 
-
-//    //     We add test stuff to main when developing components as we can test it as sson as the app starts.
-//    //     I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
+    //     We add test stuff to main when developing components as we can test it as sson as the app starts.
+    //     I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
 //        VMButton {
 //            id: testBox
 //            vmText: "Test Stuff";
@@ -296,7 +281,9 @@ ViewBase {
 //            anchors.leftMargin: 10
 //            onClickSignal: {
 //                //mainWindow.openEvaluationTaskDialog("1_9_20240327_042000")
-//                mainWindow.openEvaluationTaskDialog("1_9_20240327_042110")
+//                messageDiag.vmLarge = true;
+//                messageDiag.loadFromKey("viewevaluation_badqci_middle_eval",true);
+//                messageDiag.open(true)
 //            }
 //        }
 

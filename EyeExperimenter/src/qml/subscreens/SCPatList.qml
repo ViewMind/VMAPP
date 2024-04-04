@@ -147,12 +147,12 @@ Rectangle {
             nameWidthMap[loader.getStringForKey("viewpatlist_bdate")] = element;
 
             element = {}
-            element["width"] = (15+85)/969; // <- Modified so that new buttons don't have to be designed
+            element["width"] = (85)/969; // <- Modified so that new buttons don't have to be designed
             element["sortable"] = false;
             nameWidthMap[loader.getStringForKey("viewpatlist_sex")] = element
 
             element = {}
-            element["width"] = (130)/969;    // <- Modified so that new buttons don't have to be designed
+            element["width"] = (110)/969;    // <- Modified so that new buttons don't have to be designed
             element["sortable"] = true;
             nameWidthMap[loader.getStringForKey("viewpatlist_id")] = element
 

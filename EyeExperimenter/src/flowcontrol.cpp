@@ -372,6 +372,15 @@ bool FlowControl::isExperimentEndOk() const{
     return (studyControl.getStudyEndStatus() == StudyControl::SES_OK);
 }
 
+bool FlowControl::hasLastTaskPassedQCI()  const {
+    QVariantMap qciData = this->studyEndProcessor.getLastQCIData();
+    bool ans = qciData.value(Globals::QCIFields::QCI_PASS).toBool();
+    if (!ans){
+        StaticThreadLogger::warning("FlowControl::hasLastTaskPassedQCI","The last task was detected to have bad QCI: " + qciData.value(Globals::QCIFields::QCI).toString());
+    }
+    return ans;
+}
+
 /**
  * NOTE: For now the asking if a task requires hand calibration and asking if it's 3D is the same question.
  * It might not be in the future so that is why the functions are separate.

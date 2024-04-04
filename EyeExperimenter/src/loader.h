@@ -202,7 +202,8 @@ private:
     void sendNextTask();
 
     // Adds tasks to the task to be uploaded eval.
-    qint32 addTasksToTasksToBeUploaded(const QString &evalID);
+    // In production onlyAddOne is ALWAYS false. It's a flag only used for debugging.
+    qint32 addTasksToTasksToBeUploaded(const QString &evalID, bool onlyAddOne);
 
 
     // Processing errors.

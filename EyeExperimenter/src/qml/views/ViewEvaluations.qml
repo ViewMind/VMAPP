@@ -206,7 +206,13 @@ ViewBase {
             return true;
         }
         onClickSignal: {
-            //mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
+
+            // If we are on general settings, we just go back, nothing to check as nothing has been set.
+            if (viewer.currentIndex === vmSC_INDEX_GENERAL_SETTINGS) {
+                mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
+                return;
+            }
+
             // First Calibration Explanation
             if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_CALIBRATION) && (evaluationRun.vmCurrentTask == 0)){
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),

@@ -119,7 +119,6 @@ ApplicationWindow {
             messageDiag.open();            
         }
         onRequestEyeCheck: {
-            console.log("Attempting to open et check")
             eyeTrackingSettingsCheck.open(eyeTrackingSettingsCheck.vmINTENT_CHECK);
         }
     }

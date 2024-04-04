@@ -69,6 +69,18 @@ Rectangle {
             flowControl.showRenderWindow();
             viewEvaluations.changeNextButtonTextAndIcon(loader.getStringForKey("viewevaluation_next_button"),"next")
             viewEvaluations.enableNextButton(true)
+
+            // If a study has bad QCI, the application should take them to ongoing evaluations while showing a message of
+            // why it's happening.
+            if (!flowControl.hasLastTaskPassedQCI()){
+               mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
+               viewMainSetup.goToReportList();
+               messageDiag.vmLarge = true;
+               messageDiag.loadFromKey("viewevaluation_badqci_middle_eval",true);
+               messageDiag.open(true)
+               return;
+            }
+
             if (!flowControl.isExperimentEndOk()){
                 // We abort everything.
                 let popup = loader.getStringForKey("viewevaluation_err_data_transfer")

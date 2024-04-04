@@ -262,6 +262,12 @@ Por favor envié un mail de soporte cuanto antes.
 Luego de hacer eso, por favor reintente calibrar.
 Si el problema persiste. por favor reinicie su computadora;
 
+viewevaluation_badqci_middle_eval = Problemas de Calidad de Datos|Se detectaron problemas con la calidad de datos de la última tarea.
+Para asegurar la mejor calidad de evaluación el systema ahora volverá
+a la lista de Evaluaciones Comenzadas. 
+Por favor, asegurese de que el HMD se encuentre colocado apropiadamente en 
+el paciente.
+y que la PC se encuentre conectada correctamente a la red eléctrica;
 
 viewevaluation_checket_title = Verificando el eye tracker ...;
 viewevaluation_checket_title_pass = Eye tracking funciona correctamente;
@@ -383,6 +389,7 @@ viewongoing_pending   = PENDIENTE;
 viewongoing_remaining = Enviando tarea: <<N>> de <<M>>;
 viewongoing_upload_eval = Enviando Evaluación;
 viewongoing_upload_expired = Enviando Evaluaciones Incompletas;
+viewongoing_uploaded = ENVIADO;
 
 #********************************* UPDATE DIALOGS *********************************
 update_title = Actualización Disponible;

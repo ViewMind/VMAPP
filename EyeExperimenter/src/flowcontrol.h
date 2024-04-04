@@ -42,6 +42,7 @@ public:
     Q_INVOKABLE QVariantList setupCurrentTaskList();
 
     Q_INVOKABLE bool isExperimentEndOk() const;
+    Q_INVOKABLE bool hasLastTaskPassedQCI() const;
     Q_INVOKABLE void keyboardKeyPressed(int key);
     Q_INVOKABLE bool isRenderServerWorking() const;
     Q_INVOKABLE QVariantMap getCalibrationValidationData() const;

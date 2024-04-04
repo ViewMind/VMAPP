@@ -41,6 +41,7 @@ Item {
         property int vmComputedHeight: 0;
         property var vmRedoReasonsCodes: []
         property string vmComment: "";
+        property bool vmRedoPossible: true
 
         onVmStateChanged: {
 
@@ -75,6 +76,7 @@ Item {
         let name     = dbtask_data.name;
         let evalName = dbtask_data.eval;
         let dateTime = dbtask_data.date;
+        own.vmRedoPossible = dbtask_data.redo;
         own.vmComment  = dbtask_data.comment;
 
         let taskNameMap  = loader.getTaskCodeToNameMap();
@@ -388,6 +390,7 @@ Item {
                         vmText: {
                             let default_text = loader.getStringForKey("viewongoing_redo");
                             if (items.get(index) === undefined) return default_text
+                            if (items.get(index).uploaded) return loader.getStringForKey("viewongoing_uploaded");
                             if (items.get(index).discarded) return loader.getStringForKey("viewongoing_discarded");
                             if (items.get(index).qci < 0) return loader.getStringForKey("viewongoing_pending");
                             else return default_text
@@ -399,6 +402,7 @@ Item {
                         width: vmTaskButtonWidth*0.8
                         vmEnabled: {
                             if (!vmReadyForUpload) return false; // Can't redo an evaluation until done.
+                            if (!own.vmRedoPossible) return false; // Either the evaluation is too old or a study has been uploaded.
                             if (items.get(index) === undefined) return false;
                             if (items.get(index).discarded) return false;
                             if (items.get(index).qci_ok) {

@@ -94,7 +94,10 @@ Rectangle {
 
                 Text {
                     id: text
-                    text: items.get(index).text
+                    text: {
+                        if (items.get(index) === undefined) return "";
+                        else return items.get(index).text
+                    }
                     color: VMGlobals.vmBlackText
                     font.pixelSize: VMGlobals.vmFontLarge
                     font.weight: 400

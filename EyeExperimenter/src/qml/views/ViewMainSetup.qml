@@ -68,7 +68,7 @@ ViewBase {
 
     function goToReportList(){
         viewer.setCurrentIndex(indexReportList)
-        sideNavigationBar.vmCurrentIndex = 1; // This should be the index of the Report List.
+        sideNavigationBar.vmCurrentIndex = 1; // This should be the index of the Report List in the side NAVIGATOR, on the swiper.
     }
 
     VMConfirmDialog {

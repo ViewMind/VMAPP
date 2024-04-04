@@ -117,19 +117,19 @@ static QVariantMap GetNameCodeMap() {
 
 namespace Share {
 static const QString APP_NAME = "ViewMind Atlas";
-static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.dev.26";
+static const QString EXPERIMENTER_VERSION_NUMBER = "27.0.0.dev.27";
 static const QString SEMAPHORE_NAME              = "viewind_eyeexperimenter_semaphore";
-static const QString SHAREDMEMORY_NAME          = "viewind_eyeexperimenter_shared_memory";
-static const QString PATIENT_UID                = "patient_uid";
-static const QString PATIENT_DIRECTORY          = "patient_directory";
-static const QString PATIENT_STUDY_FILE         = "patient_study_file";
-static const QString CURRENTLY_LOGGED_EVALUATOR = "evaluator_logged";
-static const QString SELECTED_STUDY             = "selected_study";
-static const QString HAND_CALIB_RES             = "hand_calibration_results";
-static const QString SELECTED_EVALUATION        = "selected_evaluation";
-static const QString API_PARAMETER_KEY          = "api_parameter_key";
-static const QString EYEEXPLORER_SYSTEM_VERSION = "27.8.5";
-static const QString APP_RELEASE_DATE           = "DD-MM-YYYY";
+static const QString SHAREDMEMORY_NAME           = "viewind_eyeexperimenter_shared_memory";
+static const QString PATIENT_UID                 = "patient_uid";
+static const QString PATIENT_DIRECTORY           = "patient_directory";
+static const QString PATIENT_STUDY_FILE          = "patient_study_file";
+static const QString CURRENTLY_LOGGED_EVALUATOR  = "evaluator_logged";
+static const QString SELECTED_STUDY              = "selected_study";
+static const QString HAND_CALIB_RES              = "hand_calibration_results";
+static const QString SELECTED_EVALUATION         = "selected_evaluation";
+static const QString API_PARAMETER_KEY           = "api_parameter_key";
+static const QString EYEEXPLORER_SYSTEM_VERSION  = "27.8.5";
+static const QString APP_RELEASE_DATE            = "DD-MM-YYYY";
 }
 
 static bool SetUpRegion(const QString &reg){

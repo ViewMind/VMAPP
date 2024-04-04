@@ -139,7 +139,9 @@ QVariantMap Loader::getDisplayInfoForEvaluation(const QString &evalID) {
 
     QString ui_lang_mode = "en";
     if (comm->db()->getPreference(LocalDB::PREF_UI_LANG,Globals::UILanguage::EN).toString() == Globals::UILanguage::ES) ui_lang_mode = "es";
-    return this->comm->db()->getEvaluationDisplayMap(evalID,getStringListForKey("viewpatlist_months"),ui_lang_mode);
+    qlonglong override_time = 0;
+    if (DBUGEXIST(Debug::Options::OVERRIDE_EVAL_TIMEOUT)) override_time = DBUGINT(Debug::Options::OVERRIDE_EVAL_TIMEOUT);
+    return this->comm->db()->getEvaluationDisplayMap(evalID,getStringListForKey("viewpatlist_months"),ui_lang_mode,override_time);
 
 }
 
@@ -795,8 +797,11 @@ void Loader::uploadEvaluation(const QString &evalID, const QString &comment){
     // First we ensure that the evaluation comment is set  in the database.
     this->comm->db()->setEvaluationComment(evalID, comment);
 
+    bool onlyOne = false;
+    if (DBUGBOOL(Debug::Options::UPLOAD_ONE_TASK_AT_A_TIME)) onlyOne = true;
+
     taskFilesToBeUploaded.clear();
-    totalTasksSetup = addTasksToTasksToBeUploaded(evalID);
+    totalTasksSetup = addTasksToTasksToBeUploaded(evalID,onlyOne);
     discardingBecauseExpired = false;
     sendNextTask();
 
@@ -914,7 +919,7 @@ void Loader::sendNextTask(){
 
 }
 
-qint32 Loader::addTasksToTasksToBeUploaded(const QString &evalID){
+qint32 Loader::addTasksToTasksToBeUploaded(const QString &evalID, bool onlyAddOne){
 
     QVariantMap evaluation = this->comm->db()->getEvaluation(evalID);
     QVariantMap tasks = evaluation.value(LocalDB::EVAL_TASKS).toMap();
@@ -929,6 +934,7 @@ qint32 Loader::addTasksToTasksToBeUploaded(const QString &evalID){
 
         if (!task.value(LocalDB::TASK_UPLOADED).toBool()){
             tasksToUpload << zipFileName;
+            if (onlyAddOne) break; // Adds never more than one.
         }
 
     }
@@ -949,6 +955,12 @@ void Loader::startUpSequenceCheck() {
 
         StaticThreadLogger::log("Loader::startUpSequenceCheck","Finished start up sequence (Operating Info and QCI Regen Check)");
 
+        if (DBUGBOOL(Debug::Options::DISABLE_UPLOAD_TOO_OLD)){
+            StaticThreadLogger::warning("Loader::startUpSequenceCheck","UPLOAD of old tasks is disabled");
+            emit Loader::finishedRequest();
+            return;
+        }
+
         // After the startup sequence is finished. We need to check if there are any expired tasks in the system and upload them.
         qlonglong override_time = 0;
         if (DBUGEXIST(Debug::Options::OVERRIDE_EVAL_TIMEOUT)){
@@ -964,7 +976,7 @@ void Loader::startUpSequenceCheck() {
 
             totalTasksSetup = 0;
             for (qint32 i = 0; i < expiredEvals.size(); i++){
-                totalTasksSetup = totalTasksSetup + addTasksToTasksToBeUploaded(expiredEvals.at(i));
+                totalTasksSetup = totalTasksSetup + addTasksToTasksToBeUploaded(expiredEvals.at(i),false);
             }
 
             discardingBecauseExpired = true;

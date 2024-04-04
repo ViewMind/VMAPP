@@ -970,7 +970,7 @@ QString LocalDB::createNewEvaluation(const QString &subjectID,
 
         QString task = tasks_list.at(i);
         QString tarTaskFileName = "";
-        QVariantMap taskMap = createNewTaskObjectForEvaluationTaskList(evaluationID,task,&tarTaskFileName);
+        QVariantMap taskMap = createNewTaskObjectForEvaluationTaskList(evaluationID,task,tasks.size(),&tarTaskFileName);
         // Store the configuration in the task object key-d by the file name.
         tasks[tarTaskFileName] = taskMap;
 
@@ -1023,7 +1023,7 @@ QVariantMap LocalDB::getEvaluation(const QString &evaluationID) const {
 }
 
 
-QVariantMap LocalDB::getEvaluationDisplayMap(const QString &evaluationID, const QStringList &months, const QString &ui_lang_code){
+QVariantMap LocalDB::getEvaluationDisplayMap(const QString &evaluationID, const QStringList &months, const QString &ui_lang_code, qlonglong override_time){
 
     QVariantMap ongoing_evals = this->data.value(MAIN_ONGOING_EVALUATIONS).toMap();
     if (!ongoing_evals.contains(evaluationID)) return QVariantMap();
@@ -1039,6 +1039,15 @@ QVariantMap LocalDB::getEvaluationDisplayMap(const QString &evaluationID, const 
     QString subject_id = evaluation.value(EVAL_SUBJECT).toString();
     QString subject  = createSubjectTableDisplayText(subject_id);
 
+    // Computing whether the evaluation is too old or not.
+    qlonglong timeout_compare = EVALUATION_DISCARD_TIME; // A day in seconds.
+    if (override_time > 0){
+        timeout_compare = override_time;
+    }
+    qlonglong current_timestamp = QDateTime::currentSecsSinceEpoch();
+    qlonglong timestamp = evaluation.value(EVAL_TIMESTAMP).toLongLong();
+    qlonglong diff = (current_timestamp - timestamp);
+
     QVariantMap ret;
     ret["name"]       = subject;
     ret["subject_id"] = subject_id;
@@ -1052,6 +1061,7 @@ QVariantMap LocalDB::getEvaluationDisplayMap(const QString &evaluationID, const 
     QVariantList retTasks;
 
     QStringList taskKeys = tasks.keys();
+    bool anyUploaded = false;
     for (qint32 i = 0; i < taskKeys.size(); i++){
         QString key = taskKeys.at(i);
         QVariantMap task = tasks.value(key).toMap();
@@ -1061,8 +1071,18 @@ QVariantMap LocalDB::getEvaluationDisplayMap(const QString &evaluationID, const 
         temp["qci_ok"] = task.value(TASK_QCI_OK).toBool();
         temp["name"] = task.value(TASK_TYPE).toString();
         temp["discarded"] = task.value(TASK_DISCARDED).toBool();
+
+        bool uploaded = task.value(TASK_UPLOADED).toBool();
+        temp["uploaded"] = uploaded;
+
+        if (uploaded){
+            anyUploaded = true;
+        }
         retTasks << temp;
     }
+
+    // The logic is that redo is false (i.e not possible) if either ANY tasks have been uploaded or if the study is too old.
+    ret["redo"] = !(anyUploaded || (diff > timeout_compare));
 
     ret["tasks"] = retTasks;
     return ret;
@@ -1172,7 +1192,7 @@ bool LocalDB::updateEvaluation(const QString &evaluationID, const QString &taskF
     // If the QCI values are bad we need to create a new file slot in the task list for the this task.
     if ((!qci_ok) || (requestRedo)){
         QString newFileName = "";
-        QVariantMap newTask = createNewTaskObjectForEvaluationTaskList(evaluationID,task.value(TASK_TYPE).toString(),&newFileName);
+        QVariantMap newTask = createNewTaskObjectForEvaluationTaskList(evaluationID,task.value(TASK_TYPE).toString(),tasks.size(),&newFileName);
         tasks[newFileName] = newTask;
 
         // If we entered here due to a bad QCI the the status should reflect that.
@@ -1335,11 +1355,15 @@ bool LocalDB::updateTaskInEvaluationAsUploaded(const QString &evalID, const QStr
 
 }
 
-QVariantMap LocalDB::createNewTaskObjectForEvaluationTaskList(const QString &evaluationID, const QString &task , QString *tarTaskFileName){
+QVariantMap LocalDB::createNewTaskObjectForEvaluationTaskList(const QString &evaluationID, const QString &task, qint32 counter , QString *tarTaskFileName){
 
     // So for each task we generate a file name.
     QDateTime now = QDateTime::currentDateTime();
-    QString baseTaskFileName = evaluationID + "_" + task + "_" + now.toString("yyyyMMddhhmmss");
+
+    QString cntstring = QString::number(counter);
+    while (cntstring.size() < 3) cntstring = "0" + cntstring; // It's VERY unlikely that we would get a number of tasks into de double digits, much less into 3. But JUST in case.
+
+    QString baseTaskFileName = evaluationID + "_" + cntstring + "_" + task; //+ "_" + now.toString("yyyyMMddhhmmss");
     *tarTaskFileName  = baseTaskFileName + ".zip";
     QString jsonTaskFileName = baseTaskFileName + ".json";
 

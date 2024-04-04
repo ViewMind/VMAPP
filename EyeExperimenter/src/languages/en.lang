@@ -260,8 +260,13 @@ Unexpected Calibration Situation
 The calibration data is not properly formatted. 
 Please send a support email as soon as possible.
 After this, please retry the calibration. 
-If the problem persists, restart the computer. 
+If the problem persists, restart the computer.;
 
+viewevaluation_badqci_middle_eval = Data Quality Issues Detected|There were issues with the data quality of the last task.
+In order to ensure the best quality for the evaluation the system will now return you
+to the Ongoing Evaluations list. 
+Please make sure that the HMD is properly set on the patient and that the computer
+is plugged in to the power supply.; 
 
 viewevaluation_checket_title = Checking eye tracker ...;
 viewevaluation_checket_title_pass = Eye tracking is working;
@@ -383,6 +388,7 @@ viewongoing_pending   = PENDING;
 viewongoing_remaining = Sending task: <<N>> out of <<M>>;
 viewongoing_upload_eval = Uploading Evaluation;
 viewongoing_upload_expired = Uploading Incomplete Evaluations;
+viewongoing_uploaded = UPLOADED;
 
 #********************************* UPDATE DIALOGS *********************************
 update_title = Update Available;

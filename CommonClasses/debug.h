@@ -62,6 +62,8 @@ namespace Debug {
        const QString CALIB_PACKET_OVERRIDE      = "calibration_packet_override";
        const QString MISSING_STR_ERROR          = "missing_string_errors";
        const QString OVERRIDE_EVAL_TIMEOUT      = "override_eval_timeout";
+       const QString DISABLE_UPLOAD_TOO_OLD     = "disable_old_task_upload";
+       const QString UPLOAD_ONE_TASK_AT_A_TIME  = "upload_evals_uploads_only_single_task";
     }
 
     extern ConfigurationManager DEBUG_OPTIONS;

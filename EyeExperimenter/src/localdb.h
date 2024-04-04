@@ -315,7 +315,9 @@ public:
 
     // The evaluation display map is a structure especially created to fill the fields of task break down dialog, when
     // reviewing an evaluation in the front end.
-    QVariantMap   getEvaluationDisplayMap(const QString &evaluationID, const QStringList &months, const QString &ui_lang_code);
+    // The override time is required because the one of the return values is flag used to indicate if REDO is available.
+    // REDO is NOT availabe if the study is too old or if ANY tasks have been uploaded.
+    QVariantMap   getEvaluationDisplayMap(const QString &evaluationID, const QStringList &months, const QString &ui_lang_code, qlonglong override_time);
 
     // Returns a list of objects. Each object belongs to an ongoing evaluation with each field
     // representing an evaluation that meets the following criteria:
@@ -370,7 +372,9 @@ private:
     QString buildDisplayBirthDate(const QString &iso_bdate, const QStringList &months) const;
 
     // Creating a new task object for evaluation's task list. Basically just inits the map. The indexing file name is returned in the second paratemer.
-    QVariantMap createNewTaskObjectForEvaluationTaskList(const QString &evaluationID, const QString &task, QString *tarTaskFileName);
+    // The counter value is required to know how many tasks were done before the current one.This allows the counter to be part of the name and hence
+    // the order in which the tasks are carried out, even in a map, to be predictable.
+    QVariantMap createNewTaskObjectForEvaluationTaskList(const QString &evaluationID, const QString &task, qint32 counter, QString *tarTaskFileName);
 
     // Algorithm to put together a text that represents a subject taking into accout if any or all of it's id values are empty.
     QString createSubjectTableDisplayText(const QString &subject_id);
