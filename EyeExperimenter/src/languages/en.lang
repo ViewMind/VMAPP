@@ -162,7 +162,6 @@ viewsendsupport_email_send = SEND;
 viewevaluation_date = Date;
 viewevaluation_patient = Patient;
 viewevaluation_general_settings = General Settings;
-viewevaluation_eval_settings = Evaluation Settings;
 viewevaluation_eval_setup    = Available Evaluations;
 viewevaluation_doctor        = Clinician that requested the evaluation;
 viewevaluation_doctor_ph     = Select Clinician;
@@ -319,30 +318,17 @@ viewfuncctl_title = Functional Verificación;
 
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = There are no ongoing evaluations;
-viewqc_study = Study;
-viewqc_data_quality = Data Captured;
 viewqc_data_quality_tooltip = Reflects the status of the evaluation
 Green means that the evaluation can be uploaded.
 Red means that at least one task has data quality issues and should be redone. 
 Gray means that tasks still need to be done for the evaluation to be done.;
-viewqc_send = SEND;
-view_qc_send_report = Upload Evaluation;
-viewqc_confirm_archive = Yes, Archive It;
-viewqc_comment = Comments;
-viewqc_archive_explanation = If you archive the study it will not be processed but
-it will be removed from the study list;
 viewqc_archive_reason = study_instructions_misunderstood|The subject did not understand instructions for the study.|
 bad_subjet_state|The subject's state was not optimal for the study|
 other|Other; 
 viewqc_reason = Select reason for redoing task <b><<T>></b>;
 viewqc_archive_reason_ph = Enter a different reason ...;
 viewqc_comment_ph = Enter your comment for this evaluation;
-viewqc_send_wait = Please wait while information is being sent to our servers;
-viewqc_evaluator_comments = Evaluator comments will be included in the final report;
-viewqc_archive_studies = Archive Study;
 viewQC_commentSizeError = Text is too long;
-viewQC_specify_other = Specify other;
-viewqc_err_reason_missing = You must specify a reason for archiving;
 viewqc_err_server_error = <b>Server Error</b><br>A problem was detected in the server<br>Please contact the ViewMind for support;
 viewqc_success_on_send = <b>Success!</b><br>Information was correctly sent;
 

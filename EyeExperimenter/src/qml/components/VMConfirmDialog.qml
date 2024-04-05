@@ -52,7 +52,7 @@ Item {
     Rectangle {
         id: dialog
         width: VMGlobals.adjustWidth(570)
-        height: VMGlobals.adjustHeight(250)
+        height: VMGlobals.adjustHeight(350)
         anchors.centerIn: parent
         radius: VMGlobals.adjustWidth(10);
         color: "#ffffff"

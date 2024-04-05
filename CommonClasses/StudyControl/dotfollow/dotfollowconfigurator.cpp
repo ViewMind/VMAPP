@@ -33,14 +33,18 @@ bool DotFollowConfigurator::studySpecificConfiguration(const QVariantMap &studyC
 
 bool DotFollowConfigurator::parseStudyDescription(int numberOfMovements){
 
-    QString MT_MOVE   = "MV";
-    QString MT_GO     = "IN";
-    QString MT_HOLD   = "HL";
-    QString MT_CLWISE = "CW";
-    QString MT_COUTCL = "CC";
+    QString MT_MOVE     = "MV";
+    QString MT_GO       = "IN";
+    QString MT_HOLD     = "HL";
+    QString MT_CLWISE   = "CW";
+    QString MT_COUTCL   = "CC";
+    QString MT_BKG_ON   = "BL";
+    QString MT_BKG_OFF  = "BO";
+    QString MT_RIGHT_ON = "RO";
+    QString MT_LEFT_ON  = "LO";
 
     QStringList movements;
-    movements << MT_CLWISE << MT_COUTCL << MT_GO << MT_HOLD << MT_MOVE;
+    movements << MT_CLWISE << MT_COUTCL << MT_GO << MT_HOLD << MT_MOVE << MT_BKG_OFF << MT_BKG_ON << MT_RIGHT_ON << MT_LEFT_ON;
 
     QStringList lines = this->studyDescriptionContent.split('\n',Qt::SkipEmptyParts);
     if (lines.isEmpty()){
@@ -99,11 +103,13 @@ bool DotFollowConfigurator::parseStudyDescription(int numberOfMovements){
                 return false;
             }
         }
-        else if (move_type == MT_HOLD){
+        else if ((move_type == MT_HOLD) ||
+                 (move_type == MT_BKG_OFF) || (move_type == MT_BKG_ON) ||
+                 (move_type == MT_RIGHT_ON) || (move_type == MT_LEFT_ON) ){
 
             // We need the destination.
             if (tokens.size() < 3){
-                error = "Origin point in line '" + lines.at(i) + "' is invalid. There should be at least 3 parts of MV type move";
+                error = "Origin point in line '" + lines.at(i) + "' is invalid. There should be at least 3 parts of " + move_type + " type move";
                 return false;
             }
 

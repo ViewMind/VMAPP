@@ -48,6 +48,13 @@ ViewBase {
                 mainWindow.closeWait()
                 mainWindow.swipeTo(VMGlobals.vmSwipeIndexLogin)
             }
+            else if (loader.getLastAPIRequest() === VMGlobals.vmAPI_REQUEST_REPORT){
+                if (mainWindow.getCurrentSwipeIndex() !== VMGlobals.vmSwipeIndexHome){
+                    // This is from uploaded old evaluations. WE need to move to login.
+                    mainWindow.closeWait()
+                    mainWindow.swipeTo(VMGlobals.vmSwipeIndexLogin)
+                }
+            }
         }
 
     }

@@ -162,7 +162,6 @@ viewsendsupport_email_send = ENVIAR;
 viewevaluation_date = Fecha;
 viewevaluation_patient = Paciente;
 viewevaluation_general_settings = Configuación General;
-viewevaluation_eval_settings = Configuración de Evaluaciones;
 viewevaluation_eval_setup    = Evalauciones Disponibles;
 viewevaluation_doctor        = Clínico que ha pedido el estudio;
 viewevaluation_doctor_ph     = Seleccione un clínico;
@@ -320,30 +319,17 @@ viewfuncctl_title = Verificación Funcional;
 
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = No hay evaluaciones comenzadas;
-viewqc_study = Estudio;
-viewqc_data_quality = Datos Obtenidos;
 viewqc_data_quality_tooltip = Refleja el estado de la evaluación.
 Verde, significa que la evaluación ya puede ser procesada.
 Rojo significa que al menos una tarea tiene problemas de calidad y debe rehacerse. 
 Gris significa que la evaluación aún tiene tareas pendientes;
-viewqc_send = ENVIAR;
-view_qc_send_report = Enviar Estudio;
-viewqc_confirm_archive = Si, Archivar el Estudio;
-viewqc_comment = Comentarios;
-viewqc_archive_explanation = Si archiva el estudio este no será procesado, pero 
-se eliminará de la lista de estudios;
 viewqc_archive_reason = study_instructions_misunderstood|El sujeto con comprendió las instrucciones del estudio|
 bad_subjet_state|El estado del sujeto no era óptimo para el estudio|
 other|Otro; 
 viewqc_reason = Seleccione el motivo por el cual se retoma la tarea <b><<T>></b>;
 viewqc_archive_reason_ph = Ingrese un motivo diferente ...;
 viewqc_comment_ph = Ingrese su comentario para la evaluación;
-viewqc_send_wait = Por favor espere mientras la información es enviada a nuestros servidores;
-viewqc_evaluator_comments = Los comentarios del evaluador serán incluidos en el reporte final;
-viewqc_archive_studies = Archivar Estudio;
 viewQC_commentSizeError = El texto es demasiado largo;
-viewQC_specify_other = Especificar otro;
-viewqc_err_reason_missing = Debe especificar algún motivo por la cual se archiva;
 viewqc_err_server_error = <b>Error de Servidor</b><br>Un problema fue detectado en el servidor<br>Por favor contacte a ViewMind para soporte;
 viewqc_success_on_send = <b>¡Éxito!</b><br>La información fue enviada exitosamente;
 
