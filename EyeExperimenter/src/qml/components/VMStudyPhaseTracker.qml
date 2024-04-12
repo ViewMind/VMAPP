@@ -11,7 +11,6 @@ Rectangle {
     property int vmCurrentIndex: 0
     property string vmEvalTitle: ""
     property string vmEvalNumber: ""
-    property bool vmCheckAllOnProgress: true
 
     ListModel {
         id: items;
@@ -106,13 +105,10 @@ Rectangle {
                     width: text.height
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
-                    vmCheckIsVisble: {
-                        if (vmCheckAllOnProgress){
-                            return (vmCurrentIndex >= index)
-                        }
-                        else {
-                            return (vmCurrentIndex === index)
-                        }
+                    vmCheckState: {
+                        if (vmCurrentIndex === index) return check.vmCHECK_CURRENT
+                        if (vmCurrentIndex < index) return check.vmCHECK_NOT_DONE
+                        return check.vmCHECK_DONE
                     }
                 }
 
@@ -124,7 +120,7 @@ Rectangle {
                         if (items.get(index) === undefined) return ""
                         else items.get(index).text
                     }
-                    color: check.vmCheckIsVisble ? VMGlobals.vmBlueSelected : VMGlobals.vmGrayPlaceholderText
+                    color: (check.vmCheckState === check.vmCHECK_CURRENT) ? VMGlobals.vmBlueSelected : VMGlobals.vmGrayPlaceholderText
                     font.pixelSize: VMGlobals.vmFontBaseSize
                     font.weight: check.vmCheckIsVisble ? 600 : 400
                     verticalAlignment: Text.AlignVCenter

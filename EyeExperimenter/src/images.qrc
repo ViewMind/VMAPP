@@ -47,5 +47,7 @@
         <file>images/sequence_blue.png</file>
         <file>images/sequence_gray.png</file>
         <file>images/labeling/patent.png</file>
+        <file>images/checklist.png</file>
+        <file>images/checklist_blue.png</file>
     </qresource>
 </RCC>

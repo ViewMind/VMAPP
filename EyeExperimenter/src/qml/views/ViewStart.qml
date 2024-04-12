@@ -49,7 +49,7 @@ ViewBase {
                 mainWindow.swipeTo(VMGlobals.vmSwipeIndexLogin)
             }
             else if (loader.getLastAPIRequest() === VMGlobals.vmAPI_REQUEST_REPORT){
-                if (mainWindow.getCurrentSwipeIndex() !== VMGlobals.vmSwipeIndexHome){
+                if (mainWindow.getCurrentSwipeIndex() === VMGlobals.vmSwipeIndexHome){
                     // This is from uploaded old evaluations. WE need to move to login.
                     mainWindow.closeWait()
                     mainWindow.swipeTo(VMGlobals.vmSwipeIndexLogin)
@@ -277,22 +277,26 @@ ViewBase {
     }
 
 
-    //     We add test stuff to main when developing components as we can test it as sson as the app starts.
-    //     I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
-//        VMButton {
-//            id: testBox
-//            vmText: "Test Stuff";
-//            width: VMGlobals.adjustWidth(100)
-//            anchors.left: btnAddNew.right
-//            anchors.top: btnAddNew.top
-//            anchors.leftMargin: 10
-//            onClickSignal: {
-//                //mainWindow.openEvaluationTaskDialog("1_9_20240327_042000")
-//                messageDiag.vmLarge = true;
-//                messageDiag.loadFromKey("viewevaluation_badqci_middle_eval",true);
-//                messageDiag.open(true)
-//            }
+//    //     We add test stuff to main when developing components as we can test it as sson as the app starts.
+//    //     I leave here the commented the last test item so hat It appears right beside the add new evaluator button.
+//    VMButton {
+//        id: testBox
+//        vmText: "Test Stuff";
+//        width: VMGlobals.adjustWidth(100)
+//        anchors.left: btnAddNew.right
+//        anchors.top: btnAddNew.top
+//        anchors.leftMargin: 10
+//        onClickSignal: {
+//            messageDiag.vmLarge = true;
+//            messageDiag.loadFromKey("viewevaluation_badqci_middle_eval",true);
+//            messageDiag.open(true)
+
+////            mainWindow.openEvaluationTaskDialog("1_9_20240408_144816")
+////            messageDiag.vmLarge = true;
+////            messageDiag.loadFromKey("viewevaluation_badqci_middle_eval",true);
+////            messageDiag.open(true)
 //        }
+//    }
 
 
 }

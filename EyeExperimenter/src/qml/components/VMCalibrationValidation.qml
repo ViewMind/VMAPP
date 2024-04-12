@@ -420,7 +420,7 @@ Item {
 
     VMButton {
         id: continueButton
-        vmText: loader.getStringForKey("viewevaluation_continue");
+        vmText: loader.getStringForKey("viewevaluation_continue");        
         vmEnabled: vmIsLeftEyeValidated || vmIsRightEyeValidated
         anchors.bottom: dialog.bottom
         anchors.bottomMargin: VMGlobals.adjustHeight(20)
@@ -440,6 +440,7 @@ Item {
         anchors.bottomMargin: VMGlobals.adjustHeight(20)
         anchors.horizontalCenter: parent.horizontalCenter
         onClickSignal: {
+            flowControl.renderWaitScreen("",true);
             requestReCalibration(true)
         }
     }
@@ -447,11 +448,13 @@ Item {
     VMButton {
         id: restartCalibrationButton
         vmText: loader.getStringForKey("viewevaluation_calib_restart");
+        vmButtonType: (slowCalibrationButton.visible) ? restartCalibrationButton.vmTypePrimary : restartCalibrationButton.vmTypeSecondary
         anchors.bottom: dialog.bottom
         anchors.bottomMargin: VMGlobals.adjustHeight(20)
         anchors.left: dialog.left
         anchors.leftMargin: VMGlobals.adjustWidth(30)
         onClickSignal: {
+            flowControl.renderWaitScreen("",true);
             requestReCalibration(false)
         }
     }

@@ -236,67 +236,11 @@ Rectangle {
 
     VMEvaluationTaskDisplayCard {
         id: taskList
-        width:   parent.width*0.3;
+        width:   parent.width*0.36;
         anchors.top: formColumn.top
         anchors.left: formColumn.right
         anchors.leftMargin: VMGlobals.adjustWidth(40)
     }
 
-    //    Rectangle {
-
-    //        id: bkgTaskList
-    //        width:   parent.width*0.5;
-    //        height:  formColumn.height
-    //        radius: VMGlobals.adjustWidth(20)
-    //        border.color: VMGlobals.vmGrayUnselectedBorder
-    //        anchors.top: formColumn.top
-    //        x: {
-    //            let widthToCenter = parent.width - formColumn.width - formColumn.anchors.leftMargin
-    //            let offset = (widthToCenter - width)/2;
-    //            return (formColumn.width + formColumn.anchors.leftMargin) + offset;
-    //        }
-
-    //        function setTaskList(texts) {
-    //            let availableHeight = bkgTaskList.height - taskListTitle.height - divider.height - divider.anchors.topMargin - taskListTitle.anchors.topMargin - 2*taskList.anchors.topMargin
-    //            // We divide the available height by the maximum number of evaluations possible (for now we consider 10).
-    //            taskList.height = availableHeight*texts.length/6
-    //            taskList.setup(texts)
-    //        }
-
-    //        Text {
-    //            id: taskListTitle
-    //            text: loader.getStringForKey("viewevaluation_task_list")
-    //            font.pixelSize: VMGlobals.vmFontLarger
-    //            font.weight: 600
-    //            anchors.top: parent.top
-    //            anchors.horizontalCenter: parent.horizontalCenter
-    //            anchors.topMargin: VMGlobals.adjustHeight(20)
-    //        }
-
-    //        Rectangle {
-
-    //            id: divider
-    //            width: parent.width*0.8
-    //            height: parent.height*0.005
-    //            anchors.horizontalCenter: parent.horizontalCenter
-    //            anchors.top: taskListTitle.bottom
-    //            anchors.topMargin: VMGlobals.adjustHeight(10)
-    //            color: bkgTaskList.border.color
-    //            radius: width/2;
-
-    //        }
-
-    //        VMTextProgressLine {
-
-    //            id: taskList
-    //            width: parent.width
-    //            anchors.horizontalCenter: parent.horizontalCenter
-    //            anchors.top: divider.bottom
-    //            anchors.topMargin: VMGlobals.adjustHeight(10)
-
-    //        }
-
-
-    //    }
 
 }

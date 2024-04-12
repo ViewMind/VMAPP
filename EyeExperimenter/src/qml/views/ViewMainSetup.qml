@@ -151,8 +151,8 @@ ViewBase {
 
             item = {};
             item["text"]        = loader.getStringForKey("viewpatlist_qc");
-            item["icon_normal"] = "qrc:/images/shield.png"
-            item["icon_selected"] = "qrc:/images/shield_blue.png"
+            item["icon_normal"] = "qrc:/images/checklist.png"
+            item["icon_selected"] = "qrc:/images/checklist_blue.png"
             list.push(item)
 
             item = {};

@@ -161,20 +161,6 @@ ViewBase {
         }
     }
 
-
-    Text {
-        id: title
-        text: loader.getStringForKey("viewlogin_title")
-        font.pixelSize: VMGlobals.vmFontExtraExtraLarge
-        font.weight: 600
-        color: VMGlobals.vmBlackText
-        height: VMGlobals.adjustHeight(43)
-        verticalAlignment: Text.AlignVCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: VMGlobals.adjustHeight(607)
-    }
-
     VMButton {
         id: backButton
         vmText: loader.getStringForKey("viewlogin_back")
@@ -189,17 +175,14 @@ ViewBase {
         }
     }
 
-    Text {
-        id: subtTitle
-        text: loader.getStringForKey("viewlogin_subtitle")
-        font.pixelSize: VMGlobals.vmFontLarge
-        font.weight: 400
-        color: VMGlobals.vmGrayPlaceholderText
-        verticalAlignment: Text.AlignVCenter
-        height: VMGlobals.adjustHeight(18)
+    Image {
+        id: title
+        height: VMGlobals.adjustHeight(40);
+        fillMode: Image.PreserveAspectFit
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: title.bottom
-        anchors.topMargin: VMGlobals.adjustHeight(10)
+        anchors.top: parent.top
+        anchors.topMargin: VMGlobals.adjustHeight(150)
+        source: "qrc:/images/logo.png"
     }
 
     VMComboBox {
@@ -208,8 +191,8 @@ ViewBase {
         vmPlaceHolderText: loader.getStringForKey("viewlogin_placeholder_evaluator")
         width: VMGlobals.adjustWidth(320)
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: subtTitle.bottom
-        anchors.topMargin: VMGlobals.adjustHeight(54)
+        anchors.top: title.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(84)
         z: 1
     }
 
@@ -223,6 +206,9 @@ ViewBase {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: evaluatorSelection.bottom
         anchors.topMargin: VMGlobals.adjustHeight(54)
+        onEnterPressed: {
+            logInAttempt();
+        }
     }
 
 

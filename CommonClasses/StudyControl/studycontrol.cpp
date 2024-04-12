@@ -111,7 +111,7 @@ void StudyControl::startTask(const QString &workingDir,
     else if (studyName == VMDC::Study::MOVING_DOT){
         configurator = new DotFollowConfigurator();
         studyExplanationLanguageKey = STUDY_TEXT_KEY_DOTFOLLOW;
-        studyExampleLanguageKey = EXAMPLE_TEXT_DOT_FOLLOW;
+        studyExampleLanguageKey = EXAMPLE_TEXT_KEY_DOT_FOLLOW;
         studyType = ST_2D;
     }
     else if ( (studyName == VMDC::Study::SPHERES) || (studyName == VMDC::Study::SPHERES_VS) ){
@@ -495,6 +495,7 @@ void StudyControl::nextExplanationSlide(){
 
     // We do the index loop logic, and update the explanation message.
     currentStudyExplanationScreen++;
+    //qDebug() << "Next explanation slide. Current index" << currentStudyExplanationScreen << "Number of slides" << NumberOfExplanationSlides[studyExplanationLanguageKey];
     if (currentStudyExplanationScreen == NumberOfExplanationSlides[studyExplanationLanguageKey]){
         currentStudyExplanationScreen = 0;
     }
@@ -607,9 +608,9 @@ void StudyControl::FillNumberOfSlidesInExplanations(ConfigurationManager *langua
     QStringList allkeys;
     allkeys << STUDY_TEXT_KEY_BINDING_BC << STUDY_TEXT_KEY_BINDING_UC << STUDY_TEXT_KEY_GONOGO << STUDY_TEXT_KEY_GONOGO_3D
             << STUDY_TEXT_KEY_NBACKRT << STUDY_TEXT_KEY_NBACKVS << STUDY_TEXT_KEY_NBACK_3 << STUDY_TEXT_KEY_NBACK_4
-            << STUDY_TEXT_KEY_PASS_BALL << STUDY_TEXT_KEY_GONOGO_3D_VS;
+            << STUDY_TEXT_KEY_PASS_BALL << STUDY_TEXT_KEY_GONOGO_3D_VS << STUDY_TEXT_KEY_DOTFOLLOW;
     for (qint32 i = 0; i < allkeys.size(); i++){
-        //qDebug() << language->getStringList(allkeys.at(i));
+        //qDebug() << "Explanation Key" << language->getStringList(allkeys.at(i));
         NumberOfExplanationSlides[allkeys.at(i)] = language->getStringList(allkeys.at(i)).size();
     }
 
@@ -618,6 +619,7 @@ void StudyControl::FillNumberOfSlidesInExplanations(ConfigurationManager *langua
     allkeys << EXAMPLE_TEXT_KEY_BINDING_UC_3;
     allkeys << EXAMPLE_TEXT_KEY_BINDING_BC_2;
     allkeys << EXAMPLE_TEXT_KEY_BINDING_BC_3;
+    allkeys << EXAMPLE_TEXT_KEY_DOT_FOLLOW;
     allkeys << EXAMPLE_TEXT_KEY_GNG << EXAMPLE_TEXT_KEY_GNG3D << EXAMPLE_TEXT_KEY_NBACK_3 << EXAMPLE_TEXT_KEY_NBACK_4
             << EXAMPLE_TEXT_KEY_NBACK_5 << EXAMPLE_TEXT_KEY_NBACK_6;
     for (qint32 i = 0; i < allkeys.size(); i++){

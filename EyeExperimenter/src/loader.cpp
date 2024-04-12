@@ -322,7 +322,7 @@ void Loader::setExplanationLanguage(){
 
     if (!explanationStrings.loadConfiguration(exp_lang_file)){
         // In a stable program this should NEVER happen.
-        StaticThreadLogger::error("Loader::setExplanationLanguage","CANNOT LOAD Explanation language file LANG FILE: '" + exp_lang_file + "'. Reason: " + language.getError());
+        StaticThreadLogger::error("Loader::setExplanationLanguage","CANNOT LOAD Explanation language file LANG FILE: '" + exp_lang_file + "'. Reason: " + explanationStrings.getError());
     }
 
 }
@@ -444,9 +444,9 @@ bool Loader::isFirstTimeRun() const{
 QStringList Loader::getLatestVersionChanges(){
     QString name = Globals::Paths::CHANGELOG_LOCATION + "/" + Globals::Paths::CHANGELOG_BASE;
 
-    QString changeLogLangName = Globals::UILanguage::EN;
+    QString changeLogLangName = "English";
     if (comm->db()->getPreference(LocalDB::PREF_UI_LANG,Globals::UILanguage::EN).toString() == Globals::UILanguage::ES){
-        changeLogLangName = Globals::UILanguage::ES;
+        changeLogLangName = "Spanish";
     }
 
     name = name  + changeLogLangName + ".txt";
@@ -1222,11 +1222,16 @@ void Loader::receivedAPIResponse(){
             tasks.removeFirst();
 
             // There is a need for now to mark this task as uploaded. This will also remove the evaluation if necessary.
-            if (!this->comm->db()->updateTaskInEvaluationAsUploaded(eval,task)){
-                processingUploadError = FAIL_INTERNAL_PROGRAMMING;
-                StaticThreadLogger::log("Loader::receivedAPIResponse","Was unable to mark task '" + task + "' in evaluation " + eval + " as uploaded");
-                emit Loader::finishedRequest();
-                return;
+            if (!DBUGBOOL(Debug::Options::NO_RM_STUDIES)){
+                if (!this->comm->db()->updateTaskInEvaluationAsUploaded(eval,task)){
+                    processingUploadError = FAIL_INTERNAL_PROGRAMMING;
+                    StaticThreadLogger::log("Loader::receivedAPIResponse","Was unable to mark task '" + task + "' in evaluation " + eval + " as uploaded");
+                    emit Loader::finishedRequest();
+                    return;
+                }
+            }
+            else {
+                StaticThreadLogger::warning("Loader::receivedAPIResponse","MARKING TASKS AS UPLOADED HAS BEEN DISABLED");
             }
 
             // If there are no more tasks for this evaluation. Then we move on.

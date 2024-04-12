@@ -4,15 +4,19 @@ import "../"
 
 Rectangle {
 
-    property bool vmCheckIsVisble: true
+    readonly property int vmCHECK_DONE:     0;
+    readonly property int vmCHECK_NOT_DONE: 1;
+    readonly property int vmCHECK_CURRENT:  2;
+
+    property int vmCheckState: vmCHECK_NOT_DONE
 
     radius: width/2
     height: width
-    border.width: vmCheckIsVisble? 0 : 0.05*width
+    border.width: (vmCheckState != vmCHECK_CURRENT)? 0.05*width : 0
     border.color: VMGlobals.vmGrayPlaceholderText
-    color: vmCheckIsVisble? VMGlobals.vmBlueSelected : "transparent";
+    color: (vmCheckState === vmCHECK_CURRENT)? VMGlobals.vmBlueSelected : "transparent";
 
-    onVmCheckIsVisbleChanged: {
+    onVmCheckStateChanged: {
         canvas.requestPaint()
     }
 
@@ -27,7 +31,11 @@ Rectangle {
 
         onPaint: {
 
-            if (!vmCheckIsVisble) return;
+            let color = VMGlobals.vmGrayToggleOff
+            if (vmCheckState == vmCHECK_DONE){
+                color = VMGlobals.vmGrayPlaceholderText
+            }
+            else if (vmCheckState == vmCHECK_NOT_DONE) return;
 
             var ctx = getContext("2d")
             ctx.reset();
@@ -40,7 +48,7 @@ Rectangle {
             let yb = height*0.7
             let ye = height*0.3
 
-            ctx.strokeStyle = VMGlobals.vmGrayToggleOff
+            ctx.strokeStyle = color
             ctx.lineWidth = width*0.08
             ctx.lineCap = "round"
 

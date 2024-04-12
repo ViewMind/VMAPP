@@ -1,8 +1,8 @@
 viewevaluation_calibration_explanation = 
-Você consegue ver bem as quatro cruzes? Um círculo vermelho com um ponto 
-branco no seu centro aparecerá na tela. Olhe para o ponto branco. O círculo 
-se moverá pela tela. Você deve segui-lo. Lembre-se de não tirar os olhos do 
-círculo até que ele desapareça.;
+Pode ver bem as 4 cruzes?
+Olhe para o ponto branco dentro do círculo vermelho.
+Ele vai se mover pela tela. Você deve segui-lo.
+Entendeu?;
 
 
 viewevaluation_hand_calib_h = 
@@ -229,6 +229,8 @@ explanation_phase_list_pass_ball = |
 |
 |;
 
+explanation_phase_list_dotfollow = Siga o ponto vermelho.;
+
 
 examples_binding_uc_3 =
 |||O paciente deve dizer <i>Diferente</i> em voz alta.||
@@ -264,3 +266,5 @@ examples_nback_6 = |||||||
 |||||||
 |||||||;
 examples_gng_3D = |||;
+
+examples_dot_follow = %%%%;

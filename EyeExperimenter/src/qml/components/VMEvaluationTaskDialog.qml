@@ -87,6 +87,7 @@ Item {
         }
 
         dialog.height = desiredListH +
+                qci_explanation.height + qci_explanation.anchors.topMargin +
                 patientName.height + patientName.anchors.topMargin +
                 topDivider.height + topDivider.anchors.topMargin +
                 bottomDivider.height + bottomDivider.anchors.topMargin +
@@ -251,7 +252,7 @@ Item {
 
     Text {
         id: evaluationName
-        color: VMGlobals.vmGrayLightGrayText
+        color: VMGlobals.vmGrayDialogDivider
         font.weight: 400
         font.pixelSize: VMGlobals.vmFontLarger
         height: VMGlobals.adjustHeight(32)
@@ -280,11 +281,22 @@ Item {
     }
 
 
+    Text {
+        id: qci_explanation
+        color: VMGlobals.vmGrayLightGrayText
+        text: "<i>" + loader.getStringForKey("viewongoing_diag_subtitle") + "</i>"
+        font.weight: 400
+        font.pixelSize: VMGlobals.vmFontLarge
+        anchors.left: patientName.left
+        anchors.top: patientName.bottom
+        anchors.topMargin: VMGlobals.adjustHeight(5)
+    }
+
     Rectangle {
         id: topDivider
         width: dialog.width - 2*patientName.anchors.leftMargin
         height: VMGlobals.adjustHeight(1)
-        anchors.top: patientName.bottom
+        anchors.top: qci_explanation.bottom
         anchors.topMargin: VMGlobals.adjustHeight(10)
         anchors.horizontalCenter: dialog.horizontalCenter
         border.width: 0

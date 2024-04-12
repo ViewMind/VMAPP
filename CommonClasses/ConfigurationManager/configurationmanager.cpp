@@ -167,8 +167,17 @@ qreal ConfigurationManager::getReal(const QString &name, bool *ok) const{
 QStringList ConfigurationManager::getStringList(const QString &name) const{
     if (!data.contains(name)) return QStringList();
     QVariantList list;
-    if (data.value(name).canConvert(QMetaType(QMetaType::QVariantList))){
-        list = data.value(name).toList();
+    if (data.value(name).canConvert(QMetaType(QMetaType::QVariantList))){        
+        // There is a possibility that this is just as string and I needed it as a list.
+        // So we try to get it as a string.
+        QString temp = data.value(name).toString();
+        if (temp == "") {
+            // We CAN'T get it as a strign. So regular list it is.
+            list = data.value(name).toList();
+        }
+        else{
+            list << temp;
+        }
     }
     else{
         list << data.value(name);
@@ -289,6 +298,7 @@ bool ConfigurationManager::verifyParsedCommands(){
 
     if (errors.isEmpty()) return true;
     error = errors.join("<br>");
+
     return false;
 
 }

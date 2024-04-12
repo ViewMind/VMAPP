@@ -1,9 +1,8 @@
 viewevaluation_calibration_explanation = 
-Pouvez-vous voir correctement les quattres croix ? 
-Un cercle rouge avec un point blanc au centre apparaîtra à l'écran. 
-Regardez le point blanc. Le cercle se déplacera à travers l'écran. 
-Vous devez le suivre. N'oubliez pas de ne pas quitter le cercle 
-des yeux jusqu'à ce qu'il disparaisse.;
+Peut-il voir clairement les 4 croix?
+Regardez le point blanc à l'intérieur du cercle rouge.
+Il se déplacera à travers l'écran. Vous devez le suivre.
+Avez-vous compris?;
 
 viewevaluation_hand_calib_h = 
 Stretch your arms to the sides of your body.
@@ -238,6 +237,8 @@ explanation_phase_list_pass_ball = |
 |
 |;
 
+explanation_phase_list_dotfollow = Suivez le point rouge.;
+
 
 examples_binding_uc_3 =
 
@@ -275,3 +276,5 @@ examples_nback_6 = |||||||
 |||||||
 |||||||;
 examples_gng_3D = |||;
+
+examples_dot_follow = %%%%;

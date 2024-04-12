@@ -25,6 +25,7 @@ Rectangle {
     property var vmActionEnabledTexts: [];
     property var vmDataMatrix: [];
     property var vmToolTips: [];
+    property var vmExpandedText: []
     property bool vmCustomActionsEnabled: true;
     property bool vmEditActionEnabled: true;
     property bool vmDeleteActionEnabled: true;
@@ -81,11 +82,40 @@ Rectangle {
     function setList(list){
         model.clear()
         vmDataMatrix = list;
+        vmExpandedText = {}
         for (var i = 0; i < list.length; i++){
             var element = {};
             element["vmIndex"] = i
             model.append(element)
         }
+
+        // Checking the texts.
+        for (i = 0; i < vmDataMatrix.length; i++){
+            for (var j = 0; j < vmDataMatrix[i].length; j++){
+                let text = vmDataMatrix[i][j]
+                rowFontMetrics.text = text
+                let colW = table.width*vmColWidths[j]
+                if (j == 0) colW = colW - vmLeftMargin
+                let original = text;
+
+                while (rowFontMetrics.width > colW){
+                    text = text.replace(/.$/, '');
+                    rowFontMetrics.text = text + "...";
+                }
+
+                if (text !== rowFontMetrics.text){
+                    if (!(i in vmExpandedText)){
+                        vmExpandedText[i] = {}
+                    }
+                    vmExpandedText[i][j] = original
+                }
+
+                vmDataMatrix[i][j] = rowFontMetrics.text;
+
+                //console.log("Text at row " + i + " and col " + j + ": " + rowFontMetrics.text + " width of " + rowFontMetrics.width + " compared to allowed " + colW)
+            }
+        }
+
     }
 
     // This ONLY enables the proper graphical indicator.
@@ -251,8 +281,16 @@ Rectangle {
 
     }
 
+
+    TextMetrics {
+        id: rowFontMetrics
+        font.pixelSize: VMGlobals.vmFontLarge
+        font.weight: 400
+        text: ""
+    }
+
     ListView {
-        id: patientListView
+        id: rowList
         clip: true
         x: 0
         y: vmRowHeight
@@ -280,23 +318,30 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
                 onContainsMouseChanged: {
-                    if (containsMouse) tableRow.forceActiveFocus()
+                    if (containsMouse) {
+                        tableRow.forceActiveFocus()
+                    }
                 }
             }
 
             Repeater {
 
                 model: vmColWidths.length-1
+
                 Text {
+                    id: cellText
                     height: vmRowHeight
-                    width: table.width*vmColWidths[index]
+                    width: {
+                        if (vmColWidths[index] === undefined) return 0
+                        if (index === 0) return (table.width*vmColWidths[index] - vmLeftMargin)
+                        return table.width*vmColWidths[index]
+                    }
                     text: {
                         // PATCH: Avoids a warning that does not affect behaviour. Because at some point the data is found and shown.
                         if (vmDataMatrix[vmIndex] === undefined) return ""
-                        else return vmDataMatrix[vmIndex][index]
+                        return vmDataMatrix[vmIndex][index]
                     }
-                    font.pixelSize: VMGlobals.vmFontLarge
-                    font.weight: 400
+                    font: rowFontMetrics.font
                     verticalAlignment: Text.AlignVCenter
                     x: computeXBasedOnIndex(index)
                     visible: {
@@ -304,6 +349,67 @@ Rectangle {
                         if (vmShowColorCircle.includes(index)) return false;
                         return true;
                     }
+
+                    MouseArea {
+                        id: cellMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onContainsMouseChanged:{
+                            if (containsMouse){
+                                if (expandedTextToolTip.isEmpty()) return;
+                                expandedTextToolTip.isVisible = true;
+                            }
+                            else {
+                                expandedTextToolTip.isVisible = false;
+                            }
+                        }
+                    }
+
+// Used for debugging.
+//                    Rectangle {
+//                        border.color: "#000000"
+//                        border.width: 4
+//                        height: vmRowHeight
+//                        width: cellText.width
+//                        x: 0
+//                        y: 0
+//                        color: "transparent"
+//                    }
+
+                    Rectangle {
+
+                        property bool isVisible: false
+
+                        id: expandedTextToolTip
+                        width: longFormText.width + VMGlobals.adjustWidth(8)
+                        height: longFormText.height + VMGlobals.adjustHeight(4);
+                        color: VMGlobals.vmBluePanelBKGSelected;
+                        radius: VMGlobals.adjustHeight(7)
+                        x: cellMouseArea.mouseX - width/2
+                        y: cellMouseArea.mouseY - height
+                        visible: (cellText.visible && isVisible)
+
+                        function isEmpty() {
+                            return (longFormText.text === "")
+                        }
+
+                        Text {
+                            id: longFormText
+                            color: VMGlobals.vmGrayAccented
+                            font.pixelSize: VMGlobals.vmFontBaseSize
+                            font.weight: 400;
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: {
+                                if (!(vmIndex in vmExpandedText)) return "";
+                                if (!(index in vmExpandedText[vmIndex])) return "";
+                                return vmExpandedText[vmIndex][index];
+                            }
+                        }
+
+                    }
+
                 }
             }
 

@@ -22,6 +22,7 @@ Item {
     readonly property double vmRightMargin: Math.ceil(width*10/338);
 
     signal textChanged()
+    signal enterPressed()
 
     function clear(){
         inputText.text = vmPlaceHolderText
@@ -116,6 +117,10 @@ Item {
                         vmFocus = false;
                     }
                 }
+            }
+
+            Keys.onReturnPressed: {
+                enterPressed();
             }
 
             onTextEdited: {

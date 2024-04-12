@@ -1,8 +1,8 @@
 viewevaluation_calibration_explanation = 
-¿Puede ver correctamente las cuatro cruces?
-Un círculo rojo con un punto blanco en su centro aparecerá en la pantalla. 
-Mire el punto blanco. El círculo se moverá por la pantalla. Usted debe seguirlo.
-Recuerde no quitar sus ojos del círculo hasta que este desaparezca.;
+¿Puede ver bien las 4 cruces?
+Mira el punto blanco dentro del círculo rojo.
+Este se moverá por la pantalla. Debes seguirlo.
+¿Ha entendido?;
 
 
 viewevaluation_hand_calib_h = 
@@ -226,7 +226,6 @@ explanation_phase_list_pass_ball = |
 |;
 
 explanation_phase_list_dotfollow =
-Siga el punto rogjo|
 Siga el punto rojo;
 
 
@@ -266,5 +265,4 @@ examples_nback_6 = |||||||
 |||||||;
 examples_gng_3D = |||;
 
-examples_dot_follow =
-|;
+examples_dot_follow = %%%%;

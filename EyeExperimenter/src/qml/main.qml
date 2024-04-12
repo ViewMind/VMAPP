@@ -31,7 +31,7 @@ ApplicationWindow {
 
         function onUploadProgress(remaining, total, progress_text, title_text){
 
-            console.log("Upload progress called");
+            //console.log("Upload progress called");
 
             let sent = total - remaining;
             let p = 100*sent/total;

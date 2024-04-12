@@ -52,7 +52,7 @@ Rectangle {
                 return;
             }
             else{
-                flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_studyEnd") + "\n" + keysRect.getEvalName());
+                flowControl.renderWaitScreen("");
                 // We show the wait screen while we do some background processing.
                 flowControl.hideRenderWindow();
                 mainWindow.openWait(loader.getStringForKey("viewwait_study_end"));
@@ -92,7 +92,7 @@ Rectangle {
         function onCalibrationDone(calibrated) {
 
             if (calibrated) {
-                flowControl.renderWaitScreen(loader.getStringForKey("waitscreenmsg_calibrationEnd"));
+                flowControl.renderWaitScreen("");
             }
             else {
                 flowControl.renderWaitScreen("",true);
@@ -146,6 +146,7 @@ Rectangle {
             }
             else if ((vmEvaluationStage == vmSTAGE_EXPLANATION) || (vmEvaluationStage == vmSTAGE_EXAMPLES)){
                 // This should contains only one key. and it's value is the index value in the screen.
+                //console.log("Showing messages where string value map is " + JSON.stringify(string_value_map));
                 for (let key in string_value_map){
                     let message_list = loader.getStringListForKey(key,false)
                     let index = string_value_map[key];
@@ -153,6 +154,9 @@ Rectangle {
                     if (message_list.length < 1) return; // IN this case there is nothing to do.
 
                     let message_to_display = message_list[index];
+
+                    // The 4 % are used as a code to represent an empty string. This is necessary because I can't code in the text files a 1 item list where the item is just a space.
+                    if (message_to_display === "%%%%") message_to_display = "";
 
                     //console.log("Setting display message to: |" + message_to_display + "|");
 
@@ -608,7 +612,6 @@ Rectangle {
         VMStudyPhaseTracker {
             id: plineEvaluationStages
             y: hmdView.y
-            vmCheckAllOnProgress: false
             anchors.horizontalCenter: keysRect.horizontalCenter
             width: keysRect.width*0.7
             height: parent.height*0.5

@@ -61,14 +61,19 @@ Item {
             anchors.leftMargin: vmLeftMargin
 
             onFocusChanged: {
-                if (focus){
-                    if (vmCurrentText == "") text = ""
+                if (focus){                   
+                    if (vmCurrentText == "") {
+                        text = ""
+                    }
                 }
             }
 
             onActiveFocusChanged: {
                 if (activeFocus){
                     mainWindow.requestApplicationActiveFocus();
+                    if (vmCurrentText == "") {
+                        text = ""
+                    }
                 }
             }
 

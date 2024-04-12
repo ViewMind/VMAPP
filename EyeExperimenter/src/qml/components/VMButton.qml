@@ -16,10 +16,11 @@ import "../"
 
 Rectangle {
 
-    readonly property int vmTypePrimary:   0
-    readonly property int vmTypeSecondary: 1
-    readonly property int vmTypeTertiary:  2
-    readonly property int vmTypeWarning:   3
+    readonly property int vmTypePrimary:             0
+    readonly property int vmTypeSecondary:           1
+    readonly property int vmTypeTertiary:            2
+    readonly property int vmTypeWarning:             3
+    readonly property int vmTypeTertiaryWithOutline: 4
 
     readonly property double vmSpacing: VMGlobals.adjustWidth(10);
     readonly property double vmSideMargins: VMGlobals.adjustWidth(20)
@@ -84,6 +85,17 @@ Rectangle {
             vmTextColor = VMGlobals.vmBlackText
             vmTextColorDisabled = VMGlobals.vmBlackText
             vmBorderColor = "transparent"
+            vmBorderColorDisabled = vmBorderColor
+            vmDisabledColor = vmNormalColor
+            vmBorderColorHover = vmHoverColor
+        }
+        else if (vmButtonType == vmTypeTertiaryWithOutline){
+            vmHoverColor = VMGlobals.vmGrayHoverButton
+            vmNormalColor = "transparent"
+            vmPressedColor = VMGlobals.vmGrayButtonPressed
+            vmTextColor = VMGlobals.vmBlackText
+            vmTextColorDisabled = VMGlobals.vmBlackText
+            vmBorderColor = vmTextColor
             vmBorderColorDisabled = vmBorderColor
             vmDisabledColor = vmNormalColor
             vmBorderColorHover = vmHoverColor

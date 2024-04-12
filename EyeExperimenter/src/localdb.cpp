@@ -271,7 +271,7 @@ bool LocalDB::markSubjectsAsUpdated(const QVariantList &subject_ids){
             QVariantMap subject = subject_data_map.value(subject_id).toMap();
             subject[SUBJECT_MODIFIED_FLAG] = false;
             subject_data_map[subject_id] = subject;
-            qDebug() << "MARKING " << subject_id << " AS UPDATED";
+            //qDebug() << "MARKING " << subject_id << " AS UPDATED";
         }
     }
     data[MAIN_SUBJECT_DATA] = subject_data_map;
@@ -719,7 +719,7 @@ QVariantMap LocalDB::getSubjectDataToUpdate() const {
             record.insert(VMDC::SubjectField::YEARS_FORMATION,subject_data.value(LocalDB::SUBJECT_YEARS_FORMATION));
             record.insert(VMDC::SubjectField::EMAIL,subject_data.value(LocalDB::SUBJECT_EMAIL));
             to_update[subject_id] = record;
-            qDebug() << "Adding subject " << subject_id << " to update";
+            // qDebug() << "Adding subject " << subject_id << " to update";
         }
 
     }

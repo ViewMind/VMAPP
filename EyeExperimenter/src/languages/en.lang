@@ -2,8 +2,8 @@
 
 #********************************* VIEWHOME SCREEN *********************************
 viewstart_welcome = Welcome to ViewMind Atlas;
-viewstart_instruction = Login to your profile or add a new evaluator;
-viewstart_login = LOGIN;
+viewstart_instruction = Log in to your profile or add a new evaluator;
+viewstart_login = LOG IN;
 viewstart_addneweval = ADD A NEW EVALUATOR;
 viewstart_settings = Settings;
 viewstart_on_RRS_check_failed  = Error Detected|A software malfunction was detected that might affect 
@@ -51,8 +51,6 @@ Please wait ...;
 viewwait_download_remaining = Estimated Time: <M> minutes <S> seconds (<MB> MB/<MBT> MB);
 
 #********************************* LOGIN SCREEN *********************************
-viewlogin_title = Evaluator Login;
-viewlogin_subtitle = Login to your Profile or add a new Evaluator;
 viewlogin_label_evaluator = Evaluator;
 viewlogin_label_pass = Password;
 viewlogin_placeholder_evaluator = Select Evaluator;
@@ -91,7 +89,7 @@ viewpatlist_name = Name;
 viewpatlist_bdate = Birth Date;
 viewpatlist_sex = Sex;
 viewpatlist_id = Patient ID;
-viewpatlist_action = Action;
+viewpatlist_action = Actions;
 viewpatlist_edit = Edit;
 viewpatlist_study = NEW EVALUATION;
 viewpatlist_account = Account;
@@ -100,8 +98,13 @@ viewpatlist_qc = Ongoing Evaluations;
 viewpatlist_protocol = Protocol;
 viewpatlist_nopats = No patients found;
 viewpatlist_months = Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;
+
 viewpatlist_nothing_found = No entries found;
 viewpatlist_nothing_found_exp = There are not patients matching the specified name or ID.; 
+
+viewpatlist_start_title = Search patients;
+viewpatlist_start_exp = Start typing to search for patients or add a new patient; 
+
 viewpatlist_vr_failed = <b>Headset Intialization Failed</b><br>Please verify your setup.<br>Studies are disabled;
 viewpatlist_protocol_delete_title = Delete Protocol;
 viewpatlist_protocol_delete_message = Are you sure you want to delete protocol <b><<N>></b>?;
@@ -136,6 +139,16 @@ viewpatform_isnotanumber = Not a number;
 viewpatform_invalid_range = Invalid range;
 viewpatform_success_edit = <b></b><br>has been updated;
 viewpatform_success_add = <b></b><br>has been added as a patient;
+viewpatform_id_warning = No ingrese identificación personal.;
+viewpatform_max_education_level = Highest level of education reached;
+viewpatform_max_education_select = Select an option (Number of years);
+viewpatform_years_map = 
+4|Level 1 (<<N>> years)|
+6|Level 2 (<<N>> years)|
+8|Level 3 (<<N>> years)|
+10|Level 4 (<<N>> years)|
+0|Other;
+
 
 #********************************* SEND SUPPORT EMAIL *********************************
 viewsendsupport_email_title = SUPPORT REQUEST;
@@ -167,7 +180,7 @@ viewevaluation_doctor        = Clinician that requested the evaluation;
 viewevaluation_doctor_ph     = Select Clinician;
 viewevaluation_protocol_ph   = Select protocol;
 viewevaluation_no_protocol   = No protocol;
-viewevaluation_exp_lang      = Task Explanation Language;
+viewevaluation_exp_lang      = Explanation Language;
 viewevaluation_next_button   = NEXT;
 viewevaluation_error_patient_dir = Disk Write Error|Failed creating subject directory;
 viewevaluation_must_select_doctor = A clinician must be selected;
@@ -187,7 +200,7 @@ viewevaluation_err_programming = <b>Internal Application Error</b><br>Please con
 viewevalcalibration_success = <b>Calibration Successful</b><br>Please proceed with evaluation explanation;
 viewevaluation_finish = Finish;
 viewevaluation_congrats = Congratulations!;
-viewevaluation_congrats_sub = You have successfully completed all tasks;
+viewevaluation_congrats_sub = You have successfully completed the Evaluation;
 viewevaluation_skip_calibration = SKIP CALIBRATION;
 viewevaluation_finish_message = <b></b><br> has a new study that can be processed;
 viewevaluation_calib_res = CALIBRATION RESULTS;
@@ -201,24 +214,12 @@ viewevaluation_slow_calib = SLOW CALIBRATION;
 
 viewevaluation_comfirm_abort_title = Cancel Task;
 
-viewevaluation_comfirm_abort_msg_no_issue = Do you wish to stop the current task?
-<br> To continue evaluation review it from the <b>Ongoing Evaluations</> table;
+viewevaluation_comfirm_abort_msg_stop_eval = Do you wish to stop the current evaluation?
+<br>To continue evaluation select it from <b>Ongoing Evaluations</b>;
 
-viewevaluation_comfirm_abort_msg_first_redo_calibration = Do you wish to stop the current task?
-<br>You will have to redo the calibration.
-<br>To continue evaluation, review it from the <b>Ongoing Evaluations</b> table;
-
-viewevaluation_comfirm_abort_msg_first_study = Do you wish to stop the current task?
-<br>You will have to redo the calibration, and the task progress will be lost
-<br>To continue evaluation, review it from the <b>Ongoing Evaluations</b> table;
-
-
-viewevaluation_comfirm_abort_msg_nonfirst_calibration = Do you wish to stop the current task?
-<br>To continue evaluation, review it from the <b>Ongoing Evaluations</b> table;
-
-viewevaluation_comfirm_abort_msg_nonfirst_study = Do you wish to stop the current task?
+viewevaluation_comfirm_abort_msg_stop_task = Do you wish to stop the current task?
 <br>Progress on the current task will be lost
-<br>To continue evaluation, review it from the <b>Ongoing Evaluations</b> table;
+<br>To continue evaluation select it from <b>Ongoing Evaluations</b>;
 
 viewevaluation_comfirm_abort_yes = YES;
 viewevaluation_comfirm_abort_no  = NO;
@@ -228,7 +229,7 @@ viewevalution_arrow_use = Click on the arrow to continue;
 viewevalution_arrow_use_examples = Click on Examples to continue;
 viewevalution_arrow_use_eval = Click on Start Evaluation to continue;
 
-viewevaluation_task_list = Task List For Selected Evaluation;
+viewevaluation_task_list = Selected Evaluation;
 viewevalution_task_name_map = 
 binding_bc_2_short|Color Combinations (2 Targets)| 
 binding_uc_2_short|New Colors (2 Targets)|
@@ -261,29 +262,26 @@ Please send a support email as soon as possible.
 After this, please retry the calibration. 
 If the problem persists, restart the computer.;
 
-viewevaluation_badqci_middle_eval = Data Quality Issues Detected|There were issues with the data quality of the last task.
-In order to ensure the best quality for the evaluation the system will now return you
-to the Ongoing Evaluations list. 
-Please make sure that the HMD is properly set on the patient and that the computer
-is plugged in to the power supply.; 
+viewevaluation_badqci_middle_eval = Data Quality Issues Detected|We didn't gather enough data from the patient's eyes during the previous task.<br> 
+To rectify this, please repeat the task.<br> 
+Ensure that the Head Mounted Display is correctly positioned on the patient's head<br>
+and that the computer is connected to a power source.<br> 
+Once done, click on <b>REVIEW</b> followed by <b>CONTINUE</b> to resume the evaluation.<br>
+The task that needs to be repeated will be placed at the end of the Evaluation.; 
+
 
 viewevaluation_checket_title = Checking eye tracker ...;
 viewevaluation_checket_title_pass = Eye tracking is working;
 viewevaluation_checket_title_fail = Unable to detect eye tracking data;
 viewevaluation_checket_btnfail = RETRY;
-viewevaluation_checket_btnback = GO TO PATIENT LIST;
+viewevaluation_checket_btnback = PATIENT LIST;
 viewevaluation_checket_fail = The eye tracker is not working
 Plese try the following:
 1. Make sure that the headset is correctly placed on the patient
-2. Ask the patient to opent their eyes widely and click on RETRY
+2. Ask the patient to open their eyes widely and click on RETRY
 3. If the problem persists, try shutting down the application and 
 reconnecting the headset
 4. If the above did not work, restart the computer and try again.;
-
-
-#********************************* VR WAIT SCREEN MESSAGES *********************************
-waitscreenmsg_calibrationEnd = Calibration has ended;
-waitscreenmsg_studyEnd = Evaluation has ended;
 
 #********************************* VM GET CONFIG SCREEN *********************************
 viewgetconfig_instructions = Please provide the following information in order to start using the app;
@@ -321,13 +319,13 @@ viewqc_no_reports_to_evaluate = There are no ongoing evaluations;
 viewqc_data_quality_tooltip = Reflects the status of the evaluation
 Green means that the evaluation can be uploaded.
 Red means that at least one task has data quality issues and should be redone. 
-Gray means that tasks still need to be done for the evaluation to be done.;
+Gray means that the evaluation is incomplete;
 viewqc_archive_reason = study_instructions_misunderstood|The subject did not understand instructions for the study.|
 bad_subjet_state|The subject's state was not optimal for the study|
 other|Other; 
 viewqc_reason = Select reason for redoing task <b><<T>></b>;
 viewqc_archive_reason_ph = Enter a different reason ...;
-viewqc_comment_ph = Enter your comment for this evaluation;
+viewqc_comment_ph = Enter comments. Your comments will be displayed in the Evaluation Report.;
 viewQC_commentSizeError = Text is too long;
 viewqc_err_server_error = <b>Server Error</b><br>A problem was detected in the server<br>Please contact the ViewMind for support;
 viewqc_success_on_send = <b>Success!</b><br>Information was correctly sent;
@@ -357,7 +355,7 @@ studystatus_gonogo_timeout = Timeouts: <<N>>;
 studystatus_gonogo_avg = Average trial time: <<N>> ms;
 studystatus_gonogo3D_green_hit = <<N>> green spheres hit;
 studystatus_gonogo3D_red_hit = <<N>> red spheres hit;
-studystatus_dot_follow_index = Percent of time with sight on the dot: <<N>>%;
+studystatus_dot_follow_index = Percentage of time looking at the dot: <<N>>%;
 
 #********************************* ONGOING EVALS *********************************
 viewongoing_redo = REDO;
@@ -372,9 +370,11 @@ viewongoing_revevals = REVIEW EVALUATION;
 viewongoing_discarded = DISCARDED;
 viewongoing_pending   = PENDING;
 viewongoing_remaining = Sending task: <<N>> out of <<M>>;
-viewongoing_upload_eval = Uploading Evaluation;
+viewongoing_upload_eval = Uploading Evaluation
+Do not turn off the computer or close the program.;
 viewongoing_upload_expired = Uploading Incomplete Evaluations;
 viewongoing_uploaded = UPLOADED;
+viewongoing_diag_subtitle = An index above 85% ensures robust eye-tracker data for analysis;
 
 #********************************* UPDATE DIALOGS *********************************
 update_title = Update Available;

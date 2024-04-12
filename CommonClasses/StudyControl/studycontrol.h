@@ -268,7 +268,7 @@ private:
     static inline const char * EXAMPLE_TEXT_KEY_NBACK_6      = "examples_nback_6";
     static inline const char * EXAMPLE_TEXT_KEY_GNG          = "examples_gonogo";
     static inline const char * EXAMPLE_TEXT_KEY_GNG3D        = "examples_gng_3D";
-    static inline const char * EXAMPLE_TEXT_DOT_FOLLOW       = "examples_dot_follow";
+    static inline const char * EXAMPLE_TEXT_KEY_DOT_FOLLOW   = "examples_dot_follow";
 
     // The normal, slow and variable speed values fo rthe GONOGO are codified in the numbers 0,1 and 2 respectively.
     // We need to detect the 2 specifically to change the explanantion language key.

@@ -213,71 +213,16 @@ ViewBase {
                 return;
             }
 
-            // First Calibration Explanation
-            if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_CALIBRATION) && (evaluationRun.vmCurrentTask == 0)){
-                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
-                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_no_issue"))
+            // There is essentially only two different messages. If the user aborts during a task, they need to warned that their progress will be lost
+            // Otherwise no other text is presented. In both cases they are told how to continue by going into ongoing evaluations.
 
+            if (evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EVALUATION){
+                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_stop_task"))
             }
-            // First hand calibration explanation
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_PRE_HAND_CALIB) && (evaluationRun.vmCurrentTask == 0)){
+            else {
                 confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
-                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_no_issue"))
-
-            }
-            // First Example/Explanation
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXAMPLES) && (evaluationRun.vmCurrentTask == 0)){
-                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
-                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_first_redo_calibration"))
-
-
-            }
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXPLANATION) && (evaluationRun.vmCurrentTask == 0)){
-                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
-                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_first_redo_calibration"))
-
-
-            }
-            // First hand calibration verification
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_HAND_CALIB_VERIF) && (evaluationRun.vmCurrentTask == 0)){
-                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
-                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_first_redo_calibration"))
-
-
-            }
-            // First Evaluation
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EVALUATION) && (evaluationRun.vmCurrentTask == 0)){
-                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
-                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_first_study"))
-
-            }
-
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXAMPLES) && (evaluationRun.vmCurrentTask > 0)){
-                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
-                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_calibration"))
-
-            }
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EXPLANATION) && (evaluationRun.vmCurrentTask > 0)){
-                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
-                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_calibration"))
-
-            }
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_EVALUATION) && (evaluationRun.vmCurrentTask > 0)){
-                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
-                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_study"))
-
-            }
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_CALIBRATION) && (evaluationRun.vmCurrentTask > 0)){
-                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
-                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_calibration"))
-
-            }
-            // Non first hand calibration verification
-            else if ((evaluationRun.vmEvaluationStage == evaluationRun.vmSTAGE_HAND_CALIB_VERIF) && (evaluationRun.vmCurrentTask > 0)){
-                confirmStudyAbort.askForConfirmation(loader.getStringForKey("viewevaluation_comfirm_abort_title"),
-                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_nonfirst_study"))
-
-
+                                                     loader.getStringForKey("viewevaluation_comfirm_abort_msg_stop_eval"))
             }
 
         }
@@ -515,6 +460,7 @@ ViewBase {
             anchors.left: parent.left
             anchors.leftMargin: VMGlobals.adjustWidth(29)
             visible: {
+                if (viewer.currentIndex !== vmSC_INDEX_EVALUATION_SCREEN) return false;
                 if (evaluationRun.vmCurrentTask === 0) return false;
                 if (!evaluationRun.vmIsCalibrated) return false; // This takes precedence over the stage.
                 if (evaluationRun.vmEvaluationStage === evaluationRun.vmSTAGE_CALIBRATION)  return true;
@@ -550,6 +496,7 @@ ViewBase {
         vmSuggestedWidth: VMGlobals.mainWidth - mainRect.width - mainRect.anchors.rightMargin        
         vmHideNumberInMainNodes: true;
         vmUseLargerFontSize: true
+        visible: (viewer.currentIndex === vmSC_INDEX_EVALUATION_SCREEN)
         onProgressLineUpdated: {
             if (viewer.currentIndex === vmSC_INDEX_EVALUATION_SCREEN){
                 evaluationRun.setStudyAndStage();

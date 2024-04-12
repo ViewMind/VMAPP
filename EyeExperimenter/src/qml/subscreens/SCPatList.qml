@@ -17,16 +17,19 @@ Rectangle {
     readonly property int vmCOL_BDATE_INDEX: 1
     readonly property int vmCOL_ID_INDEX: 3
 
+    readonly property int vmSEARCH_PATIENT_TEXT_THRESHOLD: 1
+
     property string vmCurrentSortOrder: vmSORT_INDEX_SUBJECT
     property string vmCurrentOrderDirection: OLS.ORDER_ASCENDING
     property int vmNumberOfPatients: 0
     property bool vmNoPatientsAtAll: false;
     property bool vmStudiesEnabled: true;
-
+    property bool vmCanShowPatients: false;
 
     function loadPatients(){
 
         if (vmNoPatientsAtAll) return;
+        if (!vmCanShowPatients) return;
 
         var filterText = searchInput.vmCurrentText
 
@@ -114,7 +117,8 @@ Rectangle {
         anchors.topMargin: VMGlobals.adjustHeight(30)
         visible: !vmNoPatientsAtAll
         onTextChanged: {
-            if ((searchInput.vmCurrentText.length >= 3) || (searchInput.vmCurrentText.length == 0)){
+            vmCanShowPatients = (searchInput.vmCurrentText.length >= vmSEARCH_PATIENT_TEXT_THRESHOLD);
+            if (vmCanShowPatients){
                 loadPatients();
             }
         }
@@ -127,7 +131,7 @@ Rectangle {
         height: VMGlobals.adjustHeight(500)
         anchors.bottom: parent.bottom
         x: subScreenPatList.border.width
-        visible: !vmNoPatientsAtAll
+        visible: (!vmNoPatientsAtAll && vmCanShowPatients )
 
         Component.onCompleted: {
 
@@ -188,7 +192,7 @@ Rectangle {
     Rectangle {
         id: noPatientsFoundScreen
         anchors.fill: patListTable
-        visible: (vmNumberOfPatients == 0) && (!vmNoPatientsAtAll)
+        visible: (!vmNoPatientsAtAll) && ( (vmNumberOfPatients == 0) || (!vmCanShowPatients) )
 
         Image {
             id: nothingFoundImage
@@ -202,7 +206,10 @@ Rectangle {
 
         Text {
             id: noResultsTitle
-            text: loader.getStringForKey("viewpatlist_nothing_found");
+            text: {
+                if ((visible) && (!vmCanShowPatients)) return loader.getStringForKey("viewpatlist_start_title");
+                return loader.getStringForKey("viewpatlist_nothing_found");
+            }
             font.pixelSize: VMGlobals.vmFontExtraExtraLarge
             font.weight: 600
             height: VMGlobals.adjustHeight(43)
@@ -214,7 +221,10 @@ Rectangle {
 
         Text {
             id: noResultsSubTitle
-            text: loader.getStringForKey("viewpatlist_nothing_found_exp");
+            text: {
+                if ((visible) && (!vmCanShowPatients)) return loader.getStringForKey("viewpatlist_start_exp");
+                return loader.getStringForKey("viewpatlist_nothing_found_exp");
+            }
             color: VMGlobals.vmGrayPlaceholderText
             font.pixelSize: VMGlobals.vmFontLarge
             font.weight: 400
@@ -225,6 +235,7 @@ Rectangle {
             anchors.bottomMargin: VMGlobals.adjustHeight(139)
         }
     }
+
 
     Image {
         id: image

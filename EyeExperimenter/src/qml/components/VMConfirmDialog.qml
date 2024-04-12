@@ -20,7 +20,6 @@ Item {
     ////////////////////////// CONVERSION FUNCTIONS: 2D HMD Data to Plot Data ////////////////////////
 
     function askForConfirmation(title, message){
-        console.log("Asking for confirmation with message '" + message + "'")
         vmTitle = title;
         vmMessage = message
         open()
@@ -52,7 +51,7 @@ Item {
     Rectangle {
         id: dialog
         width: VMGlobals.adjustWidth(570)
-        height: VMGlobals.adjustHeight(350)
+        height: VMGlobals.adjustHeight(280)
         anchors.centerIn: parent
         radius: VMGlobals.adjustWidth(10);
         color: "#ffffff"

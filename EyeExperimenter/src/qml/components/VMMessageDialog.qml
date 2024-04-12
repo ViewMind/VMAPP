@@ -83,7 +83,7 @@ Item {
     Rectangle {
         id: dialog
         width: vmWidthNormal
-        height: vmLarge ? VMGlobals.adjustHeight(308) : VMGlobals.adjustHeight(227)
+        height: vmLarge ? VMGlobals.adjustHeight(328) : VMGlobals.adjustHeight(227)
         anchors.centerIn: parent
         radius: VMGlobals.adjustWidth(10);
         color: "#ffffff"

@@ -1,9 +1,8 @@
 viewevaluation_calibration_explanation = 
-Auf dem Bildschirm wird ein roter, pulsierender Kreis mit einem weißen Punkt in 
-der Mitte erscheinen. Schauen Sie auf den weißen Punkt. 
-Der Kreis wird sich auf dem Bildschirm bewegen. 
-Folgen Sie ihm mit Ihren Augen. Vergessen Sie nicht, den Kreis im Auge zu 
-behalten, bis er verschwindet.;
+Können Sie die 4 Kreuze gut sehen?
+Schauen Sie auf den weißen Punkt innerhalb des roten Kreises.
+Er wird über den Bildschirm wandern. Sie müssen ihm folgen.
+Haben Sie verstanden?;
 
 
 viewevaluation_hand_calib_h = 
@@ -241,6 +240,8 @@ Now look at the rectangle where the third circle was shown|
 Then at the rectangle where the second one appeared|
 And finish by looking at the rectangle where the first circle appeared.;
 
+explanation_phase_list_dotfollow = Folge dem roten Punkt.;
+
 
 explanation_phase_list_pass_ball = | 
 |
@@ -282,3 +283,5 @@ examples_nback_6 = |||||||
 |||||||
 |||||||;
 examples_gng_3D = |||;
+
+examples_dot_follow = %%%%;
