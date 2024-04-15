@@ -265,7 +265,7 @@ ViewBase {
                     id: fname
                     width: parent.width
                     vmLabel: loader.getStringForKey("viewaddeval_fname")
-                    vmPlaceHolderText: loader.getStringForKey("viewaddeval_fname_ph")
+                    vmPlaceHolderText: loader.getStringForKey("viewpatform_name_ph")
                     Keys.onTabPressed: lname.vmFocus = true
                 }
 
@@ -327,7 +327,7 @@ ViewBase {
                     id: lname
                     width: parent.width
                     vmLabel: loader.getStringForKey("viewaddeval_lname")
-                    vmPlaceHolderText: loader.getStringForKey("viewaddeval_lname_ph")
+                    vmPlaceHolderText: loader.getStringForKey("viewpatform_lname_ph")
                     Keys.onTabPressed: day.vmFocus = true
                     onVmCurrentTextChanged: {
                         personalID.vmErrorMsg = "";
