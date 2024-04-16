@@ -140,6 +140,8 @@ viewpatform_cannotbeempty = No puede estar vacío;
 viewpatform_pat_id = ID Interno del Paciente;
 viewpatform_last_or_id = Debe completar Apellido o ID de Paciente;
 viewpatform_isnotanumber = No es un número;
+viewpatform_years_too_large = El número debe estar entre 0 y 99;
+viewpatform_must_select = Debe elegir un opción;
 viewpatform_invalid_range = Rango inválido;
 viewpatform_success_edit = <b></b><br>ha sido editado;
 viewpatform_success_add = <b></b><br>ha sido agregado como paciente;
@@ -147,11 +149,18 @@ viewpatform_id_warning = No ingrese datos personales;
 viewpatform_max_education_level = Nivel máximo de educación alcanzado;
 viewpatform_max_education_select = Seleccione una opción.; 
 viewpatform_years_map = 
-4|Nivel 1 (<<N>> años)|
-6|Nivel 2 (<<N>> años)|
-8|Nivel 3 (<<N>> años)|
-10|Nivel 4 (<<N>> años)|
-0|Otro;
+100|Sin educación formal|
+101|Escuela primaria incompleta|
+102|Escuela primaria completa|
+103|Escuela secundaria incompleta|
+104|Escuela secundaria completa|
+105|Terciario incompleto|
+106|Tercieario completo|
+107|Universitario incompleto|
+108|Universitario completo o equivalente|
+109|Maestría o equivalente|
+110|Doctorado/Posgrado o equivalente|
+-1|Especificar años de educación;
 
 #********************************* SEND SUPPORT EMAIL *********************************
 viewsendsupport_email_title = PEDIDO DE SOPORTE;

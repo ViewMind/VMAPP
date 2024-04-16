@@ -9,6 +9,7 @@ ViewBase {
     id: addPatientView
 
     property string vmCurrentlyLoadedPatient: ""
+    property var vmEducationYearsList: []
 
     function clear(){
         fname.clear()
@@ -21,9 +22,29 @@ ViewBase {
         acceptTerms.vmIsOn = false;
         acceptTerms.visible = true;
 
+        // Years of education is a even numbered list. Even values are display texts. Odd values are the actual number of years.
+        let years_ed_list = loader.getStringListForKey("viewpatform_years_map");
+        vmEducationYearsList = [];
+        let displayList = [];
+        let lastValue = 0;
+        for (let i = 0; i < years_ed_list.length; i++){
+            let val = years_ed_list[i]
+            if ((i % 2) === 0){
+                lastValue = val;
+                vmEducationYearsList.push(val);
+            }
+            else {
+                val = val.replace("<<N>>",lastValue) // We need to do this so the actual number of years appears in the display text.
+                displayList.push(val);
+            }
+        }
+        educationSelection.setModelList(displayList)
+
         month.setSelection(-1)
         sex.setSelection(-1)
+        educationSelection.setSelection(-1);
         vmCurrentlyLoadedPatient = ""
+        yearsOfEducation.visible = false;
 
     }
 
@@ -36,7 +57,9 @@ ViewBase {
         fname.setText(patientData["name"])
         lname.setText(patientData["lastname"])
         personalID.setText(patientData["supplied_institution_id"])
-        yearsOfEducation.setText(patientData["years_formation"])
+
+        let selected_years = patientData["years_formation"] + ""; // We add an empty string to make sure the number is treated as a strng. Otherwise when seaching the range it belongs to, it won't work.
+
         if ("email" in patientData){
             email.setText(patientData["email"]);
         }
@@ -53,6 +76,19 @@ ViewBase {
             m = m - 1;
             month.setSelection(m);
         }
+
+
+        let index = vmEducationYearsList.indexOf(selected_years);
+        console.log("Loading patient with " + selected_years + " of education. Index for education is: " + index)
+        if (index === -1){
+            // Other must be selected. That is the one where -1 is the value..
+            index = vmEducationYearsList.indexOf("-1");
+            console.log("While searching for index of others we get " + index)
+            yearsOfEducation.visible = true;
+        }
+
+        educationSelection.setSelection(index)
+        yearsOfEducation.setText(selected_years)
 
         // The accept term conditions should be checked by default
         acceptTerms.vmIsOn = true;
@@ -71,6 +107,27 @@ ViewBase {
     }
 
     function checkAndSave(checkForDupes){
+
+        if (educationSelection.vmCurrentIndex === -1){
+            educationSelection.vmErrorMsg = loader.getStringForKey("viewpatform_must_select");
+            return;
+        }
+
+        if (yearsOfEducation.vmCurrentText === ""){
+            yearsOfEducation.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+            return;
+        }
+
+        // The check on years of education is ONLY necessary if it's visible.
+        if (yearsOfEducation.visible){
+            var check = numberCheck(yearsOfEducation.vmCurrentText,[0, 99])
+            if (check !== 1){
+                if (check === -1) yearsOfEducation.vmErrorMsg = loader.getStringForKey("viewpatform_isnotanumber")
+                else yearsOfEducation.vmErrorMsg = loader.getStringForKey("viewpatform_years_too_large")
+                return;
+            }
+        }
+
 
         // The logic is that either the patient ID or the last name bust be filled.
         if ((lname.vmCurrentText === "") && (personalID.vmCurrentText === "")){
@@ -102,23 +159,11 @@ ViewBase {
             return;
         }
 
-        if (yearsOfEducation.vmCurrentText === ""){
-            yearsOfEducation.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
-            return;
-        }
-
         if (sex.vmCurrentIndex == -1){
             sex.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
             return;
         }
 
-        var check = numberCheck(yearsOfEducation.vmCurrentText,[0, 100])
-
-        if (check !== 1){
-            if (check === -1) yearsOfEducation.vmErrorMsg = loader.getStringForKey("viewpatform_isnotanumber")
-            else yearsOfEducation.vmErrorMsg = loader.getStringForKey("viewpatform_invalid_range")
-            return;
-        }
 
         check = numberCheck(day.vmCurrentText,[1, 31])
         if (check !== 1){
@@ -255,6 +300,7 @@ ViewBase {
             anchors.topMargin: VMGlobals.adjustHeight(44)
             anchors.left: title.left
             spacing: VMGlobals.adjustWidth(20)
+            z: 10
 
             Column {
                 id: leftColumn
@@ -265,7 +311,7 @@ ViewBase {
                     id: fname
                     width: parent.width
                     vmLabel: loader.getStringForKey("viewaddeval_fname")
-                    vmPlaceHolderText: loader.getStringForKey("viewpatform_name_ph")
+                    vmPlaceHolderText: loader.getStringForKey("viewaddeval_fname_ph")
                     Keys.onTabPressed: lname.vmFocus = true
                 }
 
@@ -273,7 +319,8 @@ ViewBase {
                     id: bdateRow
                     spacing: VMGlobals.adjustWidth(5)
                     width: parent.width
-                    z: addPatientView.z + 2
+                    //z: addPatientView.z + 2
+                    z: educationSelection.z + 1
 
                     VMTextInput {
                         id: day
@@ -286,7 +333,8 @@ ViewBase {
                         id: month
                         width: VMGlobals.adjustWidth(320 - 75 - 80 - 2*5)
                         vmPlaceHolderText: loader.getStringForKey("viewpatform_month_ph")
-                        z: addPatientView.z + 2
+                        //z: addPatientView.z + 2
+                        z: educationSelection.z + 1
                         Component.onCompleted: {
                             setModelList(loader.getStringListForKey("viewpatform_months"))
                         }
@@ -295,7 +343,26 @@ ViewBase {
                         id: year
                         width: VMGlobals.adjustWidth(80)
                         vmPlaceHolderText: loader.getStringForKey("viewpatform_year_ph")
-                        Keys.onTabPressed: yearsOfEducation.vmFocus = true
+                        //Keys.onTabPressed: yearsOfEducation.vmFocus = true
+                    }
+                }
+
+                VMComboBox {
+                    id: educationSelection
+                    width: parent.width
+                    vmLabel: loader.getStringForKey("viewpatform_max_education_level")
+                    vmPlaceHolderText: loader.getStringForKey("viewpatform_max_education_select")
+                    z: formRow.z + 1
+                    onVmCurrentIndexChanged: {
+                        let nyears = vmEducationYearsList[vmCurrentIndex];
+                        if (nyears == "-1"){
+                            yearsOfEducation.visible = true;
+                            yearsOfEducation.setText("");
+                        }
+                        else {
+                            yearsOfEducation.setText(nyears)
+                            yearsOfEducation.visible = false;
+                        }
                     }
                 }
 
@@ -303,18 +370,10 @@ ViewBase {
                     id: yearsOfEducation
                     width: parent.width
                     vmLabel: loader.getStringForKey("viewpatform_years_of_education")
-                    vmPlaceHolderText: loader.getStringForKey("viewpatform_years_of_education_ph")
-                    Keys.onTabPressed: personalID.vmFocus = true
+                    vmPlaceHolderText: ""//loader.getStringForKey("viewpatform_years_of_education_ph")
+                    //Keys.onTabPressed: personalID.vmFocus = true
                 }
 
-                VMTextInput {
-                    id: email
-                    width: parent.width
-                    vmLabel: loader.getStringForKey("viewaddeval_email")
-                    vmPlaceHolderText: loader.getStringForKey("viewaddeval_email_ph")
-                    vmClarification: "(" + loader.getStringForKey("viewpatform_optional") + ")"
-                    Keys.onTabPressed: fname.vmFocus = true
-                }
 
             }
 
@@ -327,7 +386,7 @@ ViewBase {
                     id: lname
                     width: parent.width
                     vmLabel: loader.getStringForKey("viewaddeval_lname")
-                    vmPlaceHolderText: loader.getStringForKey("viewpatform_lname_ph")
+                    vmPlaceHolderText: loader.getStringForKey("viewaddeval_lname_ph")
                     Keys.onTabPressed: day.vmFocus = true
                     onVmCurrentTextChanged: {
                         personalID.vmErrorMsg = "";
@@ -337,7 +396,7 @@ ViewBase {
                 VMComboBox {
                     id: sex
                     width: parent.width
-                    vmLabel: loader.getStringForKey("viewpatform_sex")
+                    vmLabel: loader.getStringForKey("viewpatlist_sex")
                     vmPlaceHolderText: loader.getStringForKey("viewpatform_sex_ph")
                     z: addPatientView.z + 1
                     Component.onCompleted: {
@@ -349,13 +408,23 @@ ViewBase {
                 VMTextInput {
                     id: personalID
                     width: parent.width
-                    vmLabel: loader.getStringForKey("viewpatform_pat_id")
+                    vmLabel: loader.getStringForKey("viewpatlist_id")
                     vmPlaceHolderText: loader.getStringForKey("viewpatform_personal_id_ph")
                     vmClarification: "(" + loader.getStringForKey("viewpatform_id_warning") + ")"
                     Keys.onTabPressed: email.vmFocus = true
                     onVmCurrentTextChanged: {
                         lname.vmErrorMsg = "";
                     }
+                }
+
+
+                VMTextInput {
+                    id: email
+                    width: parent.width
+                    vmLabel: loader.getStringForKey("viewaddeval_email")
+                    vmPlaceHolderText: loader.getStringForKey("viewaddeval_email_ph")
+                    vmClarification: "(" + loader.getStringForKey("viewpatform_optional") + ")"
+                    Keys.onTabPressed: fname.vmFocus = true
                 }
 
             }
@@ -370,6 +439,7 @@ ViewBase {
             onLinkClicked: function (url){
                 loader.openURLInBrowser(url);
             }
+            z: formRow.z - 1
         }
 
         Rectangle {
@@ -381,6 +451,7 @@ ViewBase {
             width: parent.width
             border.width: 0
             color: VMGlobals.vmGrayUnselectedBorder
+            z: formRow.z - 1
         }
 
         VMButton {
