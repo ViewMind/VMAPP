@@ -728,7 +728,6 @@ bool FlowControl::startTask(qint32 taskIndexInCurrentList){
     // We add the calibration history as this function is called once the calibration is approved.
     studyControl.setCalibrationValidationData(calibrationHistory.getHistory());
 
-
     return true;
 }
 

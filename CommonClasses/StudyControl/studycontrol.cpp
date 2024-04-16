@@ -70,6 +70,7 @@ void StudyControl::startTask(const QString &workingDir,
         studyType = ST_2D;
     }
     else if (studyName == VMDC::Study::NBACK_4){
+        configurator = new NBackConfigurator();
         studyExplanationLanguageKey = STUDY_TEXT_KEY_NBACK_4;
         studyExampleLanguageKey     = EXAMPLE_TEXT_KEY_NBACK_4;
         studyType = ST_2D;

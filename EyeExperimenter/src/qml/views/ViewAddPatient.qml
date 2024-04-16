@@ -396,7 +396,7 @@ ViewBase {
                 VMComboBox {
                     id: sex
                     width: parent.width
-                    vmLabel: loader.getStringForKey("viewpatlist_sex")
+                    vmLabel: loader.getStringForKey("viewpatform_sex")
                     vmPlaceHolderText: loader.getStringForKey("viewpatform_sex_ph")
                     z: addPatientView.z + 1
                     Component.onCompleted: {

@@ -59,7 +59,6 @@ inline QVariantMap DefaultConfiguration(const QString &task_code){
     else if (task_code == VMDC::Study::NBACK_4){
         config[VMDC::StudyParameter::NUMBER_TARGETS] = 4;
         config[VMDC::StudyParameter::IS_3D_STUDY] = false;
-        config[VMDC::StudyParameter::IS_3D_STUDY] = false;
         config[VMDC::StudyParameter::NBACK_HOLD_TIME] = ConfigConsts::NBACK_HOLD_TIME;
         config[VMDC::StudyParameter::NBACK_TIMEOUT] = ConfigConsts::NBACK_TIMEOUT;
         config[VMDC::StudyParameter::NBACK_TRANSITION] = ConfigConsts::NBACK_TRANSITION;
