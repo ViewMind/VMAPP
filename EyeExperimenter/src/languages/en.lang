@@ -1,7 +1,7 @@
 # UI Language file: English
 
 #********************************* VIEWHOME SCREEN *********************************
-viewstart_welcome = Welcome to ViewMind Atlas;
+viewstart_welcome = ViewMind Atlas;
 viewstart_instruction = Log in to your profile or add a new evaluator;
 viewstart_login = LOG IN;
 viewstart_addneweval = ADD A NEW EVALUATOR;
@@ -30,15 +30,9 @@ viewsettings_umanual = User Manual;
 viewsettings_cancel = CANCEL;
 viewsettings_restart = RESTART NOW;
 viewsettings_apply = APPLY;
-viewsettings_support_text = If you are experiencing issues with the ViewMind software, please 
-click on Send Diagnostic Data and contact the tech support team on 
-info@viewmind.com. 
-For urgent matters, please Send Diagnostic Data and  contact 
-your ViewMind Institution Supervisor.;
 viewsettings_upload_logs = SEND DIAGNOSTIC DATA;
 viewsettings_restart_msg = Restart required|The application will now close.
 You must open it back up for the changes to take effect;
-
 
 
 #********************************* WAIT SCREEN *********************************
@@ -73,7 +67,6 @@ viewaddeval_lname_ph = Enter Last Name;
 viewaddeval_addeval = ADD EVALUATOR;
 viewaddeval_verifpass = Verify Password;
 viewaddeval_verifemail = Verify Email;
-viewaddeval_err_empty = Cannot be empty;
 viewaddeval_exmail_exists = Email is already being used;
 viewaddeval_added = <b></b><br>has been added as evaluator;
 viewaddeval_accept = I have read and agree to the <a href="https://www.viewmind.com/terms-conditions/">Terms of Use</a> and <a href="https://www.viewmind.com/privacy-policy/">Privacy Policy</a>;
@@ -98,14 +91,17 @@ viewpatlist_qc = Ongoing Evaluations;
 viewpatlist_protocol = Protocol;
 viewpatlist_nopats = No patients found;
 viewpatlist_months = Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;
+viewpatlist_id_explanation = Don't provide any personal identifiable information from the patient. 
+This ID refers to an internal code used by the medical institution to identify the patient. 
+This field is only mandatory if the Last Name of the patient is not provided;
 
 viewpatlist_nothing_found = No entries found;
-viewpatlist_nothing_found_exp = There are not patients matching the specified name or ID.; 
+viewpatlist_nothing_found_exp = There are no patients matching the specified name or ID.; 
 
 viewpatlist_start_title = Search patients;
 viewpatlist_start_exp = Start typing to search for patients or add a new patient; 
 
-viewpatlist_vr_failed = <b>Headset Intialization Failed</b><br>Please verify your setup.<br>Studies are disabled;
+viewpatlist_vr_failed = <b>Headset Intialization Failed</b><br>Please verify your setup.<br>Evaluations are disabled;
 viewpatlist_protocol_delete_title = Delete Protocol;
 viewpatlist_protocol_delete_message = Are you sure you want to delete protocol <b><<N>></b>?;
 
@@ -117,7 +113,7 @@ viewaccount_mod_success = <b></b><br>has been successfully modified;
 #********************************* PATIENT FORM *********************************
 viewpatform_title = Add Patient;
 viewpatform_dupe_title = Possible Duplicates;
-viewpatform_dupe_warning = A patient with a similar name and the same date of birth exists.
+viewpatform_dupe_warning = A patient with a similar name or ID and the same date of birth exists.
 Please ensure that you are not duplicating records;
 viewpatform_dupe_add = SAVE PATIENT;
 viewpatform_dupe_back = GO BACK TO LIST;
@@ -127,7 +123,7 @@ viewpatform_sex = Biological Sex;
 viewpatform_name_ph = Enter the patient's name;
 viewpatform_lname_ph = Enter the patient's lastname;
 viewpatform_sex_ph = Select biological sex;
-viewpatform_sex_options = Male|Female|Other;
+viewpatform_sex_options = Male|Female;
 viewpatform_day_ph = Day;
 viewpatform_month_ph = Month;
 viewpatform_year_ph = Year;
@@ -137,7 +133,6 @@ viewpatform_personal_id_ph = Enter Patient ID;
 viewpatform_years_of_education = Years of Education;
 viewpatform_years_of_education_ph = Enter number of years;
 viewpatform_optional = Optional;
-viewpatform_cannotbeempty = Cannot be empty;
 viewpatform_last_or_id = Either Patient ID or Last Name must be filled;
 viewpatform_isnotanumber = Not a number;
 viewpatform_years_too_large = Number must be between 0 and 99;
@@ -145,9 +140,8 @@ viewpatform_must_select = An option must be selected;
 viewpatform_invalid_range = Invalid range;
 viewpatform_success_edit = <b></b><br>has been updated;
 viewpatform_success_add = <b></b><br>has been added as a patient;
-viewpatform_id_warning = No personal identifying information;
 viewpatform_max_education_level = Highest level of education reached;
-viewpatform_max_education_select = Select an option (Number of years);
+viewpatform_max_education_select = Select an option;
 viewpatform_years_map = 
 100|No formal education|
 101|Incomplete Elementary School|
@@ -161,7 +155,6 @@ viewpatform_years_map =
 109|Master's Degree or equivalent|
 110|Doctoral Degree or equivalent|
 -1|Input years of eduacation;
-
 
 #********************************* SEND SUPPORT EMAIL *********************************
 viewsendsupport_email_title = SUPPORT REQUEST;
@@ -181,7 +174,7 @@ DisabledInstance-Disabled instance|
 Other-Other;
 viewsendsupport_email_error   = Cannot leave empty;
 viewsendsupport_email_fail = <b>Email Error</b><br>The support email could not be sent;
-viewsendsupport_email_succes = <b>Email Succesful</b><br>The support email has been successfully sent;
+viewsendsupport_email_succes = <b>Email Successful</b><br>The support email has been successfully sent;
 viewsendsupport_email_send = SEND;
 
 #********************************* STUDY SETUP *********************************
@@ -189,12 +182,15 @@ viewevaluation_date = Date;
 viewevaluation_patient = Patient;
 viewevaluation_general_settings = General Settings;
 viewevaluation_eval_setup    = Available Evaluations;
+viewevaluation_eval_no_eval  = No evaluations available;
 viewevaluation_doctor        = Clinician that requested the evaluation;
 viewevaluation_doctor_ph     = Select Clinician;
 viewevaluation_protocol_ph   = Select protocol;
 viewevaluation_no_protocol   = No protocol;
 viewevaluation_exp_lang      = Explanation Language;
 viewevaluation_next_button   = NEXT;
+viewevaluation_noevals_text  = To fix this issue please generate
+a support ticket;
 viewevaluation_error_patient_dir = Disk Write Error|Failed creating subject directory;
 viewevaluation_must_select_doctor = A clinician must be selected;
 viewevaluation_evaluation_steps = Calibration|Explanation|Examples|Evaluation;
@@ -206,16 +202,16 @@ viewevaluation_action_hcalib_end = END VERTICAL HAND CALIBRATION;
 viewevaluation_action_examples = EXAMPLES;
 viewevaluation_action_starteval = START EVALUATION;
 viewevaluation_restart_hand_calib = RESTART HAND CALIBRATION;
-viewevaluation_err_badend_study = <b>Study ended abruptly</b><br>If the study was not aborted, please try again;
-viewevaluation_err_data_transfer = <b>Data Transfer Error</b><br>You must redo the last study; 
-viewevaluation_err_no_pp = <b>Error with retrieved server data</b><br>Please contact viewmind for support<br>Unable to continue with studies;
-viewevaluation_err_programming = <b>Internal Application Error</b><br>Please contact ViewMind for Support;
+viewevaluation_err_badend_study = <b>Evaluation ended abruptly</b><br>If the task was not aborted, please try again;
+viewevaluation_err_data_transfer = <b>Data Transfer Error</b><br>You must redo the last task; 
+viewevaluation_err_no_pp = <b>Error with retrieved server data</b><br>Please generate a support ticket<br>Unable to continue with evaluations;
+viewevaluation_err_programming = <b>Internal Application Error</b><br>Please generate a support ticket;
 viewevalcalibration_success = <b>Calibration Successful</b><br>Please proceed with evaluation explanation;
 viewevaluation_finish = Finish;
 viewevaluation_congrats = Congratulations!;
 viewevaluation_congrats_sub = You have successfully completed the Evaluation;
 viewevaluation_skip_calibration = SKIP CALIBRATION;
-viewevaluation_finish_message = <b></b><br> has a new study that can be processed;
+viewevaluation_finish_message = <b></b><br> has a new evaluation that can be processed;
 viewevaluation_calib_res = CALIBRATION RESULTS;
 viewevaluation_left_eye = Left Eye;
 viewevaluation_right_eye = Right Eye;
@@ -225,14 +221,18 @@ viewevaluation_calib_restart = RESTART CALIBRATION;
 viewevaluation_continue = CONTINUE;
 viewevaluation_slow_calib = SLOW CALIBRATION;
 
-viewevaluation_comfirm_abort_title = Cancel Task;
+viewevaluation_comfirm_abort_title = Stop Evaluation;
 
 viewevaluation_comfirm_abort_msg_stop_eval = Do you wish to stop the current evaluation?
-<br>To continue evaluation select it from <b>Ongoing Evaluations</b>;
+<br>To continue evaluation select it from <b>Ongoing Evaluations</b>.
+<br>Remaining tasks must be completed within 24hs of starting the evaluation;
 
-viewevaluation_comfirm_abort_msg_stop_task = Do you wish to stop the current task?
-<br>Progress on the current task will be lost
-<br>To continue evaluation select it from <b>Ongoing Evaluations</b>;
+
+viewevaluation_comfirm_abort_msg_stop_task = Do you wish to stop the current evaluation?
+<br>Progress on the current task will be lost.
+<br>To continue evaluation select it from <b>Ongoing Evaluations</b>.
+<br>Remaining tasks must be completed within 24hs of starting the evaluation;
+
 
 viewevaluation_comfirm_abort_yes = YES;
 viewevaluation_comfirm_abort_no  = NO;
@@ -260,7 +260,7 @@ Place your hands horizontally.
 Strech your arms, as much as you can, to your sides;
 
 viewevaluation_hand_calib_v = 
-Raise your hands streatching your arms as much as you can;
+Raise your hands stretching your arms as much as you can;
 
 viewevaluation_calib_suggest_retry = 
 Calibration could not be completed| 
@@ -271,7 +271,7 @@ If the problem subsists, please restart your computer;
 viewevaluation_calib_abnormal_calibration_condition = 
 Unexpected Calibration Situation
 The calibration data is not properly formatted. 
-Please send a support email as soon as possible.
+Please generate a support ticket as soon as possible.
 After this, please retry the calibration. 
 If the problem persists, restart the computer.;
 
@@ -296,6 +296,8 @@ Plese try the following:
 reconnecting the headset
 4. If the above did not work, restart the computer and try again.;
 
+viewevaluation_binding_keys = Press <b>S</b> if they say <i>"Same"</i> or <b>D</b> if they say <i>"Different"</i>;
+
 #********************************* VM GET CONFIG SCREEN *********************************
 viewgetconfig_instructions = Please provide the following information in order to start using the app;
 viewgetconfig_institution = Institution Number;
@@ -306,26 +308,27 @@ viewgetconfig_code_ph  = Enter the activation code;
 viewgetconfig_code     = Activation Code;
 viewgetconfig_get      = GET LICENSE;
 viewgetconfig_error    = <b>App Could not be activated</b><br>Try again.<br>If the problem persists please contact ViewMind;
-viewgetconfig_error_sn = <b>Incorrect Serial Numbers</b><br>Please make sure that the headset is plugged in<br>and try again;
+viewgetconfig_error_sn = <b>Incorrect Serial Number</b><br>Please make sure that the headset is plugged in<br>and try again;
 viewgetconfig_success  = Activation was Successful|The application will close now.
-Please start ViewMind Atlas again to begin using it.;
-viewgetconfig_error_lib = <b>Instance not releaased</b><br>Request instance ??? release to ViewMind;
+Please start ViewMind Atlas Cognition App again to begin using it.;
+viewgetconfig_error_lib = <b>Instance not released</b><br>Request instance ??? release to ViewMind;
 viewgetconfig_func_verif = FUNCTIONAL VERIFICATION;
 
 #********************************* VM FUNC VERIF SCREEN *********************************
 viewfuncctl_runcheck = RUN CHECK;
 viewfuncctl_text_not_run = Please put on the headset and run the check;
-viewfuncctl_text_pass = Eye tracking verification sucessful;
+viewfuncctl_text_pass = Eye tracking verification successful;
 viewfuncctl_btn_send = SEND VERIFICATION;
 viewfuncctl_pcsn     = Computer Serial Number;
 viewfuncctl_hmdsn    = Headset Serial Number;
-viewfuncctl_btn_no_hmd_error = <b>No Headeset Detected</b><br>Please make sure that the headset is<br>connected and powered on. The restart the application;
-viewfuncctl_error_bad_password = <b>Wrong Password</b><br> Please re enter your passwor and <br>try again;
+viewfuncctl_btn_no_hmd_error = No Headset Detected|Please make sure that the headset is connected and powered on. 
+Then restart the application;
+viewfuncctl_error_bad_password = <b>Wrong Password</b><br> Please re enter your password and <br>try again;
 viewfuncctl_error_bad_user     = <b>Unauthorized user</b><br>This user cannot be used to perform <br>a functional verification;
-viewfuncctl_error_bad_sn     = <b>Incorrect Serial Number</b><br>The serial number of the device does match<br>internal records;
+viewfuncctl_error_bad_sn     = <b>Incorrect Serial Number</b><br>The serial number of the device does not match<br>internal records;
 viewfuncctl_error_generic  = <b>Unable to send the data</b><br>Please try again in a few minutes;
-viewfuncctl_success = <b>Success</b><br>Functional control data was successfully sent;
-viewfuncctl_title = Functional Verificación;
+viewfuncctl_success = <b>Success</b><br>Functional verification data was successfully sent;
+viewfuncctl_title = Functional Verification;
 
 #********************************* Quality Control *********************************
 viewqc_no_reports_to_evaluate = There are no ongoing evaluations;
@@ -333,14 +336,14 @@ viewqc_data_quality_tooltip = Reflects the status of the evaluation
 Green means that the evaluation can be uploaded.
 Red means that at least one task has data quality issues and should be redone. 
 Gray means that the evaluation is incomplete;
-viewqc_archive_reason = study_instructions_misunderstood|The subject did not understand instructions for the study.|
-bad_subjet_state|The subject's state was not optimal for the study|
+viewqc_archive_reason = study_instructions_misunderstood|The subject did not understand instructions for the task.|
+bad_subjet_state|The subject's state was not optimal for the task|
 other|Other; 
 viewqc_reason = Select reason for redoing task <b><<T>></b>;
 viewqc_archive_reason_ph = Enter a different reason ...;
 viewqc_comment_ph = Enter comments. Your comments will be displayed in the Evaluation Report.;
 viewQC_commentSizeError = Text is too long;
-viewqc_err_server_error = <b>Server Error</b><br>A problem was detected in the server<br>Please contact the ViewMind for support;
+viewqc_err_server_error = <b>Server Error</b><br>A problem was detected in the server<br>Please generate a support ticket;
 viewqc_success_on_send = <b>Success!</b><br>Information was correctly sent;
 
 #********************************* PROTOCOL VIEW *********************************
@@ -355,7 +358,7 @@ protocol_successful_created = <b></b><br>has been successfully created;
 protocol_err_exists = ID already exists. Protocol IDs must be unique;
 protocol_name_ph = Enter protocol name;
 protocol_id_ph = Enter protocol ID;
-protocol_name_too_long = Protocol cannot exceed 30 caracters;
+protocol_name_too_long = Protocol name cannot exceed 30 characters;
 
 #********************************* STUDY STATUS MESSAGES *********************************
 studystatus_binding_correct = Correct Responses: <<N>>;
@@ -363,7 +366,7 @@ studystatus_binding_incorrect = Incorrect Responses: <<N>>;
 studystatus_nback_sequence_hit = Completed Sequences: <<N>>;
 studystatus_nback_sequence_timeout = Timed Out Sequences: <<N>>;
 studystatus_nback_target_speed = Targets shown for <<N>> ms;
-studystatus_gonogo_ok = Sucessful Reponses: <<N>>;
+studystatus_gonogo_ok = Successful Reponses: <<N>>;
 studystatus_gonogo_timeout = Timeouts: <<N>>;
 studystatus_gonogo_avg = Average trial time: <<N>> ms;
 studystatus_gonogo3D_green_hit = <<N>> green spheres hit;
@@ -383,6 +386,11 @@ viewongoing_revevals = REVIEW EVALUATION;
 viewongoing_discarded = DISCARDED;
 viewongoing_pending   = PENDING;
 viewongoing_remaining = Sending task: <<N>> out of <<M>>;
+viewongoing_time_rem = Time remaining;
+viewongoing_time_text = hs|Ready to upload;
+viewongoing_time_rem_exp = All evaluations must be completed within 24 hours of their initiation.
+This column shows how much time remains until the time limit is reached.
+Once this happens all tasks from the evaluation are automatically discarded.;
 viewongoing_upload_eval = Uploading Evaluation
 Do not turn off the computer or close the program.;
 viewongoing_upload_expired = Uploading Incomplete Evaluations;
@@ -398,7 +406,7 @@ update_success = Update Success!;
 update_version = Version;
 update_close = CLOSE;
 update_download_wait = Please wait while we download the update;
-update_failed_message = <b>Update process failed</b><br>Please contanct viewmind team for support;
+update_failed_message = <b>Update process failed</b><br>Please try again.<br>If the problem persists generate a support ticket;
 
 #********************************* LABELING *********************************
 labeling_label_select = Select label;

@@ -308,7 +308,6 @@ ApplicationWindow {
 
         var map = flowControl.getCalibrationValidationData();
 
-
         let no_data_key = "calibration_points_with_too_few_data_points";
         let calib_target_key = "calibration_target_location";
         let math_issues_key = "math_issues_for_calibration";

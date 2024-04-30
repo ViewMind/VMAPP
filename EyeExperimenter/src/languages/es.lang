@@ -1,7 +1,7 @@
 # UI Language file: Spanish
 
 #********************************* VIEWHOME SCREEN *********************************
-viewstart_welcome = Bienvenidos a ViewMind Atlas;
+viewstart_welcome = ViewMind Atlas;
 viewstart_instruction = Ingrese a su perfil o agregue un nuevo evaluador;
 viewstart_login = INGRESAR;
 viewstart_addneweval = NUEVO EVALUADOR;
@@ -30,12 +30,6 @@ viewsettings_umanual = Manual de Usuario;
 viewsettings_cancel = CANCELAR;
 viewsettings_restart = REINICIAR;
 viewsettings_apply = APLICAR;
-viewsettings_support_text = 
-Si usted está teniendo problemas con el Software de ViewMind, 
-por favor oprima Enviar Datos de Diagnostico y contacte el soporte 
-técnico en info@viewmind.com. 
-Por urgencias, por favor oprima Enviar Datos de Diagnóstico y 
-contacte al Supervisor de Institución.;
 viewsettings_upload_logs = ENVIAR DATOS DE DIAGNOSTICO;
 viewsettings_restart_msg = Es necesario reiniciar|La aplicación se cerrará.
 Por favor, ábrala nuevamente para ver reflejado los cambios;
@@ -73,7 +67,6 @@ viewaddeval_lname_ph = Ingrese su apellido;
 viewaddeval_addeval = AGREGAR EVALUADOR;
 viewaddeval_verifpass = Verificar Contraseña;
 viewaddeval_verifemail = Verificar Email;
-viewaddeval_err_empty = No puede quedar vacío;
 viewaddeval_exmail_exists = El correo ya está en uso;
 viewaddeval_added = <b></b><br>ha sido agregado como evaluador;
 viewaddeval_accept = He leído y acepto los <a href="https://www.viewmind.com/terms-conditions/">Términos de Uso</a> y la <a href="https://www.viewmind.com/privacy-policy/">Política de Privacidad</a>;
@@ -98,6 +91,10 @@ viewpatlist_qc = Evaluaciones Comenzadas;
 viewpatlist_protocol = Protocolo;
 viewpatlist_nopats = No se hallaron pacientes;
 viewpatlist_months = Ene|Feb|Mar|Abr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec;
+viewpatlist_id_explanation = No proporcione información personal del paciente. 
+Este ID se refiere a un código interno utilizado por la institución médica
+para identificar al paciente. 
+Este campo solo es obligatorio si no se proporciona el apellido del paciente.;
 
 viewpatlist_nothing_found = No se hallaron coincidencias;
 viewpatlist_nothing_found_exp = No hay pacientes para ese nombre o ID.; 
@@ -105,7 +102,7 @@ viewpatlist_nothing_found_exp = No hay pacientes para ese nombre o ID.;
 viewpatlist_start_title = Buscar pacientes;
 viewpatlist_start_exp = Comience a escribir para buscar pacientes o agregue un paciente nuevo; 
 
-viewpatlist_vr_failed = <b>Falla del casco</b><br>Verificar las conexiones. Los estudios fueron<br>desahbilitados;
+viewpatlist_vr_failed = <b>Falla del casco</b><br>Verificar las conexiones. Las evaluaciones fueron<br>desahbilitadas;
 viewpatlist_protocol_delete_title = Eliminar Protocolo;
 viewpatlist_protocol_delete_message = ¿Está seguro que desea eliminar el procolo <b><<N>></b>?;
 
@@ -117,7 +114,7 @@ viewaccount_mod_success = <b></b><br>ha sido modificado exitosamente;
 #********************************* PATIENT FORM *********************************
 viewpatform_title = Añadir Paciente;
 viewpatform_dupe_title = Posibles Duplicados;
-viewpatform_dupe_warning = Un paciento con nombre similar y la misma fecha de nacimiento ya exite.
+viewpatform_dupe_warning = Un paciento con nombre o ID similar y la misma fecha de nacimiento ya exite.
 Por favor, asegúrese de que no se esta creado un registro duplicado;
 viewpatform_dupe_add = GUARDAR PACIENTE;
 viewpatform_dupe_back = VOLVER A LA LISTA;
@@ -127,17 +124,16 @@ viewpatform_sex = Sexo Biológico;
 viewpatform_name_ph = Ingrese el nombre del paciente;
 viewpatform_lname_ph = Ingrese el apellido del paciente;
 viewpatform_sex_ph = Selecione el sexo biológico;
-viewpatform_sex_options = Hombre|Mujer|Otro;
+viewpatform_sex_options = Hombre|Mujer;
 viewpatform_day_ph = Dia;
 viewpatform_month_ph = Mes;
 viewpatform_year_ph = Año;
 viewpatform_months = Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre;
+viewpatform_pat_id = ID Interno del Paciente;
 viewpatform_personal_id_ph = Ingrese ID del Paciente;
 viewpatform_years_of_education = Años de Educación;
 viewpatform_years_of_education_ph = Ingrese el número de años;
 viewpatform_optional = Opcional;
-viewpatform_cannotbeempty = No puede estar vacío;
-viewpatform_pat_id = ID Interno del Paciente;
 viewpatform_last_or_id = Debe completar Apellido o ID de Paciente;
 viewpatform_isnotanumber = No es un número;
 viewpatform_years_too_large = El número debe estar entre 0 y 99;
@@ -145,7 +141,6 @@ viewpatform_must_select = Debe elegir un opción;
 viewpatform_invalid_range = Rango inválido;
 viewpatform_success_edit = <b></b><br>ha sido editado;
 viewpatform_success_add = <b></b><br>ha sido agregado como paciente;
-viewpatform_id_warning = No ingrese datos personales; 
 viewpatform_max_education_level = Nivel máximo de educación alcanzado;
 viewpatform_max_education_select = Seleccione una opción.; 
 viewpatform_years_map = 
@@ -188,12 +183,15 @@ viewevaluation_date = Fecha;
 viewevaluation_patient = Paciente;
 viewevaluation_general_settings = Configuación General;
 viewevaluation_eval_setup    = Evalauciones Disponibles;
+viewevaluation_eval_no_eval  = Sin evaluaciones disponibles;
 viewevaluation_doctor        = Clínico que ha pedido el estudio;
 viewevaluation_doctor_ph     = Seleccione un clínico;
 viewevaluation_protocol_ph   = Seleccione un protocolo;
 viewevaluation_no_protocol   = Sin protocolo;
 viewevaluation_exp_lang      = Idioma de Explicación;
 viewevaluation_next_button   = SIGUIENTE;
+viewevaluation_noevals_text  = Para poder continuar por favor
+genere un pedido de soporte;
 viewevaluation_error_patient_dir = Falla de Disco|No se pudo crear el directorio del paciente;
 viewevaluation_must_select_doctor = Se debe seleccionar un clínico;
 viewevaluation_evaluation_steps = Calibración|Explicación|Ejemplos|Evaluación;
@@ -205,16 +203,16 @@ viewevaluation_action_hcalib_end = FIN CALIBRACIÓN MANOS VERTICAL;
 viewevaluation_action_examples  = EJEMPLOS;
 viewevaluation_action_starteval = COMENZAR EVALUACIÓN;
 viewevaluation_restart_hand_calib = CALIBRAR MANOS NUEVAMENTE;
-viewevaluation_err_badend_study = <b>Estudio no terminó correctamente</b><br>Si el estudio no fue abortado, intente nuevamente;
-viewevaluation_err_data_transfer = <b>Falla en la transferencia de datos</b><br>Deberá realizar nuevamente el ultimo estudio; 
-viewevaluation_err_no_pp = <b>Error al obtener datos del servidor</b><br>Por favor contáctse con ViewMind por soporte<br>No es posible continuar con estudios;
-viewevaluation_err_programming = <b>Error Interno en la App</b><br>Por favor contáctse con ViewMind por soporte;
+viewevaluation_err_badend_study = <b>La evaluación no terminó correctamente</b><br>Si la tarea no fue abortada, intente nuevamente;
+viewevaluation_err_data_transfer = <b>Falla en la transferencia de datos</b><br>Deberá realizar nuevamente la última tarea; 
+viewevaluation_err_no_pp = <b>Error al obtener datos del servidor</b><br>Por favor, genere un pedido de soporte<br>No es posible continuar con evaluaciones;
+viewevaluation_err_programming = <b>Error Interno en la App</b><br>Por favor, genere un pedido de soporte;
 viewevalcalibration_success = <b>Calibración Exitosa</b><br>Por favor proceda con la explicación;
 viewevaluation_finish = Finalizar;
 viewevaluation_congrats = ¡Felicitaciones!;
 viewevaluation_congrats_sub = Ha finalizado la evaluación exitósamente;
 viewevaluation_skip_calibration = SALTEAR CALIBRACIÓN;
-viewevaluation_finish_message = <b></b><br> tiene un nuevo estudio listo para procesar;
+viewevaluation_finish_message = <b></b><br> tiene una nueva evaluación lista para procesar;
 viewevaluation_calib_res = RESULTADOS DE CALIBRACIÓN;
 viewevaluation_left_eye = Ojo Izquierdo;
 viewevaluation_right_eye = Ojo Derecho;
@@ -224,14 +222,18 @@ viewevaluation_calib_restart = REINICIAR CALIBRACIÓN;
 viewevaluation_continue = CONTINUAR;
 viewevaluation_slow_calib = CALIBRACIÓN LENTA;
 
-viewevaluation_comfirm_abort_title = Cancelar tarea;
+viewevaluation_comfirm_abort_title = Abandonar evaluación;
 
 viewevaluation_comfirm_abort_msg_stop_eval = ¿Desea no continuar con la evaluación actual?
-<br>Para continuar la evaluación selecciónela desde <b>Evaluaciones Comenzadas</b>;
+<br>Para continuar la evaluación selecciónela desde <b>Evaluaciones Comenzadas</b>
+<br>Las tareas restantes deben ser completadas dentro de las 24 horas de haber
+comenzado la evaluación;
 
 viewevaluation_comfirm_abort_msg_stop_task = ¿Desea frenar el tarea actual?
 <br>El progreso en la tarea corriente se perderá.
-<br>Para continuar la evaluación selecciónela desde <b>Evaluaciones Comenzadas</b>;
+<br>Para continuar la evaluación selecciónela desde <b>Evaluaciones Comenzadas</b>
+<br>Las tareas restantes deben ser completadas dentro de las 24 horas de haber
+comenzado la evaluación;
 
 viewevaluation_comfirm_abort_yes = SI;
 viewevaluation_comfirm_abort_no  = NO;
@@ -270,7 +272,7 @@ Si el problema persiste. por favor reinicie su computadora;
 viewevaluation_calib_abnormal_calibration_condition = 
 Situación Inesperada de Calibración|
 Los datos de calibración son anómalos. 
-Por favor envié un mail de soporte cuanto antes.
+Por favor genere un pedido de soporte cuanto antes.
 Luego de hacer eso, por favor reintente calibrar.
 Si el problema persiste. por favor reinicie su computadora;
 
@@ -295,6 +297,8 @@ reconectar el casco.
 4. Si los pasos anteriores no funcionan, reinicia la computadora
 y pruebe nuevamente.; 
 
+viewevaluation_binding_keys = Presione <b>S</b> si dicen <i>"Igual"</i> o <b>D</b> si dicen <i>"Diferente"</i>;
+
 #********************************* VM GET CONFIG SCREEN *********************************
 viewgetconfig_instructions = Por favor complete los siguientes datos para comenzar a utilizar la aplicación; 
 viewgetconfig_institution = Número de Institución;
@@ -307,7 +311,7 @@ viewgetconfig_get      = OBTENER LICENCIA;
 viewgetconfig_error    = <b>No se pudo activar la aplicación</b><br>Pruebe nuevamente.<br>Si el problema persiste contactese con ViewMind;
 viewgetconfig_error_sn = <b>Número de series incorrectos</b><br>Asegúrese que el casco este conectado<br>e inténtelo nuevamente;
 viewgetconfig_success  = Activacion Exitosa|La aplicación se cerrará.
-Por favor, para comenzar a usar el ViewMind Atlas vuelva a iniciarla;
+Por favor, para comenzar a usar el ViewMind Atlas Cognition App vuelva a iniciarla;
 viewgetconfig_error_lib = <b>La instancia no está liberada</b><br>Contáctese con ViewMind y pida la liberación de<br>instancia ???;
 viewgetconfig_func_verif = VERIFICACIÓN FUNCIONAL;
 
@@ -318,12 +322,13 @@ viewfuncctl_text_pass = Verificación de seguimiento ocular exitosa;
 viewfuncctl_btn_send = ENVIAR VERIFICACIÓN;
 viewfuncctl_pcsn     = Número de Serie de la PC;
 viewfuncctl_hmdsn    = Número de Serie del Casco;
-viewfuncctl_btn_no_hmd_error = <b>No se detecto el casco</b><br>Asegúrese de que el casco se encuentre<br>conectado y prendido. Luego reinicie la aplicación;
+viewfuncctl_btn_no_hmd_error = No se detecto el casco|Asegúrese de que el casco se encuentre conectado y prendido.
+Luego reinicie la aplicación;
 viewfuncctl_error_bad_password = <b>Contraseña incorrecta</b><br> Por favor, reingrese su contraseña e <br>inténtelo nuevamente;
 viewfuncctl_error_bad_user     = <b>Usuario no autorizado</b><br>Este usuario no tiene permitido realizar<br>la verificación funcional;
 viewfuncctl_error_bad_sn     = <b>Número de serie incorrecto</b><br>El número de serie provisto no corresponde<br>con el alamacenado por ViewMind;
 viewfuncctl_error_generic  = <b>No se pudieron mandar los datos</b><br>Por favor espere unos momentos e <br>inténtelo nuevamente;
-viewfuncctl_success = <b>Éxito</b><br>Los datos de verficación funcional fueron mandados<br>con éxito;
+viewfuncctl_success = <b>Éxito</b><br>Los datos de verficación funcional fueron enviados<br>con éxito;
 viewfuncctl_title = Verificación Funcional;
 
 #********************************* Quality Control *********************************
@@ -332,14 +337,14 @@ viewqc_data_quality_tooltip = Refleja el estado de la evaluación.
 Verde, significa que la evaluación ya puede ser procesada.
 Rojo significa que al menos una tarea tiene problemas de calidad y debe rehacerse. 
 Gris significa que la evaluación está incompleta;
-viewqc_archive_reason = study_instructions_misunderstood|El sujeto con comprendió las instrucciones del estudio|
-bad_subjet_state|El estado del sujeto no era óptimo para el estudio|
+viewqc_archive_reason = study_instructions_misunderstood|El sujeto con comprendió las instrucciones de la tarea|
+bad_subjet_state|El estado del sujeto no era óptimo para la tarea|
 other|Otro; 
 viewqc_reason = Seleccione el motivo por el cual se retoma la tarea <b><<T>></b>;
 viewqc_archive_reason_ph = Ingrese un motivo diferente ...;
 viewqc_comment_ph = Añadir comentarios. Sus comentarios serán mostrados en el Reporte de esta Evaluación.;
 viewQC_commentSizeError = El texto es demasiado largo;
-viewqc_err_server_error = <b>Error de Servidor</b><br>Un problema fue detectado en el servidor<br>Por favor contacte a ViewMind para soporte;
+viewqc_err_server_error = <b>Error de Servidor</b><br>Un problema fue detectado en el servidor<br>Por favor genere un pedido de soporte;
 viewqc_success_on_send = <b>¡Éxito!</b><br>La información fue enviada exitosamente;
 
 #********************************* PROTOCOL VIEW *********************************
@@ -382,6 +387,11 @@ viewongoing_revevals = REVISAR EVALUACIÓN;
 viewongoing_discarded = DESCARTADO;
 viewongoing_pending   = PENDIENTE;
 viewongoing_remaining = Enviando tarea: <<N>> de <<M>>;
+viewongoing_time_rem = Tiempo restante;
+viewongoing_time_text = hs|Listo para enviar;
+viewongoing_time_rem_exp = Todas las evaluaciones deben ser completadas dentro de las 24 horas de haberlas comenzado. 
+Esta columna muestra cuanto tiempo queda para completar la evaluación. 
+Una vez que se acaba el tiempo, todas las tareas son automaticamente descartadas.;
 viewongoing_upload_eval = Enviando Evaluación
 No apague el ordenador, ni cierre el programa.;
 viewongoing_upload_expired = Enviando Evaluaciones Incompletas;
@@ -398,7 +408,7 @@ update_success = ¡Actualización Exitosa!;
 update_version = Versión;
 update_close = CERRAR;
 update_download_wait = Por favor espere mientras se descarga la actualización;
-update_failed_message = <b>La actualización falló</b><br>Por favor contacte a ViewMind para soporte;
+update_failed_message = <b>La actualización falló</b><br>Por favor reintente.<br>Si el problema persiste, genere un pedido de soporte;
 
 #********************************* LABELING *********************************
 labeling_label_select = Seleccione la etiqueta;

@@ -16,13 +16,16 @@ error_move_db_bkp = Unable to to move the DB backups;
 error_move_config = Unable to move the license file;
 error_move_patdata = Unable to move the patient data to the directory;
 error_cant_start_ee = Failed to start ViewMind Atlas. Please attempt to start manually;
-error_incosistent_situation = The diagnostics has found unexpected inconsistency in the installation.
-Plese contact ViewMind for support.;
+error_incosistent_situation = The diagnostics has found unexpected inconsistency in the installation.;
 error_diagnostic_failed = Unexpected behaviour when running diagnostics. Unable to determined the situation.
-Please contact ViewMind for support.;
+Please contact ViewMind for support at
+support@viewmindhelp.zendesk.com;
+
 error_mail_failed = Failed to send support email to ViewMind Support.
 Please contact ViewMind by other means;
+
 error_cleanup = Unable to clean up temporary directory;
+
 error_vmupdate_failed = ViewMind Update has encountered an unexpected issues.
 Please contact ViewMind Support and relay this issue.;
 
@@ -67,11 +70,6 @@ action_checking_file         = Checking <F> ...;
 action_verify_install        = Verifying installation integrity ...;
 action_finishing             = Finishing up ...;
 
-unable_to_update = The update did not finish correctly. In order to try and fix this error, we recomend the following steps:
-1) Restart the computer
-2) Use the Desktop Shortcut for the ViewMind Update to start it.
-3) Click on the RUN DIAGNOSTICS button.
-4) If a solution is offered click on RUN CORRECTIVE ACTION BUTTON.
-If you have issues with any of the steps above and the problem persists, contact ViewMind.;
-
-
+unable_to_update = The update has failed.
+Please restart your computer and try again.
+If the problem persists create a support request;

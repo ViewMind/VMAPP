@@ -91,6 +91,12 @@ ViewBase {
         evaluationRun.setupEvaluation();
     }
 
+    function setCurrentEvaluationName(){
+        let name = loader.getSelectedEvaluationName();
+        console.log("The current evaluation name is " + name);
+        currentEvaluationValue.text = loader.getSelectedEvaluationName();
+    }
+
     function setUpStudyNames(study_names) {
 
         let plineSetup = {};
@@ -177,6 +183,7 @@ ViewBase {
             else {
                 // Need to go back to the patient list.
                 mainWindow.swipeTo(VMGlobals.vmSwipeIndexMainScreen)
+                mainWindow.popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewevaluation_err_badend_study"))
             }
         }
     }
@@ -254,11 +261,38 @@ ViewBase {
     }
 
     Row {
-        id: personalIDRow
+        id: currentEvaluationRow
         height: VMGlobals.adjustHeight(20)
         anchors.top: patientText.bottom
         anchors.left: patientText.left
         anchors.topMargin: VMGlobals.adjustHeight(14)
+        spacing: VMGlobals.adjustWidth(5)
+
+        Text {
+            id: currentEvaluationName
+            height: parent.height
+            verticalAlignment: Text.AlignVCenter
+            text: loader.getStringForKey("viewongoing_eval") + ":"
+            color: VMGlobals.vmGrayPlaceholderText
+            font.pixelSize: VMGlobals.vmFontBaseSize
+            font.weight: 400
+        }
+        Text {
+            id: currentEvaluationValue
+            height: parent.height
+            verticalAlignment: Text.AlignVCenter
+            color: VMGlobals.vmBlackText
+            font.pixelSize: VMGlobals.vmFontBaseSize
+            font.weight: 400
+        }
+    }
+
+    Row {
+        id: personalIDRow
+        height: VMGlobals.adjustHeight(20)
+        anchors.top: currentEvaluationRow.bottom
+        anchors.left: currentEvaluationRow.left
+        anchors.topMargin: VMGlobals.adjustHeight(10)
         spacing: VMGlobals.adjustWidth(5)
 
         Text {
@@ -342,6 +376,9 @@ ViewBase {
                     height: parent.height + radius
                     onGoToEvalRun: {
                         viewer.currentIndex = vmSC_INDEX_EVALUATION_SCREEN
+                    }
+                    onEvaluationsReloaded: {
+                        nextButton.vmEnabled = !generalSettings.vmNoEvalsAvailable;
                     }
                 }
             }

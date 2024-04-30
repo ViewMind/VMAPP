@@ -153,7 +153,7 @@ Rectangle {
             element = {}
             element["width"] = 0.17;
             element["sortable"] = false;
-            nameWidthMap[loader.getStringForKey("viewevaluation_date")] = element
+            nameWidthMap[loader.getStringForKey("viewongoing_time_rem")] = element
 
             element = {}
             element["width"] = 0.08;
@@ -165,6 +165,7 @@ Rectangle {
 
             var tooltips = {};
             tooltips[loader.getStringForKey("viewongoing_status")] = loader.getStringForKey("viewqc_data_quality_tooltip")
+            tooltips[loader.getStringForKey("viewongoing_time_rem")] = loader.getStringForKey("viewongoing_time_rem_exp")
 
             reportListTable.configureTable(nameWidthMap,"",tooltips);
 

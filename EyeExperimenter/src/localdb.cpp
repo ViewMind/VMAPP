@@ -1092,9 +1092,17 @@ QVariantMap LocalDB::getEvaluationDisplayMap(const QString &evaluationID, const 
 QList<QVariantMap> LocalDB::getEvaluationTableInformation(const QString &evaluator,
                                                     qlonglong override_timeout,
                                                     const QStringList &months,
+                                                    QStringList languangeTexts,
                                                     const QString &ui_lang_code){
 
     QList<QVariantMap> list;
+
+    // This should NEVER happen. But if I screw up and and I get a list of a size different than 2, then the app might crash.
+    // So I make sure.
+    if (languangeTexts.size() != 2){
+        languangeTexts.clear();
+        languangeTexts << "" << "";
+    }
 
     QVariantMap ongoing_evals = this->data.value(MAIN_ONGOING_EVALUATIONS).toMap();
     QStringList evalKeys = ongoing_evals.keys();
@@ -1138,6 +1146,9 @@ QList<QVariantMap> LocalDB::getEvaluationTableInformation(const QString &evaluat
             if (status != EvaluationStatus::READY_UPLOAD) continue; // Too late. All it's tasks will be discarded.
         }
 
+        // This is the remaining number of seconds until expiration.
+        diff = timeout_compare - diff;
+
         QString evalType = evaluation.value(EVAL_TYPE).toString();
         QString evalName = this->data.value(MAIN_AVAILABLE_EVALS).toMap().value(evalType).toMap().value("name").toMap().value(ui_lang_code).toString();
 
@@ -1146,12 +1157,29 @@ QList<QVariantMap> LocalDB::getEvaluationTableInformation(const QString &evaluat
         QString date = evaluation.value(EVAL_ISO_DATE).toString();
         date = buildDisplayBirthDate(date,months);
 
+        QString displayTime = languangeTexts.last();
+        if (diff > 0){
+            // We need to compute the remaining hours and minutes until expiry.
+            int hours = diff/(60*60);
+            int minutes = (diff - hours*60*60)/60;
+
+            QString mins = QString::number(minutes);
+            if (minutes < 10) mins = "0" + mins;
+
+            QString hrs = QString::number(hours);
+            if (hours < 10) hrs = "0" + hrs;
+
+            displayTime = hrs  + ":" + mins + " " + languangeTexts.first();
+        }
+
+
         QVariantMap obj;
         obj[EVAL_TIMESTAMP] = timestamp;
         obj[EVAL_SUBJECT]   = createSubjectTableDisplayText(evaluation.value(EVAL_SUBJECT).toString());
         obj[EVAL_TYPE]      = evalName;
         obj[EVAL_CLINICIAN] = clinician.value(APPUSER_LASTNAME).toString() + ", " + clinician.value(APPUSER_NAME).toString();
-        obj[EVAL_TIME]      = date + " " + evaluation.value(EVAL_TIME).toString();
+        //obj[EVAL_TIME]      = date + " " + evaluation.value(EVAL_TIME).toString();
+        obj[EVAL_TIME]      = displayTime;
         obj[EVAL_STATUS]    = status;
         obj[EVAL_ID]        = evalID;
 

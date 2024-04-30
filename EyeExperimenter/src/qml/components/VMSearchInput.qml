@@ -18,6 +18,12 @@ Item {
 
     signal textChanged()
 
+    function clear(){
+        inputText.text = vmPlaceHolderText
+        vmCurrentText = "";
+        vmErrorMsg = ""
+    }
+
     Rectangle {
 
         id: mainRect

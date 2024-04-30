@@ -11,8 +11,10 @@ Rectangle {
 
     property int vmSelectedDoctorIndex: -1
     property var vmExpLangCodeList: [];
+    property bool vmNoEvalsAvailable: true
 
     signal goToEvalRun();
+    signal evaluationsReloaded();
 
     function prepareSettings(){
 
@@ -112,15 +114,41 @@ Rectangle {
 
         let avalialbleEvaluations = loader.getAvailableEvaluations();
         var list = [];
+
+        if (avalialbleEvaluations.length == 0){
+            vmNoEvalsAvailable = true;
+            list = [loader.getStringForKey("viewevaluation_eval_no_eval")];
+        }
+        else {
+            vmNoEvalsAvailable = false;
+        }
+
         for (let i = 0; i < avalialbleEvaluations.length; i++){
             list.push(avalialbleEvaluations[i].name);
         }
+
         evaluationSelection.setModelList(list);
         evaluationSelection.setSelection(0);
+
+        if (vmNoEvalsAvailable){
+            evaluationSelection.vmEnabled = false;
+        }
+        else {
+            evaluationSelection.vmEnabled = true;
+        }
+
+        // Will tell the main container whether to enable or disable the starte evaluation button depending on vmNoEvalsAvailable
+        evaluationsReloaded();
 
     }
 
     function updateTaskList(){
+
+        if (vmNoEvalsAvailable){
+            // There are no evaluations available. So we need to to show a text explaining what to do
+            taskList.configure(loader.getStringForKey("viewevaluation_eval_no_eval"),[""],loader.getStringForKey("viewevaluation_noevals_text"))
+            return;
+        }
 
         let available_evaluations = loader.getAvailableEvaluations();
 
@@ -144,7 +172,7 @@ Rectangle {
 
 
         //bkgTaskList.setTaskList(names)
-        taskList.configure(loader.getStringForKey("viewevaluation_task_list"),names)
+        taskList.configure(loader.getStringForKey("viewevaluation_task_list"),names,"")
 
     }
 

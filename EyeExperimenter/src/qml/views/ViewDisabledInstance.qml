@@ -56,6 +56,16 @@ ViewBase {
     }
 
     Text {
+        id: cognitionText
+        text: "Cognition"
+        font.pixelSize: VMGlobals.vmFontHuge
+        font.weight: 600
+        color: VMGlobals.vmBlackText
+        anchors.left: welcomeTextTM.right
+        anchors.bottom: welcomeText.bottom
+    }
+
+    Text {
         id: instructionText
         text: loader.getStringForKey("viewdisabled_messsage")
         font.pixelSize: VMGlobals.vmFontLarge

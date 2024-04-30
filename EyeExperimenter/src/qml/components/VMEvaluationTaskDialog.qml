@@ -477,12 +477,15 @@ Item {
     VMTextAreaInput {
         id: comment
         vmPlaceHolderText: (own.vmState == vmSTATE_UPLOAD) ? loader.getStringForKey("viewqc_comment_ph") : loader.getStringForKey("viewqc_archive_reason_ph")
-        vmNumberOfLines: (own.vmState == vmSTATE_REDO) ? 7 : 10
+        vmNumberOfLines: (own.vmState == vmSTATE_REDO) ? 5 : 10
         width: topDivider.width
         anchors.horizontalCenter: dialog.horizontalCenter
         anchors.top: (own.vmState === vmSTATE_REDO) ? redoReason.bottom : topDivider.bottom
         anchors.topMargin: VMGlobals.adjustHeight(10)
         visible: (own.vmState != vmSTATE_TASK_LIST)
+        onVisibleChanged: {
+            comment.vmErrorMsg = "";
+        }
     }
 
     Rectangle {
@@ -563,16 +566,23 @@ Item {
                     return
                 }
 
-                if (own.vmState == vmSTATE_REDO){
-                    close()
+                if (own.vmState == vmSTATE_REDO){                    
                     let reasonForRedoing = own.vmRedoReasonsCodes[redoReason.vmCurrentIndex];
-                    console.log("Requesting redo of task " + own.vmEvaluationID + "." + own.vmTaskToRedo +  ". Reason for redoing "  + reasonForRedoing);
+                    //console.log("Requesting redo of task " + own.vmEvaluationID + "." + own.vmTaskToRedo +  ". Reason for redoing "  + reasonForRedoing);
+                    if (reasonForRedoing === "other"){
+                        // Comments cannot be empty.
+                        if (formatted_text === ""){
+                            comment.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error");
+                            return;
+                        }
+                    }
+                    close()
                     loader.redoTask(own.vmEvaluationID, own.vmTaskToRedo, reasonForRedoing, formatted_text)
                     requestReopen(own.vmEvaluationID);
                 }
                 else {
                     // START UPLOADING THE EVALUATIONS.
-                    console.log("Requesting upload of evaluation " + own.vmEvaluationID);
+                    //console.log("Requesting upload of evaluation " + own.vmEvaluationID);
                     mainWindow.openWaitAsProgress("");
                     loader.uploadEvaluation(own.vmEvaluationID, formatted_text);
                     close()

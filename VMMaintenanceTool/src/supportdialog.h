@@ -24,6 +24,8 @@ public:
     QString getSupportContactResult() const;
     bool wasItCanceled() const;
 
+    void automaticContactSupport();
+
 private slots:
     void on_pushButton_clicked();
     void on_pbCancel_clicked();

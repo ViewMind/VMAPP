@@ -11,8 +11,8 @@ Rectangle {
 
     readonly property double vmDivisorMargin: VMGlobals.adjustHeight(15);
     readonly property string vmSYSTEM_RELEASE_DATE: "DD-MM-YYYY";
-    readonly property string vmSYSTEM_VERSION: "27.6.5";
-    readonly property string vmANVISA_REG_NUMBER: "XXXXX";
+    readonly property string vmSYSTEM_VERSION: "27.9.2";
+    readonly property string vmANVISA_REG_NUMBER: "81464750145";
 
     // Rectangle that straightens the left side edge.
     Rectangle {
@@ -42,7 +42,8 @@ Rectangle {
 
     Text {
         id: applicationName
-        text: "EyeExplorer"
+        text: "ViewMind Atlas<sup>TM</sup> Congnition App"
+        textFormat: Text.RichText
         font.weight: 400
         font.pixelSize: VMGlobals.vmFontBaseSize
         height: VMGlobals.adjustHeight(15);
@@ -170,12 +171,12 @@ Rectangle {
         model.append(element);
 
         element["vmHeight"] = labelListView.height*0.15;
-        element["vmText"]   = "Marca: <b>ViewMind Atlas</b><br>Modelo: <b>EYE EXPLORER (Versión Global " + vmSYSTEM_VERSION + ")</b>"
+        element["vmText"]   = "<b>ViewMind Atlas System for Cognition (Versión Global " + vmSYSTEM_VERSION + ")</b>"
         element["vmImage"]  = "qrc:/images/labeling/md.png"
         model.append(element);
 
         element["vmHeight"] = labelListView.height*0.17;
-        element["vmText"]   = "LEA LAS INSTRUCCIONES DE USO"
+        element["vmText"]   = "LEA LAS INSTRUCCIONES DE USO ANTES DE UTILIZAR"
         element["vmImage"]  = "qrc:/images/labeling/manual.png"
         model.append(element);
 
@@ -197,7 +198,7 @@ Rectangle {
         element["vmImage"]  = "qrc:/images/labeling/industry_white.png"
         model.append(element);
 
-        element["vmHeight"] = labelListView.height*0.24;
+        element["vmHeight"] = labelListView.height*0.22;
         element["vmText"]   = "<b>VIEWMIND S.A</b><br>Av. 24 de Septiembre 1536, Oficina 12, Córdoba, Córdoba, Argentina.<br>DT: Romina Carranza, MP: 37665468.<br>\
 <font color=\"" + VMGlobals.vmBlueSelected + "\"> info@viewmind.com</font> | <font color=\"" + VMGlobals.vmBlueSelected + "\">www.viewmind.com</font>"
         element["vmImage"]  = "qrc:/images/labeling/industry.png"
@@ -209,19 +210,20 @@ Rectangle {
         model.append(element);
 
         element["vmHeight"] = labelListView.height*0.14;
-        element["vmText"]   = "<b>EYE EXPLORER (Versão global " + vmSYSTEM_VERSION + ")</b>"
+        element["vmText"]   = "<b>ViewMind Atlas System for Cognition (Versão global " + vmSYSTEM_VERSION + ")</b>"
         element["vmImage"]  = "qrc:/images/labeling/md.png"
         model.append(element);
 
         element["vmHeight"] = labelListView.height*0.15;
-        element["vmText"]   = "LEIA AS INSTRUÇÕES DE OPERAÇÃO"
+        element["vmText"]   = "LEIA AS INSTRUÇÕES DE OPERAÇÃO ANTES DE USAR"
         element["vmImage"]  = "qrc:/images/labeling/manual.png"
         model.append(element);
 
-        element["vmHeight"] = labelListView.height*0.19;
+        element["vmHeight"] = labelListView.height*0.21;
         element["vmText"]   = "Registro ANVISA N° " + vmANVISA_REG_NUMBER + "<br>\
-<b>Detentor do registro: Domo Salute Consultoria Regulatória Ltda.</b><br>\
-Avenida Cristóvão Colombo, 2948 cj. 411 CEP 90560-002, Porto Alegre/RS, Brasil<br>\
+Detentor do registro: Domo Salute Consultoria Regulatória Ltda.<br>\
+Avenida Cristóvão Colombo, 2948 cj. 411 CEP 90560-002, <br>\
+Porto Alegre/RS, Brasil<br>\
 Responsável Técnico: Eng. Diego Louzada CREA/RS 162977"
         element["vmImage"]  = ""
         element["vmIsLast"] = true;
@@ -235,38 +237,45 @@ Responsável Técnico: Eng. Diego Louzada CREA/RS 162977"
         var element = {};
         element["vmIsLast"] = false;
 
-        element["vmHeight"] = labelListView.height*0.15;
+        element["vmHeight"] = labelListView.height*0.14;
         element["vmText"]   = vmSYSTEM_RELEASE_DATE
         element["vmImage"]  = "qrc:/images/labeling/industry_white.png"
         model.append(element);
 
-        element["vmHeight"] = labelListView.height*0.25;
+        element["vmHeight"] = labelListView.height*0.22;
         element["vmText"]   = "<b>VIEWMIND S.A</b><br>Av. 24 de Septiembre 1536, Oficina 12, Córdoba, Córdoba, Argentina.<br>DT: Romina Carranza, MP: 37665468.<br>\
 <font color=\"" + VMGlobals.vmBlueSelected + "\"> info@viewmind.com</font> | <font color=\"" + VMGlobals.vmBlueSelected + "\">www.viewmind.com</font>"
         element["vmImage"]  = "qrc:/images/labeling/industry.png"
         model.append(element);
 
-        element["vmHeight"] = labelListView.height*0.15;
+        element["vmHeight"] = labelListView.height*0.14;
         element["vmText"]   = "<b>VIEWMIND INC</b><br>576 5th Ave #903, New York, NY 10036 USA."
-        element["vmImage"]  = "qrc:/images/labeling/ec.png"
+        element["vmImage"]  = "qrc:/images/labeling/usagent.png"
         model.append(element);
 
-        element["vmHeight"] = labelListView.height*0.15;
-        element["vmText"]   = "<b>EYE EXPLORER (Global Version " + vmSYSTEM_VERSION + ")</b>"
+        element["vmHeight"] = labelListView.height*0.14;
+        element["vmText"]   = "<b>ViewMind Atlas System for Cognition (Global Version " + vmSYSTEM_VERSION + ")</b>"
         element["vmImage"]  = "qrc:/images/labeling/md.png"
         model.append(element);
 
         element["vmHeight"] = labelListView.height*0.17;
-        element["vmText"]   = "READ THE OPERATING INSTRUCTIONS"
+        element["vmText"]   = "READ THE OPERATING INSTRUCTIONS BEFORE USE"
         element["vmImage"]  = "qrc:/images/labeling/manual.png"
         model.append(element);
 
 
-        element["vmHeight"] = labelListView.height*0.13;
-        element["vmText"]   = "CAUTION. Investigational device.<br>Limited by United States law to investigational use."
+        element["vmHeight"] = labelListView.height*0.12;
+        element["vmText"]   = "CAUTION: Federal law restricts this device to sale by or on the order<br>of a physician"
+        element["vmImage"]  = "qrc:/images/labeling/rx-only.png"
+        element["vmIsLast"] = true;
+        model.append(element);
+
+        element["vmHeight"] = labelListView.height*0.07;
+        element["vmText"]   = "<b>CAUTION. Investigational device. Limited by United States law to<br>investigational use.</b>"
         element["vmImage"]  = ""
         element["vmIsLast"] = true;
         model.append(element);
+
 
     }
 
@@ -292,18 +301,18 @@ Responsável Técnico: Eng. Diego Louzada CREA/RS 162977"
         model.append(element);
 
         element["vmHeight"] = labelListView.height*0.15;
-        element["vmText"]   = "<b>EYE EXPLORER (Global Version " + vmSYSTEM_VERSION + ")</b>"
+        element["vmText"]   = "<b>ViewMind Atlas System for Cognition (Global Version " + vmSYSTEM_VERSION + ")</b>"
         element["vmImage"]  = "qrc:/images/labeling/md.png"
         model.append(element);
 
         element["vmHeight"] = labelListView.height*0.17;
-        element["vmText"]   = "READ THE OPERATING INSTRUCTIONS"
+        element["vmText"]   = "READ THE OPERATING INSTRUCTIONS BEFORE USE"
         element["vmImage"]  = "qrc:/images/labeling/manual.png"
         model.append(element);
 
 
         element["vmHeight"] = labelListView.height*0.13;
-        element["vmText"]   = "Exclusively for clinical research."
+        element["vmText"]   = "<b>The use of this device is exclusively for clinical research.</b>"
         element["vmImage"]  = ""
         element["vmIsLast"] = true;
         model.append(element);

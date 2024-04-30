@@ -11,6 +11,8 @@ ViewBase {
     property string vmCurrentlyLoadedPatient: ""
     property var vmEducationYearsList: []
 
+    property var vmDaysInMonth : [31,29,31,30,31,30,31,31,30,31,30,31]
+
     function clear(){
         fname.clear()
         lname.clear()
@@ -18,6 +20,7 @@ ViewBase {
         year.clear()
         personalID.clear()
         yearsOfEducation.clear()
+        educationSelection.vmErrorMsg = "";
         email.clear()
         acceptTerms.vmIsOn = false;
         acceptTerms.visible = true;
@@ -79,11 +82,11 @@ ViewBase {
 
 
         let index = vmEducationYearsList.indexOf(selected_years);
-        console.log("Loading patient with " + selected_years + " of education. Index for education is: " + index)
+        //console.log("Loading patient with " + selected_years + " of education. Index for education is: " + index)
         if (index === -1){
             // Other must be selected. That is the one where -1 is the value..
             index = vmEducationYearsList.indexOf("-1");
-            console.log("While searching for index of others we get " + index)
+            //console.log("While searching for index of others we get " + index)
             yearsOfEducation.visible = true;
         }
 
@@ -114,7 +117,7 @@ ViewBase {
         }
 
         if (yearsOfEducation.vmCurrentText === ""){
-            yearsOfEducation.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+            yearsOfEducation.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
             return;
         }
 
@@ -139,28 +142,28 @@ ViewBase {
         if (lname.vmCurrentText !== ""){
             // We only force the first name to be filled if the last name was.
             if (fname.vmCurrentText === ""){
-                fname.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                fname.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
                 return;
             }
         }
 
         if (day.vmCurrentText === ""){
-            day.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+            day.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
             return;
         }
 
         if (month.vmCurrentIndex == -1){
-            month.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+            month.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
             return;
         }
 
         if (year.vmCurrentText === ""){
-            year.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+            year.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
             return;
         }
 
         if (sex.vmCurrentIndex == -1){
-            sex.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+            sex.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
             return;
         }
 
@@ -169,6 +172,13 @@ ViewBase {
         if (check !== 1){
             if (check === -1) day.vmErrorMsg = loader.getStringForKey("viewpatform_isnotanumber")
             else day.vmErrorMsg = loader.getStringForKey("viewpatform_invalid_range")
+            return;
+        }
+
+        // We check the coherence of the day/month pair.
+        let maxDay = vmDaysInMonth[month.vmCurrentIndex];
+        if (day.vmCurrentText > maxDay){
+            day.vmErrorMsg = loader.getStringForKey("viewpatform_invalid_range")
             return;
         }
 
@@ -393,6 +403,20 @@ ViewBase {
                     }
                 }
 
+                VMTextInput {
+                    id: personalID
+                    width: parent.width
+                    vmLabel: loader.getStringForKey("viewpatlist_id")
+                    vmPlaceHolderText: loader.getStringForKey("viewpatform_personal_id_ph")
+                    //vmClarification: "(" + loader.getStringForKey("viewpatform_id_warning") + ")"
+                    vmToolTip: loader.getStringForKey("viewpatlist_id_explanation")
+                    Keys.onTabPressed: email.vmFocus = true
+                    //z: sex.z + 1 // I need this so that the tooltip will appear OVER the sex dropdown.
+                    onVmCurrentTextChanged: {
+                        lname.vmErrorMsg = "";
+                    }
+                }
+
                 VMComboBox {
                     id: sex
                     width: parent.width
@@ -404,19 +428,6 @@ ViewBase {
                     }
 
                 }
-
-                VMTextInput {
-                    id: personalID
-                    width: parent.width
-                    vmLabel: loader.getStringForKey("viewpatlist_id")
-                    vmPlaceHolderText: loader.getStringForKey("viewpatform_personal_id_ph")
-                    vmClarification: "(" + loader.getStringForKey("viewpatform_id_warning") + ")"
-                    Keys.onTabPressed: email.vmFocus = true
-                    onVmCurrentTextChanged: {
-                        lname.vmErrorMsg = "";
-                    }
-                }
-
 
                 VMTextInput {
                     id: email

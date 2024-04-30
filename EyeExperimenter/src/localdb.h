@@ -323,7 +323,8 @@ public:
     // representing an evaluation that meets the following criteria:
     // 1) It belongs to the specified evaluator
     // 2) It's a finished evaluation or  It's an ongoing evaluation less than 24 hrs old.
-    QList<QVariantMap> getEvaluationTableInformation(const QString &evaluator, qlonglong override_timeout, const QStringList &months, const QString &ui_lang_code);
+    // Some display texts are required. Language texts provides them for the currently selected ui language.
+    QList<QVariantMap> getEvaluationTableInformation(const QString &evaluator, qlonglong override_timeout, const QStringList &months, QStringList languangeTexts, const QString &ui_lang_code);
 
     // Changes the field uploded of an evaluation to true. When all evaluations have been changed to true, the the task is removed from the DB.
     bool updateTaskInEvaluationAsUploaded(const QString &evalID, const QString &taskID);

@@ -141,8 +141,9 @@ void MainWindow::onMaintenanceFinished(){
             logger->display(Langs::getString("notification_corrective_actions"));
         }
         else if (maintainer.getRecommendedAction() == MaintenanceManager::ACTION_CONTACT_SUPPORT){
-            ui->pbMainAction->setEnabled(true);
-            ui->pbMainAction->setText(Langs::getString("btn_main_action_contact"));
+            ui->pbMainAction->setVisible(false);
+            //ui->pbMainAction->setEnabled(true);
+            //ui->pbMainAction->setText(Langs::getString("btn_main_action_contact"));
             logger->error(Langs::getString("error_vmupdate_failed"));
         }
         else {

@@ -24,8 +24,7 @@ Asegúrese de que pueda alcanzar todos ellos. Si está teniendo problemas
 para tocar alguno, reintente la calibración sin estirar sus brazos totalmente;
 
 explanation_phase_list_binding_bc =
-Esta es la prueba de Combinación de Colores.
-Puede ser más difícil que la anterior|
+Esta es la tarea de Combinación de Colores.|
 Aparecerán <<N>> cuadrados con una cruz en su centro.
 En este caso, debe recordar la combinación de colores entre cada cuadrado y cruz.
 No aparecerán colores nuevos.|
@@ -49,7 +48,7 @@ cuadrados y cruces no ha cambiado, así que debe decir en voz alta "Igual".
 Haremos algunos ejemplos de práctica antes de comenzar;
 
 explanation_phase_list_binding_uc =
-Esta es la prueba de Nuevos Colores|
+Esta es la tarea de Nuevos Colores|
 Aparecerán <<N>> cuadrados con una cruz en su centro
 Debe recordar todos los colores presentes|
 Los cuadrados desaparecerán y un conjunto de cuadrados nuevos
@@ -76,7 +75,7 @@ Haremos algunos ejemplos de práctica antes de comenzar;
 
 
 explanation_phase_list_gonogo     = 
-Esta es la evaluación de Go/No-go. Una cruz aparecerá en el centro de la
+Esta es la tarea de Go/No-Go. Una cruz aparecerá en el centro de la
 pantalla. Mire la cruz. La cruz desaparecerá y en su lugar aparecerá una flecha.
 Si la flecha es color verde, mire rápidamente un punto en la dirección de la
 flecha. Si la flecha es color rojo, mire rápidamente en la dirección opuesta|
@@ -94,8 +93,8 @@ Ha entendido?
 Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_gonogo_3D =
-Este es las Evaluación de Esféras.
-Durante esta evaluación pelotas rojas y verdes serán enviadas de los puntos que
+Esta es la tarea de Esféras.
+Durante esta tarea, pelotas rojas y verdes serán enviadas de los puntos que
 se encuentran frente suyo. Si la pelota es verde debe intentar tocarla. Si es 
 roja, debe evitar tocarla. Si toca una pelota sentirá a su control vibrar.
 Hagamos un ejemplo. Intente tocar la pelota verde.|
@@ -110,8 +109,8 @@ Ha entendido?
 Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_gonogo_3D_vs =
-Este es las Evaluación de Esféras con Velocidad Variable.
-Durante esta evaluación pelotas rojas y verdes serán enviadas de los puntos que
+Este es la tarea de Esféras con Velocidad Variable.
+Durante esta tarea pelotas rojas y verdes serán enviadas de los puntos que
 se encuentran frente suyo. Si la pelota es verde debe intentar tocarla. Si es 
 roja, debe evitar tocarla. Si toca una pelota sentirá a su control vibrar.
 Hagamos un ejemplo. Intente tocar la pelota verde.|
@@ -128,7 +127,7 @@ Ha entendido?
 Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_nbackrt    = 
-Esta es la evaluación de N-Back. La prueba se compone de 6 cajas y una cruz central.
+Esta es la tarea de N-Back. La tarea se compone de 6 cajas y una cruz central.
 Mantenga la mirada fija en la cruz.|
 Un círculo rojo aparecerá en una de las cajas. Esta es la Posición 1.|
 Luego, aparecerá en otra caja. Posición 2|
@@ -149,7 +148,7 @@ Ha entendido?
 Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_nback_4    = 
-Esta es la evaluación de N-Back. La prueba se compone de 6 cajas y una cruz central.
+Esta es la tarea de N-Back. La tarea se compone de 6 cajas y una cruz central.
 Mantenga la mirada fija en la cruz.|
 Un círculo rojo aparecerá en una de las cajas. Esta es la Posición 1.|
 Luego, aparecerá en otra caja. Posición 2|
@@ -174,7 +173,7 @@ Ha entendido?
 Haremos algunas rondas de práctica antes de comenzar.;
 
 explanation_phase_list_nback_3    = 
-Esta es la evaluación de N-Back. La prueba se compone de 6 cajas y una cruz central.
+Esta es la tarea de N-Back. La tarea se compone de 6 cajas y una cruz central.
 Mantenga la mirada fija en la cruz.|
 Un círculo rojo aparecerá en una de las cajas. Esta es la Posición 1.|
 Luego, aparecerá en otra caja. Posición 2|
@@ -196,7 +195,7 @@ Haremos algunas rondas de práctica antes de comenzar.;
 
 
 explanation_phase_list_nbackvs    = 
-Esta es la prueba N-back De Entrenamiento. 
+Esta es la tarea N-back De Entrenamiento.
 Se mostraran una serie de círculos rojos en pantalla en una secuencia determinada. 
 Mientras los círculos se mantengan en pantalla, usted debe mirar fijamente
 la cruz del centro. 

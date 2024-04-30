@@ -5,6 +5,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QDebug>
+#include <QTimer>
 #include <QEventLoop>
 #include <QObject>
 #include <QVariantMap>
@@ -90,6 +91,7 @@ public:
 
 private slots:
     void gotReply();
+    void onTimeOut();
 
 signals:
     void gotReplyData();
@@ -111,6 +113,7 @@ private:
     QList<QFile*> filesToSendHandles;
     QNetworkAccessManager manager;
     QNetworkReply *reply;
+    QTimer timeoutTimer;
     QByteArray replyData;
     QMap<QString, QString> headers;
     QMap<QString,QString> responseHeaders;
@@ -123,6 +126,9 @@ private:
     void stringifyData();
 
     static const char * SALT_FIELD;
+
+    // Timeout is 2 minutes.
+    const qint32 TIMEOUT = 120000;
 
 };
 

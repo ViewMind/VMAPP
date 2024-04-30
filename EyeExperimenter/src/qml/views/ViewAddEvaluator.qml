@@ -25,17 +25,17 @@ ViewBase {
         }
 
         if (fname.vmCurrentText === ""){
-            fname.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty");
+            fname.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error");
             return;
         }
 
         if (lname.vmCurrentText === ""){
-            lname.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty");
+            lname.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error");
             return;
         }
 
         if (email.vmCurrentText === ""){
-            email.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty");
+            email.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error");
             return;
         }
 
@@ -46,7 +46,7 @@ ViewBase {
 
         // Ensuring tha the password is not empty and the email does not already exist.
         if (password.vmCurrentText === ""){
-            password.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty");
+            password.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error");
             return;
         }
         if (loader.checkIfEvaluatorEmailExists(email.vmCurrentText)){

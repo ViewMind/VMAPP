@@ -94,7 +94,7 @@ ViewBase {
     Component.onCompleted: {
         // Checking that the everything was loaded correctly.
         if (loader.getLoaderError()){
-            criticalFailure.loadFromText("Detected Database Corruption","ViewMind Atlas has detected possible corruption of it's local database\nPlease run ViewMind Update to fix the issue\nIf the problem is not fixed, contact ViewMind Support");
+            criticalFailure.loadFromText("Detected Database Corruption","ViewMind Atlas has detected possible corruption of it's local database\nPlease contact ViewMind Support: ");
             criticalFailure.open()
             return;
         }
@@ -158,6 +158,16 @@ ViewBase {
         color: VMGlobals.vmBlackText
         anchors.left: welcomeText.right
         anchors.top: welcomeText.top
+    }
+
+    Text {
+        id: cognitionText
+        text: "Cognition"
+        font.pixelSize: VMGlobals.vmFontHuge
+        font.weight: 600
+        color: VMGlobals.vmBlackText
+        anchors.left: welcomeTextTM.right
+        anchors.bottom: welcomeText.bottom
     }
 
     Text {

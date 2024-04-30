@@ -115,6 +115,26 @@ ViewBase {
         anchors.topMargin: VMGlobals.adjustHeight(50)
     }
 
+    Text {
+        id: welcomeTextTM
+        text: "™"
+        font.pixelSize: VMGlobals.vmFontExtraLarge
+        font.weight: 400
+        color: VMGlobals.vmBlackText
+        anchors.left: welcomeText.right
+        anchors.top: welcomeText.top
+    }
+
+    Text {
+        id: cognitionText
+        text: "Cognition"
+        font.pixelSize: VMGlobals.vmFontHuge
+        font.weight: 600
+        color: VMGlobals.vmBlackText
+        anchors.left: welcomeTextTM.right
+        anchors.bottom: welcomeText.bottom
+    }
+
 
     Text {
         id: instructionText
@@ -183,17 +203,17 @@ ViewBase {
             //                code = "PIDTB-WSJIE-7YFVB-WLSJU-U2XWZ-SVMHD"
 
             if (inst == ""){
-                institution.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty")
+                institution.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
                 return;
             }
 
             if (number == ""){
-                instance.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty")
+                instance.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
                 return;
             }
 
             if (code == ""){
-                activation_code.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty")
+                activation_code.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
                 return;
             }
 

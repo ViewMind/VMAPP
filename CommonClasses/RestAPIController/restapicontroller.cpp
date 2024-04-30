@@ -17,6 +17,8 @@ RESTAPIController::RESTAPIController(QObject *parent):QObject(parent)
     reply = nullptr;
     errorInReply = false;
     sendDataAsJSON = false;
+
+    connect(&timeoutTimer,&QTimer::timeout,this,&RESTAPIController::onTimeOut);
 }
 
 void RESTAPIController::setBaseAPI(const QString baseAPI){
@@ -270,12 +272,14 @@ bool RESTAPIController::sendPOSTRequest() {
     }
 
     //qDebug() << "Returning from sending post request";
+    timeoutTimer.start(TIMEOUT);
 
     return true;
 }
 
 bool RESTAPIController::sendGETRequest(){
 
+    errorInReply = false;
     if (reply != nullptr) delete reply;
 
     // Building the url and sending the post request.
@@ -301,6 +305,7 @@ bool RESTAPIController::sendGETRequest(){
         return false;
     }
 
+    timeoutTimer.start(TIMEOUT);
     return true;
 
 }
@@ -367,6 +372,11 @@ QByteArray RESTAPIController::getPayload() const{
 }
 
 void RESTAPIController::gotReply(){
+
+    // We are only allowed to receive replies if the timeout timer is active.
+    if (!timeoutTimer.isActive()) return;
+    timeoutTimer.stop();
+
     replyData = reply->readAll();
 
     //qDebug() << "GOT A REPLY REST API CONTROLLER";
@@ -388,6 +398,14 @@ void RESTAPIController::gotReply(){
     }
     emit RESTAPIController::gotReplyData();
 }
+
+void RESTAPIController::onTimeOut() {
+    timeoutTimer.stop();
+    errorInReply = true;
+    errors << "Timeout waiting for reply reached";
+    emit RESTAPIController::gotReplyData();
+}
+
 
 void RESTAPIController::clearFileToSendHandles(){
     for (qint32 i = 0; i < filesToSendHandles.size(); i++){

@@ -63,7 +63,10 @@ ViewBase {
             vmLoadedSN = true
         }
         else if (hmd_sn_input.vmCurrentText == "") {
-            popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewfuncctl_btn_no_hmd_error"),false);
+            //popUpNotify(VMGlobals.vmNotificationRed,loader.getStringForKey("viewfuncctl_btn_no_hmd_error"),false);
+            messageDiag.vmLarge = false;
+            messageDiag.loadFromKey("viewfuncctl_btn_no_hmd_error");
+            messageDiag.open(true);
             runETCheckButton.vmEnabled = false;
         }
 
@@ -425,23 +428,23 @@ ViewBase {
             // We need to verify that the institution and instance number are loaded.
             // And then the rest will depend on the intent.
             if (institution.vmCurrentText == ""){
-                institution.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                institution.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
                 return;
             }
 
             if (instance.vmCurrentText == ""){
-                instance.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                instance.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
                 return;
             }
 
             if (email.vmCurrentText == ""){
-                email.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                email.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
                 return;
             }
 
             if (vmIntent == vmINTENT_FUNC_VERIF){
                 if (password.vmCurrentText == ""){
-                    password.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                    password.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
                     return;
                 }
             }
@@ -449,12 +452,12 @@ ViewBase {
 
                 // We are talking about an HMD change.
                 if (lname.vmCurrentText == ""){
-                    lname.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                    lname.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
                     return;
                 }
 
                 if (fname.vmCurrentText == ""){
-                    fname.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+                    fname.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
                     return;
                 }
 

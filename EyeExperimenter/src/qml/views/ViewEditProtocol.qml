@@ -32,7 +32,7 @@ ViewBase {
     function checkAndSave(){
 
         if (protocolName.vmCurrentText === ""){
-            protocolName.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+            protocolName.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
             return;
         }
 
@@ -42,7 +42,7 @@ ViewBase {
         }
 
         if (protocolID.vmCurrentText === ""){
-            protocolID.vmErrorMsg = loader.getStringForKey("viewpatform_cannotbeempty")
+            protocolID.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error")
             return;
         }
 

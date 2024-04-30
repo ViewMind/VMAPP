@@ -29,13 +29,16 @@ Rectangle {
     function loadPatients(){
 
         if (vmNoPatientsAtAll) return;
-        if (!vmCanShowPatients) return;
 
         var filterText = searchInput.vmCurrentText
+
+        //console.log("SEARCH INPUT: " + filterText)
 
         OLS.setModelList(loader.filterSubjectList(filterText))
         OLS.sortByIndex(vmCurrentSortOrder,vmCurrentOrderDirection)
         vmNumberOfPatients = OLS.getCount()
+
+        if (!vmCanShowPatients) return;
 
         var tableTexts = [];
 
@@ -55,6 +58,12 @@ Rectangle {
         patListTable.setList(tableTexts)
         patListTable.setSortIndicator(vmSORT_COLUMNS.indexOf(vmCurrentSortOrder),vmCurrentOrderDirection)
 
+    }
+
+    function clearSearchInput(){
+        searchInput.clear()
+        vmCanShowPatients = false;
+        loadPatients();
     }
 
     function changeSortColumn(newColumn,newDirection){
@@ -118,9 +127,7 @@ Rectangle {
         visible: !vmNoPatientsAtAll
         onTextChanged: {
             vmCanShowPatients = (searchInput.vmCurrentText.length >= vmSEARCH_PATIENT_TEXT_THRESHOLD);
-            if (vmCanShowPatients){
-                loadPatients();
-            }
+            loadPatients();
         }
     }
 

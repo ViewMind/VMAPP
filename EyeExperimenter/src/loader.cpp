@@ -154,6 +154,22 @@ void Loader::setEvaluationID(const QString &evalID){
     comm->configuration()->addKeyValuePair(Globals::Share::SELECTED_EVALUATION,evalID);
 }
 
+QString Loader::getSelectedEvaluationName() {
+
+    QString evalID = comm->configuration()->getString(Globals::Share::SELECTED_EVALUATION);
+    QVariantMap selectedEvaluationStructure = comm->db()->getEvaluation(evalID);
+    QString evalTypeNumber = selectedEvaluationStructure.value(LocalDB::EVAL_TYPE).toString();
+
+    QVariantMap availableEvals = comm->db()->getAvailableEvals();
+    QVariantMap eval = availableEvals.value(evalTypeNumber).toMap();
+
+    QString lang = comm->db()->getPreference(LocalDB::PREF_UI_LANG,"English").toString();
+    QString lang_code = "en";
+    if (lang == Globals::UILanguage::ES) lang_code = "es";
+
+    return eval.value(Globals::EvalStruct::NAME).toMap().value(lang_code).toString();
+}
+
 void Loader::redoTask(const QString &evalID, const QString &task, const QString &reasonForRedoing, const QString &comment){
 
     QVariantMap evaluation = comm->db()->getEvaluation(evalID);
@@ -669,7 +685,9 @@ QVariantMap Loader::getReportsForLoggedEvaluator(){
         StaticThreadLogger::warning("Loader::getReportsForLoggedEvaluator","Override evaluation timeout value with " + QString::number(timeout));
     }
 
-    QList<QVariantMap> list =  this->comm->db()->getEvaluationTableInformation(current_evaluator,timeout,getStringListForKey("viewpatlist_months"),ui_lang_mode);
+    QStringList hrsAndMins = this->getStringListForKey("viewongoing_time_text");
+
+    QList<QVariantMap> list =  this->comm->db()->getEvaluationTableInformation(current_evaluator,timeout,getStringListForKey("viewpatlist_months"),hrsAndMins,ui_lang_mode);
 
     QVariantMap returnmap = Globals::SortMapListByStringValue(list,LocalDB::EVAL_TIMESTAMP);
 
@@ -1033,6 +1051,8 @@ void Loader::receivedAPIResponse(){
     QVariantMap retdata = apiclient.getMapDataReturned();
     this->lastHTTPCodeReceived = retdata.value(APINames::MAIN_HTTP_CODE).toInt();
 
+    //Debug::prettyPrintQVariantMap(retdata);
+
     if (!apiclient.getError().isEmpty()){
 
         // We need to check if the instance is disabled or not.
@@ -1378,6 +1398,9 @@ void Loader::receivedAPIResponse(){
             StaticThreadLogger::error("Loader::receivedAPIResponse","Received unknown API Request Type finish:  " + QString::number(apiclient.getLastRequestType()));
         }
     }
+
+    qDebug() << "Received API Response. Sending finished request";
+
     emit Loader::finishedRequest();
 }
 
@@ -1436,13 +1459,14 @@ void Loader::updateDownloadFinished(bool allOk){
         StaticThreadLogger::error("Loader::updateDownloadFinished","Failed in creating a backup of the vmconfiguration file to the tool maintenance directory");
     }
 
-    // Now we create a Desktop ShortCut For the file.
-    QStringList possiblePaths = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation); // the possible paths for the desktop.
-    QString pathToLink = possiblePaths.first() + "/" + Globals::Paths::VM_UPDATE_LINK; // The name of the ShortCut
+    // Now we create a Desktop ShortCut For the file. The user needs to be able to lauch it should the update fail
+    // Update 24 April, 2024: We no longer create a shortcut for the vm maintenance tool
+//    QStringList possiblePaths = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation); // the possible paths for the desktop.
+//    QString pathToLink = possiblePaths.first() + "/" + Globals::Paths::VM_UPDATE_LINK; // The name of the ShortCut
     QFileInfo info(Globals::Paths::VMTOOLEXE);
-    if (!QFile::link(info.absoluteFilePath(),pathToLink)){
-        StaticThreadLogger::error("Loader::updateDownloadFinished","Failed in creating a shortcut for tool app. The target path: '" + pathToLink + "'. The source path: '" + info.absoluteFilePath() +  "'");
-    }
+//    if (!QFile::link(info.absoluteFilePath(),pathToLink)){
+//        StaticThreadLogger::error("Loader::updateDownloadFinished","Failed in creating a shortcut for tool app. The target path: '" + pathToLink + "'. The source path: '" + info.absoluteFilePath() +  "'");
+//    }
 
     // If we had no issues so far we call the VMMaintenanceTool with the update parameter.
     //    Start an application and quit.

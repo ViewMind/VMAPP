@@ -52,6 +52,10 @@ ViewBase {
         }
     }
 
+    function clearPatientListSearchInput(){
+        patlist.clearSearchInput();
+    }
+
     function isMainSetupOnOngoingEvaluations(){
         return (viewer.currentIndex === indexReportList);
     }

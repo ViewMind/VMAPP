@@ -33,12 +33,12 @@ Rectangle {
         }
 
         if (fname.vmCurrentText === ""){
-            fname.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty");
+            fname.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error");
             return;
         }
 
         if (lname.vmCurrentText === ""){
-            lname.vmErrorMsg = loader.getStringForKey("viewaddeval_err_empty");
+            lname.vmErrorMsg = loader.getStringForKey("viewsendsupport_email_error");
             return;
         }
 

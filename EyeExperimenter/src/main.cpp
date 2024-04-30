@@ -87,6 +87,7 @@ int main(int argc, char *argv[])
 
     // At this point we know the region, so we set it up.
     bool OK = false;
+    //StaticThreadLogger::log("main","Setting up for region: " + defines.getString(Globals::VMAppSpec::Region));
     OK = Globals::SetUpRegion(defines.getString(Globals::VMAppSpec::Region));
     if (!OK){
         StaticThreadLogger::error("main","Could not set up Region Configuration for " + defines.getString(Globals::VMAppSpec::Region));

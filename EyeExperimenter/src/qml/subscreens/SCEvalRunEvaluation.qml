@@ -177,11 +177,11 @@ Rectangle {
 
                     let ntargets;
 
-                    if ((current_task === VMGlobals.vmTASK_BINDING_BC_2_SHORT) || (current_task === VMGlobals.vmTASK_BINDING_BC_2_SHORT)){
+                    if ((current_task === VMGlobals.vmTASK_BINDING_BC_2_SHORT) || (current_task === VMGlobals.vmTASK_BINDING_UC_2_SHORT)){
                         ntargets = 2;
                     }
                     else if ((current_task === VMGlobals.vmTASK_BINDING_BC_3_SHORT) ||
-                             (current_task === VMGlobals.vmTASK_BINDING_BC_3_SHORT) ||
+                             (current_task === VMGlobals.vmTASK_BINDING_UC_3_SHORT) ||
                              (current_task === VMGlobals.vmTASK_NBACK_3) ){
                         ntargets = 3;
                     }
@@ -263,6 +263,9 @@ Rectangle {
 
         // So first we make sure that the proper patient is loaded.
         viewEvaluations.setPatientForEvaluation();
+
+        // We can now safely set the current evaluation name
+        viewEvaluations.setCurrentEvaluationName();
 
         // This internally sets the current task list and it's returned.
         vmTaskList = flowControl.setupCurrentTaskList();

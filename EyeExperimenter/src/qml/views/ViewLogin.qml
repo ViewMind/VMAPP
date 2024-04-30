@@ -153,6 +153,7 @@ ViewBase {
             }
             else {                
                 mainWindow.swipeTo(currentSwiperIndexToLoad);
+                viewMainSetup.clearPatientListSearchInput();
                 viewMainSetup.goBackToPatientList()
             }
         }

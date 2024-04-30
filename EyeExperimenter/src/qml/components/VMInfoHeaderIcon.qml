@@ -11,6 +11,8 @@ Rectangle {
     height: 20
     color: "transparent"
 
+    property bool vmCenterOnIcon: false
+
     signal triggeredSignal()
 
     MouseArea {
@@ -36,6 +38,10 @@ Rectangle {
         width: text.width*1.06
         anchors.bottom: infoIconCanvas.top
         anchors.right: infoIconCanvas.right
+        anchors.rightMargin: {
+            if (!vmCenterOnIcon) return 0;
+            return -(tooltip.width - infoIconCanvas.width)/2
+        }
         z: 100
         visible: mouseArea.containsMouse
 

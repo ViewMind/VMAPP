@@ -346,6 +346,7 @@ void APIClient::gotReply(){
 
     QJsonParseError json_error;
     QJsonDocument doc = QJsonDocument::fromJson(QString(raw_reply).toUtf8(),&json_error);
+
     if (doc.isNull()){
         error = "Error decoding JSON Data: " + json_error.errorString();
         error = error + "\nRaw Reply Data: " +  QString(raw_reply) + "\n";
@@ -360,6 +361,7 @@ void APIClient::gotReply(){
         error = error + "\nRaw Reply Data: " +  QString(raw_reply);
     }
     emit APIClient::requestFinish();
+
 }
 
 bool APIClient::sendRequest(bool nosign){

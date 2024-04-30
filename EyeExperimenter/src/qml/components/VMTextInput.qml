@@ -16,6 +16,7 @@ Item {
     property bool vmFocus: false
     property string vmClarification: ""
     property int vmMaxLength: 0
+    property string vmToolTip: ""
 
     readonly property double vmLeftMargin: VMGlobals.adjustWidth(10);
     readonly property double vmRightMargin: VMGlobals.adjustWidth(18);
@@ -214,6 +215,21 @@ Item {
         anchors.left: label.right
         anchors.leftMargin: VMGlobals.adjustWidth(5)
         visible: (vmClarification !== "") && (label.visible)
+    }
+
+    VMInfoHeaderIcon {
+        id: infoHeaderIcon
+        anchors.top: label.top
+        anchors.left: clarification.visible? clarification.right : label.right
+        anchors.leftMargin: VMGlobals.adjustWidth(1)
+        height: 0.8*label.height
+        vmToolTip: vmTextInput.vmToolTip
+        vmCenterOnIcon: true
+        visible: {
+            if (!label.visible) return false;
+            if (vmTextInput.vmToolTip === "") return false;
+            return true;
+        }
     }
 
 }

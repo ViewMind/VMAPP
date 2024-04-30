@@ -23,7 +23,7 @@ Make sure you can reach them all. If you are having trouble touching any cube
 we can redo the hand calibration, but this time do not fully stretch your arms;
 
 explanation_phase_list_binding_bc =
-This is the Color Combination Test. It can be harder than the previous one.|
+This is the Color Combination Task. |
 <<N>> boxes with a cross at its center will appear. In this case, you must
 remember the combination of colors between each box and cross.
 No new colors will appear|
@@ -49,7 +49,7 @@ We will do some practice examples before starting;
 
 
 explanation_phase_list_binding_uc =
-This is the New Colors Test|
+This is the New Colors Task|
 <<N>> boxes with a cross at its center will appear. You must remember
 all the colors present. |
 The boxes will disappear, and a new set will appear|
@@ -74,7 +74,7 @@ We will do some practice examples before starting.;
 
 
 explanation_phase_list_gonogo     = 
-This is the Go/No Go test. Look at the cross in the center of the screen.
+This is the Go/No Go Task. Look at the cross in the center of the screen.
 The cross will disappear and an arrow will appear.
 If the arrow is green, look in the direction of the arrow. And if it is
 red, look in the opposite direction.|
@@ -93,7 +93,7 @@ We will do some practice examples before starting;
 
 
 explanation_phase_list_gonogo_3D =
-This is Spheres Test. During this evaluation green and
+This is Spheres Task. During this task, green and
 red balls will be sent from the points in front of you. If the ball is 
 green you must touch it and if it's red, you must avoid it. If you make 
 contact with a ball you will feel your controller vibrate. Let's do 
@@ -109,7 +109,7 @@ Do you understand the instructions?
 We will do some practice examples before starting;
 
 explanation_phase_list_gonogo_3D_vs =
-This is Spheres Test with Variable Speed. During this evaluation
+This is Spheres Task with Variable Speed. During this task,
 green and red balls will be sent from the points in front of you. If 
 the ball is green you must touch it and if it's red, you must avoid it. 
 If you make contact with a ball you will feel your controller vibrate. 
@@ -120,7 +120,7 @@ Now avoid touching the red ball.|
 Now try to touch the green ball again. |
 |
 Now avoid touching the red ball.|
-The speed of the balls will increase as you do the test successfully. 
+The speed of the balls will increase as you do the task successfully.
 If you don't, the speed of the balls will decrease.
 Do you understand the instructions?
 
@@ -128,7 +128,7 @@ We will do some practice examples before starting;
 
 
 explanation_phase_list_nback_3    =
-This is the N-Back Test. The test is composed of 6 boxes and one cross in
+This is the N-Back Task. The task is composed of 6 boxes and one cross in
 the center of the screen. You must keep your eyes on the cross.|
 A red circle will appear on one of the boxes. Position 1|
 Then it will appear on another box. Position 2|
@@ -145,12 +145,12 @@ Position 3|
 Now quickly look at Position 3|
 Position 2|
 And Position 1. Did you understand?
-We will do some practice rounds before starting the test.;
+We will do some practice rounds before starting the task.;
 
 
 
 explanation_phase_list_nback_4    =
-This is the N-Back Test. The test is composed of 6 boxes and one cross in
+This is the N-Back Task. The task is composed of 6 boxes and one cross in
 the center of the screen. You must keep your eyes on the cross.|
 A red circle will appear on one of the boxes. Position 1|
 Then it will appear on another box. Position 2|
@@ -173,13 +173,13 @@ Position 2|
 And Position 1. 
 Do you understand?
 
-We will do some practice examples before starting the test.;
+We will do some practice examples before starting the task.;
 
 
 
 
 explanation_phase_list_nbackrt    =
-This is the N-Back Test. The test is composed of 6 boxes and one cross in
+This is the N-Back Task. The task is composed of 6 boxes and one cross in
 the center of the screen. You must keep your eyes on the cross.|
 A red circle will appear on one of the boxes. Position 1|
 Then it will appear on another box. Position 2|
@@ -196,10 +196,10 @@ Position 3|
 Now quickly look at Position 3|
 Position 2|
 And Position 1. Do you understand?
-We will do some practice examples before starting the test.;
+We will do some practice examples before starting the task.;
 
 explanation_phase_list_nbackvs    = 
-This is the NBack Evaluation For Training.
+This is the NBack Task For Training.
 Red circles will appear on the screen in a given sequence.
 While the circles are being shown, please keep your eyes focused on the center cross. 
 The number of circles in the sequence will depend on the selected difficulty. 

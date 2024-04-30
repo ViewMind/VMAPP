@@ -49,5 +49,8 @@
         <file>images/labeling/patent.png</file>
         <file>images/checklist.png</file>
         <file>images/checklist_blue.png</file>
+        <file>images/labeling/rx-only.png</file>
+        <file>images/labeling/rx-only.jpeg</file>
+        <file>images/labeling/usagent.png</file>
     </qresource>
 </RCC>

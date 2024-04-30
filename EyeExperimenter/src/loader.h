@@ -57,6 +57,7 @@ public:
     Q_INVOKABLE QVariantMap getTaskCodeToNameMap() const;
     Q_INVOKABLE QVariantMap getDisplayInfoForEvaluation(const QString &evalID);
     Q_INVOKABLE void setEvaluationID(const QString &evalID);
+    Q_INVOKABLE QString getSelectedEvaluationName();
     Q_INVOKABLE void redoTask(const QString &evalID, const QString &task, const QString &reasonForRedoing, const QString &comment);
 
     //////////////////////////// UPDATE RELATED FUNCTIONS ////////////////////////////
