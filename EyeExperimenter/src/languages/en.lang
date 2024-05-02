@@ -309,8 +309,9 @@ viewgetconfig_code     = Activation Code;
 viewgetconfig_get      = GET LICENSE;
 viewgetconfig_error    = <b>App Could not be activated</b><br>Try again.<br>If the problem persists please contact ViewMind;
 viewgetconfig_error_sn = <b>Incorrect Serial Number</b><br>Please make sure that the headset is plugged in<br>and try again;
-viewgetconfig_success  = Activation was Successful|The application will close now.
-Please start ViewMind Atlas Cognition App again to begin using it.;
+viewgetconfig_success  = Activation was Successful|The application will close now.<br>
+Please start ViewMind Atlas Cognition App again to begin using it.<br><br>
+<b>IMPORTANT: Ensure you're connected to the internet the first time<br>you use the application</b>;
 viewgetconfig_error_lib = <b>Instance not released</b><br>Request instance ??? release to ViewMind;
 viewgetconfig_func_verif = FUNCTIONAL VERIFICATION;
 

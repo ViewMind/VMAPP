@@ -24,7 +24,7 @@ viewsettings_advanced = Avanzado;
 viewsettings_about = Acerca de;
 viewsettings_tech_support = Soporte;
 viewsettings_language = Seleccionar el idioma de la aplicación;
-viewsettings_run_et_check = VERIFICAR SEGUIMIENTO OCULAR;
+viewsettings_run_et_check = VERIFICAR EYE TRACKER;
 viewsettings_langs = English|Español;
 viewsettings_umanual = Manual de Usuario;
 viewsettings_cancel = CANCELAR;
@@ -226,13 +226,13 @@ viewevaluation_comfirm_abort_title = Abandonar evaluación;
 
 viewevaluation_comfirm_abort_msg_stop_eval = ¿Desea no continuar con la evaluación actual?
 <br>Para continuar la evaluación selecciónela desde <b>Evaluaciones Comenzadas</b>
-<br>Las tareas restantes deben ser completadas dentro de las 24 horas de haber
+<br>Las tareas restantes deben ser completadas dentro de las 24 horas de haber<br>
 comenzado la evaluación;
 
 viewevaluation_comfirm_abort_msg_stop_task = ¿Desea frenar el tarea actual?
 <br>El progreso en la tarea corriente se perderá.
 <br>Para continuar la evaluación selecciónela desde <b>Evaluaciones Comenzadas</b>
-<br>Las tareas restantes deben ser completadas dentro de las 24 horas de haber
+<br>Las tareas restantes deben ser completadas dentro de las 24 horas de haber<br>
 comenzado la evaluación;
 
 viewevaluation_comfirm_abort_yes = SI;
@@ -310,8 +310,9 @@ viewgetconfig_code     = Código de Activación;
 viewgetconfig_get      = OBTENER LICENCIA;
 viewgetconfig_error    = <b>No se pudo activar la aplicación</b><br>Pruebe nuevamente.<br>Si el problema persiste contactese con ViewMind;
 viewgetconfig_error_sn = <b>Número de series incorrectos</b><br>Asegúrese que el casco este conectado<br>e inténtelo nuevamente;
-viewgetconfig_success  = Activacion Exitosa|La aplicación se cerrará.
-Por favor, para comenzar a usar el ViewMind Atlas Cognition App vuelva a iniciarla;
+viewgetconfig_success  = Activacion Exitosa|La aplicación se cerrará.<br>
+Por favor, para comenzar a usar el ViewMind Atlas Cognition App<br>vuelva a iniciarla<br><br>
+<b>IMPORTANTE: Asegurese de estar conectado a internet la primera<br>vez que utilize la aplicación</b>;
 viewgetconfig_error_lib = <b>La instancia no está liberada</b><br>Contáctese con ViewMind y pida la liberación de<br>instancia ???;
 viewgetconfig_func_verif = VERIFICACIÓN FUNCIONAL;
 

@@ -297,9 +297,6 @@ ViewBase {
 //        anchors.top: btnAddNew.top
 //        anchors.leftMargin: 10
 //        onClickSignal: {
-//            messageDiag.vmLarge = true;
-//            messageDiag.loadFromKey("viewevaluation_badqci_middle_eval",true);
-//            messageDiag.open(true)
 
 ////            mainWindow.openEvaluationTaskDialog("1_9_20240408_144816")
 ////            messageDiag.vmLarge = true;

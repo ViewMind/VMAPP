@@ -198,7 +198,7 @@ ApplicationWindow {
             ViewGetVMConfig {
                 id: viewGetVMConfig
                 onSuccessActivation: {
-                    messageDiag.vmLarge = false;                    
+                    messageDiag.vmLarge = true;
                     messageDiag.loadFromKey("viewgetconfig_success")
                     messageDiag.open();
                 }

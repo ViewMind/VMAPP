@@ -161,6 +161,7 @@ ViewBase {
 
     }
 
+
     VMConfirmDialog {
         id: confirmStudyAbort
         onConfirm: {
