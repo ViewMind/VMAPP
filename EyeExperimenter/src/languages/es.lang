@@ -15,9 +15,9 @@ viewstart_vr_disconnect = <b>Pérdida de conexión al casco</b><br>Por favor rei
 
 viewdisabled_title     = ViewMind Atlas;
 viewdisabled_btn_retry = VERIFICAR STATUS DE INSTANCIA;
-viewdisabled_messsage  = Esta instancia a sido deshabilitada
+viewdisabled_messsage  = Esta instancia ha sido deshabilitada
 Para más información, por favor contacte el Soporte de ViewMind;
-viewdisabled_recheck_failed = <b>Instancia deshabilitada</b><br>Esta instacia fue desahbilitada;
+viewdisabled_recheck_failed = <b>Instancia deshabilitada</b><br>Esta instancia fue deshabilitada;
 
 #********************************* SETTINGS DIALOG *********************************
 viewsettings_advanced = Avanzado;
@@ -38,7 +38,7 @@ Por favor, ábrala nuevamente para ver reflejado los cambios;
 #********************************* WAIT SCREEN *********************************
 viewwait_synching = Obteniendo información del portal.
 Por favor espere ... ;
-viewwait_study_end = Finalizando estudio. 
+viewwait_study_end = Finalizando tarea. 
 Por favor espere ... ;
 viewait_get_license = Buscando los datos en nuestros servidores.
 Por favor espere ...;
@@ -102,7 +102,7 @@ viewpatlist_nothing_found_exp = No hay pacientes para ese nombre o ID.;
 viewpatlist_start_title = Buscar pacientes;
 viewpatlist_start_exp = Comience a escribir para buscar pacientes o agregue un paciente nuevo; 
 
-viewpatlist_vr_failed = <b>Falla del casco</b><br>Verificar las conexiones. Las evaluaciones fueron<br>desahbilitadas;
+viewpatlist_vr_failed = <b>Falla del casco</b><br>Verificar las conexiones. Las evaluaciones fueron<br>deshabilitadas;
 viewpatlist_protocol_delete_title = Eliminar Protocolo;
 viewpatlist_protocol_delete_message = ¿Está seguro que desea eliminar el procolo <b><<N>></b>?;
 
@@ -114,8 +114,8 @@ viewaccount_mod_success = <b></b><br>ha sido modificado exitosamente;
 #********************************* PATIENT FORM *********************************
 viewpatform_title = Añadir Paciente;
 viewpatform_dupe_title = Posibles Duplicados;
-viewpatform_dupe_warning = Un paciento con nombre o ID similar y la misma fecha de nacimiento ya exite.
-Por favor, asegúrese de que no se esta creado un registro duplicado;
+viewpatform_dupe_warning = Un paciente con nombre o ID similar y la misma fecha de nacimiento ya exite.
+Por favor, asegúrese de que no se esté creando un registro duplicado;
 viewpatform_dupe_add = GUARDAR PACIENTE;
 viewpatform_dupe_back = VOLVER A LA LISTA;
 viewpatform_title_edit = Editar Paciente;
@@ -123,9 +123,9 @@ viewpatform_subtitle = Por favor, complete la siguiente información;
 viewpatform_sex = Sexo Biológico;
 viewpatform_name_ph = Ingrese el nombre del paciente;
 viewpatform_lname_ph = Ingrese el apellido del paciente;
-viewpatform_sex_ph = Selecione el sexo biológico;
+viewpatform_sex_ph = Seleccione el sexo biológico;
 viewpatform_sex_options = Hombre|Mujer;
-viewpatform_day_ph = Dia;
+viewpatform_day_ph = Día;
 viewpatform_month_ph = Mes;
 viewpatform_year_ph = Año;
 viewpatform_months = Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre;
@@ -137,7 +137,7 @@ viewpatform_optional = Opcional;
 viewpatform_last_or_id = Debe completar Apellido o ID de Paciente;
 viewpatform_isnotanumber = No es un número;
 viewpatform_years_too_large = El número debe estar entre 0 y 99;
-viewpatform_must_select = Debe elegir un opción;
+viewpatform_must_select = Debe elegir una opción;
 viewpatform_invalid_range = Rango inválido;
 viewpatform_success_edit = <b></b><br>ha sido editado;
 viewpatform_success_add = <b></b><br>ha sido agregado como paciente;
@@ -150,7 +150,7 @@ viewpatform_years_map =
 103|Escuela secundaria incompleta|
 104|Escuela secundaria completa|
 105|Terciario incompleto|
-106|Tercieario completo|
+106|Terciario completo|
 107|Universitario incompleto|
 108|Universitario completo o equivalente|
 109|Maestría o equivalente|
@@ -160,14 +160,14 @@ viewpatform_years_map =
 #********************************* SEND SUPPORT EMAIL *********************************
 viewsendsupport_email_title = PEDIDO DE SOPORTE;
 viewsendsupport_email_subject = Motivo del pedido de soporte;
-viewsendsupport_email_subject_ph = Seleccione el motivo que más se asemeje;
+viewsendsupport_email_subject_ph = Seleccione el motivo que más se adecúe;
 viewsendsupport_email_sender  = Evaluador;
 viewsendsupport_email_sender_ph  = Seleccione un evaluador;
 viewsendsupport_email_issue   = Por favor describa el problema;
 viewsendsupport_email_issue_ph   = Ingrese aquí su descripción;
 viewsendsupport_email_reasons = 
 Calibration-Calibración|
-EyeTracking-Segumiento Ocular|
+EyeTracking-Seguimiento Ocular|
 VRHeadset-Problemas con el casco|
 Computer-Problemas con la computadora|
 ViewMindApp-Problemas con ViewMind Atlas|
@@ -182,7 +182,7 @@ viewsendsupport_email_send = ENVIAR;
 viewevaluation_date = Fecha;
 viewevaluation_patient = Paciente;
 viewevaluation_general_settings = Configuación General;
-viewevaluation_eval_setup    = Evalauciones Disponibles;
+viewevaluation_eval_setup    = Evaluaciones Disponibles;
 viewevaluation_eval_no_eval  = Sin evaluaciones disponibles;
 viewevaluation_doctor        = Clínico que ha pedido el estudio;
 viewevaluation_doctor_ph     = Seleccione un clínico;
@@ -210,7 +210,7 @@ viewevaluation_err_programming = <b>Error Interno en la App</b><br>Por favor, ge
 viewevalcalibration_success = <b>Calibración Exitosa</b><br>Por favor proceda con la explicación;
 viewevaluation_finish = Finalizar;
 viewevaluation_congrats = ¡Felicitaciones!;
-viewevaluation_congrats_sub = Ha finalizado la evaluación exitósamente;
+viewevaluation_congrats_sub = Ha finalizado la evaluación exitosamente;
 viewevaluation_skip_calibration = SALTEAR CALIBRACIÓN;
 viewevaluation_finish_message = <b></b><br> tiene una nueva evaluación lista para procesar;
 viewevaluation_calib_res = RESULTADOS DE CALIBRACIÓN;
@@ -229,7 +229,7 @@ viewevaluation_comfirm_abort_msg_stop_eval = ¿Desea no continuar con la evaluac
 <br>Las tareas restantes deben ser completadas dentro de las 24 horas de haber<br>
 comenzado la evaluación;
 
-viewevaluation_comfirm_abort_msg_stop_task = ¿Desea frenar el tarea actual?
+viewevaluation_comfirm_abort_msg_stop_task = ¿Desea frenar la tarea actual?
 <br>El progreso en la tarea corriente se perderá.
 <br>Para continuar la evaluación selecciónela desde <b>Evaluaciones Comenzadas</b>
 <br>Las tareas restantes deben ser completadas dentro de las 24 horas de haber<br>
@@ -258,7 +258,7 @@ moving_dot|Moving Dot;
 
 viewevaluation_hand_calib_h = 
 Coloque sus manos de manera horizontal. 
-Estire sus brazos lo mas que pueda hacia sus costados.;
+Estire sus brazos lo más que pueda hacia sus costados.;
 
 viewevaluation_hand_calib_v = 
 Alce sus brazos estirando al máximo los mismos.;
@@ -274,7 +274,7 @@ Situación Inesperada de Calibración|
 Los datos de calibración son anómalos. 
 Por favor genere un pedido de soporte cuanto antes.
 Luego de hacer eso, por favor reintente calibrar.
-Si el problema persiste. por favor reinicie su computadora;
+Si el problema persiste, por favor reinicie su computadora;
 
 viewevaluation_badqci_middle_eval = Problemas de Calidad de Datos|No recibimos suficientes datos de los ojos del paciente durante la última tarea.<br>
 Deberá realizar esta tarea nuevamente.<br>
@@ -290,11 +290,11 @@ viewevaluation_checket_btnfail = REINTENTAR;
 viewevaluation_checket_btnback = LISTA DE PACIENTES;
 viewevaluation_checket_fail = El eye tracker no está funcionando.
 Por favor intente lo siguiente:
-1. Asegurarse de que el casco esté bien ubicado en el paciente.
+1. Asegúrese de que el casco esté bien ubicado en el paciente.
 2. Pídale al paciente que abra bien los ojos y haga click en REINTENTAR.
 3. Si el problema persiste, intente cerrar el programa y luego 
 reconectar el casco. 
-4. Si los pasos anteriores no funcionan, reinicia la computadora
+4. Si los pasos anteriores no funcionan, reinicie la computadora
 y pruebe nuevamente.; 
 
 viewevaluation_binding_keys = Presione <b>S</b> si dicen <i>"Igual"</i> o <b>D</b> si dicen <i>"Diferente"</i>;
@@ -309,8 +309,8 @@ viewgetconfig_code_ph  = Ingrese el código de activacion;
 viewgetconfig_code     = Código de Activación;
 viewgetconfig_get      = OBTENER LICENCIA;
 viewgetconfig_error    = <b>No se pudo activar la aplicación</b><br>Pruebe nuevamente.<br>Si el problema persiste contactese con ViewMind;
-viewgetconfig_error_sn = <b>Número de series incorrectos</b><br>Asegúrese que el casco este conectado<br>e inténtelo nuevamente;
-viewgetconfig_success  = Activacion Exitosa|La aplicación se cerrará.<br>
+viewgetconfig_error_sn = <b>Número de serie incorrecto</b><br>Asegúrese que el casco esté conectado<br>e inténtelo nuevamente;
+viewgetconfig_success  = Activación Exitosa|La aplicación se cerrará.<br>
 Por favor, para comenzar a usar el ViewMind Atlas Cognition App<br>vuelva a iniciarla<br><br>
 <b>IMPORTANTE: Asegurese de estar conectado a internet la primera<br>vez que utilize la aplicación</b>;
 viewgetconfig_error_lib = <b>La instancia no está liberada</b><br>Contáctese con ViewMind y pida la liberación de<br>instancia ???;
@@ -323,7 +323,7 @@ viewfuncctl_text_pass = Verificación de seguimiento ocular exitosa;
 viewfuncctl_btn_send = ENVIAR VERIFICACIÓN;
 viewfuncctl_pcsn     = Número de Serie de la PC;
 viewfuncctl_hmdsn    = Número de Serie del Casco;
-viewfuncctl_btn_no_hmd_error = No se detecto el casco|Asegúrese de que el casco se encuentre conectado y prendido.
+viewfuncctl_btn_no_hmd_error = No se detectó el casco|Asegúrese de que el casco se encuentre conectado y prendido.
 Luego reinicie la aplicación;
 viewfuncctl_error_bad_password = <b>Contraseña incorrecta</b><br> Por favor, reingrese su contraseña e <br>inténtelo nuevamente;
 viewfuncctl_error_bad_user     = <b>Usuario no autorizado</b><br>Este usuario no tiene permitido realizar<br>la verificación funcional;
@@ -338,7 +338,7 @@ viewqc_data_quality_tooltip = Refleja el estado de la evaluación.
 Verde, significa que la evaluación ya puede ser procesada.
 Rojo significa que al menos una tarea tiene problemas de calidad y debe rehacerse. 
 Gris significa que la evaluación está incompleta;
-viewqc_archive_reason = study_instructions_misunderstood|El sujeto con comprendió las instrucciones de la tarea|
+viewqc_archive_reason = study_instructions_misunderstood|El sujeto no comprendió las instrucciones de la tarea|
 bad_subjet_state|El estado del sujeto no era óptimo para la tarea|
 other|Otro; 
 viewqc_reason = Seleccione el motivo por el cual se retoma la tarea <b><<T>></b>;
@@ -355,12 +355,12 @@ protocol_edit = Editar Protocolo;
 protocol_id = ID de Protocolo;
 protocol_creation_date = Fecha de Creación;
 protocol_delete = Eliminar;
-protocol_successful_edit = <b></b><br>ha sido editado exitósamente;
-protocol_successful_created = <b></b><br>ha sido creado exitósamente;
+protocol_successful_edit = <b></b><br>ha sido editado exitosamente;
+protocol_successful_created = <b></b><br>ha sido creado exitosamente;
 protocol_err_exists = El ID ya existe. Los IDs de Protocolo deben ser únicos;
 protocol_name_ph = Ingrese el nombre del protocolo;
 protocol_id_ph = Ingrese el ID del protocolo;
-protocol_name_too_long = El nombre no debe tener mas de 30 caracteres;
+protocol_name_too_long = El nombre no debe tener más de 30 caracteres;
 
 #********************************* STUDY STATUS MESSAGES *********************************
 studystatus_binding_correct = Respuestas Correctas: <<N>>;
