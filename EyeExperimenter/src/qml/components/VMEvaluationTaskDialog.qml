@@ -14,7 +14,7 @@ Item {
     readonly property int vmRowH: evaluationTasksDialog.height*0.1;
     readonly property int vmMaxAllowListH: evaluationTasksDialog.height*0.6;
     readonly property int vmButtonH: vmRowH*0.8;
-    readonly property int vmTaskColWidth: evaluationTasksDialog.width*0.20;
+    readonly property int vmTaskColWidth: evaluationTasksDialog.width*0.22;
     readonly property int vmTaskQCIWidth: evaluationTasksDialog.width*0.1;
     readonly property int vmTaskButtonWidth: evaluationTasksDialog.width*0.1;
     readonly property real vmPercentWheelRowHeightRatio: 0.8
