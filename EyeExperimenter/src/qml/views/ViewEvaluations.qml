@@ -164,7 +164,7 @@ ViewBase {
 
     VMConfirmDialog {
         id: confirmStudyAbort
-        onConfirm: {
+        onConfirm: {            
             flowControl.keyboardKeyPressed(Qt.Key_Escape);
         }
     }

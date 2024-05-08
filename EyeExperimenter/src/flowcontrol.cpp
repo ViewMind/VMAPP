@@ -309,6 +309,8 @@ void FlowControl::keyboardKeyPressed(int key){
 
     // qDebug() << "Keyboard Pressed with study phase" << studyControl.getStudyPhase();
 
+    bool aborting = false;
+
     if (studyControl.getStudyPhase() == StudyControl::SS_EVAL){
         QString phase = "Eval";
         switch (key){
@@ -319,6 +321,7 @@ void FlowControl::keyboardKeyPressed(int key){
             studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_BINDING_DIFF);
             break;
         case Qt::Key_Escape:
+            aborting = true;
             studyControl.sendInStudyCommand(StudyControl::InStudyCommand::ISC_ABORT);
             break;
         default:
@@ -333,6 +336,7 @@ void FlowControl::keyboardKeyPressed(int key){
             studyControl.nextExampleSlide();
             break;
         case Qt::Key_Escape:
+            aborting = true;
             studyControl.sendInStudyCommand(StudyControl::ISC_ABORT);
             break;
         default:
@@ -350,6 +354,7 @@ void FlowControl::keyboardKeyPressed(int key){
             studyControl.previousExplanationSlide();
             break;
         case Qt::Key_Escape:
+            aborting = true;
             studyControl.sendInStudyCommand(StudyControl::ISC_ABORT);
             break;
         default:
@@ -359,11 +364,17 @@ void FlowControl::keyboardKeyPressed(int key){
     }
     else if (studyControl.getStudyPhase() == StudyControl::SS_NONE){
         // In this case all we need to do is to property set the abort study state and emit the proper signal.
+        aborting = true;
         this->studyControl.forceStudyEndStatusToAborted();
         emit FlowControl::experimentHasFinished();
     }
     else {
         StaticThreadLogger::warning("FlowControl::keyboardKeyPressed","The following key was pressed but the in study command was not sent as no study is running");
+    }
+
+    // Everytime we abor the calibration history is stored as a failed calibration. Regardless of wheter it was actually successfull.
+    if (aborting){
+        storeCalibrationHistoryAsFailedCalibration();
     }
 
 }
