@@ -89,6 +89,32 @@ QString CalibrationValidation::getValidationReport() const{
     return validationReport;
 }
 
+void CalibrationValidation::setCalibrationAttemptsRawAndPupilData(const RenderServerPacket &calibrationData){
+
+    QVariantMap left;
+    QVariantMap right;
+    QVariantMap raw_data;
+
+    left["x"] = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_RAW_LX).toList();
+    left["y"] = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_RAW_LY).toList();
+    left["z"] = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_RAW_LZ).toList();
+
+    right["x"] = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_RAW_RX).toList();
+    right["y"] = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_RAW_RY).toList();
+    right["z"] = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_RAW_RZ).toList();
+
+    raw_data["left"]  = left;
+    raw_data["right"] = right;
+
+    QVariantMap pupil_data;
+    pupil_data["left"] = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_PL).toList();
+    pupil_data["right"] = calibrationData.getPayloadField(RRS::PacketCalibrationControl::CALIB_DATA_PR).toList();
+
+    calibrationAttempt[VMDC::CalibrationAttemptFields::RAW_DATA] = raw_data;
+    calibrationAttempt[VMDC::CalibrationAttemptFields::PUPIL_DATA] = pupil_data;
+
+}
+
 void CalibrationValidation::generateAFailedCalibrationReport(){
     qint32 N = calibrationConfiguration[VMDC::CalibrationConfigurationFields::NUMBER_OF_CALIBRAION_POINTS].toInt();
     QVariantList all;

@@ -978,30 +978,6 @@ void ViewMindDataContainer::printRawDataCSV(const QString &filename, const QStri
     towrite.close();
 }
 
-////////////////////////////////////// Generate Vector Functions //////////////////////////////////////
-
-QVariantMap ViewMindDataContainer::GenerateReadingRawDataVector(qreal timestamp, qreal xr, qreal yr, qreal xl, qreal yl, qreal pr, qreal pl, qreal char_r, qreal char_l, qreal word_r, qreal word_l){
-    QVariantMap vector = ViewMindDataContainer::GenerateStdRawDataVector(timestamp,xr,yr,xl,yl,pr,pl);
-    vector.insert(VMDC::DataVectorField::CHAR_L,char_l);
-    vector.insert(VMDC::DataVectorField::CHAR_R,char_r);
-    vector.insert(VMDC::DataVectorField::WORD_L,word_l);
-    vector.insert(VMDC::DataVectorField::WORD_R,word_r);
-    return vector;
-}
-
-QVariantMap ViewMindDataContainer::GenerateStdRawDataVector(qreal timestamp, qreal xr, qreal yr, qreal xl, qreal yl, qreal pr, qreal pl){
-    QVariantMap vector;
-    vector.insert(VMDC::DataVectorField::TIMESTAMP,timestamp);
-    vector.insert(VMDC::DataVectorField::X_L,xl);
-    vector.insert(VMDC::DataVectorField::X_R,xr);
-    vector.insert(VMDC::DataVectorField::Y_L,yl);
-    vector.insert(VMDC::DataVectorField::Y_R,yr);
-    vector.insert(VMDC::DataVectorField::PUPIL_L,pl);
-    vector.insert(VMDC::DataVectorField::PUPIL_R,pr);
-    return vector;
-
-}
-
 ////////////////////////////////////// STATIC STRING INITIALIZATION //////////////////////////////////////
 
 QString ViewMindDataContainer::MAIN_FIELD_SUBJECT_DATA                = "subject";

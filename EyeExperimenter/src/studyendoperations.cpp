@@ -140,9 +140,9 @@ void StudyEndOperations::doStudyFileProcessing(){
                 qci = computeQCIOnLegacy3DStudy(timevector);
             }
             else {
-                //qDebug() << "2D Legacy";
-                QVariantList list = vmdc.getStudyTrialList(study);
-                qci = computeQCIOnLegacy2DStudy(list);
+                // This is a legacy study. It's too old and we shouldn't be supporting it.
+                StaticThreadLogger::error("StudyEndOperations::run","No study duration field found on  '" + dataFile + "' and it's not a 3D study which means it's an old one");
+                return;
             }
         }
 
@@ -278,9 +278,9 @@ qreal StudyEndOperations::computeQCI(const QString &study) {
     qreal expectedNumberOfDataPoints = estimatedDataGatheringTime/sampling_period;
     qreal qci = qMin(numberOfDataPointsObatained*100.0/expectedNumberOfDataPoints,100.0);
 
-    //    qDebug() << "Study duration" << studyDuration << ". Time with No Data PerTrial" << timeWithNoDataPerTrial << ". Number of Trials" << numberOfTrials;
-    //    qDebug() << "Expected Data Gathering Time" << estimatedDataGatheringTime << "Expected Number of Data Points" << expectedNumberOfDataPoints << "Sampling Period" << sampling_period;
-    //    qDebug() << "Number of points obtained" << numberOfDataPointsObatained << "QCI" << qci;
+    qDebug() << "Study duration" << studyDuration << ". Time with No Data PerTrial" << timeWithNoDataPerTrial << ". Number of Trials" << numberOfTrials;
+    qDebug() << "Expected Data Gathering Time" << estimatedDataGatheringTime << "Expected Number of Data Points" << expectedNumberOfDataPoints << "Sampling Period" << sampling_period;
+    qDebug() << "Number of points obtained" << numberOfDataPointsObatained << "QCI" << qci;
 
     return qci;
 
@@ -372,45 +372,6 @@ bool StudyEndOperations::createQCIStudyFile(const QString &evalID) {
 
 }
 
-qreal StudyEndOperations::computeQCIOnLegacy2DStudy(const QVariantList &trials) const {
-
-    qreal pointsInTrial = 0;
-    qreal estimated_gather_time = 0;
-    qreal expected_number_of_points = 0;
-
-    // Now that we have how many points we should get. We count how many points we have.
-    for (qint32 i = 0; i < trials.size(); i++){
-
-        QVariantMap trial = trials.at(i).toMap();
-        QVariantMap data = trial.value(VMDC::TrialField::DATA).toMap();
-        QStringList dataset_names = data.keys();
-
-        for (qint32 j = 0; j < dataset_names.size(); j++){
-
-            QVariantMap dataSet = data.value(dataset_names.at(j)).toMap();
-
-            QVariantList rawdata = dataSet.value(VMDC::DataSetField::RAW_DATA).toList();
-
-            pointsInTrial = pointsInTrial + rawdata.size();
-
-            for (qint32 k = 0; k < rawdata.size(); k++){
-
-                if (rawdata.size() < 2) continue;
-                qreal time_diff = rawdata.last().toMap().value(VMDC::DataVectorField::TIMESTAMP).toReal() - rawdata.first().toMap().value(VMDC::DataVectorField::TIMESTAMP).toReal();
-                estimated_gather_time = estimated_gather_time + time_diff;
-
-            }
-
-        }
-
-    }
-
-    // Now that we have an estimate of the study length, we do the same as in the regular QCI.
-    expected_number_of_points = estimated_gather_time/sampling_period;
-    return qMin(pointsInTrial*100.0/expected_number_of_points,100.0);
-
-}
-
 qreal StudyEndOperations::computeQCIOnLegacy3DStudy(const QVariantList &timevector) const {
 
     qreal pointsInTrial = 0;
@@ -447,13 +408,14 @@ qreal StudyEndOperations::computeNumberOfDataPointsIn2DStudy(const QVariantList 
             QVariantList list = dataSet.value(VMDC::DataSetField::RAW_DATA).toList();
             qint32 temp_npoints = 0;
             if (list.size() > 0){
-                if (list.first().toMap().contains(VMDC::DataVectorField::COUNTER)){
-                    qlonglong first = list.first().toMap().value(VMDC::DataVectorField::COUNTER).toLongLong();
-                    qlonglong last  = list.last().toMap().value(VMDC::DataVectorField::COUNTER).toLongLong();
+                QVariantMap fPoint = list.first().toMap();
+                QVariantMap lPoint = list.last().toMap();
+                QVariantList fIntVector = fPoint.value(VMDC::DataVectorField::INT_VECTOR).toList();
+                QVariantList lIntVector = lPoint.value(VMDC::DataVectorField::INT_VECTOR).toList();
+                if ((lIntVector.size() == 2) && (fIntVector.size() == 2)){
+                    qlonglong first = fIntVector.at(VMDC::DataVectorField::L_CNT).toLongLong();
+                    qlonglong last  = lIntVector.at(VMDC::DataVectorField::L_CNT).toLongLong();
                     temp_npoints = last - first + 1;
-                }
-                else {
-                    temp_npoints = dataSet.value(VMDC::DataSetField::RAW_DATA).toList().size();
                 }
             }
             //temp_npoints = dataSet.value(VMDC::DataSetField::RAW_DATA).toList().size();

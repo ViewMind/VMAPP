@@ -107,8 +107,8 @@ private:
     qint32 resolutionHeight;
 
     ////////////////////////////// GENERAL Functions /////////////////
-    void finalizeCalibrationProcess(qint32 code);
-    void createFailedCalibrationData();
+    void finalizeCalibrationProcess(qint32 code,const RenderServerPacket &calibrationData);
+    void createFailedCalibrationData(const RenderServerPacket &calibrationData);
     void configureValidationGeneration();
     void sendCalibrationCoefficientPacket();
     void addEyeDataToCalibrationPoint(float xl, float xr, float yl, float yr, float zl, float zr, qint32 index);

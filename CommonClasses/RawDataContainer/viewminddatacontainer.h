@@ -115,32 +115,6 @@ public:
     void printRawDataCSV(const QString &filename, const QString &study, const QStringList whichRawDataValues);
     void DebugPrintContentToConsole() const;
 
-    /**
-     * @brief GenerateStdRawDataVector Geneates a valid vector that can be inserted with add NewRawDataVector. Ensuring coherence. Standar all EyeTracking values.
-     * @param xr Right Eye X Coordinate
-     * @param yr Righe Eye Y Cooordinate
-     * @param xl Left Eye X Coordinate
-     * @param yl Left Eye Y Coordinate
-     * @param pr Right Eye Pupil size
-     * @param pl Left Eye Pupil size.
-     * @return A Raw data vector in the form of a map.
-     */
-    static QVariantMap GenerateStdRawDataVector(qreal timestamp, qreal xr, qreal yr, qreal xl, qreal yl, qreal pr, qreal pl);
-    /**
-     * @brief GenerateReadingRawDataVector Geneates a valid vector that can be inserted with add NewRawDataVector. Ensuring coherence. Standar all EyeTracking values. Includes specific Reading study data.
-     * @param xr Right Eye X Coordinate
-     * @param yr Righe Eye Y Cooordinate
-     * @param xl Left Eye X Coordinate
-     * @param yl Left Eye Y Coordinate
-     * @param pr Right Eye Pupil size
-     * @param pl Left Eye Pupil size.
-     * @param char_r Character index for the right eye
-     * @param char_l Character index for the left eye
-     * @param word_r Word index for the right eye
-     * @param word_l Word index for the left eye.
-     * @return
-     */
-    static QVariantMap GenerateReadingRawDataVector(qreal timestamp, qreal xr, qreal yr, qreal xl, qreal yl, qreal pr, qreal pl, qreal char_r, qreal char_l, qreal word_r, qreal word_l);
 
     ////////////////////////// FUNCTION FOR READING DATA. ONLY WHAT IS ABSOLUTELY NECESSARY.
     QVariantList getStudyTrialList(const QString &study);

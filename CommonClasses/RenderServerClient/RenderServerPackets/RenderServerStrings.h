@@ -73,12 +73,24 @@ static const QString COMMAND               = "cmd";      // The command.
 static const QString CALIBRATION_TARGETS_X = "x";        // The calibration targets
 static const QString CALIBRATION_TARGETS_Y = "y";        // The calibration targets
 static const QString CALIBRATION_TARGETS_Z = "z";        // The calibration targets
+
 static const QString CALIB_DATA_LX         = "lx";
 static const QString CALIB_DATA_LY         = "ly";
 static const QString CALIB_DATA_LZ         = "lz";
 static const QString CALIB_DATA_RX         = "rx";
 static const QString CALIB_DATA_RY         = "ry";
 static const QString CALIB_DATA_RZ         = "rz";
+
+static const QString CALIB_DATA_RAW_LX     = "raw_lx";
+static const QString CALIB_DATA_RAW_LY     = "raw_ly";
+static const QString CALIB_DATA_RAW_LZ     = "raw_lz";
+static const QString CALIB_DATA_RAW_RX     = "raw_rx";
+static const QString CALIB_DATA_RAW_RY     = "raw_ry";
+static const QString CALIB_DATA_RAW_RZ     = "raw_rz";
+
+static const QString CALIB_DATA_PR         = "pr";
+static const QString CALIB_DATA_PL         = "pl";
+
 static const QString GATHER_TIME           = "gt";       // Gather Timer
 static const QString MOVE_TIME             = "mt";       // Move Time;
 static const QString N_CALIB_POINTS        = "n";        // Number of calibration points.

@@ -161,23 +161,24 @@ namespace VMDC {
     
 
     namespace DataVectorField {
-       static const QString TIMESTAMP = "ts";
-       static const QString CHAR_L = "cl";
-       static const QString CHAR_R = "cr";
-       static const QString PUPIL_L = "pl";
-       static const QString PUPIL_R = "pr";
-       static const QString WORD_L = "wl";
-       static const QString WORD_R = "wr";
-       static const QString X_L = "xl";
-       static const QString X_R = "xr";
-       static const QString Y_L = "yl";
-       static const QString Y_R = "yr";
-       static const QString COUNTER = "c";
-       static const QStringList valid{TIMESTAMP,CHAR_L,CHAR_R,PUPIL_L,PUPIL_R,WORD_L,WORD_R,X_L,X_R,Y_L,Y_R,COUNTER};
-       static QString validate(const QString &str) { return VMDC::validate(str,valid,"Data Vector Field"); }
-       static qint32 toInt(const QString &str) {return valid.indexOf(str); }
-       static QString fromInt(qint32 index ) { if ((index >= 0) && (index < valid.size())) return valid.at(index); else return ""; }   
-       static QString validateList(const QStringList &totest) { for (qint32 i = 0; i < totest.size(); i++) { QString ans = validate(totest.at(i)); if (ans != "") return ans; } return ""; }       
+       static const int F_XR     = 0;
+       static const int F_YR     = 1;
+       static const int F_PR     = 2;
+       static const int F_XL     = 3;
+       static const int F_YL     = 4;
+       static const int F_PL     = 5;
+       static const int F_X_ET_L = 6;
+       static const int F_Y_ET_L = 7;
+       static const int F_Z_ET_L = 8;
+       static const int F_X_ET_R = 9;
+       static const int F_Y_ET_R = 10;
+       static const int F_Z_ET_R = 11;
+
+       static const int L_TS     = 0;
+       static const int L_CNT    = 1;
+
+       static const QString INT_VECTOR = "l";
+       static const QString FLOAT_VECTOR = "f";
     }
 
     namespace FixationVectorField {
@@ -322,9 +323,11 @@ namespace VMDC {
        static const QString CALIBRATION_PTS_NO_DATA               = "calibration_points_with_too_few_data_points";
        static const QString TIMESTAMP                             = "timestamp";
        static const QString IS_3D                                 = "is_3d";
+       static const QString RAW_DATA                              = "raw_et_vectors";
+       static const QString PUPIL_DATA                            = "pupil_data";
 
        static const QStringList valid{VALIDATION_POINT_ACCEPTANCE_THRESHOLD,LEFT_EYE_DATA,RIGHT_EYE_DATA, COFICIENT_OF_DETERMINATION,MATH_ISSUES_FOR_CALIBRATION,
-                   CALIBRATION_POINT_GATHERTIME,CALIBRATION_POINT_WAITTIME, CALIBRATION_PTS_NO_DATA,CALIBRATION_TARGET_PERCENTS,IS_3D,
+                   CALIBRATION_POINT_GATHERTIME,CALIBRATION_POINT_WAITTIME, CALIBRATION_PTS_NO_DATA,CALIBRATION_TARGET_PERCENTS,IS_3D, RAW_DATA, PUPIL_DATA,
                    CORRECTION_COEFICIENTS, TIMESTAMP};
        static QString validate(const QString &str) { return VMDC::validate(str,valid,"Calibration Attempt Field"); }
        static qint32 toInt(const QString &str) {return valid.indexOf(str); }

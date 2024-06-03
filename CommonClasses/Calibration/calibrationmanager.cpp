@@ -98,9 +98,11 @@ QSize CalibrationManager::getResolution() const{
 
 ////////////////////// Finalize the calibration process //////////////////
 
-void CalibrationManager::createFailedCalibrationData(){
+void CalibrationManager::createFailedCalibrationData(const RenderServerPacket &calibrationData){
     configureValidationGeneration();
     calibrationValidation.generateAFailedCalibrationReport();
+    // And add the raw data for storage.
+    calibrationValidation.setCalibrationAttemptsRawAndPupilData(calibrationData);
     isCalibrated = false;
     emit CalibrationManager::calibrationDone(CALIBRATION_FAILED);
 }
@@ -128,7 +130,7 @@ void CalibrationManager::configureValidationGeneration(){
                                               calibrationMode3D);
 }
 
-void CalibrationManager::finalizeCalibrationProcess(qint32 code){
+void CalibrationManager::finalizeCalibrationProcess(qint32 code, const RenderServerPacket &calibrationData){
 
     // We compute the correction coefficients only if the calibration was successfull.
     if (!correctionCoefficients.computeCoefficients()){
@@ -140,6 +142,8 @@ void CalibrationManager::finalizeCalibrationProcess(qint32 code){
 
     // And we actually generate it.
     bool wasSuccessfull = calibrationValidation.generateCalibrationReport(correctionCoefficients);
+    // And add the raw data for storage.
+    calibrationValidation.setCalibrationAttemptsRawAndPupilData(calibrationData);
 
     if (wasSuccessfull){
         // We now send the coefficients back to the remote render server so they can be used.
@@ -267,7 +271,7 @@ void CalibrationManager::processCalibrationData(const RenderServerPacket &calibr
 
         if (there_was_an_error){
             //finalizeCalibrationProcess(CALIBRATION_FAILED);
-            createFailedCalibrationData();
+            createFailedCalibrationData(calibrationData);
             return;
         }
 
@@ -295,7 +299,7 @@ void CalibrationManager::processCalibrationData(const RenderServerPacket &calibr
     }
 
     // Now that the data we can finalize the calibration process.
-    finalizeCalibrationProcess(CALIBRATION_SUCCESSFUL);
+    finalizeCalibrationProcess(CALIBRATION_SUCCESSFUL,calibrationData);
 
 }
 

@@ -23,7 +23,7 @@ Rectangle {
         }
         onContainsMouseChanged: {
             if (containsMouse){
-                console.log("Tootip time!!!");
+                //console.log("Tootip time!!!");
             }
         }
     }

@@ -97,9 +97,7 @@ private:
     qreal computeNumberOfDataPointsIn2DStudy(const QVariantList &trials) const;
 
     // For legacy support. If a file does not contain, in it's studies the duration field, then the QCI is computed with the timestamps of the raw data (2D) study.
-    qreal computeQCIOnLegacy2DStudy(const QVariantList &trials) const;
     qreal computeQCIOnLegacy3DStudy(const QVariantList &timevector) const;
-
 
     // Gets all the data necessary from the study medata to create a proper index in the local db.
     bool createQCIStudyFile(const QString &evalID);

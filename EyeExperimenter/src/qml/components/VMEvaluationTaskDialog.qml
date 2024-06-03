@@ -419,6 +419,7 @@ Item {
                             if (items.get(index).discarded) return false;
                             if (items.get(index).qci_ok) {
                                 // Can only redo tasks that have been done sucessfully, but only if RRS is working.
+                                if (flowControl == null) return false // Avoids annoying warnings.
                                 if (flowControl.isRenderServerWorking()) return true
                                 return false;
                             }

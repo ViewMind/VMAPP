@@ -12,6 +12,7 @@
 
 #include "eyecorrectioncoefficients.h"
 #include "../RawDataContainer/VMDC.h"
+#include "../RenderServerClient/RenderServerPackets/renderserverpacket.h"
 #include "../LinearLeastSquares/linearleastsquaresfit.h"
 #include "../LogInterface/staticthreadlogger.h"
 
@@ -51,6 +52,9 @@ public:
 
     // Used for getting the calibration configuration to be stored in the study output file.
     QVariantMap getCalibrationConfigurationData() const;
+
+    // This simply stores the raw calibration data fields in the calibration attempt structure.
+    void setCalibrationAttemptsRawAndPupilData(const RenderServerPacket &calibrationData);
 
     // This will return the recommended eye to use for evaluation/processing of the study.
     QString getRecommendedEye() const;
