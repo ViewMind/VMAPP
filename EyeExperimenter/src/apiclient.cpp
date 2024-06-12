@@ -211,6 +211,8 @@ bool APIClient::requestFunctionalControl(const QVariantMap &hwInfo,
     json[JFIELD_PASSWORD] = password;
     json[JFIELD_INTENT]   = intent;
 
+    Debug::prettyPrintQVariantMap(json);
+
     rest_controller.setJSONData(json);
 
     return sendRequest(true);

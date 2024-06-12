@@ -1399,7 +1399,7 @@ void Loader::receivedAPIResponse(){
         }
     }
 
-    qDebug() << "Received API Response. Sending finished request";
+    //qDebug() << "Received API Response. Sending finished request";
 
     emit Loader::finishedRequest();
 }
