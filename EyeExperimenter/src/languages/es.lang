@@ -114,7 +114,7 @@ viewaccount_mod_success = <b></b><br>ha sido modificado exitosamente;
 #********************************* PATIENT FORM *********************************
 viewpatform_title = Añadir Paciente;
 viewpatform_dupe_title = Posibles Duplicados;
-viewpatform_dupe_warning = Un paciente con nombre o ID similar y la misma fecha de nacimiento ya exite.
+viewpatform_dupe_warning = Un paciente con nombre o ID similar y la misma fecha de nacimiento ya existe.
 Por favor, asegúrese de que no se esté creando un registro duplicado;
 viewpatform_dupe_add = GUARDAR PACIENTE;
 viewpatform_dupe_back = VOLVER A LA LISTA;
