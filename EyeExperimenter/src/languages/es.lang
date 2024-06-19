@@ -10,6 +10,7 @@ viewstart_on_RRS_check_failed  = Se Detectó un Error|Un software está funciona
 afectar a ViewMind Atlas.
 Por favor reinicie su computadora para arreglar este error;
 viewstart_vr_disconnect = <b>Pérdida de conexión al casco</b><br>Por favor reinicie la aplicación;
+viewstart_umanual_lang_select = Seleccione el idioma del manual de usuario;
 
 #********************************* VIEW INSTANCE DISABLED *********************************
 
@@ -312,7 +313,7 @@ viewgetconfig_error    = <b>No se pudo activar la aplicación</b><br>Pruebe nuev
 viewgetconfig_error_sn = <b>Número de serie incorrecto</b><br>Asegúrese que el casco esté conectado<br>e inténtelo nuevamente;
 viewgetconfig_success  = Activación Exitosa|La aplicación se cerrará.<br>
 Por favor, para comenzar a usar el ViewMind Atlas Cognition App<br>vuelva a iniciarla<br><br>
-<b>IMPORTANTE: Asegurese de estar conectado a internet la primera<br>vez que utilize la aplicación</b>;
+<b>IMPORTANTE: Asegúrese de estar conectado a internet la primera<br>vez que utilize la aplicación</b>;
 viewgetconfig_error_lib = <b>La instancia no está liberada</b><br>Contáctese con ViewMind y pida la liberación de<br>instancia ???;
 viewgetconfig_func_verif = VERIFICACIÓN FUNCIONAL;
 

@@ -400,17 +400,8 @@ QString Loader::getInstitutionName() const {
 }
 
 
-void Loader::openUserManual(){
-
-    QString lang = comm->db()->getPreference(LocalDB::PREF_UI_LANG,"English").toString();
-    QString path = "";
-    if (lang == Globals::UILanguage::ES){
-        path = Globals::Paths::MANUAL_DIR + "/es.pdf";
-    }
-    else{
-        path = Globals::Paths::MANUAL_DIR + "/en.pdf";
-    }
-
+void Loader::openUserManual(const QString &langCode){
+    QString path = Globals::Paths::MANUAL_DIR + "/" + langCode + ".pdf";
     QString currentDirectory = QDir::currentPath();
     QString filePath = currentDirectory + "/" + path;
     if (!QFile(filePath).exists()){

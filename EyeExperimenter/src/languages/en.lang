@@ -6,10 +6,11 @@ viewstart_instruction = Log in to your profile or add a new evaluator;
 viewstart_login = LOG IN;
 viewstart_addneweval = ADD A NEW EVALUATOR;
 viewstart_settings = Settings;
-viewstart_on_RRS_check_failed  = Error Detected|A software malfunction was detected that might affect 
+viewstart_on_RRS_check_failed  = Error Detected|A software malfuncction was detected that might affect 
 ViewMind Atlas.
 Please restart the computer to fix this error.;
 viewstart_vr_disconnect = <b>Connection to headset lost</b><br>Please restart the application;
+viewstart_umanual_lang_select = Select the language of the User Manual;
 
 #********************************* VIEW INSTANCE DISABLED *********************************
 
@@ -289,7 +290,7 @@ viewevaluation_checket_title_fail = Unable to detect eye tracking data;
 viewevaluation_checket_btnfail = RETRY;
 viewevaluation_checket_btnback = PATIENT LIST;
 viewevaluation_checket_fail = The eye tracker is not working
-Plese try the following:
+Please try the following:
 1. Make sure that the headset is correctly placed on the patient
 2. Ask the patient to open their eyes widely and click on RETRY
 3. If the problem persists, try shutting down the application and 

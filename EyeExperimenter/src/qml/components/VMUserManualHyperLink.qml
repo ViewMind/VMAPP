@@ -8,15 +8,14 @@ import "../subscreens"
 
 // The user manual hyperlink
 MouseArea {
+
+    property string vmHyperLinkText: loader.getStringForKey("viewsettings_umanual")
+
     id: userManualClickableArea
     hoverEnabled: true;
     cursorShape: userManualClickableArea.containsMouse? Qt.PointingHandCursor : Qt.ArrowCursor
     height: VMGlobals.adjustHeight(18)
     width: metrics.width + icon.width + icon.anchors.leftMargin
-
-    onClicked: {
-        loader.openUserManual()
-    }
 
     Text {
         id: userManualText
@@ -45,7 +44,7 @@ MouseArea {
 
     TextMetrics {
         id: metrics
-        text: loader.getStringForKey("viewsettings_umanual")
+        text: vmHyperLinkText
         font.pixelSize: VMGlobals.vmFontLarger
         font.underline: userManualClickableArea.containsMouse
         font.weight: 600

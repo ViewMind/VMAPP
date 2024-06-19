@@ -10,7 +10,7 @@ Rectangle {
     color: VMGlobals.vmGrayToggleOff
 
     readonly property double vmDivisorMargin: VMGlobals.adjustHeight(15);
-    readonly property string vmSYSTEM_RELEASE_DATE: "DD-MM-YYYY";
+    readonly property string vmSYSTEM_RELEASE_DATE: "19-06-2024";
     readonly property string vmSYSTEM_VERSION: "27.1.A";
     readonly property string vmANVISA_REG_NUMBER: "81464750145";
 

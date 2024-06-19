@@ -64,5 +64,6 @@
         <file>qml/components/VMStudyPhaseTracker.qml</file>
         <file>qml/components/VMEvaluationTaskDialog.qml</file>
         <file>qml/components/VMEvaluationTaskDisplayCard.qml</file>
+        <file>qml/components/VMUserManualLangSelect.qml</file>
     </qresource>
 </RCC>

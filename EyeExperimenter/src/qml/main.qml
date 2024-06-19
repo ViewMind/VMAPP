@@ -123,6 +123,11 @@ ApplicationWindow {
         }
     }
 
+
+    VMUserManualLangSelect {
+        id: userManualLangSelection
+    }
+
     VMEyeTrackingCheckDialog {
         id: eyeTrackingSettingsCheck
         onDismissed: function (allgood) {
@@ -260,6 +265,11 @@ ApplicationWindow {
             }
         }
 
+    }
+
+
+    function openUserManualSelection(){
+        userManualLangSelection.open();
     }
 
     function swipeTo(index){

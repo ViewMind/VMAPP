@@ -44,7 +44,7 @@ public:
     Q_INVOKABLE void changeGetVMConfigScreenLanguage(const QString &var);
     Q_INVOKABLE QVariantList getAvailableEvaluations();
     Q_INVOKABLE void logUIMessage(const QString &message, bool isError);
-    Q_INVOKABLE void openUserManual();
+    Q_INVOKABLE void openUserManual(const QString &langCode);
     Q_INVOKABLE bool processingParametersArePresent() const;
     Q_INVOKABLE void openURLInBrowser(const QString &url);
     Q_INVOKABLE bool instanceDisabled() const;
